@@ -41,11 +41,11 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　サキが、ALTのベーカー(Ms. Baker)先生に日本でやりたいことをインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">I\'m Ms. Baker, from Australia. I want to see many <b>temples</b> in Nara.</span>'+
-      '<span class="sp">I also want to learn how to cook Japanese <b>food</b>.</span>'+
-      '<span class="sp">And I want to play <b>winter</b> sports like skiing.</span>',
-    passage:'<b>サキのメモ</b><br>Ms. Baker wants to see many （　あ　） in Nara.<br>'+
-            '— wants to learn how to cook Japanese （　い　）.<br>— wants to play （　う　） sports.',
+      '<span class="sp">Hi, I\'m Ms. Baker from Australia. First, I\'d like to visit the old <b>temples</b> in Nara.</span>'+
+      '<span class="sp">I\'m also excited to try cooking Japanese <b>food</b> at home.</span>'+
+      '<span class="sp">And in <b>winter</b>, I want to enjoy skiing and other snow sports.</span>',
+    passage:'<b>サキのメモ</b><br>Ms. Baker — visit the old （　あ　） in Nara<br>'+
+            '— try cooking Japanese （　い　）<br>— enjoy （　う　） sports such as skiing',
     items:[
     { type:"fill", label:"あ", pt:2, stem:"（あ）寺・寺院（複数）", answers:["temples"], hint:"英語1語" },
     { type:"fill", label:"い", pt:2, stem:"（い）食べ物", answers:["food"], hint:"英語1語" },
@@ -69,8 +69,8 @@ sections: [
 /* ===== 大問2 チラシ＋対話 ===== */
 { no:2, title:"中学生のケンジ(Kenji)とアヤ(Aya)が、ミドリ市の文化交流イベントの一つである、ALTのエミリー(Emily Davis)先生の英会話レッスンのちらしを見ながら話しています。(1)〜(5)に答えなさい。", groups:[
   { flyer:
-    '<h4>Let\'s talk with Emily!</h4>'+
-    '<div class="note">Hello, everyone! Please come to my class and have fun!</div>'+
+    '<h4>English Café with Emily!</h4>'+
+    '<div class="note">Hi, everyone! Join my class, and let\'s enjoy English together!</div>'+
     '<table><tr><td>Date</td><td>October 12, 2026</td></tr>'+
     '<tr><td>Morning class</td><td>10:00 a.m. – 11:00 a.m.</td></tr>'+
     '<tr><td>Afternoon class</td><td>2:30 p.m. – 3:30 p.m.</td></tr></table>'+
@@ -81,14 +81,14 @@ sections: [
     '<span class="sp"><span class="who">Kenji:</span> Look, Aya. Did you know about this event?</span>'+
     '<span class="sp"><span class="who">Aya:</span> Yes. Ms. Davis is the （　あ　） popular English teacher in my school.</span>'+
     '<span class="sp"><span class="who">Kenji:</span> Really? I want to join, but I\'m not （　い　） that I can speak well.</span>'+
-    '<span class="sp"><span class="who">Aya:</span> Don\'t be afraid of making mistakes when you speak English.</span>'+
+    '<span class="sp"><span class="who">Aya:</span> You don\'t need to worry about mistakes when you speak.</span>'+
     '<span class="sp"><span class="who">Kenji:</span> Good advice. She likes <i>sushi</i>. My favorite <i>sushi</i> restaurant is near the park. '+
     'I think the <i>sushi</i> there is the <u>(う) good</u> in our town.</span>'+
     '<span class="sp"><span class="who">Aya:</span> That\'s good. I\'m （　い　） she will like it.</span>'+
     '<span class="sp"><span class="who">Kenji:</span> The class is three days from now. I have basketball practice that day.</span>'+
     '<span class="sp"><span class="who">Aya:</span> What time will it finish?</span>'+
     '<span class="sp"><span class="who">Kenji:</span> It will finish at noon. Then I can join the afternoon class and talk about basketball!</span>',
-    note:'語注：apply 申し込む／be afraid of 〜 〜を恐れる／mistake 間違い',
+    note:'語注：apply 申し込む／worry about 〜 〜を気にする／mistake 間違い',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"（あ）に入れるのに最も適当な英語1語を書きなさい。", answers:["most"], hint:"the （　） popular" },
     { type:"fill", label:"(2)い", pt:3, stem:"2か所の（い）に共通して入る最も適当な英語1語を書きなさい。", answers:["sure"], hint:"I'm not 〜 / I'm 〜" },
@@ -165,16 +165,16 @@ sections: [
   { passage:
     '<b>①</b> Good morning, everyone. I\'m Daiki from the library committee. Today I want to talk about our new plan, "Reading Friends." '+
     'This plan will start next month. We hope students will enjoy reading and share good books with each other.<br><br>'+
-    '<b>②</b> When I became a junior high school student, I didn\'t read many books. I often played video games at home. '+
-    'One day, my older brother gave me a book. He said, "I think you will like this story." He was right. I couldn\'t stop reading it. '+
-    'It was my first time to enjoy a book so much. This experience <u>(お) ___</u> my idea about reading. '+
-    'I learned that meeting a good book is <b>wonderful</b>. So I joined the library committee.<br><br>'+
+    '<b>②</b> In my first year of junior high school, I didn\'t read many books. I often played video games at home. '+
+    'One day, my older brother gave me a book. He said, "I think you will like this story." He was right. I read it again and again. '+
+    'It was my first time to enjoy a book so much. This experience <u>(お) ___</u> the way I think about books. '+
+    'I learned that meeting a good book is <b>wonderful</b>. That is why I joined the library committee.<br><br>'+
     '<b>③</b> In this plan, we will choose one good book every month. Some books are exciting stories, and some are true stories. '+
     'After you read the book, please tell us your comments. We may use your comments for our website, but please '+
     'don\'t worry about your English. We just want everyone to know that books are （　え　）.<br><br>'+
     '<b>④</b> Some people say that using a smartphone is useful. That\'s true. <u>④ Using a smartphone is faster than reading a book</u> '+
     'when we want to find information. But a book has good points, too. <u>③ ( us / a book / teaches / many things )</u> slowly. '+
-    'When you read a book, you can <u>(か) ___</u> the characters\' feelings. So please join "Reading Friends" and find a good book!',
+    'When you read a book, you can <u>(か) ___</u> the hero\'s true feelings. So please join "Reading Friends" and find a good book!',
     passageEn:true,
     note:'語注：committee 委員会／experience 経験／comment 感想／information 情報',
     items:[

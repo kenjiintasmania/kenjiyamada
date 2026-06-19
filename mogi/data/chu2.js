@@ -34,19 +34,19 @@ sections: [
       '<span class="sp"><span class="who">Mike:</span> No, she doesn\'t. She likes tennis. She practices it every Saturday.</span>'+
       '<span class="sp"><span class="who">Saki:</span> I see. Next week my friend Kumi will come to my house, and we will cook lunch together.</span>'+
       '<span class="sp"><span class="who">Mike:</span> That\'s nice. Where does Kumi live?</span>'+
-      '<span class="sp"><span class="who">Saki:</span> She lives near the station. She will come on Sunday afternoon.</span>',
+      '<span class="sp"><span class="who">Saki:</span> She lives near the station. She is coming over this Sunday evening.</span>',
     intro:"(2) マイクとサキの対話を聞き、英語の質問の答えを選びなさい。対話と質問は1回読まれます。",
     items:[
     { type:"mcq", label:"①", pt:3, stem:E("What did Mike do last Sunday?"),
       choices:[ E("He read a book about animals."), E("He played tennis with his sister."),
                 E("He played baseball with his friends."), E("He cooked lunch with Kumi.") ], answer:2 },
     { type:"mcq", label:"②", pt:3, stem:E("Does Mike's sister play baseball?"),
-      choices:[ E("Yes, she is."), E("No, she isn't."), E("Yes, she does."), E("No, she doesn't.") ], answer:3 },
+      choices:[ E("No, she doesn't."), E("Yes, she does."), E("No, she isn't."), E("Yes, she is.") ], answer:0 },
     { type:"mcq", label:"③", pt:3, stem:E("Where will Saki and Kumi cook lunch?"),
-      choices:[ E("At a restaurant."), E("At Saki's house."), E("At Kumi's house."), E("At the station.") ], answer:1 },
-    { type:"mcq", label:"④", pt:3, stem:E("When will Kumi come to Saki's house?"),
-      choices:[ E("On Saturday morning."), E("On Saturday afternoon."),
-                E("On Sunday morning."), E("On Sunday afternoon.") ], answer:3 } ] },
+      choices:[ E("At Saki's home."), E("At a café near the station."), E("At Kumi's home."), E("At school.") ], answer:0 },
+    { type:"mcq", label:"④", pt:3, stem:E("When will Kumi visit Saki?"),
+      choices:[ E("On Sunday morning."), E("On Sunday evening."),
+                E("On Saturday evening."), E("On Monday afternoon.") ], answer:1 } ] },
 
   { passage:
       '<b>転入生について（メモ）</b><br>名前：リサ・ブラウン<br>出身：カナダ<br>'+
@@ -58,7 +58,7 @@ sections: [
     intro:"(3) リサについてのメモを見ながら放送を聞き、質問の答えを選びなさい。放送は2回読まれます。",
     items:[
     { type:"mcq", label:"①", pt:3, stem:E("Does Lisa play the violin every day?"),
-      choices:[ E("Yes, she is."), E("No, she isn't."), E("Yes, she does."), E("No, she doesn't.") ], answer:2 },
+      choices:[ E("Yes, she does."), E("No, she doesn't."), E("Yes, she is."), E("No, she isn't.") ], answer:0 },
     { type:"mcq", label:"②", pt:3, stem:E("How many cats does Lisa have?"),
       choices:[ E("One."), E("Two."), E("Three."), E("Four.") ], answer:1 } ] }
 ]},
@@ -80,8 +80,8 @@ sections: [
     '<tr><td>2月</td><td>ロケットを作ろう</td></tr><tr><td>3月</td><td>たこを作ろう</td></tr></table>'+
     '<div class="note">・10分前に集合してください</div>',
     passage:
-    '<span class="sp"><span class="who">Tom:</span> What are you looking at, Kenta?</span>'+
-    '<span class="sp"><span class="who">Kenta:</span> Hi, Tom. I\'m looking at a flyer from Hikari Space Museum. We can learn about (　①　) and watch movies about space.</span>'+
+    '<span class="sp"><span class="who">Tom:</span> Kenta, have you seen this flyer?</span>'+
+    '<span class="sp"><span class="who">Kenta:</span> Hi, Tom. Yes. It\'s a flyer from Hikari Space Museum. There we can study the (　①　) and enjoy some space movies.</span>'+
     '<span class="sp"><span class="who">Tom:</span> The planetarium is popular. The museum also has a craft class on the (　②　) Sunday of every month. (　③　) students can join. I joined last month and made a hat.</span>'+
     '<span class="sp"><span class="who">Kenta:</span> That sounds interesting. I want to visit next month. Can you go with me?</span>'+
     '<span class="sp"><span class="who">Tom:</span> Yes, but I can\'t go in the morning. I practice the piano then. I\'m free in the afternoon.</span>'+
@@ -118,14 +118,14 @@ sections: [
     '<span class="sp"><span class="who">Emma:</span> Sure. Come to my house next Sunday.</span>',
     items:[
     { type:"bankpick", label:"(1)ⓐ", pt:3, stem:"ⓐに入る最も適切な文を、次のア〜カから選びなさい。", answer:1,
-      bank:[E("Did you walk your dog there?"),E("Did you play soccer there?"),E("Where did you take them?"),
-            E("How can you go there?"),E("Who is that player?"),E("Does your grandmother like soccer, too?")] },
+      bank:[E("Did you walk your dog there?"),E("Did you play in the game?"),E("Where did you take these pictures?"),
+            E("How do you get there?"),E("Is that your brother in the photos?"),E("Does your grandmother like soccer, too?")] },
     { type:"bankpick", label:"(1)ⓑ", pt:3, stem:"ⓑに入る最も適切な文を、ア〜カから選びなさい。", answer:2,
-      bank:[E("Did you walk your dog there?"),E("Did you play soccer there?"),E("Where did you take them?"),
-            E("How can you go there?"),E("Who is that player?"),E("Does your grandmother like soccer, too?")] },
+      bank:[E("Did you walk your dog there?"),E("Did you play in the game?"),E("Where did you take these pictures?"),
+            E("How do you get there?"),E("Is that your brother in the photos?"),E("Does your grandmother like soccer, too?")] },
     { type:"bankpick", label:"(1)ⓒ", pt:3, stem:"ⓒに入る最も適切な文を、ア〜カから選びなさい。", answer:5,
-      bank:[E("Did you walk your dog there?"),E("Did you play soccer there?"),E("Where did you take them?"),
-            E("How can you go there?"),E("Who is that player?"),E("Does your grandmother like soccer, too?")] },
+      bank:[E("Did you walk your dog there?"),E("Did you play in the game?"),E("Where did you take these pictures?"),
+            E("How do you get there?"),E("Is that your brother in the photos?"),E("Does your grandmother like soccer, too?")] },
     { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するエマの発言ですか。具体的に日本語で書きなさい。",
       model:"ケンが「試合の写真をよくとる」と言ったことに対して、自分も（試合の写真を）よくとる、ということ。",
       tip:"「だれが」「何をする」を入れて書こう。" },
@@ -164,7 +164,7 @@ sections: [
     passageEn:true,
     note:'語注：owner 持ち主／granddaughter 孫娘／key ring キーホルダー／as a hobby しゅみで',
     items:[
-    { type:"mcq", label:"(1)", pt:3, stem:"次の英文を入れるのに最も適切な場所を、本文中の（ア）〜（ウ）から選びなさい。<br>"+E("Then I was very happy."),
+    { type:"mcq", label:"(1)", pt:3, stem:"次の英文を入れるのに最も適切な場所を、本文中の（ア）〜（ウ）から選びなさい。<br>"+E("Then I felt really glad."),
       choices:["（ア）","（イ）","（ウ）"], answer:2 },
     { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容を、具体的に日本語で書きなさい。",
       model:"アヤ（モリさんの孫娘）が、ミサキのためにキーホルダーを手作りしてくれた、ということ。" },
@@ -190,9 +190,9 @@ sections: [
       { type:"wordorder", label:"(2)", pt:3, stem:'A:［ '+E("you / to / going / are")+' ］ visit your aunt next Sunday?　B: Yes, I am.',
         words:["you","to","going","are"], answer:"Are you going to visit your aunt next Sunday?",
         display:"Are you going to visit your aunt next Sunday?" },
-      { type:"wordorder", label:"(3)", pt:3, stem:'A:［ '+E("have / you / if / time")+' ］ tomorrow, let\'s go to the zoo.　B: Sounds good.',
-        words:["have","you","if","time"], answer:"If you have time tomorrow, let's go to the zoo.",
-        display:"If you have time tomorrow, let's go to the zoo." },
+      { type:"wordorder", label:"(3)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, let\'s go to the zoo.　B: Sounds good.',
+        words:["are","you","if","free"], answer:"If you are free tomorrow, let's go to the zoo.",
+        display:"If you are free tomorrow, let's go to the zoo." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("was / your / playing / sister")+' ］ the piano at five yesterday?　B: Yes, she was.',
         words:["was","your","playing","sister"], answer:"Was your sister playing the piano at five yesterday?",
         display:"Was your sister playing the piano at five yesterday?" } ] },
@@ -206,21 +206,21 @@ sections: [
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("to / my / see / Osaka")+' ］ grandmother last week.　B: That\'s nice.',
         words:["to","my","see","Osaka"], answer:"I went to Osaka to see my grandmother last week.",
         display:"I went to Osaka to see my grandmother last week." },
-      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("time / you / if / have")+' ］ tomorrow, come to the festival with me.　B: OK.',
-        words:["time","you","if","have"], answer:"If you have time tomorrow, come to the festival with me.",
-        display:"If you have time tomorrow, come to the festival with me." } ] }
+      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, come to the festival with me.　B: OK.',
+        words:["are","you","if","free"], answer:"If you are free tomorrow, come to the festival with me.",
+        display:"If you are free tomorrow, come to the festival with me." } ] }
   ] },
 
 /* ===== 大問7 対話文（語句補充） ===== */
 { no:7, title:"次の対話文の（　①　）〜（　④　）に入る最も適切な英語を、それぞれ1語で書きなさい。", groups:[
   { passage:
-    '<span class="sp"><span class="who">Nao:</span> Hi, Mei. Do you often come to this library?</span>'+
+    '<span class="sp"><span class="who">Nao:</span> Hi, Mei. Do you come to this library a lot?</span>'+
     '<span class="sp"><span class="who">Mei:</span> Yes, Nao. Today I （　①　） here at nine, and I read some books.</span>'+
-    '<span class="sp"><span class="who">Nao:</span> That\'s nice. I think （　②　） everyone in our class likes this library.</span>'+
-    '<span class="sp"><span class="who">Mei:</span> Yes. I usually come here with my brother. How （　③　） books do you read in a week?</span>'+
+    '<span class="sp"><span class="who">Nao:</span> Nice. I think （　②　） all the students here love this library.</span>'+
+    '<span class="sp"><span class="who">Mei:</span> I agree. I usually come with my brother. How （　③　） books do you read each week?</span>'+
     '<span class="sp"><span class="who">Nao:</span> About five. My sister reads more. She works here as a librarian.</span>'+
-    '<span class="sp"><span class="who">Mei:</span> Oh, your sister works here?</span>'+
-    '<span class="sp"><span class="who">Nao:</span> Yes. I want to be a librarian （　④　） her.</span>',
+    '<span class="sp"><span class="who">Mei:</span> Oh, does she work here?</span>'+
+    '<span class="sp"><span class="who">Nao:</span> Yes. I hope to become a librarian （　④　） my sister.</span>',
     items:[
     { type:"fill", label:"①", pt:2, stem:"①（過去形に）", answers:["came"], hint:"come の過去形" },
     { type:"fill", label:"②", pt:2, stem:"②（〜のほとんど）", answers:["almost"], hint:"almost 〜" },

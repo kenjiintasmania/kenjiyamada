@@ -37,10 +37,10 @@ sections: [
 
   { intro:"問題C　先生が宿題について話しています。マリ(Mari)が書いたメモの（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Now I\'ll tell you about your homework. Write about your favorite <b>season</b>.</span>'+
-      '<span class="sp">Write more than <b>seventy</b> English words about it.</span>'+
-      '<span class="sp">Finish your homework by next <b>Monday</b>.</span>',
-    passage:'<b>マリのメモ</b><br>・好きな（　あ　）について書く<br>・それについて（　い　）語より多く英語で書く<br>・次の（　う　）までに終わらせる',
+      '<span class="sp">OK, here is your homework. Choose your favorite <b>season</b> and write about it.</span>'+
+      '<span class="sp">Your writing should be over <b>seventy</b> words in English.</span>'+
+      '<span class="sp">Please hand it in by next <b>Monday</b>.</span>',
+    passage:'<b>マリのメモ</b><br>・いちばん好きな（　あ　）を選んで書く<br>・英語で（　い　）語より多く書く<br>・次の（　う　）に提出する',
     items:[
     { type:"fill", label:"あ", pt:2, stem:"（あ）季節", answers:["season"], hint:"英語1語" },
     { type:"fill", label:"い", pt:2, stem:"（い）70", answers:["seventy"], hint:"英語1語" },
@@ -74,17 +74,17 @@ sections: [
     '<tr><td>Drink　S / M / L</td><td>¥120 / ¥150 / ¥200</td></tr>'+
     '<tr><td>Cake</td><td>¥280</td></tr><tr><td>Salad</td><td>¥250</td></tr><tr><td>Ice cream</td><td>¥300</td></tr></table>',
     passage:
-    '<span class="sp"><span class="who">Ryo:</span> We still have some time before the movie. It starts at （あ） o\'clock. How about going to a café?</span>'+
-    '<span class="sp"><span class="who">Lisa:</span> Good idea. It\'s one thirty now. We have thirty minutes, so we have （い） time to eat. But we need about ten minutes to walk to the theater.</span>'+
-    '<span class="sp"><span class="who">Ryo:</span> Right. There is a nice café over there. Let\'s go.</span>'+
+    '<span class="sp"><span class="who">Ryo:</span> The movie doesn\'t start until （あ） o\'clock, so we have some free time. Shall we find a café?</span>'+
+    '<span class="sp"><span class="who">Lisa:</span> Good idea. It\'s one thirty now. We have thirty minutes, so there is （い） time to eat. But it takes about ten minutes to walk to the theater.</span>'+
+    '<span class="sp"><span class="who">Ryo:</span> Sure. There is a nice café over there. Let\'s go.</span>'+
     '<span class="sp"><i>At the café.</i></span>'+
-    '<span class="sp"><span class="who">Lisa:</span> Look at the menu. Which set do you like?</span>'+
-    '<span class="sp"><span class="who">Ryo:</span> Well, Set D looks good. Let\'s share it. It has （あ） pizzas and （あ） drinks.</span>'+
-    '<span class="sp"><span class="who">Lisa:</span> That\'s too much for me. We <u>(う) eat</u> lunch two hours ago, so I\'m not very hungry.</span>'+
+    '<span class="sp"><span class="who">Lisa:</span> Look at the menu. Which set looks good to you?</span>'+
+    '<span class="sp"><span class="who">Ryo:</span> Hmm, Set D looks nice. How about sharing it? It comes with （あ） pizzas and （あ） drinks.</span>'+
+    '<span class="sp"><span class="who">Lisa:</span> That\'s a bit much for me. We <u>(う) eat</u> lunch two hours ago, so I\'m not very hungry.</span>'+
     '<span class="sp"><span class="who">Ryo:</span> Then how about Set B and a medium drink? We can share the pasta and salad.</span>'+
-    '<span class="sp"><span class="who">Lisa:</span> That\'s good.</span>'+
-    '<span class="sp"><span class="who">Ryo:</span> Then I\'ll go and order. I\'ll pay for ours. Keep our table, Lisa.</span>'+
-    '<span class="sp"><span class="who">Lisa:</span> OK. I\'ll pay you half later.</span>',
+    '<span class="sp"><span class="who">Lisa:</span> Sounds good.</span>'+
+    '<span class="sp"><span class="who">Ryo:</span> OK, I\'ll go and order for us. I\'ll pay first — could you save our seats, Lisa?</span>'+
+    '<span class="sp"><span class="who">Lisa:</span> Sure. I\'ll give you my half afterwards.</span>',
     note:'語注：over there あそこに／medium Mサイズの／pay 支払う／half 半分',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"3か所の（あ）に共通して入れる最も適当な英語1語を書きなさい。", answers:["two"], hint:"〜o'clock / 〜 pizzas" },
@@ -157,7 +157,7 @@ sections: [
 /* ===== 大問5 原稿（読解） ===== */
 { no:5, title:"次の英文は、ユイ(Yui)が書いた原稿です。(1)〜(6)に答えなさい。", groups:[
   { passage:
-    '<b>①</b> When I became a junior high school student, I joined the brass band. I liked music, so I wanted to play the trumpet well.<br><br>'+
+    '<b>①</b> In my first year of junior high, I joined the brass band. I liked music, so I wanted to play the trumpet well.<br><br>'+
     '<b>②</b> Three months later, in August, we had a music contest. It was my first one. I decided to play my best. '+
     'I practiced hard in the music room every day. I listened to many CDs of famous players, and I asked some members how to play better. '+
     'When I finished practicing, I thought I was （　お　）. However, our band didn\'t win any prizes. '+
@@ -165,9 +165,9 @@ sections: [
     'I thought, "Maybe I should stop playing because we didn\'t win."<br><br>'+
     '<b>③</b> That night, my grandmother heard my story. She said, "Why do you look so （　か　）?" I told her about the contest. '+
     'She said, "How did you feel when you played?" I said, "I felt happy when the sound was beautiful." '+
-    'She said, "How about expressing that feeling? I think that will <u>(き) ( make / your / better / sound )</u>." '+
-    'I said, "Thank you. But my skills are not good." She said, "Don\'t worry, Yui. You should keep practicing if you really like music. '+
-    'If you keep practicing, you can improve your skills." I said, "<u>(く) That</u> may be right. I\'ll try again."<br><br>'+
+    'She said, "Why not put that feeling into your music? I think it will <u>(き) ( make / your / better / sound )</u>." '+
+    'I said, "Thank you. But my skills are not good." She said, "It\'s all right, Yui. You should keep playing if you truly love music. '+
+    'If you keep playing, your skills will improve." I said, "<u>(く) That</u> may be right. I\'ll try again."<br><br>'+
     '<b>④</b> The next month, I practiced with my feelings. I thought about the song\'s story. Finally, at the next contest, our band got a prize.<br><br>'+
     '<b>⑤</b> Of course, I sometimes think playing well is difficult. But now, I don\'t think that I （　け　） when we can\'t win. '+
     'I don\'t play for prizes. I will keep playing in high school.',
@@ -186,11 +186,11 @@ sections: [
     { type:"jp", label:"(4)①", pt:4, stem:"下線部(く)の具体的内容を説明する次の文の①・②に、適当な日本語を入れなさい。<br>ユイが本当に（　①　）ならば、練習を続けるべきだ。練習を続ければ、（　②　）ことができる、という祖母のことば。<br>①にあてはまる日本語：",
       model:"音楽が好き", tip:"if you really like music より。" },
     { type:"jp", label:"(4)②", pt:4, stem:"②にあてはまる日本語：",
-      model:"（演奏の）技術を上達させる", tip:"you can improve your skills より。" },
+      model:"（演奏の）技術を上達させる", tip:"your skills will improve より。" },
     { type:"fill", label:"(5)け", pt:4, stem:"（け）に入れるのに最も適当な英語3語を、本文中から抜き出して書きなさい。",
       answers:["should stop playing"], hint:"英語3語（第2段落より）" },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",
-      choices:[ E("Yui joined the brass band when she became a junior high school student."),
+      choices:[ E("Yui joined the brass band in her first year of junior high school."),
                 E("Ken told Yui the band didn't win because she didn't practice hard."),
                 E("Yui's grandmother won many prizes when she was young."),
                 E("Yui's band got a prize at the next contest."),
