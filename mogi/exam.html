@@ -41,10 +41,15 @@
 <script>
 (function(){
   const id=(new URLSearchParams(location.search)).get("id")||"chu2";
+  const C2='／ <a href="chu2.html">中2</a>', C3='／ <a href="chu3.html">中3</a>';
   const meta={
-    chu2:  {file:"data/chu2.js",   title:'中2 模擬テスト <span class="en">Mock</span>', crumb:""},
-    chu3_1:{file:"data/chu3_1.js", title:'中3 第1回 模擬テスト <span class="en">Mock</span>', crumb:'／ <a href="chu3.html">中3</a>'},
-    chu3_2:{file:"data/chu3_2.js", title:'中3 第2回 模擬テスト <span class="en">Mock</span>', crumb:'／ <a href="chu3.html">中3</a>'}
+    chu2:  {file:"data/chu2.js",   title:'中2 第1回 模擬テスト <span class="en">Mock</span>', crumb:C2},
+    chu2_2:{file:"data/chu2_2.js", title:'中2 第2回 模擬テスト <span class="en">Mock</span>', crumb:C2},
+    chu2_3:{file:"data/chu2_3.js", title:'中2 第3回 模擬テスト <span class="en">Mock</span>', crumb:C2},
+    chu3_1:{file:"data/chu3_1.js", title:'中3 第1回 模擬テスト <span class="en">Mock</span>', crumb:C3},
+    chu3_2:{file:"data/chu3_2.js", title:'中3 第2回 模擬テスト <span class="en">Mock</span>', crumb:C3},
+    chu3_3:{file:"data/chu3_3.js", title:'中3 第3回 模擬テスト <span class="en">Mock</span>', crumb:C3},
+    chu3_4:{file:"data/chu3_4.js", title:'中3 第4回 模擬テスト <span class="en">Mock</span>', crumb:C3}
   }[id]||{file:"data/chu2.js",title:"模擬テスト",crumb:""};
   document.getElementById("examTitle").innerHTML=meta.title;
   document.getElementById("crumb2").innerHTML=meta.crumb;
