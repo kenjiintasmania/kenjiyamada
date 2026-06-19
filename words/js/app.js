@@ -1,26 +1,34 @@
-/* 単語アプリ — 基本編＆拡張編
-   - 品詞ごとに挑戦／シャッフル／クリアフラグ（保存）／再挑戦の自動再出題 */
+/* 単語アプリ — 基本編＆拡張編（訳→英語 タイピング式）
+   - 品詞ごとに挑戦／シャッフル／再挑戦
+   - 訳（日本語）を見て英語をキー入力し、正誤判定
+   - 「打ち込めた単語数（正解できた語数）」を端末ごとに保存 */
 (function () {
   "use strict";
 
   var WORDS = window.WORDS || [];
   var META = window.WORD_META || {};
-  var STORE_KEY = "tango_v1";
-  var SET_SIZE = 20;            // 1セットの語数
+  var STORE_KEY = "tango_v2";        // v1=フラッシュカード(見た語数)。意味が変わるため新キーへ
+  var OLD_STORE_KEY = "tango_v1";
+  var SET_SIZE = 20;                  // 1セットの語数
   var RETRY_RATES = { off: 0, low: 0.12, normal: 0.22, high: 0.35 };
 
   /* ---------- 保存データ ---------- */
   var store = loadStore();
   function loadStore() {
-    var def = { cleared: {}, settings: { dir: "j2e", retry: "normal", sound: true, order: "shuffle" } };
+    var def = { cleared: {}, settings: { retry: "normal", sound: true, order: "shuffle" } };
     try {
       var raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return def;
-      var o = JSON.parse(raw);
-      o.cleared = o.cleared || {};
-      o.settings = Object.assign(def.settings, o.settings || {});
-      return o;
-    } catch (e) { return def; }
+      if (raw) {
+        var o = JSON.parse(raw);
+        o.cleared = o.cleared || {};
+        o.settings = Object.assign(def.settings, o.settings || {});
+        return o;
+      }
+    } catch (e) { /* 壊れていれば初期化 */ }
+    // 旧データ(tango_v1)は「見た語数」で意味が異なるため引き継がず破棄。
+    // ただし古い端末でクラッシュしないよう、安全に存在チェックだけ行う。
+    try { if (localStorage.getItem(OLD_STORE_KEY)) localStorage.removeItem(OLD_STORE_KEY); } catch (e) {}
+    return def;
   }
   function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
   function isCleared(id) { return !!store.cleared[id]; }
@@ -43,6 +51,46 @@
     var n = 0; for (var i = 0; i < list.length; i++) if (isCleared(list[i].id)) n++; return n;
   }
 
+  /* ---------- 正誤判定（英語の入力チェック） ---------- */
+  // 入力・正解を正規化：前後の空白除去→小文字化→引用符の統一→
+  // 前後の記号除去→内部の連続空白を1つに→ハイフンは空白扱い。
+  function normalizeAnswer(s) {
+    if (s == null) return "";
+    var t = String(s);
+    // 引用符・約物の統一（カーリー→ストレート、全角→半角の主要なもの）
+    t = t.replace(/[‘’ʼ′]/g, "'")   // ' ' ʼ ′ → '
+         .replace(/[“”]/g, '"')               // “ ” → "
+         .replace(/[‐-―−]/g, "-")         // 各種ダッシュ・マイナス → -
+         .replace(/　/g, " ");                       // 全角スペース → 半角
+    t = t.trim().toLowerCase();
+    t = t.replace(/-/g, " ");                            // ハイフンは空白と同一視
+    t = t.replace(/\s+/g, " ").trim();                   // 内部の連続空白を1つに
+    // 前後の約物を除去（語頭・語末のみ。内部のアポストロフィ等は保持）
+    t = t.replace(/^[\s.,!?;:"'()\[\]{}…~～、。･・]+/, "")
+         .replace(/[\s.,!?;:"'()\[\]{}…~～、。･・]+$/, "");
+    return t;
+  }
+
+  // 1つの正解 w から「許容される正規化済み解答」の集合を作る。
+  // 例: "as a result (of)" → {"as a result of", "as a result"}
+  //     括弧内が任意（省略可）の部分とみなし、付き／無しの両方を許容する。
+  function acceptableSet(w) {
+    var set = {};
+    function add(str) { var n = normalizeAnswer(str); if (n) set[n] = 1; }
+    add(w);
+    if (/[()]/.test(w)) {
+      add(w.replace(/\([^)]*\)/g, " "));   // 括弧（と中身）をすべて省いた形
+      add(w.replace(/[()]/g, " "));        // 括弧記号だけ外して中身は残す形
+    }
+    return set;
+  }
+
+  function judge(input, w) {
+    var n = normalizeAnswer(input);
+    if (!n) return false;
+    return !!acceptableSet(w)[n];
+  }
+
   /* ---------- DOM ---------- */
   var $ = function (id) { return document.getElementById(id); };
   var screens = { home: $("screen-home"), cats: $("screen-cats"), study: $("screen-study"), done: $("screen-done") };
@@ -57,10 +105,11 @@
     $("topTitle").textContent = name === "study" ? (session ? session.titleShort : "学習") :
       name === "cats" ? MODE_NAME[curMode] : "単語アプリ";
     window.scrollTo(0, 0);
+    if (name === "study") setTimeout(focusInput, 50);
   }
   function goBack() {
     if (session && screens.study.classList.contains("hidden") === false) {
-      if (!confirm("学習をやめてもどりますか？（クリア状況は保存されます）")) return;
+      if (!confirm("学習をやめてもどりますか？（成績は保存されます）")) return;
     }
     navStack.pop();
     var prev = navStack[navStack.length - 1] || "home";
@@ -90,7 +139,7 @@
     $("catModeTitle").textContent = MODE_NAME[curMode];
     var all = byMode[curMode];
     var done = clearedCount(all);
-    $("catModeProg").innerHTML = "クリア <b>" + done + "</b> / " + all.length + " 語";
+    $("catModeProg").innerHTML = "打ち込めた <b>" + done + "</b> / " + all.length + " 語";
 
     var posList = (curMode === "b" ? META.basicByPos : META.extendedByPos) ||
       (META.posOrder || []).map(function (p) { return [p, (byModePos[curMode][p] || []).length]; }).filter(function (x) { return x[1]; });
@@ -104,7 +153,7 @@
       html += '<button class="cat-tile pos-' + pos + (c >= total && total > 0 ? ' done' : '') + '" data-pos="' + pos + '">' +
         '<div class="cat-row"><span class="cat-name">' + pos + '</span><span class="cat-chip">' + total + '</span></div>' +
         '<span class="bar"><i style="width:' + pct + '%"></i></span>' +
-        '<span class="cat-count">クリア <b>' + c + '</b> / ' + total + '</span>' +
+        '<span class="cat-count">打ち込めた <b>' + c + '</b> / ' + total + '</span>' +
         '</button>';
     });
     $("catList").innerHTML = html;
@@ -127,7 +176,7 @@
       title = "🔀 ぜんぶシャッフル"; tag = "全品詞";
     } else if (scope === "__retry__") {
       pool = byMode[mode].filter(function (w) { return isCleared(w.id); });
-      if (!pool.length) { toast("まだクリアした単語がありません"); return; }
+      if (!pool.length) { toast("まだ打ち込めた単語がありません"); return; }
       shuffle(pool); isReview = true;
       title = "🔄 再挑戦"; tag = "復習";
     } else {
@@ -179,25 +228,37 @@
     renderCard(it);
   }
 
+  function focusInput() {
+    var inp = $("answerInput");
+    if (inp && !inp.disabled) { try { inp.focus(); } catch (e) {} }
+  }
+
   function renderCard(it) {
-    var w = it.w, dir = store.settings.dir;
-    var frontText = dir === "j2e" ? (w.j || w.w) : w.w;
-    var frontJp = dir === "j2e";
-    $("cardFront").textContent = frontText;
-    $("cardFront").className = "card-front" + (frontJp ? " jp" : "");
-    $("cardBack").classList.add("hidden");
-    $("cardBack").innerHTML = "";
+    var w = it.w;
+    // 出題：日本語の意味（訳）
+    $("cardFront").textContent = w.j || w.w;
+    $("cardFront").className = "card-front jp";
     $("cardPos").textContent = w.p;
     $("card").className = "card flip pos-" + w.p;
     setTimeout(function () { $("card").classList.remove("flip"); }, 300);
     $("retryBadge").classList.toggle("hidden", !it.retry);
-    $("tapHint").classList.remove("hidden");
-    $("speakBtn").classList.toggle("hidden", false);
-    $("revealActions").classList.add("hidden");
-    $("showActions").classList.remove("hidden");
-    it.revealed = false;
 
-    // progress
+    // 入力欄を初期化
+    var inp = $("answerInput");
+    inp.value = "";
+    inp.disabled = false;
+    inp.className = "answer-input";
+    inp.setAttribute("placeholder", "英語を入力");
+
+    // フィードバック・操作の表示切替
+    $("feedback").className = "feedback hidden";
+    $("feedback").innerHTML = "";
+    $("inputActions").classList.remove("hidden");
+    $("nextActions").classList.add("hidden");
+    $("speakBtn").classList.add("hidden");    // 答え合わせ前は読み上げボタンを隠す
+    it.answered = false;
+
+    // 進捗
     var pct = session.baseTotal ? Math.round(session.baseDone / session.baseTotal * 100) : 0;
     $("studyBar").style.width = pct + "%";
     $("studyCount").innerHTML = "<b>" + session.baseDone + "</b> / " + session.baseTotal;
@@ -205,31 +266,50 @@
     $("studyTitle").innerHTML = '<span class="tag" style="background:' + c + '">' + session.tag + "</span>" +
       (session.scope === "__shuffle__" ? "ぜんぶシャッフル" : session.scope === "__retry__" ? "再挑戦" : session.scope);
     $("studyTitle").style.setProperty("--c", c);
+
+    focusInput();
   }
 
-  function reveal() {
-    var it = session.current; if (!it || it.revealed) return;
-    it.revealed = true;
-    var w = it.w, dir = store.settings.dir;
-    var ansEng = dir === "j2e";
-    var ansText = ansEng ? w.w : (w.j || "—");
-    $("cardBack").innerHTML = '<div class="ans ' + (ansEng ? "" : "jp") + '">' + esc(ansText) + "</div>";
-    $("cardBack").classList.remove("hidden");
-    $("tapHint").classList.add("hidden");
-    $("showActions").classList.add("hidden");
-    $("revealActions").classList.remove("hidden");
-    if (store.settings.sound) speak(w.w);
+  // 入力を確定して採点する
+  function submitAnswer() {
+    var it = session.current; if (!it || it.answered) return;
+    var inp = $("answerInput");
+    var raw = inp.value;
+    if (!normalizeAnswer(raw)) { focusInput(); return; }   // 空入力は無視
+    it.answered = true;
+    var ok = judge(raw, it.w.w);
+
+    inp.disabled = true;
+    inp.classList.add(ok ? "correct" : "wrong");
+
+    var fb = $("feedback");
+    fb.className = "feedback " + (ok ? "ok" : "ng");
+    fb.innerHTML =
+      '<div class="mark">' + (ok ? "○" : "✕") + '</div>' +
+      '<div class="fb-body">' +
+        '<div class="fb-label">' + (ok ? "正解！" : "おしい！正解は") + '</div>' +
+        '<div class="fb-answer">' + esc(it.w.w) + '</div>' +
+        (ok ? "" : '<div class="fb-your">あなたの入力：' + esc(raw) + '</div>') +
+      '</div>';
+
+    $("inputActions").classList.add("hidden");
+    $("nextActions").classList.remove("hidden");
+    $("speakBtn").classList.remove("hidden");
+    $("nextBtn").focus();
+
+    recordResult(ok, it);
+    if (store.settings.sound) speak(it.w.w);
   }
 
-  function answer(ok) {
-    var it = session.current; if (!it) return;
+  // 採点結果を成績・保存に反映
+  function recordResult(ok, it) {
     if (it.retry) {
       session.results.retry++;
-      if (!ok) setCleared(it.w.id, false);   // 再挑戦で間違えたらクリア解除（学習に戻す）
-      else setCleared(it.w.id, true);
+      if (ok) setCleared(it.w.id, true);
+      else setCleared(it.w.id, false);   // 再挑戦で間違えたら未クリアに戻す
     } else {
       if (ok) {
-        setCleared(it.w.id, true);
+        setCleared(it.w.id, true);       // 正しく打ち込めた → クリア
         session.results.clear++;
         session.baseDone++;
       } else {
@@ -238,18 +318,22 @@
           setCleared(it.w.id, false);
           session.baseDone++;
         } else {
-          session.queue.push({ w: it.w, retry: false }); // 後でもう一度
+          session.queue.push({ w: it.w, retry: false }); // 後でもう一度出題
         }
       }
     }
     maybeInjectRetry();
+  }
+
+  function goNext() {
+    if (!session.current || !session.current.answered) return;
     nextCard();
   }
 
   function finishSession() {
     var r = session.results;
-    var msg = "<b>" + r.clear + " 語</b> をクリア！";
-    if (r.again) msg += "<br>もう一回にした語：" + r.again;
+    var msg = "<b>" + r.clear + " 語</b> を打ち込めました！";
+    if (r.again) msg += "<br>まちがえた語：" + r.again;
     if (r.retry) msg += "<br>🔄 再挑戦：" + r.retry + " 語";
     var list = session.scope === "__shuffle__" || session.scope === "__retry__"
       ? byMode[session.mode] : (byModePos[session.mode][session.scope] || []);
@@ -268,7 +352,7 @@
     if (!("speechSynthesis" in window)) return;
     try {
       speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text.replace(/\(.*?\)/g, "").replace(/[.…]/g, ""));
+      var u = new SpeechSynthesisUtterance(String(text).replace(/\(.*?\)/g, "").replace(/[.…~～]/g, ""));
       u.lang = "en-US"; u.rate = 0.92;
       var v = voices.filter(function (x) { return /en[-_]/i.test(x.lang); })[0];
       if (v) u.voice = v;
@@ -288,29 +372,28 @@
       }).join("") + "</div>";
     }
     return '<h3>⚙ 設定</h3>' +
-      '<div class="setting-row"><div><div class="label">出題の向き</div><div class="desc">意味→英語／英語→意味</div></div>' +
-      seg("dir", [["j2e", "意味→英語"], ["e2j", "英語→意味"]]) + "</div>" +
       '<div class="setting-row"><div><div class="label">出題順</div><div class="desc">品詞ごとの並び順</div></div>' +
       seg("order", [["shuffle", "シャッフル"], ["seq", "順番"]]) + "</div>" +
-      '<div class="setting-row"><div><div class="label">再挑戦の頻度</div><div class="desc">クリア済みを自動で再出題</div></div>' +
+      '<div class="setting-row"><div><div class="label">再挑戦の頻度</div><div class="desc">打ち込めた語を自動で再出題</div></div>' +
       seg("retry", [["off", "なし"], ["low", "少"], ["normal", "ふつう"], ["high", "多"]]) + "</div>" +
-      '<div class="setting-row"><div><div class="label">英語の音声</div><div class="desc">答えを見ると読み上げ</div></div>' +
+      '<div class="setting-row"><div><div class="label">英語の音声</div><div class="desc">答え合わせのときに読み上げ</div></div>' +
       '<div class="switch ' + (s.sound ? "on" : "") + '" data-sw="sound"></div></div>' +
-      '<button class="danger-btn" data-reset="mode">「' + MODE_NAME[curMode] + '」のクリア状況をリセット</button>' +
-      '<button class="danger-btn" data-reset="all">すべてのクリア状況をリセット</button>';
+      '<button class="danger-btn" data-reset="mode">「' + MODE_NAME[curMode] + '」の成績をリセット</button>' +
+      '<button class="danger-btn" data-reset="all">すべての成績をリセット</button>';
   }
 
   function aboutHtml() {
     var m = META;
     return '<h3>？ このアプリについて</h3><div class="about">' +
-      "<p>英単語を品詞ごとに練習できるアプリです。全 <b>" + (m.total || WORDS.length) + "</b> 語。</p>" +
+      "<p>意味（日本語）を見て英語を打ち込む単語アプリです。品詞ごとに練習できます。全 <b>" + (m.total || WORDS.length) + "</b> 語。</p>" +
       "<ul>" +
       "<li><b>基本編（" + (m.basicCount || 0) + "語）</b>：先生の単語集から、品詞ごとに抜粋。</li>" +
       "<li><b>拡張編（" + (m.extendedCount || 0) + "語）</b>：NEW HORIZON のデータベースから、マイナー過ぎる語を除いて収録。</li>" +
-      "<li><b>クリアフラグ</b>：「✓クリア！」を押すと記録され、進み具合が残ります。</li>" +
+      "<li><b>打ち込めた単語数</b>：英語を正しく入力できた語が記録され、進み具合が残ります。</li>" +
+      "<li><b>判定</b>：大文字小文字・前後の空白や記号・ハイフン／スペースの違いは正解とみなします。</li>" +
       "<li><b>シャッフル</b>：全品詞からランダムに出題。</li>" +
-      "<li><b>再挑戦</b>：クリア済みの語をたまに自動で再出題します（設定で頻度を変更可）。</li>" +
-      "</ul><p style='font-size:12px'>※ 記録はこの端末のブラウザに保存されます。</p></div>";
+      "<li><b>再挑戦</b>：打ち込めた語をたまに自動で再出題します（設定で頻度を変更可）。</li>" +
+      "</ul><p style='font-size:12px'>※ 成績はこの端末のブラウザに保存されます。</p></div>";
   }
 
   /* ---------- helpers ---------- */
@@ -339,19 +422,22 @@
   $("modalClose").addEventListener("click", closeModal);
   $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
 
-  $("card").addEventListener("click", function (e) { if (e.target.closest("#speakBtn")) return; reveal(); });
   $("speakBtn").addEventListener("click", function (e) { e.stopPropagation(); if (session && session.current) speak(session.current.w.w); });
-  $("showBtn").addEventListener("click", reveal);
-  $("clearBtn").addEventListener("click", function () { answer(true); });
-  $("againBtn").addEventListener("click", function () { answer(false); });
+  $("submitBtn").addEventListener("click", submitAnswer);
+  $("nextBtn").addEventListener("click", goNext);
+  $("answerInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); submitAnswer(); }
+  });
   $("doneBackBtn").addEventListener("click", function () { renderHome(); renderCats(); show("cats", false); navStack = ["home", "cats"]; });
   $("doneAgainBtn").addEventListener("click", function () { startSession(session.mode, session.scope); });
 
   document.addEventListener("keydown", function (e) {
-    if (!screens.study.classList.contains("hidden")) {
-      if (e.code === "Space") { e.preventDefault(); session.current && !session.current.revealed ? reveal() : null; }
-      else if (e.key === "Enter") { if (session.current && session.current.revealed) answer(true); }
-      else if (e.key === "Backspace") { if (session.current && session.current.revealed) { e.preventDefault(); answer(false); } }
+    if (screens.study.classList.contains("hidden")) return;
+    if (!session || !session.current) return;
+    // 採点後は Enter で次へ（入力欄からのEnterは上で処理）
+    if (e.key === "Enter" && session.current.answered) {
+      if (document.activeElement && document.activeElement.id === "answerInput") return;
+      e.preventDefault(); goNext();
     }
   });
 
@@ -367,12 +453,12 @@
     if (sw) { store.settings.sound = !store.settings.sound; save(); sw.classList.toggle("on", store.settings.sound); return; }
     var rs = e.target.getAttribute && e.target.getAttribute("data-reset");
     if (rs === "mode") {
-      if (confirm(MODE_NAME[curMode] + " のクリア状況をすべて消しますか？")) {
+      if (confirm(MODE_NAME[curMode] + " の成績をすべて消しますか？")) {
         byMode[curMode].forEach(function (w) { delete store.cleared[w.id]; }); save();
         closeModal(); renderHome(); renderCats(); toast("リセットしました");
       }
     } else if (rs === "all") {
-      if (confirm("すべてのクリア状況を消しますか？")) { store.cleared = {}; save(); closeModal(); renderHome(); renderCats(); toast("リセットしました"); }
+      if (confirm("すべての成績を消しますか？")) { store.cleared = {}; save(); closeModal(); renderHome(); renderCats(); toast("リセットしました"); }
     }
   }
 

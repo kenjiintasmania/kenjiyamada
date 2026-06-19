@@ -1,4 +1,5 @@
-<!-- mado_loop.html | v0.24 | 2026-06-19 JST -->
+<!-- mado_loop.html | v0.25 | 2026-06-19 JST -->
+<!--   v0.24→v0.25：①級チップ選択でアクションカードへスムーズスクロール。②レベルバーを4マーカー化（◯直近/★本番最高(濃金)/☆クイック最高(薄金)/◆平均(紫)）。公式キャプションは本番(フル)最高のみで駆動・新フル最高だけ大☆ポップ。③ヘッダのブランドをどの画面からでもホームへ＋判定テスト中に「←ホーム」を表示。 -->
 <!--   v0.23→v0.24：成績送信先GAS_URLを新デプロイ(mado_score_gas v2.0)に更新。 -->
 <!--   v0.22→v0.23：最高★の黒外枠を◯のリングと同じ2.5pxに（視認性UP）。 -->
 <!--   v0.21→v0.22：最高マーカーを「白抜き・黒外枠の星★」に（円ではなく星形のまま）。直近=青リング◯／最高=白黒の星★。 -->
@@ -66,7 +67,8 @@
 
   /* ヘッダ／ブランド */
   header{display:flex;align-items:center;gap:12px;margin:2px 2px 16px;}
-  .brand{display:flex;align-items:center;gap:12px;}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:13px;}
+  .brand:focus-visible{outline:2px solid var(--brand2);outline-offset:3px;}
   .brand-mark{width:42px;height:42px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;
     justify-content:center;color:#fff;font-weight:800;font-size:21px;letter-spacing:.5px;
     background:linear-gradient(140deg,var(--brand2),var(--brand));box-shadow:0 6px 14px rgba(50,74,134,.28);}
@@ -101,6 +103,20 @@
     pointer-events:none;-webkit-text-stroke:3px #fff;paint-order:stroke;text-shadow:0 1px 2px rgba(0,0,0,.35);
     animation:starpop .55s cubic-bezier(.2,.9,.3,1.5);}
   @keyframes starpop{0%{transform:translate(-50%,-52%) scale(.2);opacity:0;}60%{transform:translate(-50%,-52%) scale(1.35);opacity:1;}100%{transform:translate(-50%,-52%) scale(1);opacity:1;}}
+  /* 4種マーカー：直近◯ / 本番最高★(濃金) / クイック最高☆(薄金) / 平均◆(紫) */
+  .lb-mk{position:absolute;top:50%;transform:translate(-50%,-55%);font-size:15px;line-height:1;z-index:2;
+    pointer-events:none;-webkit-text-stroke:.6px #fff;paint-order:stroke;text-shadow:0 0 2px #fff,0 1px 2px rgba(0,0,0,.3);
+    transition:left .45s cubic-bezier(.3,.9,.3,1);}
+  .lb-mk.full{color:#d9a500;-webkit-text-stroke:.9px #c08a1e;font-size:18px;z-index:4;}
+  .lb-mk.quick{color:#f1d27a;font-size:16px;z-index:3;}
+  .lb-mk.avg{color:#7a5cc8;font-size:14px;transform:translate(-50%,-52%);}
+  .lb-legend{display:flex;gap:11px;justify-content:flex-end;flex-wrap:wrap;font-size:10px;color:var(--hint);margin-top:5px;line-height:1.3;}
+  .lb-legend i{font-style:normal;}
+  .lb-legend .lf{color:#d9a500;font-weight:700;}
+  .lb-legend .lq{color:#d9b94a;font-weight:700;}
+  .lb-legend .la{color:#7a5cc8;font-weight:700;}
+  .lb-legend .lr{color:var(--brand);font-weight:700;}
+  @media(max-width:560px){.lb-legend{justify-content:center;}}
   /* 4技能レーダー */
   .radar-wrap{margin:8px 0 0;}
   .radar{display:block;width:100%;max-width:300px;height:auto;margin:4px auto 0;}
@@ -298,7 +314,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">
+    <div class="brand" role="button" tabindex="0" aria-label="ホームへもどる">
       <div class="brand-mark">英</div>
       <div>
         <h1>英検ループ訓練</h1>
@@ -323,7 +339,7 @@
 
 <script>
 (function(){
-  var APP_VER = "v0.24";
+  var APP_VER = "v0.25";
 
   /* ============================ 級・ジャンル定義 ============================ */
   var GRADES = [
@@ -1348,15 +1364,20 @@
   // 直近の判定テストから、バー座標 L（0〜8の連続値・0.25刻みに丸め）を求める。
   //   合格：その級メモリ〜+0.75（満点で次級の「手前」まで）。不合格：その級の-0.25〜-0.75（手前〜下の級+α）。
   //   ※数値は一切表示しない。あくまで視覚的な「目安」。
-  function levelCoord(){
-    var lt=loadLastTest(); if(!lt) return null;
-    var m=LEVEL_ORDER.indexOf(lt.grade); if(m<0) return null; // 級判定対象外（prep等）は無視
+  // 任意の {grade,pct,pass} からバー座標 L（0〜8）を算出する純関数
+  function levelCoordOf(grade, pct, pass){
+    var m=LEVEL_ORDER.indexOf(grade); if(m<0) return null; // 級判定対象外（prep等）は無視
     var bar=m+1;                                   // バー座標（0=7未満なので+1）
     var L;
-    if(lt.pass){ L=bar + Math.min(Math.max((lt.pct-65)/35,0),1)*0.75; }
-    else       { L=bar - 0.25 - Math.min(Math.max((65-lt.pct)/65,0),1)*0.5; }
+    if(pass){ L=bar + Math.min(Math.max((pct-65)/35,0),1)*0.75; }
+    else    { L=bar - 0.25 - Math.min(Math.max((65-pct)/65,0),1)*0.5; }
     L=Math.round(L*4)/4;                            // 0.25刻みにスナップ（離散的な「段」の感覚に）
     return Math.min(Math.max(L,0),8);
+  }
+  // 直近の判定テストから L を求める（◯＝直近マーカー用）
+  function levelCoord(){
+    var lt=loadLastTest(); if(!lt) return null;
+    return levelCoordOf(lt.grade, lt.pct, lt.pass);
   }
   function levelCaption(L){
     if(L==null) return "まだ判定なし — 判定テストで力をはかろう";
@@ -1386,6 +1407,18 @@
     }catch(e){return null;}
   }
   function saveBestLevel(v){try{localStorage.setItem(BESTLEVEL_KEY,String(v));}catch(e){}}
+  // ---- レベルバーの4マーカー用ストレージ（本番最高★・クイック最高☆・平均◆） ----
+  var BESTFULL_KEY="mado_bestfull_v1", BESTQUICK_KEY="mado_bestquick_v1", LEVELAVG_KEY="mado_levelavg_v1";
+  function loadNum(k){try{var v=localStorage.getItem(k);return v==null?null:parseFloat(v);}catch(e){return null;}}
+  function saveNum(k,v){try{localStorage.setItem(k,String(v));}catch(e){}}
+  function loadBestFull(){return loadNum(BESTFULL_KEY);}
+  function loadBestQuick(){return loadNum(BESTQUICK_KEY);}
+  // 本番(フル)最高を更新。新記録なら true（公式バッジ＝この値で駆動）
+  function updateBestFull(L){var b=loadBestFull(); if(b==null||L>b){ saveNum(BESTFULL_KEY,L); return true; } return false;}
+  function updateBestQuick(L){var b=loadBestQuick(); if(b==null||L>b){ saveNum(BESTQUICK_KEY,L); return true; } return false;}
+  function loadLevelAvg(){try{var o=JSON.parse(localStorage.getItem(LEVELAVG_KEY)); if(o&&o.count>0)return o; }catch(e){} return null;}
+  function pushLevelAvg(L){try{var o=loadLevelAvg()||{sum:0,count:0}; o.sum+=L; o.count++; localStorage.setItem(LEVELAVG_KEY,JSON.stringify(o)); return o;}catch(e){return null;}}
+  function levelAvgCoord(){var o=loadLevelAvg(); return o&&o.count>0 ? o.sum/o.count : null;}
   // 模試後：各軸の今回%を記録、ベスト更新。新記録の軸集合を返す
   function recordTestRadar(grade, byGenre){
     var all=loadRadar(), d=radarOf(all,grade), nr={};
@@ -1457,27 +1490,42 @@
   }
   function updateLevelChip(){
     var el=document.getElementById("levelbar"); if(!el) return;
-    var lt=loadLastTest();
-    var L=levelCoord();
-    var bestL=loadBestLevel();   // 全級通じた最高位置
-    var nearest = (L==null)? -1 : Math.round(L);
+    var recentL = levelCoord();        // ◯ 直近（クイック/フルどちらでも）
+    var fullL   = loadBestFull();      // ★ 本番(フル)最高 ＝ 公式の位置・キャプション
+    var quickL  = loadBestQuick();     // ☆ クイック最高
+    var avgL    = levelAvgCoord();     // ◆ 平均
+    // 公式キャプションは「本番(フル)最高」で駆動（クイックは公式を上げない）
+    var officialL = (fullL!=null)? fullL : null;
+    var hasAny = (recentL!=null)||(fullL!=null)||(quickL!=null)||(avgL!=null);
+    // 目盛りの強調は公式位置（無ければ直近）に合わせる
+    var hi = (officialL!=null)? officialL : recentL;
+    var nearest = (hi==null)? -1 : Math.round(hi);
     var ticks="", scale="";
     for(var i=0;i<9;i++){
       ticks+='<span class="lb-tick" style="left:'+(i/8*100)+'%"></span>';
       var tf = i===0?'translateX(0)':(i===8?'translateX(-100%)':'translateX(-50%)');
       scale+='<span class="lb-cell'+(i===nearest?' on':'')+'" style="left:'+(i/8*100)+'%;transform:'+tf+'">'+esc(LEVEL_BAR_LABELS[i])+'</span>';
     }
+    function pos(c){return (c/8*100).toFixed(2);}
     var markers="";
-    if(L!=null){
-      var atPeak=(bestL==null)||(L>=bestL-1e-9);
-      if(atPeak){ markers='<span class="lb-bigstar" style="left:'+(L/8*100).toFixed(2)+'%">★</span>'; }
-      else { markers='<span class="lb-best" style="left:'+(bestL/8*100).toFixed(2)+'%">★</span>'+
-                     '<span class="lb-pointer" style="left:'+(L/8*100).toFixed(2)+'%"></span>'; }
+    // 新しいフル最高が出た直後だけ、大☆のポップ演出（一度きり）
+    var pop = !!S._newFullBest; S._newFullBest=false;
+    if(avgL!=null)   markers+='<span class="lb-mk avg" style="left:'+pos(avgL)+'%">◆</span>';
+    if(quickL!=null) markers+='<span class="lb-mk quick" style="left:'+pos(quickL)+'%">☆</span>';
+    if(fullL!=null){
+      markers+= pop
+        ? '<span class="lb-bigstar" style="left:'+pos(fullL)+'%">★</span>'
+        : '<span class="lb-mk full" style="left:'+pos(fullL)+'%">★</span>';
     }
-    el.className="levelbar"+(L==null?" none":"");
-    el.innerHTML='<div class="lb-cap">'+esc(levelCaption(L))+'</div>'+
+    if(recentL!=null) markers+='<span class="lb-pointer" style="left:'+pos(recentL)+'%"></span>';
+    var legend = hasAny
+      ? '<div class="lb-legend"><i><span class="lr">◯</span>直近</i><i><span class="lf">★</span>本番最高</i><i><span class="lq">☆</span>クイック最高</i><i><span class="la">◆</span>平均</i></div>'
+      : '';
+    el.className="levelbar"+(hasAny?"":" none");
+    el.innerHTML='<div class="lb-cap">'+esc(levelCaption(officialL))+'</div>'+
                  '<div class="lb-track">'+ticks+markers+'</div>'+
-                 '<div class="lb-scale">'+scale+'</div>';
+                 '<div class="lb-scale">'+scale+'</div>'+
+                 legend;
   }
 
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -1555,6 +1603,12 @@
     var chips=document.querySelectorAll(".gchip");
     for(var i=0;i<chips.length;i++)chips[i].addEventListener("click",function(){
       S.grade=this.getAttribute("data-g"); saveGrade(S.grade); renderHome();
+      // 級を選んだら「訓練/テスト/データ」のアクションカードを中央へスクロールし、次の選択へ誘導
+      var gt=document.getElementById("goTrain"), card=gt&&gt.closest&&gt.closest(".card");
+      if(card){
+        var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        card.scrollIntoView({behavior:reduce?"auto":"smooth", block:"center"});
+      }
     });
     $("goTrain").addEventListener("click",function(){S.genre="vocab";go("train");});
     $("goTest").addEventListener("click",function(){go("testsetup");});
@@ -1779,7 +1833,10 @@
     var gm=gradeMeta(S.grade);
     app.innerHTML=''+
     '<div class="card">'+
-      '<div class="prog">'+esc(gm.name)+' 判定テスト（'+(t.mode==="quick"?"クイック":"フル")+'）　'+(t.idx+1)+' / '+t.queue.length+'</div>'+
+      '<div class="tbar" style="margin-bottom:8px;">'+
+        '<button class="act ghost" id="testHome" style="padding:7px 14px;font-size:14px;">← ホーム</button>'+
+        '<span class="stat">'+esc(gm.name)+' 判定テスト（'+(t.mode==="quick"?"クイック":"フル")+'）　'+(t.idx+1)+' / '+t.queue.length+'</span>'+
+      '</div>'+
       '<div class="ratebar"><i style="width:'+Math.round(t.idx/t.queue.length*100)+'%"></i></div>'+
       (S.q.p?renderPassage(S.q.p):'')+
       '<div class="q" style="margin-top:10px;">'+esc(S.q.q||"")+'</div>'+
@@ -1788,6 +1845,7 @@
       '<div id="fb"></div>'+
       '<div class="actions" id="tactions"></div>'+
     '</div>';
+    var th=$("testHome"); if(th)th.addEventListener("click",function(){go("home");});
     bindQuestion(S.q,/*isTest*/true);
   }
 
@@ -1858,7 +1916,16 @@
     var pass=(t.ok/total)>=PASS;
     if(LEVEL_ORDER.indexOf(S.grade)>=0) saveLastTest({grade:S.grade, pct:pct, pass:pass, ts:Date.now()});
     S.lastResult={grade:S.grade, score:t.ok, total:total, pct:pct, pass:pass, mode:t.mode};
-    var L=null; if(LEVEL_ORDER.indexOf(S.grade)>=0){ L=levelCoord(); recordLevelRadar(S.grade,L); }
+    var L=null; S._newFullBest=false;
+    if(LEVEL_ORDER.indexOf(S.grade)>=0){
+      L=levelCoordOf(S.grade, pct, pass);             // この回のバー座標
+      recordLevelRadar(S.grade,L);                    // 旧：級別bestL＋グローバル最高（レーダー/データ用）
+      if(L!=null){
+        if(t.mode==="full"){ S._newFullBest=updateBestFull(L); } // ★本番最高（新記録なら大☆ポップ）。公式キャプションを駆動
+        else { updateBestQuick(L); }                  // ☆クイック最高のみ（公式は上げない）
+        pushLevelAvg(L);                              // ◆平均（全テストの座標を通算）
+      }
+    }
     var radNew=recordTestRadar(S.grade, t.byGenre||{});
     var showRadar=(S.grade!=="prep");
     var rec=recommendGenre(S.grade);
@@ -1914,6 +1981,16 @@
   }
 
   document.getElementById("ver").textContent=APP_VER;
+
+  // ヘッダのブランドをどの画面からでもホームへ（クリック＋Enter/Spaceで操作可）
+  var brandEl=document.querySelector(".brand");
+  if(brandEl){
+    brandEl.addEventListener("click",function(){ go("home"); });
+    brandEl.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){ e.preventDefault(); e.stopPropagation(); go("home"); }
+    });
+  }
+
   go("home");
 })();
 </script>

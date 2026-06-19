@@ -24,6 +24,20 @@ function countWords(s){
   return t.replace(/\s+/g," ").split(" ").length;
 }
 const KATA = ["ア","イ","ウ","エ","オ","カ","キ","ク"];
+/* 並べかえ：answer(完成文)の中での出現位置で words を正しい順に並べる（複数語トークン対応） */
+function orderTokens(words, answer){
+  const aw = normSpell(answer).split(" ");
+  function pos(tok){
+    const tw = normSpell(tok).split(" ");
+    for(let i=0;i+tw.length<=aw.length;i++){
+      let m=true; for(let j=0;j<tw.length;j++){ if(aw[i+j]!==tw[j]){m=false;break;} }
+      if(m) return i;
+    }
+    return 999;
+  }
+  return words.slice().map((w,idx)=>({w,idx,p:pos(w)}))
+    .sort((a,b)=> (a.p-b.p)||(a.idx-b.idx)).map(o=>o.w);
+}
 
 /* ---------- 状態 ---------- */
 let ITEMS = [];   // 採点対象 {item, pt, kind, get:()=>state, mark:(state)=>void}
@@ -174,17 +188,26 @@ function renderItem(it, ctx){
 
   if(it.type==="bankpick"){
     q.appendChild(el("div","stem", stem));
-    const sel=el("select","inline-ans");
-    sel.style.width="70px";
-    sel.appendChild(el("option",null,"—"));
-    it.bank.forEach((b,i)=> sel.appendChild(el("option",null,KATA[i])) );
-    [...sel.options].forEach((o,i)=>{ if(i>0) o.value=i-1; });
-    q.appendChild(sel);
+    const ul=el("ul","choices");
+    const name="b_"+(ITEMS.length)+"_"+Math.random().toString(36).slice(2,7);
+    it.bank.forEach((b,i)=>{
+      const li=el("li","choice");
+      li.innerHTML=`<input type="radio" name="${name}" value="${i}"><span class="mk">${KATA[i]}</span><span class="tx">${b}</span>`;
+      li.addEventListener("click",e=>{ if(e.target.tagName!=="INPUT"){ li.querySelector("input").checked=true; }});
+      ul.appendChild(li);
+    });
+    q.appendChild(ul);
     q.appendChild(resultBox());
     pushItem({pt, el:q, kind:"auto", grade:()=>{
-      const v=sel.value===""?-1:+sel.value;
+      const sel=ul.querySelector("input:checked");
+      const v=sel?+sel.value:-1;
+      ul.querySelectorAll(".choice").forEach((li,i)=>{
+        li.classList.remove("correct","wrong");
+        if(i===it.answer) li.classList.add("correct");
+        else if(i===v) li.classList.add("wrong");
+      });
       const ok=v===it.answer;
-      showRes(q, ok, ok?null:`正解：${KATA[it.answer]}`);
+      showRes(q, ok, ok?null:`正解：${KATA[it.answer]}　${it.bank[it.answer].replace(/<[^>]+>/g,"")}`);
       return ok?pt:0;
     }}, ctx);
     return q;
@@ -192,15 +215,35 @@ function renderItem(it, ctx){
 
   if(it.type==="wordorder"){
     q.appendChild(el("div","stem", stem));
-    const wb=el("div","wordbank");
-    it.words.forEach(w=> wb.appendChild(el("span","w", w)));
-    q.appendChild(wb);
-    const w=el("div"); w.innerHTML=`<input class="ans" type="text" autocomplete="off" spellcheck="false" placeholder="英文を書こう">`;
-    const inp=w.querySelector("input"); q.appendChild(w);
+    q.appendChild(el("div","note","（　）内の4語を正しい順にタップしよう。もう一度タップで取り消し。"));
+    const correct = orderTokens(it.words, it.answer);
+    const build=el("div","wo-build");
+    const bank=el("div","wo-bank");
+    let seq=[];
+    function draw(){
+      build.innerHTML=""; bank.innerHTML="";
+      if(seq.length===0) build.appendChild(el("span","wo-empty","ここに語がならびます →"));
+      seq.forEach((wi,pos)=>{
+        const c=el("button","wo-chip in"); c.type="button"; c.innerHTML='<span class="en">'+it.words[wi]+'</span>';
+        c.addEventListener("click",()=>{ seq.splice(pos,1); draw(); });
+        build.appendChild(c);
+      });
+      it.words.forEach((wd,wi)=>{
+        if(seq.indexOf(wi)>=0) return;
+        const c=el("button","wo-chip"); c.type="button"; c.innerHTML='<span class="en">'+wd+'</span>';
+        c.addEventListener("click",()=>{ seq.push(wi); draw(); });
+        bank.appendChild(c);
+      });
+    }
+    draw();
+    q.appendChild(build); q.appendChild(bank);
     q.appendChild(resultBox());
     pushItem({pt, el:q, kind:"auto", grade:()=>{
-      const ok=normSpell(inp.value)===normSpell(it.answer);
-      showRes(q, ok, ok?null:`正解：<span class="en">${it.display||it.answer}</span>`);
+      const built = seq.map(wi=> normSpell(it.words[wi])).join(" ");
+      const want  = correct.map(w=> normSpell(w)).join(" ");
+      const ok = seq.length===it.words.length && built===want;
+      build.querySelectorAll(".wo-chip").forEach(c=> c.classList.add(ok?"ok":"ng"));
+      showRes(q, ok, ok?null:`正解（順番）：<span class="en">${correct.join(" ")}</span>`);
       return ok?pt:0;
     }}, ctx);
     return q;

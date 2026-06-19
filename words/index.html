@@ -72,21 +72,25 @@
       </div>
     </div>
 
-    <div id="card" class="card" tabindex="0">
+    <div id="card" class="card quiz" tabindex="-1">
       <div id="retryBadge" class="retry-badge hidden">🔄 再挑戦単語</div>
       <div class="card-pos" id="cardPos"></div>
-      <div class="card-front" id="cardFront"></div>
-      <div class="card-back hidden" id="cardBack"></div>
-      <button id="speakBtn" class="speak-btn" aria-label="音声">🔊</button>
-      <div class="tap-hint" id="tapHint">タップで答えを見る</div>
+      <div class="card-front jp" id="cardFront"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <button id="speakBtn" class="speak-btn hidden" aria-label="音声">🔊</button>
     </div>
 
-    <div id="revealActions" class="actions hidden">
-      <button id="againBtn" class="btn again">まだ / もう一回</button>
-      <button id="clearBtn" class="btn clear">✓ クリア！</button>
+    <div class="answer-row">
+      <input id="answerInput" class="answer-input" type="text" inputmode="latin"
+             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+             enterkeyhint="done" placeholder="英語を入力" />
     </div>
-    <div id="showActions" class="actions">
-      <button id="showBtn" class="btn show">答えを見る</button>
+
+    <div id="inputActions" class="actions">
+      <button id="submitBtn" class="btn show">答え合わせ</button>
+    </div>
+    <div id="nextActions" class="actions hidden">
+      <button id="nextBtn" class="btn clear">次へ ›</button>
     </div>
   </section>
 
