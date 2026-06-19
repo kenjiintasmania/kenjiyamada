@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模擬テスト</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="index.html">← トップ</a> <span id="crumb2"></span></div>
+  <header>
+    <div>
+      <h1 id="examTitle">模擬テスト</h1>
+      <div class="sub" id="examSub">放送文を読んで／本文を読んで、答えをえらぼう・書こう</div>
+    </div>
+    <div class="namebox"><span>組番名前</span><input id="name" placeholder="　　　　　　"></div>
+  </header>
+
+  <div id="scorebar" class="scorebar hide">
+    <span class="big" id="scoretext">0 / 0</span>
+    <span class="msg" id="scoremsg"></span>
+  </div>
+
+  <div class="controls">
+    <button class="grade" onclick="MockExam.gradeAll()">採点する</button>
+    <button class="reset" onclick="MockExam.resetAll()">もう一度</button>
+    <button class="ghost" onclick="window.print()">印刷</button>
+    <span class="bd" style="align-self:center;color:#9a927e">配点合計 <b id="totalpts">0</b> 点</span>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>
+    正進社 過去問ベース 模擬テスト ／ リスニングは放送文を読むシミュレーション方式<br>
+    英作文・日本語記述は模範解答を見て自己採点します。
+  </footer>
+</div>
+
+<script src="assets/engine.js"></script>
+<script>
+(function(){
+  const id=(new URLSearchParams(location.search)).get("id")||"chu2";
+  const meta={
+    chu2:  {file:"data/chu2.js",   title:'中2 模擬テスト <span class="en">Mock</span>', crumb:""},
+    chu3_1:{file:"data/chu3_1.js", title:'中3 第1回 模擬テスト <span class="en">Mock</span>', crumb:'／ <a href="chu3.html">中3</a>'},
+    chu3_2:{file:"data/chu3_2.js", title:'中3 第2回 模擬テスト <span class="en">Mock</span>', crumb:'／ <a href="chu3.html">中3</a>'}
+  }[id]||{file:"data/chu2.js",title:"模擬テスト",crumb:""};
+  document.getElementById("examTitle").innerHTML=meta.title;
+  document.getElementById("crumb2").innerHTML=meta.crumb;
+  const s=document.createElement("script");
+  s.src=meta.file;
+  s.onload=function(){ MockExam.render(window.EXAM, document.getElementById("quiz")); };
+  s.onerror=function(){ document.getElementById("quiz").innerHTML="<p>データを読み込めませんでした。</p>"; };
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>
