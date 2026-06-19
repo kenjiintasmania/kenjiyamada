@@ -28,6 +28,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 #topTitle{flex:1;text-align:center;font-weight:700;font-size:16px}
 .icon-btn{width:40px;height:40px;border-radius:12px;font-size:22px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
 .icon-btn:active{background:#e9edf8}
+/* 3アプリのトップへもどるリンク（全画面に表示） */
+.totop{font-size:13px;font-weight:700;color:#4f7cff;text-decoration:none;white-space:nowrap;
+  padding:6px 11px;border-radius:10px;background:#eef2fb}
+.totop:active{background:#e0e7fb}
+.totop.home{display:inline-block;margin:0 0 10px}
 
 .screen{padding:18px 16px 40px;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
