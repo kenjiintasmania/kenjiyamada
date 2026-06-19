@@ -114,10 +114,10 @@ sections: [
     passageEn:true,
     note:'語注：shelf たな／seashell 貝がら',
     items:[
-    { type:"en", label:"(1)", pt:6, stem:"イラストに合うように、ハルカのことばを4語以上で書きなさい。", minWords:4,
-      model:"You have many beautiful seashells", tip:"You have 〜 の形。たくさんの貝がらを見て驚く場面。" },
-    { type:"en", label:"(2)", pt:5, stem:"イラストに合うように、3語以上で書きなさい。", minWords:3,
-      model:"a photo of them", tip:"夜のできごと（貝がらの写真を家族に送る）。" } ]}
+    { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：たくさんの貝がらを見て驚く場面。次の語を正しく並べて英文を完成させなさい。",
+      words:["beautiful","You","seashells","have","many"], answer:"You have many beautiful seashells" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"夜、貝がらの写真を家族に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
+      words:["of","a","them","photo"], answer:"a photo of them" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想 ===== */
@@ -191,10 +191,10 @@ sections: [
       display:"Swimming taught me many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語1語を、第2段落中から抜き出して書きなさい。<br>"+E("Mika's grandfather told her not to （　え　）."),
       answers:["give"], hint:"第2段落の語・英語1語" },
-    { type:"jp", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に、適当な日本語を入れなさい。<br>水泳は、あなたの（　①　）をより（　②　）するためのよい方法だ。<br>①にあてはまる日本語：",
-      model:"体（からだ）", tip:"本文 your body より。" },
-    { type:"jp", label:"(5)②", pt:4, stem:"②にあてはまる日本語：",
-      model:"強く（じょうぶに）", tip:"stronger より。" },
+    { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>水泳は、あなたの（　①　）をより（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "体（からだ）","心（こころ）","頭（あたま）","声（こえ）" ], answer:0 },
+    { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "強く（じょうぶに）","やさしく","明るく","静かに" ], answer:0 },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",
       choices:[ E("Mika could not swim at all in her first year."),
                 E("Mika never wanted to stop coming to practice."),

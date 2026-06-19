@@ -111,10 +111,10 @@ sections: [
     passageEn:true,
     note:'語注：shelf たな／model car 模型の車／three hundred 300',
     items:[
-    { type:"en", label:"(1)", pt:6, stem:"日記とイラストに合うように、ジョーのことばを4語以上で書きなさい。", minWords:4,
-      model:"How many model cars do you have?", tip:"ハルが「約300」と答えている。数をたずねる文。" },
-    { type:"en", label:"(2)", pt:5, stem:"日記の流れに合うように、3語以上で書きなさい。", minWords:3,
-      model:"to go home", tip:"5時前に家ですること。「〜しなければならない」have to の続き。" } ]}
+    { type:"wordorder", label:"(1)", pt:6, stem:"ハルが「約300（台）」と答えています。数をたずねるジョーのことばになるよう、次の語を正しく並べて英文を完成させなさい。",
+      words:["do","many","cars","How","you","have","model"], answer:"How many model cars do you have?" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"5時前に家でしなければならないことを表します（I have の続き）。次の語を正しく並べて英文を完成させなさい。",
+      words:["home","to","go"], answer:"to go home" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想 ===== */
@@ -183,10 +183,10 @@ sections: [
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部(き)の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["make","your","better","cake"], answer:"make your cake better",
       display:"make your cake better" },
-    { type:"jp", label:"(4)①", pt:4, stem:"下線部(く)の具体的内容を説明する次の文の①・②に、適当な日本語を入れなさい。<br>ソウタが本当に（　①　）ならば、料理を続けるべきだ。料理を続ければ、（　②　）ことができる、という母のことば。<br>①にあてはまる日本語：",
-      model:"食べ物が好き", tip:"if you truly love food より。" },
-    { type:"jp", label:"(4)②", pt:4, stem:"②にあてはまる日本語：",
-      model:"（料理の）技術を上達させる", tip:"your skills will improve より。" },
+    { type:"mcq", label:"(4)①", pt:4, stem:"下線部(く)の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>ソウタが本当に（　①　）ならば、料理を続けるべきだ。料理を続ければ、（　②　）ことができる、という母のことば。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "食べ物が好き","コンテストで勝ちたい","有名になりたい","友達がほしい" ], answer:0 },
+    { type:"mcq", label:"(4)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "（料理の）技術を上達させる","新しい材料を買う","賞をもらう","料理をやめる" ], answer:0 },
     { type:"fill", label:"(5)け", pt:4, stem:"（け）に入れるのに最も適当な英語3語を、本文中から抜き出して書きなさい。",
       answers:["should stop cooking"], hint:"英語3語（第2段落より）" },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",

@@ -127,11 +127,13 @@ sections: [
     { type:"bankpick", label:"(1)ⓒ", pt:3, stem:"ⓒに入る最も適切な文を、ア〜カから選びなさい。", answer:5,
       bank:[E("Did you feed the goats there?"),E("Did you join the craft class?"),E("Where did you draw these pictures?"),
             E("How do you get there?"),E("Is that an elephant in the pictures?"),E("Does your mother like animals, too?")] },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するケイトの発言ですか。具体的に日本語で書きなさい。",
-      model:"リクが「動物の絵をよくかく」と言ったことに対して、自分も（動物の絵を）よくかく、ということ。",
-      tip:"「だれが」「何をする」を入れて書こう。" },
-    { type:"en", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Kate's mother have in her room?"),
-      model:"She has many animal books in her room.", tip:"主語＝She、動詞＝has。" } ]}
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するケイトの発言ですか。最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "リクが「動物の絵をよくかく」と言ったこと。",
+                "リクが「ゾウは本当に大きい」と言ったこと。",
+                "リクが「ミドリ動物園にいた」と言ったこと。",
+                "リクが「動物が好きだ」と言ったこと。" ], answer:0 },
+    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Kate's mother have in her room?"),
+      answers:["she has many animal books in her room","she has many animal books","she has animal books in her room"], hint:"She has 〜." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
@@ -146,8 +148,8 @@ sections: [
   { intro:"(2) 英語の授業で、あなたの朝の過ごし方について話します。下の条件に合うように英文を書きなさい。",
     note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
     items:[
-    { type:"en", label:"", pt:6, stem:"あなたの朝の過ごし方を英語で書こう。", minWords:8,
-      model:"I get up at six every morning. Then I walk my dog before breakfast.", tip:"I usually 〜. / I sometimes 〜. が使いやすい。" } ] }
+    { type:"wordorder", label:"", pt:6, stem:"朝の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+      words:["six","get","I","at","up"], answer:"I get up at six." } ] }
 ]},
 
 /* ===== 大問5 長文読解 ===== */
@@ -167,8 +169,11 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"次の英文を入れるのに最も適切な場所を、本文中の（ア）〜（ウ）から選びなさい。<br>"+E("Then I felt really happy."),
       choices:["（ア）","（イ）","（ウ）"], answer:2 },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容を、具体的に日本語で書きなさい。",
-      model:"エミ（サトウさんのむすめ）が、ソウタのためにかばんを手作りしてくれた、ということ。" },
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容として最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "エミ（サトウさんのむすめ）が、ソウタのためにかばんを手作りしてくれたこと。",
+                "サトウさんが、ソウタのために茶色い犬をくれたこと。",
+                "エミがカナダからソウタに会いに来てくれたこと。",
+                "ソウタが橋の下でサトウさんの犬を見つけたこと。" ], answer:0 },
     { type:"mcq", label:"(3)①", pt:3, stem:E("When did Sota get a phone call from Mr. Sato?"),
       choices:[ E("On October 12."), E("On October 13."), E("Last autumn."), E("Next summer.") ], answer:0 },
     { type:"mcq", label:"(3)②", pt:3, stem:E("What was the bag?"),

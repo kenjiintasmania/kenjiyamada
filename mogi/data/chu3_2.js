@@ -111,10 +111,10 @@ sections: [
     passageEn:true,
     note:'語注：CD shelf CDだな／five hundred 500',
     items:[
-    { type:"en", label:"(1)", pt:6, stem:"日記とイラストに合うように、リリーのことばを4語以上で書きなさい。", minWords:4,
-      model:"How many CDs do you have?", tip:"ソラが「約500」と答えている。数をたずねる文。" },
-    { type:"en", label:"(2)", pt:5, stem:"日記の流れに合うように、3語以上で書きなさい。", minWords:3,
-      model:"to go home", tip:"5時前に家ですること。「〜しなければならない」have to の続き。" } ]}
+    { type:"wordorder", label:"(1)", pt:6, stem:"ソラが「約500（枚）」と答えています。数をたずねるリリーのことばになるよう、次の語を正しく並べて英文を完成させなさい。",
+      words:["do","many","have","How","you","CDs"], answer:"How many CDs do you have?" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"5時前に家でしなければならないことを表します（I have の続き）。次の語を正しく並べて英文を完成させなさい。",
+      words:["home","to","go"], answer:"to go home" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想 ===== */
@@ -183,10 +183,10 @@ sections: [
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部(き)の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["make","your","better","sound"], answer:"make your sound better",
       display:"make your sound better" },
-    { type:"jp", label:"(4)①", pt:4, stem:"下線部(く)の具体的内容を説明する次の文の①・②に、適当な日本語を入れなさい。<br>ユイが本当に（　①　）ならば、練習を続けるべきだ。練習を続ければ、（　②　）ことができる、という祖母のことば。<br>①にあてはまる日本語：",
-      model:"音楽が好き", tip:"if you really like music より。" },
-    { type:"jp", label:"(4)②", pt:4, stem:"②にあてはまる日本語：",
-      model:"（演奏の）技術を上達させる", tip:"your skills will improve より。" },
+    { type:"mcq", label:"(4)①", pt:4, stem:"下線部(く)の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>ユイが本当に（　①　）ならば、練習を続けるべきだ。練習を続ければ、（　②　）ことができる、という祖母のことば。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "音楽が好き","コンテストで勝ちたい","有名になりたい","友達がほしい" ], answer:0 },
+    { type:"mcq", label:"(4)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "（演奏の）技術を上達させる","新しい楽器を買う","賞をもらう","部活をやめる" ], answer:0 },
     { type:"fill", label:"(5)け", pt:4, stem:"（け）に入れるのに最も適当な英語3語を、本文中から抜き出して書きなさい。",
       answers:["should stop playing"], hint:"英語3語（第2段落より）" },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",

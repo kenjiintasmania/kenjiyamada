@@ -113,10 +113,10 @@ sections: [
     passageEn:true,
     note:'語注：host father ホストファーザー',
     items:[
-    { type:"en", label:"(1)", pt:6, stem:"イラストに合うように、エマのことばを4語以上で書きなさい。", minWords:4,
-      model:"I am making a birthday cake", tip:"I am 〜ing の形。ケーキを作っている場面。" },
-    { type:"en", label:"(2)", pt:5, stem:"イラストに合うように、3語以上で書きなさい。", minWords:3,
-      model:"a birthday party", tip:"夜のできごと（パーティー）。" } ]}
+    { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：エマがキッチンでケーキを作っている場面。次の語を正しく並べて英文を完成させなさい。",
+      words:["making","I","cake","am","a","birthday"], answer:"I am making a birthday cake" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：夜にみんなでパーティーをしている場面。次の語を正しく並べて英文（we had のあとの部分）を完成させなさい。",
+      words:["party","a","birthday"], answer:"a birthday party" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想 ===== */
@@ -189,10 +189,10 @@ sections: [
       display:"A book teaches us many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"（え）に入れるのに最も適当な英語1語を、第2段落中から抜き出して書きなさい。",
       answers:["wonderful"], hint:"第2段落の語・英語1語" },
-    { type:"jp", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に、適当な日本語を入れなさい。<br>（　①　）とき、スマートフォンを使うことは（　②　）ことよりも速い。<br>①にあてはまる日本語：",
-      model:"情報を調べる（さがす）", tip:"本文 find information より。" },
-    { type:"jp", label:"(5)②", pt:4, stem:"②にあてはまる日本語：",
-      model:"本を読む", tip:"reading a book より。" },
+    { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>（　①　）とき、スマートフォンを使うことは（　②　）ことよりも速い。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "情報を調べる","本を借りる","ゲームをする","友達と話す" ], answer:0 },
+    { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "本を読む","写真をとる","音楽を聞く","手紙を書く" ], answer:0 },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",
       choices:[ E("Daiki's new plan, \"Reading Friends,\" will start next month."),
                 E("Daiki read many books before he became a junior high school student."),

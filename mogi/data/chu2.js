@@ -126,11 +126,13 @@ sections: [
     { type:"bankpick", label:"(1)ⓒ", pt:3, stem:"ⓒに入る最も適切な文を、ア〜カから選びなさい。", answer:5,
       bank:[E("Did you walk your dog there?"),E("Did you play in the game?"),E("Where did you take these pictures?"),
             E("How do you get there?"),E("Is that your brother in the photos?"),E("Does your grandmother like soccer, too?")] },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するエマの発言ですか。具体的に日本語で書きなさい。",
-      model:"ケンが「試合の写真をよくとる」と言ったことに対して、自分も（試合の写真を）よくとる、ということ。",
-      tip:"「だれが」「何をする」を入れて書こう。" },
-    { type:"en", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Emma's grandmother have in her room?"),
-      model:"She has many old soccer photos in her room.", tip:"主語＝She、動詞＝has。" } ]}
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するエマの発言ですか。最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "ケンが「試合の写真をよくとる」と言ったこと。",
+                "ケンが「弟はよい選手だ」と言ったこと。",
+                "ケンが「ミドリ公園にいた」と言ったこと。",
+                "ケンが「サッカーが好きだ」と言ったこと。" ], answer:0 },
+    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Emma's grandmother have in her room?"),
+      answers:["she has many old soccer photos in her room","she has many old soccer photos","she has old soccer photos in her room"], hint:"She has 〜." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
@@ -145,8 +147,8 @@ sections: [
   { intro:"(2) 英語の授業で、あなたの夕方（夕食後）の過ごし方について話します。下の条件に合うように英文を書きなさい。",
     note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
     items:[
-    { type:"en", label:"", pt:6, stem:"あなたの夕方の過ごし方を英語で書こう。", minWords:8,
-      model:"I do my homework after dinner. Then I read books in my room.", tip:"I usually 〜. / I sometimes 〜. が使いやすい。" } ] }
+    { type:"wordorder", label:"", pt:6, stem:"夕方（夕食後）の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+      words:["after","do","homework","I","my","dinner"], answer:"I do my homework after dinner." } ] }
 ]},
 
 /* ===== 大問5 長文読解 ===== */
@@ -166,8 +168,11 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"次の英文を入れるのに最も適切な場所を、本文中の（ア）〜（ウ）から選びなさい。<br>"+E("Then I felt really glad."),
       choices:["（ア）","（イ）","（ウ）"], answer:2 },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容を、具体的に日本語で書きなさい。",
-      model:"アヤ（モリさんの孫娘）が、ミサキのためにキーホルダーを手作りしてくれた、ということ。" },
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容として最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "アヤ（モリさんの孫娘）が、ミサキのためにキーホルダーを手作りしてくれたこと。",
+                "モリさんが、ミサキのために赤いかさを買ってくれたこと。",
+                "アヤがアメリカからミサキに会いに来てくれたこと。",
+                "ミサキが公園でモリさんのかさを見つけたこと。" ], answer:0 },
     { type:"mcq", label:"(3)①", pt:3, stem:E("When did Misaki get a phone call from Ms. Mori?"),
       choices:[ E("On May 5."), E("On May 6."), E("Last spring."), E("Next winter.") ], answer:0 },
     { type:"mcq", label:"(3)②", pt:3, stem:E("What was the key ring?"),

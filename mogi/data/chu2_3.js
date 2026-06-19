@@ -128,11 +128,13 @@ sections: [
     { type:"bankpick", label:"(1)ⓒ", pt:3, stem:"ⓒに入る最も適切な文を、ア〜カから選びなさい。", answer:5,
       bank:[E("Did you bring your dog there?"),E("Did you play in the concert?"),E("Where did you record this song?"),
             E("How do you get there?"),E("Is that your sister in the photo?"),E("Does your grandfather like music, too?")] },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するアナの発言ですか。具体的に日本語で書きなさい。",
-      model:"リクが「よくスマホで歌を録音する」と言ったことに対して、自分も（スマホで歌を）よく録音する、ということ。",
-      tip:"「だれが」「何をする」を入れて書こう。" },
-    { type:"en", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Anna's grandfather have in his room?"),
-      model:"He has many old records in his room.", tip:"主語＝He、動詞＝has。" } ]}
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">Me, too.</span> は、どのようなことに対するアナの発言ですか。最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "リクが「よくスマホで歌を録音する」と言ったこと。",
+                "リクが「姉はよい演奏者だ」と言ったこと。",
+                "リクが「町のホールにいた」と言ったこと。",
+                "リクが「音楽が好きだ」と言ったこと。" ], answer:0 },
+    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Anna's grandfather have in his room?"),
+      answers:["he has many old records in his room","he has many old records","he has old records in his room"], hint:"He has 〜." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
@@ -147,8 +149,8 @@ sections: [
   { intro:"(2) 英語の授業で、あなたの週末の過ごし方について話します。下の条件に合うように英文を書きなさい。",
     note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
     items:[
-    { type:"en", label:"", pt:6, stem:"あなたの週末の過ごし方を英語で書こう。", minWords:8,
-      model:"I play soccer with my friends on weekends. Then I listen to music at home.", tip:"I usually 〜. / I often 〜. が使いやすい。" } ] }
+    { type:"wordorder", label:"", pt:6, stem:"週末の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+      words:["my","play","I","with","soccer","friends"], answer:"I play soccer with my friends." } ] }
 ]},
 
 /* ===== 大問5 長文読解 ===== */
@@ -168,8 +170,11 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"次の英文を入れるのに最も適切な場所を、本文中の（ア）〜（ウ）から選びなさい。<br>"+E("Then he smiled and looked happy."),
       choices:["（ア）","（イ）","（ウ）"], answer:2 },
-    { type:"jp", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容を、具体的に日本語で書きなさい。",
-      model:"エミリー（カーターさんの娘）が、ハルトのために夏の花（ひまわり）の絵を描いてくれた、ということ。" },
+    { type:"mcq", label:"(2)", pt:4, stem:"下線部 <span class=\"en\">That</span> が指す内容として最も適切なものを、ア〜エから選びなさい。",
+      choices:[ "エミリー（カーターさんの娘）が、ハルトのために夏の花（ひまわり）の絵を描いてくれたこと。",
+                "カーターさんが、ハルトに大きな地図をくれたこと。",
+                "ハルトがカーターさんを古い神社まで案内したこと。",
+                "カーターさんがイギリスからはがきを送ってくれたこと。" ], answer:0 },
     { type:"mcq", label:"(3)①", pt:3, stem:E("When did Haruto get a postcard from Mr. Carter?"),
       choices:[ E("On August 21."), E("On August 12."), E("Last summer."), E("Next summer.") ], answer:0 },
     { type:"mcq", label:"(3)②", pt:3, stem:E("What was the picture in the postcard?"),
