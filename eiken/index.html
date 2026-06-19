@@ -1,0 +1,1921 @@
+<!-- mado_loop.html | v0.24 | 2026-06-19 JST -->
+<!--   v0.23→v0.24：成績送信先GAS_URLを新デプロイ(mado_score_gas v2.0)に更新。 -->
+<!--   v0.22→v0.23：最高★の黒外枠を◯のリングと同じ2.5pxに（視認性UP）。 -->
+<!--   v0.21→v0.22：最高マーカーを「白抜き・黒外枠の星★」に（円ではなく星形のまま）。直近=青リング◯／最高=白黒の星★。 -->
+<!--   v0.20→v0.21：レベルバーの最高マーカーを◯と同サイズの白抜き・黒外枠の円に変更（直近=青リング／最高=黒リングで区別）。 -->
+<!--   v0.19→v0.20：レベルバーの最高(✩)を全級通算のグローバル最高位置に修正（旧級別ベストから自動移行）。直近◯＋最高✩が正しく併記。 -->
+<!--   v0.18→v0.19：新記録の星を白フチ化（★）で視認性UP。Enter操作を統一（未回答→判定/回答後→次へ、クリックも可）。不合格表示を「残念・・・不合格」に。 -->
+<!--   v0.17→v0.18：自己データを可視化。レベルバーに直近◯/最高✩/新記録☆。4技能ダイヤモンド型レーダー（単語/文法/4技能/読解）。 -->
+<!--   模試=全軸更新（新記録は大☆）、ジャンル訓練=測った軸のみ明るく他はダーク表示。記録は mado_radar_v1 に保存。 -->
+<!--   v0.16→v0.17：4級・準2級の長文を増量しバランス調整。長文読解 5:9 4:13 3:17 準2:14 準2+:10 2:10。パッセージ16本・総計478問。 -->
+<!--   v0.15→v0.16：長文をさらに追加。5級(Emmaの学校)・2級(食品ロス)・準2+(睡眠と健康)。パッセージ計12本・総計459問。 -->
+<!--   方針：判定テストは全ジャンル公平に出題（苦手重点モードは採用しない）。 -->
+<!--   v0.14→v0.15：長文をさらに追加。5級(Kenの一日)・2級(AI)・準2+(プラスチック問題)に長文読解を新設。パッセージ計9本・総計444問。 -->
+<!--   v0.13→v0.14：長文パッセージを追加（計6本）。3級に内容一致型の作文・Eメール読解、4級・準2級にも長文読解を新設。総計430問。 -->
+<!--   v0.12→v0.13：判定テスト結果に「苦手を鍛える」導線を追加。成績の先生へ送信（GAS連携）を統合。 -->
+<!--   送信先=旧mado_drillと同じGAS_URL。?cls=3A&num=5&name=… と端末記憶で自動入力。 -->
+<!--   v0.11→v0.12：苦手ジャンルの自動おすすめを追加。正答率データから「今日のおすすめ」カード＋苦手タイルに「苦手」バッジ。 -->
+<!--   v0.10→v0.11：使える英語学（中学入学準備）を+10で計20問。4技能別問題を全級拡充。総計413問。 -->
+<!--   v0.9→v0.10：レベルバーを全幅に拡張＋目盛り線追加。級間を4分割（3中間点）した連続位置でポインタ表示。 -->
+<!--   数値は出さず「3級ギリ合格／3級＋α／4と3のあいだ／3級の手前」等の語で“あくまで目安”を視覚化（CSE換算は非公開のため不使用）。 -->
+<!--   v0.8→v0.9：3級に「長文読解」ジャンルを新設。大問4・5の長文2本（放送委員Haruka／写真部Daiki）と抜き出し8問を統合。 -->
+<!--   出題時にパッセージを上部表示。答えは本文中に実在する抜き出し型。総計375問。 -->
+<!--   v0.7→v0.8：7・6・5・準2・準2+・2級も増量（MORE3）。全級バランス化。総計367問。 -->
+<!--   v0.6→v0.7：3級・4級を中心に問題増量（MORE2）。3級70問・4級49問・全体250問。4技能別問題も拡充。 -->
+<!--   v0.5→v0.6：「大問テクニック」を「4技能別問題」に改名し、メタ（解き方のコツ）を採点ジャンルから除去→実戦問題に。 -->
+<!--   メタ学力は新モジュール「中学入学準備（使える英語学）」を6級と5級の間に新設し10問収録（級レベル判定には不使用）。 -->
+<!--   級ごとに構成が異なってもOKなようavailableGenresで存在するジャンルのみ表示。 -->
+<!--   v0.2→v0.3：準2級・準2級プラスを追加（全8級）。選択肢の表示順をランダム化（正答が①固定の罠を解消）。 -->
+<!--   ヘッダに「いまの目安：英検◯級レベル」を直近の判定テスト結果から算出して表示。 -->
+<!--   v0.1→v0.2：学校教材向けに配色・タイポ・余白を刷新。級/ジャンルごとのアクセント色、 -->
+<!--   ソフトシャドウのカード、判定結果のリング表示、採点フィードバックのポップ演出を追加。 -->
+<!--   英文フォントは可読性重視のサンセリフに変更（Comic Sans廃止）。prefers-reduced-motion対応。 -->
+<!-- 「ジャンルごとに訓練」▶「英検級判定テスト」をループで回す英検トレーニングアプリ。 -->
+<!--   フェーズ計画：①骨格づくり(本版) → ②UI/UX向上 → ③問題数増加。 -->
+<!--   級：7・6・5・4・3・2級（7級/6級＝2027年1月新設予定。小学生向けCBT）。 -->
+<!--   訓練ジャンル：単語／文法／大問テクニック／本番練習。ランダム出題→採点・解説→ジャンル別正答率。 -->
+<!--   判定テスト：65%以上で合格（英検の判定基準を採用）。フルモード／クイックモードの2種。 -->
+<!--   問題データは BANK[級][ジャンル] の配列。フェーズ③で各級の問題を増やす設計。 -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検ループ訓練 ― 訓練▶判定テスト</title>
+<style>
+  :root{
+    --jp:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+    --en:"Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;
+    --ink:#1d2733; --muted:#5d6b7d; --hint:#8b97a6;
+    --line:#e4e9f0; --line2:#eef2f7; --card:#ffffff; --bg:#eef2f8;
+    --brand:#324a86; --brand2:#3f73c4; --brand-bg:#eaf0fb; --brand-ink:#2c4a8a;
+    --ok:#1f9d6b; --ok-bg:#e7f6ef; --ng:#d65454; --ng-bg:#fdecec;
+    --warn:#c98a00; --warn-bg:#fff6dd; --gold:#c08a1e;
+    --shadow:0 1px 2px rgba(20,40,80,.04),0 8px 24px rgba(20,40,80,.06);
+    --shadow-sm:0 1px 2px rgba(20,40,80,.05),0 2px 8px rgba(20,40,80,.05);
+    --r:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;color:var(--ink);-webkit-text-size-adjust:100%;padding:18px 16px 40px;
+    font-family:var(--jp);line-height:1.6;
+    background:
+      radial-gradient(1100px 460px at 50% -180px, #dde8fb 0%, rgba(221,232,251,0) 70%),
+      var(--bg);}
+  .wrap{max-width:780px;margin:0 auto;}
+  .en{font-family:var(--en);}
+
+  /* ヘッダ／ブランド */
+  header{display:flex;align-items:center;gap:12px;margin:2px 2px 16px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{width:42px;height:42px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-weight:800;font-size:21px;letter-spacing:.5px;
+    background:linear-gradient(140deg,var(--brand2),var(--brand));box-shadow:0 6px 14px rgba(50,74,134,.28);}
+  h1{font-size:21px;font-weight:800;margin:0;letter-spacing:.2px;}
+  .tagline{font-size:12px;color:var(--muted);margin-top:1px;}
+  .ver{font-size:11px;color:var(--hint);background:#fff;border:1px solid var(--line);
+    padding:3px 9px;border-radius:999px;white-space:nowrap;align-self:flex-start;}
+  /* 級レベルバー（7未満▶7▶…▶2級／青→黄→赤） */
+  .levelbar{flex:1 1 auto;min-width:0;margin-left:18px;max-width:600px;}
+  .levelbar .lb-cap{font-size:12px;font-weight:700;color:var(--brand-ink);text-align:right;margin-bottom:5px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .levelbar.none .lb-cap{color:var(--muted);font-weight:600;}
+  .lb-track{position:relative;height:10px;border-radius:999px;
+    background:linear-gradient(90deg,#2b59c3 0%,#3f8fd0 25%,#e9b21e 50%,#e0782f 75%,#d6453f 100%);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
+  .lb-tick{position:absolute;top:1px;bottom:1px;width:2px;transform:translateX(-50%);
+    background:rgba(255,255,255,.55);border-radius:1px;}
+  .lb-pointer{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;
+    background:#fff;border:2.5px solid var(--brand);box-shadow:0 1px 5px rgba(0,0,0,.35);
+    transition:left .45s cubic-bezier(.3,.9,.3,1);z-index:2;}
+  .lb-best{position:absolute;top:50%;left:0;transform:translate(-50%,-55%);font-size:19px;line-height:1;z-index:1;
+    color:#fff;-webkit-text-stroke:2.5px #000;paint-order:stroke;pointer-events:none;
+    text-shadow:0 1px 1px rgba(0,0,0,.25);transition:left .45s cubic-bezier(.3,.9,.3,1);}
+  .lb-scale{position:relative;height:13px;margin-top:5px;}
+  .lb-cell{position:absolute;top:0;font-size:9.5px;color:var(--hint);line-height:1.1;white-space:nowrap;}
+  .lb-cell.on{color:var(--ink);font-weight:800;}
+  .levelbar.none .lb-track{filter:grayscale(.55) opacity(.55);}
+  /* レベルバーの記録マーカー（直近◯ / 最高✩ / 新記録☆） */
+  .lb-star{position:absolute;top:50%;transform:translate(-50%,-55%);font-size:16px;color:#e8a200;z-index:2;
+    pointer-events:none;-webkit-text-stroke:.6px #fff;paint-order:stroke;text-shadow:0 0 2px #fff,0 1px 2px rgba(0,0,0,.3);}
+  .lb-bigstar{position:absolute;top:50%;transform:translate(-50%,-52%);font-size:24px;color:#ffc400;z-index:3;
+    pointer-events:none;-webkit-text-stroke:3px #fff;paint-order:stroke;text-shadow:0 1px 2px rgba(0,0,0,.35);
+    animation:starpop .55s cubic-bezier(.2,.9,.3,1.5);}
+  @keyframes starpop{0%{transform:translate(-50%,-52%) scale(.2);opacity:0;}60%{transform:translate(-50%,-52%) scale(1.35);opacity:1;}100%{transform:translate(-50%,-52%) scale(1);opacity:1;}}
+  /* 4技能レーダー */
+  .radar-wrap{margin:8px 0 0;}
+  .radar{display:block;width:100%;max-width:300px;height:auto;margin:4px auto 0;}
+  .radar .rg{fill:none;stroke:var(--line2);stroke-width:1;}
+  .radar .rs{stroke:var(--line);stroke-width:1;}
+  .radar .rbest{fill:rgba(232,162,0,.10);stroke:#e8a200;stroke-width:1.5;stroke-dasharray:4 3;}
+  .radar .rrec{fill:rgba(63,115,196,.18);stroke:var(--brand2);stroke-width:2;}
+  .radar .rbest.dim,.radar .rrec.dim{opacity:.14;}
+  .radar text{text-anchor:middle;dominant-baseline:central;font-family:var(--jp);}
+  .radar .rlab{font-size:12px;font-weight:800;fill:var(--ink);}
+  .radar .rlab.dm{fill:var(--hint);opacity:.45;}
+  .radar .rstar{font-size:14px;fill:#e8a200;stroke:#fff;stroke-width:.6;paint-order:stroke;}
+  .radar .rstar.dm{opacity:.18;}
+  .radar .rdot{fill:var(--brand2);stroke:#fff;stroke-width:1.5;}
+  .radar .rdot.dm{opacity:.18;}
+  .radar .rbig{font-size:24px;fill:#ffc400;stroke:#fff;stroke-width:3;paint-order:stroke;}
+  .rlegend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);margin:6px 0 2px;}
+  .rlegend i{font-style:normal;}
+  .lg-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--brand2);
+    box-shadow:0 0 0 1.5px #fff,0 0 0 3px var(--brand2);margin-right:6px;vertical-align:middle;}
+  .lg-star{color:#e8a200;margin-right:3px;font-weight:700;}
+  .lg-big{color:#ffce3a;margin-right:3px;font-weight:700;}
+  @media(max-width:560px){.levelbar{max-width:100%;min-width:0;width:100%;flex-basis:100%;order:3;margin:10px 0 0;}
+    .levelbar .lb-cap{text-align:center;}header{flex-wrap:wrap;}.ver{margin-left:auto;}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow);}
+  .muted{color:var(--muted);} .hint{color:var(--hint);font-size:13px;}
+  .sectlabel{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);
+    text-transform:none;margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+  .sectlabel .dot{width:7px;height:7px;border-radius:50%;background:var(--brand2);}
+
+  /* ステップ表示（ループ） */
+  .loop{display:flex;align-items:center;gap:6px;margin:0 2px 16px;}
+  .loop .step{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 6px;
+    border-radius:12px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--muted);
+    box-shadow:var(--shadow-sm);transition:.2s;}
+  .loop .step .si{font-size:15px;}
+  .loop .step.on{border-color:transparent;color:#fff;font-weight:700;
+    background:linear-gradient(140deg,var(--brand2),var(--brand));box-shadow:0 6px 14px rgba(50,74,134,.25);}
+  .loop .sep{color:var(--hint);font-size:13px;flex:0 0 auto;}
+
+  /* 級セレクタ */
+  .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .gchip{position:relative;border:1px solid var(--line);background:#fff;border-radius:14px;
+    padding:13px 9px 11px;text-align:center;cursor:pointer;transition:.18s;overflow:hidden;}
+  .gchip::before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--gc);opacity:.85;}
+  .gchip:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--gc);}
+  .gchip.on{background:var(--gcb);border-color:var(--gc);box-shadow:var(--shadow);}
+  .gchip .gn{font-size:20px;font-weight:800;color:var(--gc);line-height:1.1;}
+  .gchip .gs{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.35;}
+  .gchip .new{position:absolute;top:7px;right:7px;font-size:9px;font-weight:800;color:#fff;
+    background:var(--gc);padding:1px 6px;border-radius:999px;letter-spacing:.04em;}
+
+  /* 現在の級・大ボタン */
+  .nowgrade{font-size:15px;font-weight:800;margin-bottom:3px;}
+  .nowgrade b{color:var(--brand-ink);}
+
+  /* ジャンルタイル */
+  .genres{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .gtile{position:relative;border:1px solid var(--line);background:#fff;border-radius:14px;
+    padding:14px 14px 13px;cursor:pointer;text-align:left;transition:.18s;box-shadow:var(--shadow-sm);}
+  .gtile:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--tc);}
+  .gtile .gi{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
+    justify-content:center;font-size:20px;background:var(--tcb);margin-bottom:9px;}
+  .gtile .gl{font-size:16px;font-weight:800;}
+  .gtile .gd{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;min-height:32px;}
+  .accwrap{display:flex;align-items:center;gap:8px;margin-top:8px;}
+  .accbar{flex:1;height:7px;border-radius:999px;background:var(--line2);overflow:hidden;}
+  .accbar > i{display:block;height:100%;border-radius:999px;transition:width .5s ease;}
+  .acclab{font-size:12px;font-weight:800;color:var(--ink);min-width:34px;text-align:right;}
+  .acclab.none{color:var(--hint);font-weight:600;}
+  .accsub{font-size:11px;color:var(--hint);margin-top:4px;}
+  .gtile .weakbadge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:800;color:#fff;
+    background:#d65454;padding:2px 8px;border-radius:999px;letter-spacing:.04em;}
+
+  /* 苦手ジャンルのおすすめ */
+  .rec{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-left:5px solid var(--rc,#d9803a);}
+  .rec .rec-ico{font-size:26px;flex:0 0 auto;}
+  .rec .rec-txt{flex:1 1 180px;min-width:0;}
+  .rec .rec-h{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.05em;margin-bottom:3px;}
+  .rec .rec-main{font-size:16px;font-weight:700;line-height:1.45;}
+  .rec .rec-sub{font-size:13px;color:var(--muted);margin-top:3px;}
+  .rec .act{white-space:nowrap;}
+
+  /* 共通ボタン */
+  .actions{margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;}
+  .act{font-family:var(--jp);font-size:16px;font-weight:700;padding:11px 20px;border-radius:11px;cursor:pointer;
+    border:1px solid transparent;color:#fff;transition:.16s;line-height:1.3;
+    background:linear-gradient(140deg,var(--brand2),var(--brand));box-shadow:0 6px 14px rgba(50,74,134,.22);}
+  .act:hover{transform:translateY(-1px);box-shadow:0 9px 18px rgba(50,74,134,.26);}
+  .act:active{transform:translateY(0);}
+  .act.sec{background:#fff;color:var(--brand-ink);border-color:var(--line);box-shadow:var(--shadow-sm);}
+  .act.sec:hover{border-color:var(--brand2);}
+  .act.ghost{background:transparent;color:var(--muted);border-color:var(--line);box-shadow:none;}
+  .act.ghost:hover{background:#fff;color:var(--ink);}
+  .act.big{font-size:17px;padding:15px 22px;width:100%;justify-content:center;text-align:center;}
+  .act:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none;}
+
+  /* 訓練ヘッダ */
+  .tbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+  .pill{font-size:13px;font-weight:700;padding:6px 13px;border:1px solid var(--line);border-radius:999px;
+    background:#fff;cursor:pointer;color:var(--muted);transition:.15s;}
+  .pill:hover{border-color:var(--pc);color:var(--pc);}
+  .pill.on{border-color:transparent;background:var(--pc);color:#fff;}
+  .stat{margin-left:auto;font-size:13px;color:var(--muted);}
+  .stat b{color:var(--ink);font-size:14px;}
+
+  /* 出題カード */
+  .tech{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--tc);
+    background:var(--tcb);border-radius:999px;padding:5px 12px;margin-bottom:12px;}
+  .prog{font-size:13px;color:var(--muted);margin-bottom:9px;font-weight:600;}
+  .q{font-size:17px;margin-bottom:12px;line-height:1.55;font-weight:600;}
+  .sent{font-family:var(--en);font-size:21px;line-height:1.65;margin:0 0 16px;color:#27313e;
+    background:var(--brand-bg);border-radius:12px;padding:13px 16px;font-weight:600;}
+  .choices{display:flex;flex-direction:column;gap:9px;}
+  .ch{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 15px;cursor:pointer;font-size:17px;text-align:left;transition:.14s;width:100%;}
+  .ch:hover{border-color:var(--brand2);background:#fafcff;}
+  .ch .mk{flex:0 0 27px;height:27px;border-radius:8px;border:1.5px solid var(--line);display:flex;
+    align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--muted);transition:.14s;}
+  .ch .txt{flex:1;}
+  .ch.en .txt{font-family:var(--en);}
+  .ch.right{border-color:var(--ok);background:var(--ok-bg);}
+  .ch.right .mk{border-color:var(--ok);background:var(--ok);color:#fff;}
+  .ch.wrong{border-color:var(--ng);background:var(--ng-bg);}
+  .ch.wrong .mk{border-color:var(--ng);background:var(--ng);color:#fff;}
+  .ch.dim{opacity:.5;}
+
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .lbl{font-size:16px;color:var(--muted);font-weight:700;}
+  #ans{font-family:var(--en);font-size:22px;width:300px;max-width:100%;
+    padding:9px 13px;border:1.5px solid var(--line);border-radius:11px;outline:none;transition:.15s;}
+  #ans:focus{border-color:var(--brand2);box-shadow:0 0 0 4px var(--brand-bg);}
+  #ans:disabled{background:#f4f6f9;}
+  .sub{font-size:12px;color:var(--hint);margin:6px 0 0;}
+
+  #fb{min-height:8px;margin-top:15px;}
+  #fb .fbwrap{animation:pop .28s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98);}to{opacity:1;transform:none;}}
+  .verdict{font-size:18px;font-weight:800;display:flex;align-items:center;gap:7px;}
+  .ok{color:var(--ok);} .ng{color:var(--ng);} .warn{color:var(--warn);}
+  .ansrow{font-size:16px;margin-top:7px;}
+  .ansrow .en{font-weight:800;font-size:19px;}
+  .exp{font-size:15px;color:#3a4654;margin-top:10px;border-left:4px solid var(--brand2);
+    padding:9px 14px;line-height:1.65;background:#f6f9fe;border-radius:0 10px 10px 0;}
+
+  /* 長文読解パッセージ */
+  .passage{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:12px 16px;
+    margin-bottom:13px;max-height:240px;overflow:auto;box-shadow:inset 0 -10px 12px -12px rgba(0,0,0,.06);}
+  .ptitle{font-size:13px;font-weight:800;color:var(--brand-ink);margin-bottom:7px;}
+  .pbody{font-family:var(--en);font-size:15.5px;line-height:1.75;color:#2a2f34;}
+  .pbody p{margin:0 0 8px;}
+  .pnum{font-family:var(--jp);font-size:11px;color:var(--hint);margin-right:5px;}
+
+  /* 判定テスト：進捗 */
+  .ratebar{height:9px;border-radius:999px;background:var(--line2);overflow:hidden;margin:10px 0 4px;}
+  .ratebar > i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand2),var(--brand));transition:width .35s ease;}
+
+  /* 判定テスト結果 */
+  .center{text-align:center;}
+  .ring{width:172px;height:172px;border-radius:50%;margin:8px auto 4px;display:flex;align-items:center;
+    justify-content:center;background:conic-gradient(var(--rc) calc(var(--p)*1%), var(--line2) 0);}
+  .ring-hole{width:128px;height:128px;border-radius:50%;background:#fff;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--line);}
+  .ring-pct{font-size:38px;font-weight:800;line-height:1;color:var(--ink);}
+  .ring-cap{font-size:12px;color:var(--muted);margin-top:3px;}
+  .rscore{font-size:15px;color:var(--muted);margin:8px 0 2px;}
+  .rscore b{color:var(--ink);font-size:17px;}
+  .passmark{display:inline-flex;align-items:center;gap:8px;font-size:20px;font-weight:800;
+    padding:10px 24px;border-radius:999px;margin:12px 0 4px;color:#fff;}
+  .passmark.pass{background:linear-gradient(140deg,#27b07c,var(--ok));box-shadow:0 8px 18px rgba(31,157,107,.28);}
+  .passmark.fail{background:linear-gradient(140deg,#e36b6b,var(--ng));box-shadow:0 8px 18px rgba(214,84,84,.24);}
+  .threshold{font-size:13px;color:var(--hint);}
+  .send-box{margin-top:18px;padding-top:16px;border-top:1px solid var(--line2);}
+  .send-h{font-size:13px;font-weight:800;color:var(--muted);margin-bottom:6px;}
+  .rnum{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0 12px;}
+  #scls,#sid,#snm{font-family:var(--jp);font-size:16px;width:92px;text-align:center;
+    padding:9px 8px;border:1.5px solid var(--line);border-radius:10px;outline:none;}
+  #snm{width:130px;}
+  #scls:focus,#sid:focus,#snm:focus{border-color:var(--brand2);box-shadow:0 0 0 4px var(--brand-bg);}
+  .rnote{font-size:12px;color:var(--hint);margin-top:10px;}
+
+  .foot{text-align:center;font-size:11px;color:var(--hint);margin-top:18px;}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+  @media(max-width:520px){
+    .sent{font-size:18px;}#ans{font-size:19px;width:100%;}h1{font-size:19px;}
+    .genres{grid-template-columns:1fr;}.grades{grid-template-columns:repeat(3,1fr);}
+    .gtile .gd{min-height:0;}.ch{font-size:16px;}.ring{width:152px;height:152px;}
+    .ring-hole{width:114px;height:114px;}.ring-pct{font-size:33px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark">英</div>
+      <div>
+        <h1>英検ループ訓練</h1>
+        <div class="tagline">ジャンル訓練 → 判定テストで、合格へ。</div>
+      </div>
+    </div>
+    <div class="levelbar none" id="levelbar"></div>
+    <span class="ver" id="ver">v0.2</span>
+  </header>
+
+  <div class="loop" id="loop">
+    <div class="step" data-st="home"><span class="si">🏠</span><span>ホーム</span></div>
+    <span class="sep">›</span>
+    <div class="step" data-st="train"><span class="si">🎓</span><span>ジャンル訓練</span></div>
+    <span class="sep">›</span>
+    <div class="step" data-st="test"><span class="si">📋</span><span>判定テスト</span></div>
+  </div>
+
+  <div id="app"></div>
+  <div class="foot">学校での反復学習用 ・ ループ式 英検トレーニング</div>
+</div>
+
+<script>
+(function(){
+  var APP_VER = "v0.24";
+
+  /* ============================ 級・ジャンル定義 ============================ */
+  var GRADES = [
+    {id:"7",        name:"7級",      sub:"小学校中学年〜・アルファベットと身近な単語", isNew:true, c:"#e2735a", cbg:"#fdeee9"},
+    {id:"6",        name:"6級",      sub:"小学校高学年〜・基本の文と日常表現",       isNew:true, c:"#d99a2b", cbg:"#fbf2df"},
+    {id:"prep",     name:"中学入学準備", sub:"6級と5級の間・使える英語学（勉強法/会話/作文）", c:"#3a8f9c", cbg:"#e6f3f5"},
+    {id:"5",        name:"5級",      sub:"中学初級・be動詞と一般動詞",              c:"#2f9e6e", cbg:"#e7f6ef"},
+    {id:"4",        name:"4級",      sub:"中学中級・過去形や比較",                 c:"#2f80c4", cbg:"#e6f1fb"},
+    {id:"3",        name:"3級",      sub:"中学卒業・長文と英作文",                 c:"#5560c8", cbg:"#ecedfb"},
+    {id:"pre2",     name:"準2級",    sub:"高校中級・長めの長文と英作文",            c:"#6f5cc8", cbg:"#eeeafb"},
+    {id:"pre2plus", name:"準2級プラス", sub:"準2と2の橋渡し・2025年新設",            isNew:true, c:"#9a5cc0", cbg:"#f3ebfa"},
+    {id:"2",        name:"2級",      sub:"高校卒業・社会的な話題",                 c:"#c05a86", cbg:"#faecf1"}
+  ];
+  var GENRES = [
+    {id:"vocab",     name:"単語",       icon:"📖", desc:"単語・熟語・コロケーション",        c:"#2f80c4", cbg:"#e6f1fb"},
+    {id:"grammar",   name:"文法",       icon:"🧩", desc:"語順・時制・三単現",             c:"#7c5cd0", cbg:"#efeafb"},
+    {id:"technique", name:"4技能別問題", icon:"🎧", desc:"読む・聞く・書く・話すの実戦問題",   c:"#d9803a", cbg:"#fbefe3"},
+    {id:"reading",   name:"長文読解",    icon:"📰", desc:"大問4・5 長文を読んで答える",          c:"#9a6a3a", cbg:"#f4ece1"},
+    {id:"practice",  name:"本番練習",    icon:"📝", desc:"本番の形式で力だめし",            c:"#2f9e6e", cbg:"#e7f6ef"},
+    {id:"meta",      name:"使える英語学", icon:"💡", desc:"勉強法・会話/作文のコツ",          c:"#2aa6a0", cbg:"#e3f5f3"}
+  ];
+  function gradeMeta(id){for(var i=0;i<GRADES.length;i++)if(GRADES[i].id===id)return GRADES[i];}
+  function genreMeta(id){for(var i=0;i<GENRES.length;i++)if(GENRES[i].id===id)return GENRES[i];}
+  // その級で実際に問題があるジャンルだけを返す（級ごとに構成が違ってもOKに）
+  function availableGenres(grade){
+    return GENRES.filter(function(ge){var a=BANK[grade]&&BANK[grade][ge.id];return a&&a.length;});
+  }
+
+  /* ============================ 問題バンク ============================
+     q   : 日本語の指示文
+     en  : 英文（任意。Comic Sansで表示）
+     t   : "mc"=4択 / "fill"=打ち込み
+     ch  : 選択肢（mc）   a: 正解インデックス(mc) / 正解文字列(fill)
+     ac  : 別解（fill, 任意）   chJp: 選択肢が日本語のとき true
+     ex  : 解説
+     ※フェーズ③で各級・各ジャンルの配列に問題を追加していく。
+  ===================================================================== */
+  var BANK = {
+    /* ---------------- 7級（新設・小学校中学年） ---------------- */
+    "7":{
+      vocab:[
+        {t:"mc", q:"「ねこ」を表す英語をえらぼう。", ch:["cat","dog","bird","fish"], a:0, ex:"cat＝ねこ。動物の名前は絵といっしょに覚えよう。"},
+        {t:"mc", q:"🍎 これを表す英語は？", ch:["apple","orange","banana","grape"], a:0, ex:"apple＝りんご。"},
+        {t:"mc", q:"「赤」を表す英語は？", ch:["red","blue","green","black"], a:0, ex:"red＝赤。色のことばはよく出るよ。"},
+        {t:"fill", q:"「犬」を英語で書こう。", a:"dog", ex:"dog＝犬。"},
+        {t:"mc", q:"あいさつ「おはよう」にあう英語は？", ch:["Good morning.","Good night.","Thank you.","Goodbye."], chJp:false, a:0, ex:"Good morning.＝おはよう。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I (   ) a student.", q:"(   ) に入る語は？", ch:["am","is","are","be"], a:0, ex:"主語が I のときは am。I am ～＝わたしは～です。"},
+        {t:"mc", en:"This is (   ) apple.", q:"(   ) に入る語は？", ch:["an","a","the","×"], a:0, ex:"母音(a,i,u,e,o)の音で始まる語の前は an。"},
+        {t:"mc", q:"「これは本です」にあう英語は？", ch:["This is a book.","This a book is.","Book is this.","Is this book."], a:0, ex:"This is a ～. の語順を覚えよう。"}
+      ],
+      technique:[
+        {t:"mc", q:"【7級リーディング】絵に合う英文をえらぼう。 🏃 走っている男の子", ch:["The boy is running.","The boy is sleeping.","The boy is eating.","The boy is swimming."], a:0, ex:"7級は『英文を読んで、絵に合う文をえらぶ』形式。動作のことばに注目！"},
+        {t:"mc", q:"【7級リスニング】質問『What is this?』、絵は 🐶。あう答えは？", ch:["It's a dog.","It's a cat.","It's a bird.","It's a fish."], a:0, ex:"7級リスニングは絵についての質問。英文は2回読まれるよ。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) is your name?", q:"(   ) に入る語は？", ch:["What","Who","Where","When"], a:0, ex:"名前をたずねるときは What is your name?。"},
+        {t:"mc", q:"絵に合う英文は？ 🖊️ 青いペン", ch:["This is a blue pen.","This is a red pen.","This is a blue cup.","This is a blue book."], a:0, ex:"色（blue）と物（pen）の両方が合うものをえらぶ。"}
+      ]
+    },
+
+    /* ---------------- 6級（新設・小学校高学年） ---------------- */
+    "6":{
+      vocab:[
+        {t:"mc", q:"「学校」を表す英語は？", ch:["school","station","library","park"], a:0, ex:"school＝学校。"},
+        {t:"fill", q:"「家族」を英語で（f で始まる）。", a:"family", ex:"family＝家族。"},
+        {t:"mc", q:"「月曜日」は？", ch:["Monday","Sunday","Friday","Tuesday"], a:0, ex:"Monday＝月曜日。曜日は大文字で始める。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I (   ) soccer every day.", q:"(   ) に入る語は？", ch:["play","plays","playing","played"], a:0, ex:"主語 I＋現在の習慣 → play（原形）。"},
+        {t:"mc", en:"She (   ) to school by bus.", q:"(   ) に入る語は？", ch:["goes","go","going","gone"], a:0, ex:"主語 She（三人称・単数）の現在形は goes。"},
+        {t:"mc", en:"(   ) you like music?", q:"(   ) に入る語は？", ch:["Do","Are","Is","Does"], a:0, ex:"一般動詞 like の疑問文。主語 you には Do。"}
+      ],
+      technique:[
+        {t:"mc", q:"【6級リーディング】英文を読み、内容に合う絵をえらぼう。 “I have a cat. It is small and white.”", ch:["小さい白いねこ 🐱","大きい黒い犬","白い鳥","小さい茶色のねこ"], chJp:true, a:0, ex:"6級は『まとまった英文を読み、内容に合う絵をえらぶ』形式。色や大小を正確に。"},
+        {t:"mc", en:"A: How are you?", q:"【6級リスニング】自然なやりとりをえらぼう。", ch:["I'm fine, thank you.","It's a dog.","Yes, I do.","I'm twelve."], a:0, ex:"6級リスニングは会話のやりとり。あいさつの定型を覚えよう。"}
+      ],
+      practice:[
+        {t:"mc", en:"A: (   ) is it? B: It's three o'clock.", q:"(   ) に入る語は？", ch:["What time","How many","What color","How old"], a:0, ex:"時刻をたずねる What time is it?。"},
+        {t:"mc", en:"There (   ) two dogs in the park.", q:"(   ) に入る語は？", ch:["are","is","am","be"], a:0, ex:"two dogs（複数）→ There are。"}
+      ]
+    },
+
+    /* ---------------- 5級 ---------------- */
+    "5":{
+      vocab:[
+        {t:"mc", q:"「いそがしい」は？", ch:["busy","happy","hungry","sleepy"], a:0, ex:"busy＝いそがしい。"},
+        {t:"fill", q:"「毎日」　every (   )", a:"day", ex:"every day＝毎日。"}
+      ],
+      grammar:[
+        {t:"mc", en:"He (   ) not like natto.", q:"(   ) に入る語は？", ch:["does","do","is","are"], a:0, ex:"主語 He の一般動詞の否定文は does not。"},
+        {t:"mc", en:"I (   ) reading a book now.", q:"(   ) に入る語は？", ch:["am","is","are","do"], a:0, ex:"now（今）＋〜ing → 現在進行形。主語 I は am。"},
+        {t:"mc", en:"(   ) the door, please.", q:"(   ) に入る語は？", ch:["Open","Opens","Opening","Opened"], a:0, ex:"命令文は動詞の原形で始める。"}
+      ],
+      technique:[
+        {t:"mc", en:"I (   ) up at six every morning.", q:"【5級・大問1】(   ) に合う語は？", ch:["get","take","look","go"], a:0, ex:"get up＝起きる。熟語はかたまりで覚える。"},
+        {t:"mc", en:"A: Thank you.", q:"【5級・大問2】会話に合う応答は？", ch:["You're welcome.","Here you are.","Me, too.","See you."], a:0, ex:"おれいには You're welcome.（どういたしまして）。"}
+      ],
+      practice:[
+        {t:"mc", en:"My birthday is (   ) May.", q:"(   ) に入る語は？", ch:["in","on","at","to"], a:0, ex:"月の前は in。in May＝5月に。"},
+        {t:"mc", en:"(   ) is that boy? — He is my brother.", q:"(   ) に入る語は？", ch:["Who","What","Where","When"], a:0, ex:"人をたずねる Who。"}
+      ]
+    },
+
+    /* ---------------- 4級 ---------------- */
+    "4":{
+      vocab:[
+        {t:"mc", q:"「〜を理解する」は？", ch:["understand","arrive","invite","collect"], a:0, ex:"understand＝理解する。"},
+        {t:"fill", q:"「将来」を英語で（f で始まる）。", a:"future", ex:"future＝将来。in the future＝将来に。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I (   ) to Kyoto last week.", q:"(   ) に入る語は？", ch:["went","go","goes","will go"], a:0, ex:"last week（先週）→ 過去形 went。"},
+        {t:"mc", en:"This book is (   ) than that one.", q:"(   ) に入る語は？", ch:["more interesting","interesting","interestinger","most interesting"], a:0, ex:"長い形容詞の比較は more ～ than。"},
+        {t:"mc", en:"He was (   ) TV when I came home.", q:"(   ) に入る語は？", ch:["watching","watch","watches","watched"], a:0, ex:"was ＋〜ing → 過去進行形。"}
+      ],
+      technique:[
+        {t:"mc", en:"You must (   ) your homework before dinner.", q:"【4級・大問1】(   ) に合う語は？", ch:["finish","finishes","finishing","finished"], a:0, ex:"must のうしろは動詞の原形。"}
+      ],
+      practice:[
+        {t:"mc", en:"I have (   ) been to Australia.", q:"(   ) に入る語は？", ch:["never","ever","yet","still"], a:0, ex:"have never been＝一度も行ったことがない。"},
+        {t:"mc", en:"A: How long (   ) you study? B: For two hours.", q:"(   ) に入る語は？", ch:["did","are","do","were"], a:0, ex:"For two hours（過去の時間）→ did you study。"}
+      ]
+    },
+
+    /* ---------------- 3級（教材から豊富に収録） ---------------- */
+    "3":{
+      vocab:[
+        {t:"fill", en:"I want to (   ) camping with my friends.", q:"ワードバンク [enjoy / vacation / grow] から1語。", a:"enjoy", ex:"enjoy ～ing で「〜を楽しむ」。enjoy camping＝キャンプを楽しむ。"},
+        {t:"fill", en:"We went to Okinawa during summer (   ).", q:"ワードバンクから1語。", a:"vacation", ex:"summer vacation＝夏休み。"},
+        {t:"fill", en:"I have to take (   ) of my brother.", q:"(   ) に入る1語。", a:"care", ex:"take care of ～＝「〜の世話をする」。熟語はかたまりで。"},
+        {t:"fill", en:"She is (   ) in reading books.", q:"(   ) に入る1語。", a:"interested", ex:"be interested in ～＝「〜に興味がある」。"},
+        {t:"fill", en:"It depends (   ) the weather.", q:"(   ) に入る1語。", a:"on", ex:"depend on ～＝「〜による・〜しだい」。"},
+        {t:"fill", en:"We look forward (   ) the summer festival.", q:"(   ) に入る1語。", a:"to", ex:"look forward to ～＝「〜を楽しみに待つ」。"},
+        {t:"fill", q:"「将来」を英語で（f で始まる）。", a:"future", ex:"future＝将来。"},
+        {t:"fill", q:"「〜を紹介する」を英語で（i で始まる）。", a:"introduce", ex:"introduce＝紹介する。"},
+        {t:"mc", en:"A: This cake is really (   ). B: Thanks! I made it.", q:"場面に合う語は？", ch:["delicious","difficult","dangerous","boring"], a:0, ex:"ケーキをほめ、Thanks!と返す場面 → delicious（おいしい）。語彙問題は『場面と気持ち』を想像。"}
+      ],
+      grammar:[
+        {t:"mc", en:"My sister (   ) to the library every Saturday.", q:"(   ) に入る語は？", ch:["goes","go","went","going"], a:0, ex:"主語は三人称・単数、every Saturday は習慣 → 三単現の goes。"},
+        {t:"mc", en:"I (   ) to Tokyo last week.", q:"(   ) に入る語は？", ch:["went","go","goes","will go"], a:0, ex:"last ～（先週）→ 過去形 went。"},
+        {t:"mc", en:"He doesn't (   ) breakfast.", q:"(   ) に入る語は？", ch:["eat","eats","ate","eating"], a:0, ex:"doesn't のうしろは必ず原形。eat が正解。"},
+        {t:"mc", en:"There (   ) two books on the desk.", q:"(   ) に入る語は？", ch:["are","is","am","be"], a:0, ex:"two books（複数）→ There are。"},
+        {t:"mc", en:"She has (   ) here since 2010.", q:"(   ) に入る語は？", ch:["lived","live","lives","living"], a:0, ex:"has ＋過去分詞 → 現在完了。since（〜から）が目印。"},
+        {t:"mc", en:"Tomorrow I (   ) visit my grandmother.", q:"(   ) に入る語は？", ch:["will","am","did","was"], a:0, ex:"tomorrow（未来）→ will＋原形。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: It's a beautiful day. Why don't we go to the park? B: (   )", q:"【大問2】会話に合う応答は？", ch:["That sounds great.","You're welcome.","It was fun.","I'm full."], a:0, ex:"Why don't we ～?（〜しない？）は提案。賛成の That sounds great. が自然。"},
+        {t:"mc", en:"A: Excuse me. I'm looking for the station. B: (   ) Go straight and turn right.", q:"【大問2】会話に合う応答は？", ch:["Sure.","No, thank you.","Here you are.","That's too bad."], a:0, ex:"道案内が続く前のひとこと → Sure.。(   )のうしろの文もヒント。"}
+      ],
+      practice:[
+        {t:"mc", en:"A: Could you tell me the way to the station?", q:"応答として最も適切なものは？", ch:["Sure. Go straight and turn left.","Yes, I did.","No, thank you.","I'm fine."], a:0, ex:"道をたずねられたので、案内する Sure. ～ が正解。"},
+        {t:"mc", en:"A: How about going to the movies this weekend?", q:"応答として最も適切なものは？", ch:["That sounds great.","It was fun.","You're welcome.","Here you are."], a:0, ex:"How about ～?（提案）には賛成の That sounds great.。"},
+        {t:"mc", en:"A: I'm afraid I can't come to the party.", q:"応答として最も適切なものは？", ch:["That's too bad.","Congratulations!","Nice to meet you.","You're welcome."], a:0, ex:"残念な知らせ → That's too bad.（それは残念）。"},
+        {t:"mc", en:"A: Thank you for helping me with my homework.", q:"応答として最も適切なものは？", ch:["No problem.","I don't think so.","I'll take it.","That's too bad."], a:0, ex:"おれいには No problem.（どういたしまして）。"},
+        {t:"mc", q:"会話: A: Did you enjoy your vacation in Okinawa? B: Yes! I went swimming every day. 質問: What did B do?", ch:["B went swimming.","B played soccer.","B studied math.","B watched TV."], a:0, ex:"B の発言 I went swimming every day から swimming。"},
+        {t:"mc", q:"英文: Kenji practices French every day because he wants to travel to France. 質問: Why does Kenji practice French?", ch:["To travel to France.","To meet a friend.","To pass a test.","To watch movies."], a:0, ex:"because のあとが理由。travel to France が答え。"}
+      ]
+    },
+
+    /* ---------------- 準2級 ---------------- */
+    "pre2":{
+      vocab:[
+        {t:"mc", en:"The company decided to (   ) the new project.", q:"(   ) に入る語は？", ch:["launch","arrive","belong","attend"], a:0, ex:"launch＝（事業などを）開始する。"},
+        {t:"fill", q:"「〜を準備する」を英語で（p で始まる）。", a:"prepare", ex:"prepare＝準備する。prepare for the exam。"},
+        {t:"mc", en:"She has a positive (   ) toward her work.", q:"(   ) に入る語は？", ch:["attitude","weather","machine","engine"], a:0, ex:"attitude＝態度・姿勢。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I have been studying English (   ) three years.", q:"(   ) に入る語は？", ch:["for","since","during","while"], a:0, ex:"期間の前は for。for three years＝3年間。"},
+        {t:"mc", en:"If I (   ) more time, I would travel abroad.", q:"(   ) に入る語は？", ch:["had","have","will have","has"], a:0, ex:"仮定法過去：If＋過去形, would＋原形。"},
+        {t:"mc", en:"The movie was so boring that I (   ) asleep.", q:"(   ) に入る語は？", ch:["fell","felt","fall","feel"], a:0, ex:"fall asleep＝眠りに落ちる。過去形 fell。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Have you decided what to order? B: (   )", q:"【準2級・聞く/話す】自然な応答は？", ch:["Not yet. I'm still thinking.","Yes, I did it.","It's over there.","You're welcome."], a:0, ex:"Have you decided? に「まだ」と返す自然な流れ。"},
+        {t:"mc", en:"A: Why don't we study together this weekend? B: (   )", q:"【準2級・聞く/話す】提案への応答は？", ch:["Good idea. Let's meet at the library.","No, I didn't.","It's mine.","Thank you for coming."], a:0, ex:"提案 Why don't we ～? に賛成し具体案を返す。"}
+      ],
+      practice:[
+        {t:"mc", en:"A: Would you mind (   ) the window? B: Not at all.", q:"(   ) に入る語は？", ch:["opening","to open","open","opened"], a:0, ex:"mind のあとは動名詞（〜ing）。"},
+        {t:"mc", q:"英文: Tom moved to Osaka to study design. 質問: Why did Tom move to Osaka?", ch:["To study design.","To meet friends.","To find a job.","To play sports."], a:0, ex:"to study design（目的のto不定詞）が理由。"}
+      ]
+    },
+
+    /* ---------------- 準2級プラス（2025年新設） ---------------- */
+    "pre2plus":{
+      vocab:[
+        {t:"mc", en:"Volunteers helped (   ) the damaged houses.", q:"(   ) に入る語は？", ch:["rebuild","reduce","remind","remove"], a:0, ex:"rebuild＝建て直す。re-（再び）＋build。"},
+        {t:"fill", q:"「効率的な」を英語で（e で始まる）。", a:"efficient", ex:"efficient＝効率的な。"}
+      ],
+      grammar:[
+        {t:"mc", en:"The report needs (   ) before the deadline.", q:"(   ) に入る語は？", ch:["to be finished","finishing to","finish","be finished"], a:0, ex:"need to be＋過去分詞＝〜される必要がある。"},
+        {t:"mc", en:"(   ) harder, he would have passed the exam.", q:"(   ) に入る語は？", ch:["Had he studied","If he studies","He studied","Did he study"], a:0, ex:"仮定法過去完了の倒置：Had＋主語＋過去分詞。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: I think we should reduce plastic use. B: (   )", q:"【準2+ 聞く/話す】意見への応答は？", ch:["I agree. It harms the ocean.","No, thank you.","It's over there.","Here you are."], a:0, ex:"意見に賛成し理由を添える自然な応答。"}
+      ],
+      practice:[
+        {t:"mc", en:"Despite the rain, the event (   ) as planned.", q:"(   ) に入る語は？", ch:["took place","take place","taking place","taken place"], a:0, ex:"take place＝開催される。過去形 took place。"},
+        {t:"mc", en:"The new policy aims (   ) traffic accidents.", q:"(   ) に入る語は？", ch:["to reduce","reducing","reduce","reduced"], a:0, ex:"aim to＋原形＝〜することを目指す。"}
+      ]
+    },
+
+    /* ---------------- 2級 ---------------- */
+    "2":{
+      vocab:[
+        {t:"mc", en:"The new law will (   ) the environment.", q:"(   ) に入る語は？", ch:["protect","invite","arrive","collect"], a:0, ex:"protect＝守る。protect the environment＝環境を守る。"},
+        {t:"fill", q:"「環境」を英語で（e で始まる）。", a:"environment", ex:"environment＝環境。"},
+        {t:"mc", en:"Reading books can (   ) your vocabulary.", q:"(   ) に入る語は？", ch:["improve","reduce","arrive","belong"], a:0, ex:"improve＝向上させる。"}
+      ],
+      grammar:[
+        {t:"mc", en:"If it (   ) tomorrow, we will stay home.", q:"(   ) に入る語は？", ch:["rains","will rain","rained","raining"], a:0, ex:"条件のif節は未来でも現在形。rains。"},
+        {t:"mc", en:"I wish I (   ) speak French.", q:"(   ) に入る語は？", ch:["could","can","will","am"], a:0, ex:"I wish ＋仮定法 → could（〜できたらなあ）。"},
+        {t:"mc", en:"The book (   ) by many students is famous.", q:"(   ) に入る語は？", ch:["read","reads","reading","to read"], a:0, ex:"名詞を後ろから説明する過去分詞。read（読まれる本）。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Could you give me some advice on studying abroad? B: (   )", q:"【2級・聞く/話す】助言を求められた応答は？", ch:["Sure. First, improve your daily conversation.","Yes, I did.","It's raining outside.","Goodbye for now."], a:0, ex:"助言を求められたら具体的なアドバイスで返す。"},
+        {t:"mc", en:"A: What do you think about online learning? B: (   )", q:"【2級・聞く/話す】意見を求められた応答は？", ch:["I think it's convenient, but it can be lonely.","Yes, I do it.","It's over there.","No problem, thanks."], a:0, ex:"意見を求められたら長所と短所を述べる。"}
+      ],
+      practice:[
+        {t:"mc", en:"Many people believe that exercise (   ) good for health.", q:"(   ) に入る語は？", ch:["is","are","be","being"], a:0, ex:"主語 exercise（不可算・単数あつかい）→ is。"},
+        {t:"mc", en:"(   ) the heavy rain, the game was canceled.", q:"(   ) に入る語は？", ch:["Because of","Because","So","But"], a:0, ex:"あとが名詞のかたまり → Because of（〜のために）。"}
+      ]
+    }
+  };
+
+  /* ============================ 追加問題（フェーズ③）============================
+     既存 BANK を壊さず、級・ジャンルごとに問題を上積みする。下でBANKへ連結する。
+  ============================================================================== */
+  var MORE = {
+    "7":{
+      vocab:[
+        {t:"mc", q:"「青」を表す英語は？", ch:["blue","red","yellow","white"], a:0, ex:"blue＝青。"},
+        {t:"mc", q:"🐱 これを表す英語は？", ch:["cat","dog","cow","pig"], a:0, ex:"cat＝ねこ。"},
+        {t:"mc", q:"「本」を表す英語は？", ch:["book","pen","desk","bag"], a:0, ex:"book＝本。"},
+        {t:"fill", q:"「赤」を英語で書こう（r で始まる）。", a:"red", ex:"red＝赤。"},
+        {t:"mc", q:"数の「three」はいくつ？", ch:["3","2","5","8"], chJp:true, a:0, ex:"three＝3。"},
+        {t:"mc", q:"あいさつ「ありがとう」は？", ch:["Thank you.","Good night.","I'm sorry.","Hello."], a:0, ex:"Thank you.＝ありがとう。"}
+      ],
+      grammar:[
+        {t:"mc", en:"(   ) is a cat.", q:"「これはねこです」", ch:["This","These","They","You"], a:0, ex:"This is ～＝これは～です。"},
+        {t:"mc", en:"I have (   ) pens.", q:"「2本のペン」", ch:["two","a","an","much"], a:0, ex:"two pens＝2本のペン（複数）。"},
+        {t:"mc", en:"(   ) you happy?", q:"「あなたは幸せ？」", ch:["Are","Is","Do","Does"], a:0, ex:"you には Are。"},
+        {t:"mc", en:"It is (   ) egg.", q:"(   ) に入る語は？", ch:["an","a","the","×"], a:0, ex:"egg は母音の音 → an。"}
+      ],
+      technique:[
+        {t:"mc", q:"【7級リーディング】🐟 泳いでいる魚に合う英文は？", ch:["The fish is swimming.","The fish is flying.","The fish is running.","The fish is sleeping."], a:0, ex:"絵の動作（swim）に合う文を選ぶ。"},
+        {t:"mc", q:"【7級リスニング】絵:🍎 質問『What fruit is this?』 答えは？", ch:["It's an apple.","It's a dog.","It's a pen.","It's a cat."], a:0, ex:"絵についての質問。果物 apple。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) old are you?", q:"年齢をたずねる", ch:["How","What","Who","Where"], a:0, ex:"How old are you?＝何歳？"},
+        {t:"mc", q:"絵:🐶 黒い犬 に合う英文は？", ch:["This is a black dog.","This is a white cat.","This is a black cat.","This is a red dog."], a:0, ex:"色（black）と動物（dog）が両方合うもの。"}
+      ]
+    },
+    "6":{
+      vocab:[
+        {t:"mc", q:"「公園」は？", ch:["park","school","hospital","library"], a:0, ex:"park＝公園。"},
+        {t:"mc", q:"「朝食」は？", ch:["breakfast","lunch","dinner","snack"], a:0, ex:"breakfast＝朝食。"},
+        {t:"fill", q:"「友だち」を英語で（f で始まる）。", a:"friend", ex:"friend＝友だち。"},
+        {t:"mc", q:"「土曜日」は？", ch:["Saturday","Monday","Sunday","Friday"], a:0, ex:"Saturday＝土曜日。"}
+      ],
+      grammar:[
+        {t:"mc", en:"He (   ) like natto.", q:"否定文に", ch:["doesn't","don't","isn't","aren't"], a:0, ex:"主語 He の一般動詞否定は doesn't。"},
+        {t:"mc", en:"(   ) is your favorite color?", q:"(   ) に入る語は？", ch:["What","Who","When","Whose"], a:0, ex:"色をたずねる What。"},
+        {t:"mc", en:"I am (   ) a letter now.", q:"(   ) に入る語は？", ch:["writing","write","wrote","writes"], a:0, ex:"now＋am → 現在進行形 writing。"},
+        {t:"mc", en:"We (   ) to school every day.", q:"(   ) に入る語は？", ch:["go","goes","going","went"], a:0, ex:"主語 We＋習慣 → go。"}
+      ],
+      technique:[
+        {t:"mc", q:"【6級リーディング】“I like dogs. I have two black dogs.” 内容に合う絵は？", ch:["黒い犬が2匹","白い犬が1匹","黒いねこが2匹","茶色い犬が2匹"], chJp:true, a:0, ex:"数（two）と色（black）の両方を満たす絵。"},
+        {t:"mc", en:"A: Thank you very much.", q:"【6級リスニング】自然な応答は？", ch:["You're welcome.","I'm twelve.","It's a cat.","Yes, I am."], a:0, ex:"おれいには You're welcome.。"}
+      ],
+      practice:[
+        {t:"mc", en:"A: (   ) do you live? B: In Tokyo.", q:"(   ) に入る語は？", ch:["Where","What","Who","When"], a:0, ex:"場所をたずねる Where。"},
+        {t:"mc", en:"She has (   ) apples.", q:"(   ) に入る語は？", ch:["some","a","an","much"], a:0, ex:"数えられる名詞の複数には some。"}
+      ]
+    },
+    "5":{
+      vocab:[
+        {t:"mc", q:"「楽しい」は？", ch:["fun","sad","angry","tired"], a:0, ex:"fun＝楽しい。"},
+        {t:"mc", q:"「水」は？", ch:["water","milk","juice","tea"], a:0, ex:"water＝水。"},
+        {t:"fill", q:"「先生」を英語で（t で始まる）。", a:"teacher", ex:"teacher＝先生。"},
+        {t:"mc", q:"「川」は？", ch:["river","mountain","sea","sky"], a:0, ex:"river＝川。"}
+      ],
+      grammar:[
+        {t:"mc", en:"They (   ) playing soccer.", q:"(   ) に入る語は？", ch:["are","is","am","do"], a:0, ex:"主語 They → are。"},
+        {t:"mc", en:"Does she (   ) English?", q:"(   ) に入る語は？", ch:["speak","speaks","spoke","speaking"], a:0, ex:"Does のあとは原形 speak。"},
+        {t:"mc", en:"(   ) book is this?", q:"「だれの本？」", ch:["Whose","Who","What","Which"], a:0, ex:"持ち主をたずねる Whose。"},
+        {t:"mc", en:"There (   ) a cat under the table.", q:"(   ) に入る語は？", ch:["is","are","am","be"], a:0, ex:"a cat（単数）→ There is。"}
+      ],
+      technique:[
+        {t:"mc", en:"You (   ) play in the library.", q:"【5級・大問1】禁止「〜してはいけない」", ch:["must not","not","don't to","no"], a:0, ex:"must not＝〜してはいけない。"},
+        {t:"mc", en:"A: Let's play tennis. B: (   )", q:"【5級・大問2】さそいへの応答", ch:["Yes, let's.","You're welcome.","Here you are.","I'm sorry."], a:0, ex:"Let's ～ への賛成は Yes, let's.。"}
+      ],
+      practice:[
+        {t:"mc", en:"I usually get up (   ) seven.", q:"(   ) に入る語は？", ch:["at","in","on","to"], a:0, ex:"時刻の前は at。"},
+        {t:"mc", en:"(   ) many books do you have?", q:"(   ) に入る語は？", ch:["How","What","Who","Where"], a:0, ex:"数をたずねる How many。"}
+      ]
+    },
+    "4":{
+      vocab:[
+        {t:"mc", q:"「招待する」は？", ch:["invite","arrive","collect","wash"], a:0, ex:"invite＝招待する。"},
+        {t:"mc", q:"「到着する」は？", ch:["arrive","leave","invite","borrow"], a:0, ex:"arrive＝到着する。"},
+        {t:"fill", q:"「天気」を英語で（w で始まる）。", a:"weather", ex:"weather＝天気。"},
+        {t:"mc", q:"「便利な」は？", ch:["useful","careful","dangerous","famous"], a:0, ex:"useful＝便利な・役立つ。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I want (   ) a doctor.", q:"「〜になりたい」", ch:["to be","being","be","been"], a:0, ex:"want to＋原形。to be a doctor。"},
+        {t:"mc", en:"He is taller (   ) his brother.", q:"(   ) に入る語は？", ch:["than","then","as","more"], a:0, ex:"比較級＋than。"},
+        {t:"mc", en:"She is good (   ) playing the piano.", q:"(   ) に入る語は？", ch:["at","in","on","to"], a:0, ex:"be good at＝〜が得意。"},
+        {t:"mc", en:"It started (   ) last night.", q:"(   ) に入る語は？", ch:["raining","rain","to rained","rains"], a:0, ex:"start ～ing。raining。"}
+      ],
+      technique:[
+        {t:"mc", en:"You (   ) finish it by noon.", q:"【4級・大問1】「〜しなければならない」", ch:["have to","have","having","to have"], a:0, ex:"have to＋原形＝〜しなければ。"},
+        {t:"mc", en:"A: How was the movie? B: (   )", q:"【4級・大問2】感想をたずねる", ch:["It was great.","Yes, I do.","Here you are.","At seven."], a:0, ex:"How was ～? には感想で答える。"}
+      ],
+      practice:[
+        {t:"mc", en:"I have a lot of homework, (   ) I can't go out.", q:"(   ) に入る語は？", ch:["so","but","or","because"], a:0, ex:"結果をつなぐ so（だから）。"},
+        {t:"mc", en:"Which is (   ), summer or winter?", q:"(   ) に入る語は？", ch:["hotter","hot","hottest","more hot"], a:0, ex:"2つの比較は比較級 hotter。"}
+      ]
+    },
+    "3":{
+      vocab:[
+        {t:"fill", en:"She is proud (   ) her team.", q:"(   ) に入る1語。", a:"of", ex:"be proud of＝〜を誇りに思う。"},
+        {t:"fill", en:"Would you (   ) to have some tea?", q:"(   ) に入る1語。", a:"like", ex:"Would you like to ～?＝〜しませんか。"},
+        {t:"fill", q:"「〜を練習する」を英語で（p で始まる）。", a:"practice", ex:"practice＝練習する。"},
+        {t:"fill", q:"「〜を集める」を英語で（c で始まる）。", a:"collect", ex:"collect＝集める。"},
+        {t:"fill", q:"「外国の」を英語で（f で始まる）。", a:"foreign", ex:"foreign＝外国の。"},
+        {t:"fill", q:"「必要な」を英語で（n で始まる）。", a:"necessary", ex:"necessary＝必要な。"},
+        {t:"mc", en:"This temple is very (   ). Many tourists visit it.", q:"場面に合う語は？", ch:["popular","quiet","cheap","empty"], a:0, ex:"観光客が多い → popular（人気の）。"},
+        {t:"fill", en:"I have lived here (   ) I was ten.", q:"(   ) に入る1語。", a:"since", ex:"現在完了＋since＝〜以来ずっと。"},
+        {t:"fill", en:"She was cooking (   ) he was watching TV.", q:"(   ) に入る1語。", a:"while", ex:"while＝〜している間。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I don't know (   ) to do next.", q:"(   ) に入る語は？", ch:["what","which","who","whose"], a:0, ex:"what to do＝何をすべきか。"},
+        {t:"mc", en:"She is the girl (   ) won the prize.", q:"(   ) に入る語は？", ch:["who","which","what","whom"], a:0, ex:"人を説明する関係代名詞 who。"},
+        {t:"mc", en:"I want something cold (   ).", q:"(   ) に入る語は？", ch:["to drink","drink","drinking","drank"], a:0, ex:"形容詞用法の不定詞。something to drink。"},
+        {t:"mc", en:"English is (   ) all over the world.", q:"(   ) に入る語は？", ch:["spoken","speak","speaking","spoke"], a:0, ex:"受動態 is＋過去分詞 spoken。"},
+        {t:"mc", en:"This is the most interesting book (   ) all.", q:"(   ) に入る語は？", ch:["of","in","at","for"], a:0, ex:"最上級＋of all＝すべての中で最も。"},
+        {t:"mc", en:"He told me (   ) late.", q:"(   ) に入る語は？", ch:["not to be","to not be","be not","not be"], a:0, ex:"tell 人 not to＋原形＝〜しないように言う。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Can I help you? B: (   )", q:"【大問2】店員への応答", ch:["Yes, I'm looking for a shirt.","You're welcome.","That's too bad.","I'm fine, thank you."], a:0, ex:"店での Can I help you? には用件で答える。"},
+        {t:"mc", en:"A: How long does it take? B: (   )", q:"【大問2】所要時間の問い", ch:["About twenty minutes.","Yes, I do.","It's mine.","At three."], a:0, ex:"How long（時間の長さ）には About ～ minutes。"}
+      ],
+      practice:[
+        {t:"mc", q:"英文: The festival will be held on November 15. Each class will prepare a special event. 質問: When is the festival?", ch:["On November 15.","In summer.","Next year.","Every day."], a:0, ex:"on November 15 が日付。"},
+        {t:"mc", q:"英文: Ms. Green has been a teacher for twenty years. She is popular because she always takes care of students. 質問: Why is Ms. Green popular?", ch:["Because she takes care of students.","Because she is rich.","Because she is young.","Because she sings well."], a:0, ex:"because のあとが理由。"},
+        {t:"mc", en:"A: I'm looking forward to the school trip. B: (   )", q:"応答として自然なのは？", ch:["Me too! I want to visit the castle.","No, thank you.","That's too bad.","Here you are."], a:0, ex:"楽しみという話題に共感する応答。"},
+        {t:"mc", q:"英文: Kenji started learning French last year because he wants to travel to France. 質問: When did Kenji start learning French?", ch:["Last year.","Next year.","Yesterday.","Two years ago."], a:0, ex:"last year（去年）が開始時期。"},
+        {t:"mc", en:"A: Could you pass me the salt? B: (   )", q:"応答として最も適切なものは？", ch:["Sure, here you are.","Yes, I did.","That's too bad.","Goodbye."], a:0, ex:"依頼 Could you ～? には Sure＋手渡しの定型。"}
+      ]
+    },
+    "pre2":{
+      vocab:[
+        {t:"mc", en:"We need to (   ) energy at home.", q:"(   ) に入る語は？", ch:["save","spend","waste","borrow"], a:0, ex:"save energy＝エネルギーを節約する。"},
+        {t:"fill", q:"「経験」を英語で（e で始まる）。", a:"experience", ex:"experience＝経験。"},
+        {t:"mc", en:"The doctor gave me some useful (   ).", q:"(   ) に入る語は？", ch:["advice","advices","advise","advised"], a:0, ex:"advice は数えない名詞（複数形なし）。"}
+      ],
+      grammar:[
+        {t:"mc", en:"He is the man (   ) car was stolen.", q:"(   ) に入る語は？", ch:["whose","who","which","whom"], a:0, ex:"所有を表す関係代名詞 whose。"},
+        {t:"mc", en:"I'd like you (   ) me a favor.", q:"(   ) に入る語は？", ch:["to do","do","doing","did"], a:0, ex:"would like 人 to＋原形。"},
+        {t:"mc", en:"By the time we arrived, the train (   ) left.", q:"(   ) に入る語は？", ch:["had","has","have","was"], a:0, ex:"過去完了 had＋過去分詞。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: How was your presentation? B: (   )", q:"【準2級・聞く/話す】感想を求められた応答は？", ch:["It went well, thanks for asking.","Yes, I do.","It's over there.","No, thank you."], a:0, ex:"How was ～? には感想で答える。"}
+      ],
+      practice:[
+        {t:"mc", en:"It is important (   ) enough sleep.", q:"(   ) に入る語は？", ch:["to get","getting","get","got"], a:0, ex:"It is 形容詞 to＋原形。"},
+        {t:"mc", en:"Not only Tom (   ) Mary likes music.", q:"(   ) に入る語は？", ch:["but also","and","or","so"], a:0, ex:"not only A but also B＝AだけでなくBも。"}
+      ]
+    },
+    "pre2plus":{
+      vocab:[
+        {t:"mc", en:"The factory tries to (   ) waste.", q:"(   ) に入る語は？", ch:["minimize","maximize","memorize","realize"], a:0, ex:"minimize＝最小化する。"},
+        {t:"fill", q:"「持続可能な」を英語で（s で始まる）。", a:"sustainable", ex:"sustainable＝持続可能な。"}
+      ],
+      grammar:[
+        {t:"mc", en:"It is essential that he (   ) on time.", q:"(   ) に入る語は？", ch:["be","is","was","being"], a:0, ex:"essential that＋(should) be → 原形 be。"},
+        {t:"mc", en:"(   ) any help, please let me know.", q:"(   ) に入る語は？", ch:["Should you need","If you needs","Do you need","Need you"], a:0, ex:"仮定法の倒置 Should you need＝もし必要なら。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Do you think students should have part-time jobs? B: (   )", q:"【準2+ 聞く/話す】意見を求められた応答は？", ch:["Yes, because they can learn responsibility.","No, I didn't.","It's mine.","You're welcome."], a:0, ex:"Do you think ～? には Yes/No＋理由で答える。"}
+      ],
+      practice:[
+        {t:"mc", en:"The proposal was rejected (   ) its high cost.", q:"(   ) に入る語は？", ch:["because of","because","although","despite"], a:0, ex:"あとが名詞句 → because of。"},
+        {t:"mc", en:"Few people (   ) aware of the problem.", q:"(   ) に入る語は？", ch:["are","is","was","has"], a:0, ex:"Few people（複数）→ are。"}
+      ]
+    },
+    "2":{
+      vocab:[
+        {t:"mc", en:"Scientists continue to (   ) the disease.", q:"(   ) に入る語は？", ch:["research","arrive","belong","attend"], a:0, ex:"research＝研究する。"},
+        {t:"fill", q:"「責任」を英語で（r で始まる）。", a:"responsibility", ex:"responsibility＝責任。"},
+        {t:"mc", en:"The government will (   ) new rules.", q:"(   ) に入る語は？", ch:["introduce","reduce","arrive","remind"], a:0, ex:"introduce＝導入する。"}
+      ],
+      grammar:[
+        {t:"mc", en:"He spoke as if he (   ) everything.", q:"(   ) に入る語は？", ch:["knew","knows","know","has known"], a:0, ex:"as if＋仮定法過去 knew＝まるで知っているかのように。"},
+        {t:"mc", en:"The higher you climb, (   ).", q:"(   ) に入る語は？", ch:["the colder it gets","colder it gets","it gets cold","the cold"], a:0, ex:"The 比較級 ～, the 比較級 …＝〜するほど…。"},
+        {t:"mc", en:"I had my bike (   ) yesterday.", q:"(   ) に入る語は？", ch:["repaired","repair","repairing","to repair"], a:0, ex:"have＋物＋過去分詞＝〜してもらう。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Some people work from home now. What do you think? B: (   )", q:"【2級・聞く/話す】意見を述べる応答は？", ch:["I think it saves time, though teamwork can suffer.","Yes, I work.","It's over there.","Thank you very much."], a:0, ex:"意見を求められたら理由・対比を入れて述べる。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) the difficulty, they completed the project.", q:"(   ) に入る語は？", ch:["Despite","Because","So","Although"], a:0, ex:"Despite＋名詞＝〜にもかかわらず。"},
+        {t:"mc", en:"It is said (   ) reading improves the mind.", q:"(   ) に入る語は？", ch:["that","what","which","who"], a:0, ex:"It is said that ～＝〜と言われている。"}
+      ]
+    }
+  };
+  // MORE を BANK に連結（新しい級も作成する）
+  (function(){
+    for(var g in MORE){ if(!BANK[g])BANK[g]={};
+      for(var ge in MORE[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
+        BANK[g][ge]=BANK[g][ge].concat(MORE[g][ge]); } }
+  })();
+
+  // 追加問題（フェーズ③拡充：3級・4級中心）
+  var MORE2 = {
+    "4":{
+      vocab:[
+        {t:"mc", q:"「〜を借りる」は？", ch:["borrow","lend","buy","sell"], a:0, ex:"borrow＝（無料で）借りる。lend＝貸す。"},
+        {t:"mc", q:"「めずらしい・まれな」は？", ch:["rare","busy","cheap","heavy"], a:0, ex:"rare＝まれな。"},
+        {t:"mc", q:"「〜を決める」は？", ch:["decide","arrive","invite","collect"], a:0, ex:"decide＝決める。decide to＋原形。"},
+        {t:"mc", q:"「ふつう・たいてい」は？", ch:["usually","suddenly","quickly","hardly"], a:0, ex:"usually＝たいてい（頻度）。"},
+        {t:"fill", q:"「病院」を英語で（h で始まる）。", a:"hospital", ex:"hospital＝病院。"},
+        {t:"fill", q:"「海外へ・外国へ」を英語で（a で始まる）。", a:"abroad", ex:"go abroad＝海外へ行く。"},
+        {t:"mc", q:"「正しい」は？", ch:["correct","careful","famous","useful"], a:0, ex:"correct＝正しい。"},
+        {t:"fill", q:"「（時間が）早く」を英語で（e で始まる）。", a:"early", ex:"early＝（時間が）早く。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I was (   ) when you called.", q:"(   ) に入る語は？", ch:["sleeping","slept","sleep","sleeps"], a:0, ex:"過去進行形 was＋〜ing。"},
+        {t:"mc", en:"She is the (   ) student in the class.", q:"(   ) に入る語は？", ch:["tallest","taller","tall","more tall"], a:0, ex:"the＋最上級 -est。"},
+        {t:"mc", en:"This question is (   ) than that one.", q:"(   ) に入る語は？", ch:["easier","easy","easiest","more easy"], a:0, ex:"短い語の比較級は -er。easier。"},
+        {t:"mc", en:"I have already (   ) lunch.", q:"(   ) に入る語は？", ch:["eaten","eat","ate","eating"], a:0, ex:"現在完了 have＋過去分詞 eaten。"},
+        {t:"mc", en:"He went to bed early (   ) he was tired.", q:"(   ) に入る語は？", ch:["because","so","but","or"], a:0, ex:"理由をつなぐ because。"},
+        {t:"mc", en:"Would you like (   ) tea?", q:"(   ) に入る語は？", ch:["some","any","a","an"], a:0, ex:"すすめる文では some を使う。"},
+        {t:"mc", en:"My mother told me (   ) the dishes.", q:"(   ) に入る語は？", ch:["to wash","wash","washing","washed"], a:0, ex:"tell 人 to＋原形。"},
+        {t:"mc", en:"If you are tired, you (   ) take a rest.", q:"(   ) に入る語は？", ch:["should","are","do","have"], a:0, ex:"should＝〜すべき・したほうがよい。"},
+        {t:"mc", en:"It was (   ) cold that we stayed home.", q:"(   ) に入る語は？", ch:["so","such","very","too"], a:0, ex:"so＋形容詞＋that＝とても〜なので…。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: How was your weekend? B: (   )", q:"【4級・聞く/話す】自然な応答は？", ch:["It was fun. I went hiking.","Yes, I do.","Here you are.","At seven."], a:0, ex:"How was ～? には感想で答える。"},
+        {t:"mc", en:"A: What are you going to do this summer? B: (   )", q:"【4級・聞く/話す】予定をたずねる応答は？", ch:["I'm going to visit my aunt.","It was great.","You're welcome.","Yes, please."], a:0, ex:"未来の予定 be going to で答える。"},
+        {t:"mc", en:"A: I won first prize! B: (   )", q:"【4級・聞く/話す】自然な応答は？", ch:["Congratulations!","That's too bad.","I'm sorry.","Pardon?"], a:0, ex:"よい知らせには Congratulations!。"},
+        {t:"mc", q:"【4級・読む】掲示: SWIMMING LESSON / Date: July 10 / Time: 10:00-11:30 / Bring your own towel. 質問: What should you bring?", ch:["A towel.","A book.","A ticket.","Lunch."], a:0, ex:"Bring your own towel から towel。"},
+        {t:"mc", q:"【4級・読む】Eメール: Hi! I'm going to have a birthday party on Saturday. Can you come? 質問: When is the party?", ch:["On Saturday.","On Sunday.","Next month.","Today."], a:0, ex:"on Saturday が日付。"},
+        {t:"mc", en:"A: Can you help me with my bag? B: (   )", q:"【4級・聞く/話す】依頼への応答は？", ch:["Sure, no problem.","It's mine.","That's too bad.","Goodbye."], a:0, ex:"依頼には Sure / No problem。"}
+      ],
+      practice:[
+        {t:"mc", en:"I'm interested (   ) science.", q:"(   ) に入る語は？", ch:["in","on","at","to"], a:0, ex:"be interested in。"},
+        {t:"mc", en:"He is afraid (   ) dogs.", q:"(   ) に入る語は？", ch:["of","in","on","to"], a:0, ex:"be afraid of＝〜をこわがる。"},
+        {t:"mc", en:"We arrived (   ) the station at noon.", q:"(   ) に入る語は？", ch:["at","to","in","on"], a:0, ex:"arrive at＋場所。"},
+        {t:"mc", en:"She has lived in Japan (   ) 2015.", q:"(   ) に入る語は？", ch:["since","for","from","at"], a:0, ex:"現在完了＋since＝〜以来。"},
+        {t:"mc", q:"英文: Yuki practices the piano every day because she wants to be a pianist. 質問: Why does Yuki practice the piano?", ch:["To be a pianist.","To meet friends.","To win money.","To watch TV."], a:0, ex:"because のあとが理由。"},
+        {t:"mc", en:"A: Which season do you like the best? B: (   )", q:"応答として自然なのは？", ch:["I like spring the best.","Yes, I do.","It's mine.","At three."], a:0, ex:"like ～ the best で答える。"}
+      ]
+    },
+    "3":{
+      vocab:[
+        {t:"fill", en:"I'm looking (   ) to seeing you.", q:"(   ) に入る1語。", a:"forward", ex:"look forward to ～ing＝〜を楽しみに待つ。"},
+        {t:"mc", en:"My grandfather is very (   ). He is 90 but walks every day.", q:"場面に合う語は？", ch:["healthy","hungry","angry","boring"], a:0, ex:"毎日歩ける → healthy（健康な）。"},
+        {t:"mc", en:"Could you (   ) me how to get to the station?", q:"(   ) に入る語は？", ch:["tell","talk","say","speak"], a:0, ex:"tell 人 ＝（人）に教える/言う。"},
+        {t:"mc", en:"She (   ) her homework before dinner.", q:"(   ) に入る語は？", ch:["finished","arrived","invited","collected"], a:0, ex:"finish ＝終える。"},
+        {t:"fill", q:"「便利な」を英語で（c で始まる）。", a:"convenient", ex:"convenient＝便利な。"},
+        {t:"fill", q:"「〜を覚えている」を英語で（r で始まる）。", a:"remember", ex:"remember＝覚えている・思い出す。"}
+      ],
+      grammar:[
+        {t:"mc", en:"Do you know (   ) he lives?", q:"(   ) に入る語は？", ch:["where","what","which","whose"], a:0, ex:"間接疑問。know のあとは where he lives（平叙の語順）。"},
+        {t:"mc", en:"The cake (   ) by my mother was delicious.", q:"(   ) に入る語は？", ch:["made","make","making","makes"], a:0, ex:"名詞を後ろから説明する過去分詞 made。"},
+        {t:"mc", en:"I have a friend (   ) lives in Canada.", q:"(   ) に入る語は？", ch:["who","which","what","whose"], a:0, ex:"人を説明する関係代名詞 who。"},
+        {t:"mc", en:"It is important (   ) breakfast every day.", q:"(   ) に入る語は？", ch:["to eat","eating","eat","ate"], a:0, ex:"It is 形容詞 to＋原形。"},
+        {t:"mc", en:"He is not as tall (   ) his brother.", q:"(   ) に入る語は？", ch:["as","than","more","so"], a:0, ex:"not as ～ as …＝…ほど〜でない。"},
+        {t:"mc", en:"I don't know what (   ).", q:"(   ) に入る語は？", ch:["to say","saying","said","says"], a:0, ex:"what to say＝何を言うべきか。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Do you have any plans for the weekend? B: (   )", q:"【3級・聞く/話す】自然な応答は？", ch:["I'm going to visit my grandparents.","Yes, I did.","You're welcome.","It's mine."], a:0, ex:"予定をたずねられたら be going to で答える。"},
+        {t:"mc", en:"A: Shall I carry your bag? B: (   )", q:"【3級・聞く/話す】申し出への応答は？", ch:["Thank you. That's very kind.","No, I didn't.","It's over there.","At seven."], a:0, ex:"Shall I ～? の申し出にはお礼で受ける。"},
+        {t:"mc", en:"A: I'm sorry I'm late. B: (   )", q:"【3級・聞く/話す】自然な応答は？", ch:["That's OK. Don't worry.","Congratulations!","Here you are.","Yes, please."], a:0, ex:"おわびには That's OK. と返す。"},
+        {t:"mc", en:"A: How often do you play tennis? B: (   )", q:"【3級・聞く/話す】頻度をたずねる応答は？", ch:["About twice a week.","Yes, I do.","It's mine.","Last year."], a:0, ex:"How often には頻度（twice a week など）で答える。"},
+        {t:"mc", q:"【3級・読む】掲示: SUMMER CONCERT / Place: City Hall / Tickets: 500 yen (free for children under 6). 質問: How much is a ticket for a 4-year-old child?", ch:["Free.","500 yen.","250 yen.","1000 yen."], a:0, ex:"under 6 は無料 → 4歳は free。"},
+        {t:"mc", q:"【3級・読む】掲示: The library will be closed on Mondays in August. 質問: When is the library closed?", ch:["On Mondays in August.","Every day.","On Sundays.","In July."], a:0, ex:"closed on Mondays in August。"},
+        {t:"mc", q:"【3級・読む】Eメール: I bought a new bike. Why don't we ride together this Sunday? 質問: What does the writer want to do on Sunday?", ch:["Ride bikes together.","Buy a bike.","Go shopping.","Study."], a:0, ex:"Why don't we ride together から。"},
+        {t:"mc", q:"【3級・聞く】A: Did you finish your science report? B: Not yet. I'll do it tonight. 質問: What will B do tonight?", ch:["Finish the science report.","Watch a movie.","Play soccer.","Go shopping."], a:0, ex:"I'll do it tonight の it＝science report。"}
+      ],
+      practice:[
+        {t:"mc", en:"A: Have you ever been to Kyoto? B: (   )", q:"応答として自然なのは？", ch:["Yes, twice.","Yes, I am.","It's mine.","At seven."], a:0, ex:"Have you ever ～? には回数などで答える。"},
+        {t:"mc", en:"A: You look pale. Are you OK? B: (   )", q:"応答として自然なのは？", ch:["I have a headache.","Congratulations!","Here you are.","You're welcome."], a:0, ex:"具合をたずねられて症状を答える。"},
+        {t:"mc", q:"英文: The new restaurant near the station is popular because the food is cheap and delicious. 質問: Why is the restaurant popular?", ch:["Because the food is cheap and delicious.","Because it is far away.","Because it is expensive.","Because it is small."], a:0, ex:"because のあとが理由。"},
+        {t:"mc", en:"A: Could you turn down the music? B: (   )", q:"応答として自然なのは？", ch:["Sure, sorry about that.","Yes, I did.","It's over there.","Congratulations!"], a:0, ex:"依頼に応じる Sure＋ひとこと。"},
+        {t:"mc", q:"英文: Mike studied hard for the test, so he got a good score. 質問: Why did Mike get a good score?", ch:["Because he studied hard.","Because he is lucky.","Because the test was easy.","Because he slept well."], a:0, ex:"so の前が理由（studied hard）。"}
+      ]
+    }
+  };
+  (function(){
+    for(var g in MORE2){ if(!BANK[g])BANK[g]={};
+      for(var ge in MORE2[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
+        BANK[g][ge]=BANK[g][ge].concat(MORE2[g][ge]); } }
+  })();
+
+  // 追加問題（フェーズ③拡充2：7・6・5・準2・準2+・2級）
+  var MORE3 = {
+    "7":{
+      vocab:[
+        {t:"mc", q:"🐘 これを表す英語は？", ch:["elephant","cat","dog","bird"], a:0, ex:"elephant＝ぞう。"},
+        {t:"mc", q:"「黄色」を表す英語は？", ch:["yellow","blue","red","green"], a:0, ex:"yellow＝黄色。"},
+        {t:"fill", q:"「ねこ」を英語で書こう（c で始まる）。", a:"cat", ex:"cat＝ねこ。"},
+        {t:"mc", q:"数の「five」はいくつ？", ch:["5","3","4","9"], chJp:true, a:0, ex:"five＝5。"},
+        {t:"mc", q:"あいさつ「さようなら」は？", ch:["Goodbye.","Hello.","Thank you.","Sorry."], a:0, ex:"Goodbye.＝さようなら。"}
+      ],
+      grammar:[
+        {t:"mc", en:"(   ) are my friends.", q:"「彼らは友だちです」", ch:["They","He","She","It"], a:0, ex:"複数の主語 They＋are。"},
+        {t:"mc", en:"I (   ) a dog.", q:"「犬を飼っている」", ch:["have","has","am","is"], a:0, ex:"I have ～＝〜を持っている。"},
+        {t:"mc", en:"She (   ) happy.", q:"(   ) に入る語は？", ch:["is","am","are","be"], a:0, ex:"主語 She＋is。"},
+        {t:"mc", en:"(   ) this a pen?", q:"「これはペンですか？」", ch:["Is","Are","Do","Am"], a:0, ex:"this には Is。"},
+        {t:"mc", en:"I like (   ).", q:"「りんごが好き（複数）」", ch:["apples","apple","a apple","an apples"], a:0, ex:"数えられる名詞の一般論は複数形 apples。"}
+      ],
+      technique:[
+        {t:"mc", q:"【7級リーディング】🚗 走っている車に合う英文は？", ch:["The car is going.","The car is flying.","The car is eating.","The car is reading."], a:0, ex:"動作に合う文を選ぶ。"},
+        {t:"mc", q:"【7級リスニング】絵:🐦 質問『What is this?』 答えは？", ch:["It's a bird.","It's a fish.","It's a dog.","It's a cat."], a:0, ex:"絵についての質問。bird。"},
+        {t:"mc", q:"【7級リーディング】絵:📕赤い本 に合う英文は？", ch:["This is a red book.","This is a blue book.","This is a red cup.","This is a red pen."], a:0, ex:"色（red）と物（book）が両方合うもの。"},
+        {t:"mc", q:"【7級リスニング】絵:👦走っている男の子 質問『What is the boy doing?』", ch:["He is running.","He is eating.","He is sleeping.","He is swimming."], a:0, ex:"動作を答える。running。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) is this? — It's a cat.", q:"(   ) に入る語は？", ch:["What","Who","Where","When"], a:0, ex:"物をたずねる What。"},
+        {t:"mc", en:"How (   ) apples? — Three.", q:"(   ) に入る語は？", ch:["many","much","old","long"], a:0, ex:"数をたずねる How many。"},
+        {t:"mc", q:"絵:🍌2本のバナナ に合う英文は？", ch:["These are two bananas.","This is a banana.","These are two apples.","This is two banana."], a:0, ex:"複数 These are two ～s。"},
+        {t:"mc", en:"(   ) you like dogs? — Yes, I do.", q:"(   ) に入る語は？", ch:["Do","Are","Is","Does"], a:0, ex:"一般動詞 like の疑問文、主語 you → Do。"}
+      ]
+    },
+    "6":{
+      vocab:[
+        {t:"mc", q:"「夕食」は？", ch:["dinner","breakfast","lunch","snack"], a:0, ex:"dinner＝夕食。"},
+        {t:"mc", q:"「教室」は？", ch:["classroom","kitchen","garden","station"], a:0, ex:"classroom＝教室。"},
+        {t:"fill", q:"「先生」を英語で（t で始まる）。", a:"teacher", ex:"teacher＝先生。"},
+        {t:"mc", q:"「水曜日」は？", ch:["Wednesday","Tuesday","Thursday","Monday"], a:0, ex:"Wednesday＝水曜日。"},
+        {t:"mc", q:"「いそがしい」は？", ch:["busy","easy","happy","early"], a:0, ex:"busy＝いそがしい。"},
+        {t:"fill", q:"「町」を英語で（t で始まる）。", a:"town", ex:"town＝町。"}
+      ],
+      grammar:[
+        {t:"mc", en:"She (   ) TV every evening.", q:"(   ) に入る語は？", ch:["watches","watch","watching","watched"], a:0, ex:"三人称単数＋習慣 → watches。"},
+        {t:"mc", en:"(   ) does he go to school? — By bike.", q:"(   ) に入る語は？", ch:["How","What","Who","When"], a:0, ex:"手段をたずねる How。"},
+        {t:"mc", en:"I don't have (   ) money.", q:"(   ) に入る語は？", ch:["any","some","much of","a"], a:0, ex:"否定文では any。"},
+        {t:"mc", en:"They are (   ) lunch now.", q:"(   ) に入る語は？", ch:["having","have","has","had"], a:0, ex:"now＋are → 現在進行形 having。"},
+        {t:"mc", en:"Let's (   ) to the park.", q:"(   ) に入る語は？", ch:["go","goes","going","went"], a:0, ex:"Let's＋原形。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Nice to meet you.", q:"【6級リスニング】自然な応答は？", ch:["Nice to meet you, too.","You're welcome.","It's a dog.","Yes, I do."], a:0, ex:"はじめましてのあいさつを返す。"},
+        {t:"mc", q:"【6級リーディング】“I have a small white rabbit.” 内容に合う絵は？", ch:["小さい白いうさぎ","大きい黒い犬","白いねこ","小さい茶色のうさぎ"], chJp:true, a:0, ex:"色（white）と大きさ（small）が合う絵。"},
+        {t:"mc", en:"A: See you tomorrow.", q:"【6級リスニング】自然な応答は？", ch:["See you.","Here you are.","I'm twelve.","No, thank you."], a:0, ex:"別れのあいさつ See you. を返す。"},
+        {t:"mc", en:"A: What time is it?", q:"【6級リスニング】自然な応答は？", ch:["It's seven o'clock.","I'm fine.","Yes, I do.","It's a cat."], a:0, ex:"時刻をたずねられたら時刻で答える。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) is your birthday? — In May.", q:"(   ) に入る語は？", ch:["When","Where","Who","What"], a:0, ex:"時をたずねる When。"},
+        {t:"mc", en:"There (   ) some books on the desk.", q:"(   ) に入る語は？", ch:["are","is","am","be"], a:0, ex:"some books（複数）→ There are。"},
+        {t:"mc", en:"He can (   ) very fast.", q:"(   ) に入る語は？", ch:["run","runs","running","ran"], a:0, ex:"can のあとは原形 run。"},
+        {t:"mc", en:"(   ) that your bag? — Yes, it is.", q:"(   ) に入る語は？", ch:["Is","Are","Do","Does"], a:0, ex:"that には Is。"}
+      ]
+    },
+    "5":{
+      vocab:[
+        {t:"mc", q:"「おもしろい・興味深い」は？", ch:["interesting","boring","angry","tired"], a:0, ex:"interesting＝おもしろい。"},
+        {t:"mc", q:"「むずかしい」は？", ch:["difficult","easy","kind","fast"], a:0, ex:"difficult＝むずかしい。"},
+        {t:"mc", q:"「台所」は？", ch:["kitchen","garden","station","library"], a:0, ex:"kitchen＝台所。"},
+        {t:"fill", q:"「数学」を英語で（m で始まる）。", a:"math", ac:["mathematics"], ex:"math＝数学。"},
+        {t:"mc", q:"「速い」は？", ch:["fast","slow","late","early"], a:0, ex:"fast＝速い。"},
+        {t:"fill", q:"「音楽」を英語で（m で始まる）。", a:"music", ex:"music＝音楽。"},
+        {t:"mc", q:"「姉・妹」は？", ch:["sister","brother","mother","father"], a:0, ex:"sister＝姉・妹。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I (   ) breakfast at seven every day.", q:"(   ) に入る語は？", ch:["have","has","having","had"], a:0, ex:"主語 I＋習慣 → have。"},
+        {t:"mc", en:"(   ) she play the piano? — Yes, she does.", q:"(   ) に入る語は？", ch:["Does","Do","Is","Are"], a:0, ex:"三人称単数の一般動詞疑問文 Does。"},
+        {t:"mc", en:"We (   ) not in the same class.", q:"(   ) に入る語は？", ch:["are","is","am","do"], a:0, ex:"主語 We → are not。"},
+        {t:"mc", en:"Tom and I (   ) good friends.", q:"(   ) に入る語は？", ch:["are","is","am","be"], a:0, ex:"複数主語 → are。"},
+        {t:"mc", en:"Please (   ) quiet.", q:"(   ) に入る語は？", ch:["be","is","are","being"], a:0, ex:"命令文の be動詞は原形 be。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: How are you?", q:"【5級・聞く/話す】自然な応答は？", ch:["I'm fine, thank you.","It's mine.","Yes, I do.","At seven."], a:0, ex:"体調をたずねる定番のやりとり。"},
+        {t:"mc", en:"A: This is my friend, Ken.", q:"【5級・聞く/話す】自然な応答は？", ch:["Nice to meet you.","You're welcome.","Here you are.","I'm sorry."], a:0, ex:"紹介には Nice to meet you.。"},
+        {t:"mc", en:"A: What's this?", q:"【5級・聞く/話す】自然な応答は？", ch:["It's a notebook.","Yes, it is.","I'm twelve.","At three."], a:0, ex:"What's this? には It's ～. で答える。"},
+        {t:"mc", en:"A: Happy birthday!", q:"【5級・聞く/話す】自然な応答は？", ch:["Thank you!","That's too bad.","No, thank you.","Pardon?"], a:0, ex:"お祝いには Thank you!。"}
+      ],
+      practice:[
+        {t:"mc", en:"I go to school (   ) bus.", q:"(   ) に入る語は？", ch:["by","on","in","with"], a:0, ex:"交通手段は by bus。"},
+        {t:"mc", en:"(   ) are you from? — I'm from Osaka.", q:"(   ) に入る語は？", ch:["Where","What","Who","When"], a:0, ex:"出身をたずねる Where。"},
+        {t:"mc", en:"She has a cat. (   ) name is Tama.", q:"(   ) に入る語は？", ch:["Its","It's","Her","His"], a:0, ex:"動物の所有 Its（its＝それの）。"},
+        {t:"mc", en:"Let's play tennis (   ) Sunday.", q:"(   ) に入る語は？", ch:["on","in","at","to"], a:0, ex:"曜日の前は on。"}
+      ]
+    },
+    "pre2":{
+      vocab:[
+        {t:"mc", en:"He decided to (   ) the meeting.", q:"(   ) に入る語は？", ch:["attend","arrive","belong","prepare"], a:0, ex:"attend＝出席する。"},
+        {t:"mc", en:"We should (   ) the environment for the future.", q:"(   ) に入る語は？", ch:["protect","waste","spend","borrow"], a:0, ex:"protect＝守る。"},
+        {t:"fill", q:"「機会・チャンス」を英語で（o で始まる）。", a:"opportunity", ex:"opportunity＝機会。"},
+        {t:"mc", en:"Her speech made a strong (   ) on me.", q:"(   ) に入る語は？", ch:["impression","invitation","information","instruction"], a:0, ex:"make an impression＝印象を与える。"},
+        {t:"fill", q:"「目標」を英語で（g で始まる）。", a:"goal", ex:"goal＝目標。"},
+        {t:"mc", en:"The store (   ) a wide variety of goods.", q:"(   ) に入る語は？", ch:["offers","arrives","belongs","depends"], a:0, ex:"offer＝提供する。"}
+      ],
+      grammar:[
+        {t:"mc", en:"I'm looking forward to (   ) you again.", q:"(   ) に入る語は？", ch:["seeing","see","saw","seen"], a:0, ex:"look forward to ＋動名詞。"},
+        {t:"mc", en:"He suggested (   ) a break.", q:"(   ) に入る語は？", ch:["taking","to take","take","took"], a:0, ex:"suggest ＋動名詞。"},
+        {t:"mc", en:"The book (   ) I bought yesterday is interesting.", q:"(   ) に入る語は？", ch:["that","who","whose","what"], a:0, ex:"物を説明する関係代名詞 that。"},
+        {t:"mc", en:"She works hard (   ) to pass the exam.", q:"(   ) に入る語は？", ch:["in order","so that","because","such"], a:0, ex:"in order to＋原形＝〜するために。"},
+        {t:"mc", en:"It was such a nice day (   ) we went hiking.", q:"(   ) に入る語は？", ch:["that","as","than","so"], a:0, ex:"such ～ that …＝とても〜なので…。"},
+        {t:"mc", en:"If I were you, I (   ) study harder.", q:"(   ) に入る語は？", ch:["would","will","am","do"], a:0, ex:"仮定法 If I were you, I would ～。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: Have you finished the report? B: (   )", q:"【準2級・聞く/話す】自然な応答は？", ch:["Almost. I need ten more minutes.","Yes, I am.","It's over there.","You're welcome."], a:0, ex:"進捗をたずねられて現状を答える。"},
+        {t:"mc", q:"【準2級・読む】Eメール: I'd love to join the trip. What should I bring? 質問: What does the writer ask?", ch:["What to bring.","When to leave.","Who will come.","Where to meet."], a:0, ex:"What should I bring? が質問。"},
+        {t:"mc", en:"A: Do you mind if I open the window? B: (   )", q:"【準2級・聞く/話す】許可を求められた応答は？", ch:["Not at all. Go ahead.","Yes, I did.","It's mine.","At seven."], a:0, ex:"Do you mind ～? の許可には Not at all.（どうぞ）。"},
+        {t:"mc", q:"【準2級・聞く】A: I can't decide which club to join. B: How about the science club? 質問: What does B suggest?", ch:["Joining the science club.","Quitting school.","Buying a book.","Going home."], a:0, ex:"How about ～? は提案。"},
+        {t:"mc", q:"【準2級・読む】長文: Students said the new library was useful because it had many study rooms. 質問: Why is the new library useful?", ch:["It has many study rooms.","It is far away.","It is closed.","It is small."], a:0, ex:"because のあとが理由。"}
+      ],
+      practice:[
+        {t:"mc", en:"Thanks (   ) your help, we finished early.", q:"(   ) に入る語は？", ch:["to","for","of","with"], a:0, ex:"Thanks to ～＝〜のおかげで。"},
+        {t:"mc", en:"He is responsible (   ) the project.", q:"(   ) に入る語は？", ch:["for","to","of","at"], a:0, ex:"be responsible for＝〜に責任がある。"},
+        {t:"mc", en:"I'm used to (   ) early.", q:"(   ) に入る語は？", ch:["getting up","get up","got up","gets up"], a:0, ex:"be used to ＋動名詞＝〜に慣れている。"},
+        {t:"mc", q:"英文: She moved to London to study art three years ago. 質問: Why did she move to London?", ch:["To study art.","To find a job.","To meet friends.","To play music."], a:0, ex:"to study art（目的）。"}
+      ]
+    },
+    "pre2plus":{
+      vocab:[
+        {t:"mc", en:"The new system will (   ) efficiency.", q:"(   ) に入る語は？", ch:["enhance","reduce","delay","ignore"], a:0, ex:"enhance＝高める。"},
+        {t:"mc", en:"We must (   ) limited resources wisely.", q:"(   ) に入る語は？", ch:["manage","waste","ignore","delay"], a:0, ex:"manage＝管理する。"},
+        {t:"fill", q:"「影響」を英語で（i で始まる）。", a:"influence", ex:"influence＝影響。"},
+        {t:"mc", en:"The data (   ) a clear trend.", q:"(   ) に入る語は？", ch:["indicates","invites","arrives","belongs"], a:0, ex:"indicate＝示す。"},
+        {t:"fill", q:"「達成する」を英語で（a で始まる）。", a:"achieve", ex:"achieve a goal＝目標を達成する。"}
+      ],
+      grammar:[
+        {t:"mc", en:"(   ) finishing the work, she went home.", q:"(   ) に入る語は？", ch:["After","During","While","Since"], a:0, ex:"After＋動名詞＝〜したあとで。"},
+        {t:"mc", en:"The project, (   ) took two years, was a success.", q:"(   ) に入る語は？", ch:["which","who","whose","what"], a:0, ex:"物を補足説明する関係代名詞 which。"},
+        {t:"mc", en:"He insisted on (   ) the bill.", q:"(   ) に入る語は？", ch:["paying","to pay","pay","paid"], a:0, ex:"insist on ＋動名詞。"},
+        {t:"mc", en:"Hardly (   ) when it started to rain.", q:"(   ) に入る語は？", ch:["had we arrived","we arrived","we had arrived","arrived we"], a:0, ex:"否定語が文頭→倒置 Hardly had we arrived。"},
+        {t:"mc", en:"It is high time we (   ) action.", q:"(   ) に入る語は？", ch:["took","take","takes","taking"], a:0, ex:"It is high time＋仮定法過去（took）。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: What's your opinion on remote work? B: (   )", q:"【準2+ 聞く/話す】意見を述べる応答は？", ch:["I think it improves work-life balance.","Yes, I work.","It's over there.","No problem."], a:0, ex:"意見を求められたら理由つきで述べる。"},
+        {t:"mc", q:"【準2+ 読む】長文: The survey shows that students who sleep well perform better. 質問: What helps students perform better?", ch:["Sleeping well.","Skipping meals.","Studying all night.","Watching TV."], a:0, ex:"who sleep well の部分が答え。"},
+        {t:"mc", en:"A: I'm thinking of studying abroad. B: (   )", q:"【準2+ 聞く/話す】自然な応答は？", ch:["That's a great idea. Where to?","Yes, I did.","It's mine.","Goodbye."], a:0, ex:"計画に関心を示して質問を返す。"},
+        {t:"mc", q:"【準2+ 聞く】A: Should we take the bus or the train? B: The train is faster, so let's take it. 質問: What will they take?", ch:["The train.","The bus.","A taxi.","A bike."], a:0, ex:"let's take it の it＝the train。"}
+      ],
+      practice:[
+        {t:"mc", en:"(   ) the bad weather, the flight was delayed.", q:"(   ) に入る語は？", ch:["Due to","Because","Although","So"], a:0, ex:"Due to＋名詞＝〜のために。"},
+        {t:"mc", en:"Not only is he smart, (   ) he is kind.", q:"(   ) に入る語は？", ch:["but also","and also","so also","or"], a:0, ex:"not only A but also B。"},
+        {t:"mc", en:"The more you practice, (   ) you become.", q:"(   ) に入る語は？", ch:["the better","better","the best","more good"], a:0, ex:"The 比較級 ～, the 比較級 …。"},
+        {t:"mc", q:"英文: The company introduced a new policy to reduce overtime. 質問: Why did the company introduce the policy?", ch:["To reduce overtime.","To increase sales.","To hire more staff.","To save paper."], a:0, ex:"to reduce overtime（目的）。"}
+      ]
+    },
+    "2":{
+      vocab:[
+        {t:"mc", en:"The government plans to (   ) taxes next year.", q:"(   ) に入る語は？", ch:["raise","arrive","belong","attend"], a:0, ex:"raise＝引き上げる。"},
+        {t:"mc", en:"Regular exercise can (   ) the risk of disease.", q:"(   ) に入る語は？", ch:["reduce","arrive","belong","attend"], a:0, ex:"reduce the risk＝危険を減らす。"},
+        {t:"fill", q:"「効果的な」を英語で（e で始まる）。", a:"effective", ex:"effective＝効果的な。"},
+        {t:"mc", en:"Scientists made an important (   ).", q:"(   ) に入る語は？", ch:["discovery","invitation","instruction","impression"], a:0, ex:"discovery＝発見。"},
+        {t:"fill", q:"「経済」を英語で（e で始まる）。", a:"economy", ex:"economy＝経済。"},
+        {t:"mc", en:"The article (   ) several solutions.", q:"(   ) に入る語は？", ch:["suggests","arrives","belongs","depends"], a:0, ex:"suggest＝提案する・示す。"}
+      ],
+      grammar:[
+        {t:"mc", en:"The bridge (   ) last year is very long.", q:"(   ) に入る語は？", ch:["built","build","building","builds"], a:0, ex:"名詞を後置修飾する過去分詞 built。"},
+        {t:"mc", en:"I'd rather stay home (   ) go out.", q:"(   ) に入る語は？", ch:["than","then","as","that"], a:0, ex:"would rather A than B。"},
+        {t:"mc", en:"He talks as though he (   ) an expert.", q:"(   ) に入る語は？", ch:["were","is","be","being"], a:0, ex:"as though＋仮定法過去 were。"},
+        {t:"mc", en:"(   ) of the two answers is correct.", q:"(   ) に入る語は？", ch:["Neither","No","None","Both is"], a:0, ex:"Neither of＋単数扱い＝どちらも〜ない。"},
+        {t:"mc", en:"It is necessary that everyone (   ) present.", q:"(   ) に入る語は？", ch:["be","is","was","being"], a:0, ex:"necessary that＋(should) be → 原形 be。"},
+        {t:"mc", en:"Having finished the work, he (   ) home.", q:"(   ) に入る語は？", ch:["went","go","gone","going"], a:0, ex:"分詞構文。主節は went。"}
+      ],
+      technique:[
+        {t:"mc", en:"A: What do you think about social media? B: (   )", q:"【2級・聞く/話す】意見を述べる応答は？", ch:["It connects people, but it can spread false news.","Yes, I use.","It's over there.","Thank you."], a:0, ex:"長所と短所を入れて意見を述べる。"},
+        {t:"mc", q:"【2級・読む】長文: Online shopping is convenient, but some worry about security. 質問: What is a concern about online shopping?", ch:["Security.","Speed.","Color.","Weather."], a:0, ex:"worry about security から。"},
+        {t:"mc", en:"A: Could you recommend a good book? B: (   )", q:"【2級・聞く/話す】依頼への応答は？", ch:["Sure. This novel is really moving.","Yes, I did.","It's raining.","Goodbye."], a:0, ex:"おすすめを求められたら具体的に答える。"},
+        {t:"mc", q:"【2級・聞く】A: The meeting is at 3, right? B: Actually, it was moved to 4. 質問: What time is the meeting?", ch:["At 4.","At 3.","At 5.","At 2."], a:0, ex:"moved to 4＝4時に変更。"},
+        {t:"mc", q:"【2級・読む】長文: The author argues that reading fiction improves empathy. 質問: What is the author's main point?", ch:["Fiction improves empathy.","Fiction is boring.","Reading wastes time.","Empathy is useless."], a:0, ex:"argues that のあとが主張。"}
+      ],
+      practice:[
+        {t:"mc", en:"The plan failed (   ) lack of money.", q:"(   ) に入る語は？", ch:["because of","because","so","although"], a:0, ex:"because of＋名詞。"},
+        {t:"mc", en:"She is capable (   ) solving hard problems.", q:"(   ) に入る語は？", ch:["of","to","in","at"], a:0, ex:"be capable of ＋動名詞。"},
+        {t:"mc", en:"(   ) it was raining, we went out.", q:"(   ) に入る語は？", ch:["Although","Because","So","Due to"], a:0, ex:"Although＝〜だけれども（逆接）。"},
+        {t:"mc", q:"英文: He took an umbrella because the sky looked cloudy. 質問: Why did he take an umbrella?", ch:["The sky looked cloudy.","It was sunny.","He was cold.","He lost it."], a:0, ex:"because のあとが理由。"}
+      ]
+    }
+  };
+  (function(){
+    for(var g in MORE3){ if(!BANK[g])BANK[g]={};
+      for(var ge in MORE3[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
+        BANK[g][ge]=BANK[g][ge].concat(MORE3[g][ge]); } }
+  })();
+
+  // 中学入学準備（メタ学力／使える英語学）— 級レベル判定には使わない学習モジュール
+  BANK.prep = { meta:[
+    {t:"mc", q:"会話で最も大切なのは？", ch:["完璧な文法より、止まらずに伝え続けること","発音を完璧にすること","難しい単語を使うこと","だまって考えこむこと"], chJp:true, a:0, ex:"会話は流れ。多少まちがえても、止まらず伝え続けるほうが通じる。"},
+    {t:"mc", q:"知らない単語を英語で伝えたいとき有効なのは？", ch:["別の簡単な言葉で言いかえる（パラフレーズ）","あきらめて黙る","日本語で言う","辞書を最後まで待つ"], chJp:true, a:0, ex:"言いかえる力＝発信力。a round thing のように説明できる。"},
+    {t:"mc", q:"リスニングが苦手なときの練習法は？", ch:["毎日少しずつ、同じ音声をくり返し聞く","一度だけ長時間聞く","字幕だけを読む","音楽だけを流す"], chJp:true, a:0, ex:"同じ素材のくり返しで、音と意味が結びつく。"},
+    {t:"mc", q:"英単語を覚えるコツは？", ch:["例文・場面ごと覚える","つづりだけ100回書く","意味だけ眺める","一夜づけで全部"], chJp:true, a:0, ex:"単語は使う場面とセットだと記憶に残る。"},
+    {t:"mc", q:"英作文で最初にすべきことは？", ch:["結論（自分の意見）を先に決める","かっこいい単語を探す","とにかく長く書く","日本語で全部書く"], chJp:true, a:0, ex:"意見→理由→具体例。最初に立場を決めると書きやすい。"},
+    {t:"mc", en:"A: ...（聞き取れなかった）", q:"相手の話が聞き取れなかったときの一言は？", ch:["Pardon? / Could you say that again?","Goodbye.","No.","Thank you."], a:0, ex:"聞き返しは会話の基本。遠慮なく Pardon? と言ってよい。"},
+    {t:"mc", q:"英語を伸ばす毎日の習慣として良いのは？", ch:["短時間でも毎日英語にふれる","週に1回だけ長時間やる","テスト前だけやる","ただ聞き流すだけ"], chJp:true, a:0, ex:"毎日少しの積み重ねが、いちばん力になる。"},
+    {t:"mc", q:"スピーチや面接で印象が良いのは？", ch:["相手の目を見て、はっきり話す","下を向いて小声で話す","早口で一気に言う","暗記を棒読みする"], chJp:true, a:0, ex:"内容だけでなく、伝え方（声・視線）も評価される。"},
+    {t:"mc", q:"会話中に文法をまちがえたと気づいたら？", ch:["気にしすぎず、言いたいことを続ける","会話をやめる","全部言い直して止まる","あやまり続ける"], chJp:true, a:0, ex:"会話は完璧さより継続。通じればOK、と考えよう。"},
+    {t:"mc", q:"長文を速く読むコツは？", ch:["タイトルと最初の文で話題をつかむ","全単語を辞書で引く","最後の段落から読む","声に出して一字ずつ"], chJp:true, a:0, ex:"先に話題をつかむと、細部の意味も推測しやすい。"}
+  ] };
+
+  /* ====== 長文読解パッセージ（大問4・5 / 抜き出し）====== */
+  var PASSAGES = {
+    haruka:{ title:"放送委員 Haruka のスピーチ「今月の歌」", paras:[
+      "Good morning, everyone. I'm Haruka from the broadcasting committee. Today I want to talk about our new plan, \"Song of the Month.\" This plan will start next month. We hope students will enjoy music and find new songs more easily.",
+      "When I became a junior high school student, I often listened to music in my room. There were so many songs on the internet, but I couldn't choose my favorite one easily. Sometimes I just looked at the long list and went to bed without listening to any songs. One day, I talked about this problem with my family at breakfast. After breakfast, my brother gave me a CD. He said, \"I think you will like this song.\" He was right. I listened to it again and again. I could feel the singer's voice in my heart. It was my first time to enjoy a song so much. I wanted to introduce good songs to other students, so I joined the broadcasting committee.",
+      "In this plan, we will choose one song every month and play it at lunch time. We want to make lunch time fun with music. We are going to play many kinds of songs. Some are pop songs. Some are old songs. Maybe some are songs from other countries. After listening to the song, please send us your comments. We will be very happy to hear from you.",
+      "Some people say young people don't listen to full songs now. My friends listen to only short parts of songs on their phones every day. Of course, I sometimes do, too. There are too many songs on the internet, so maybe many people can't find their favorite songs [ あ ] now.",
+      "Short parts of songs are useful when we want to find new songs quickly. But is that really enjoying music? I don't think so. If you only listen to a short part, you can't [ い ] the singer's true feelings. Good songs [ う ] people happy. So please try to join our new plan, and we hope you will [ え ] us many comments. You can find a good song."
+    ]},
+    daiki:{ title:"Daiki の作文「写真部」", paras:[
+      "When I became a junior high school student, I joined the photo club. I liked taking pictures, so I wanted to take beautiful ones.",
+      "Three months later, in July, we had a photo contest. It was my first one. I decided to take a picture of the mountain near my town. I did many things to take the best picture. I took pictures hard every morning, I read some books about famous photographers' pictures, and I asked some members how to take better pictures. When I finished taking the picture, I thought it was [ え ]. However, I didn't get any prizes. My friend, Shota, said, \"I think your picture needs something.\" I said, \"What is it?\" He said nothing. I thought, \"Maybe I should stop taking pictures because I didn't get a prize.\"",
+      "That night, my grandfather saw the picture. He said, \"This is beautiful, but you look so sad. Why?\" I told him about the contest. He said, \"How did you feel when you saw the mountain in the morning?\" I said, \"The sky slowly changed its color, and the mountain looked really beautiful.\" I told him about my other feelings on that morning, too. He said, \"How about expressing them? Your picture is already good. And don't worry, Daiki. You should keep taking pictures if you really like taking pictures. If you keep taking pictures, your pictures will be better.\" I said, \"That may be right. I'll try again.\"",
+      "The next weekend, I went to the mountain again before breakfast. I thought about the colors of the sky and my town. I expressed my feelings in the picture. One month later, I showed the new picture to our club teacher. She said, \"This picture is really [ う ].\" I joined another contest with the picture. Finally, I got a prize.",
+      "After the contest, I got some prizes. Of course, I sometimes think taking good pictures is difficult. But I don't think that I [ あ ] when I can't get a prize. I will [ い ] pictures in high school."
+    ]},
+    yuki:{ title:"Yuki の作文「町のボランティア」", paras:[
+      "Last summer, I joined a volunteer activity in my town. Every Saturday morning, we cleaned the river near the station. At first, I thought it would be boring.",
+      "But many people joined, and we talked a lot while cleaning. An old man taught me the names of the birds by the river. I was surprised that there were so many kinds of birds in my town.",
+      "After two months, the river became much cleaner. One day, a little girl said to me, \"The water is beautiful now!\" Her words made me very happy. I learned that small actions can change our town.",
+      "Now I want to do more for my town. Next, I will join a group that plants flowers in the park. I hope my town will become a place that everyone loves."
+    ]},
+    email:{ title:"メール：Kenta と Aya のやりとり", paras:[
+      "From: Kenta — Hi Aya! Our school festival is next Sunday. I'm going to play the guitar with my band at 2 p.m. Can you come? After the show, let's eat takoyaki together. My sister will make it at the cooking club.",
+      "From: Aya — Hi Kenta! That sounds great. I'll come at 1 p.m. so I can see the art club's pictures first. I love takoyaki! Should I bring anything? See you on Sunday."
+    ]},
+    max:{ title:"Tom の犬 Max", paras:[
+      "Tom has a big brown dog. Its name is Max. Tom got Max three years ago on his birthday.",
+      "Every morning, Tom walks Max in the park before school. Max likes to run and play with a ball. Sometimes other dogs come, and they play together.",
+      "On weekends, Tom and his family take Max to the river. Max loves swimming. Tom takes many pictures of Max. Max is Tom's best friend."
+    ]},
+    online:{ title:"長文：オンライン学習について", paras:[
+      "These days, more students study online. Online lessons have several good points. Students can learn at home, so they do not need to travel to school. They can also watch the lessons again if they do not understand something.",
+      "However, online study has some problems, too. Some students find it hard to focus at home. Also, they cannot easily ask questions or talk with friends. Teachers say that talking with classmates is an important part of learning.",
+      "Experts say the best way is to use both online and classroom lessons. For example, students can watch a video lesson at home and then discuss it at school. In this way, they can enjoy the good points of both."
+    ]},
+    ken_day:{ title:"Ken の一日", paras:[
+      "My name is Ken. I am twelve years old. I live in Osaka with my family.",
+      "I get up at six thirty every morning. I eat breakfast with my sister. I usually have rice, eggs, and milk.",
+      "I go to school by bike. I like English and music. After school, I play soccer with my friends in the park."
+    ]},
+    ai_tech:{ title:"長文：AIと私たちの生活", paras:[
+      "Artificial intelligence, or AI, is changing the way we live. AI is now used in many areas, such as health care, transportation, and education. For example, some hospitals use AI to find diseases earlier than before.",
+      "AI also brings some concerns. Many people worry that machines will take away their jobs. In addition, AI sometimes makes mistakes because it learns from data that may not be perfect. Therefore, humans still need to check the results carefully.",
+      "Experts believe that AI and humans should work together. AI can do simple tasks quickly, while humans can make decisions that require feelings and creativity. By using the strengths of both, we may create a better future."
+    ]},
+    plastic:{ title:"長文：プラスチックごみの問題", paras:[
+      "Plastic is cheap, light, and useful, so it is used in many products. However, plastic waste has become a serious problem around the world. A lot of plastic ends up in the ocean, where it harms fish and other sea animals.",
+      "To solve this problem, some countries have banned plastic bags. Many shops now ask customers to bring their own bags. Companies are also developing new materials that break down naturally and do not stay in the environment for a long time.",
+      "However, these efforts are not enough by themselves. Each of us can help by reducing the plastic we use and by recycling. Small changes in our daily lives can make a big difference for the planet."
+    ]},
+    emma:{ title:"Emma の学校", paras:[
+      "I am Emma. I am a junior high school student. My school is near my house.",
+      "I have four classes in the morning and two classes in the afternoon. My favorite subject is science. We do many experiments.",
+      "I am in the tennis club. We practice on Mondays, Wednesdays, and Fridays. My friend Lisa is in the same club. We always go home together."
+    ]},
+    food_waste:{ title:"長文：食品ロスの問題", paras:[
+      "Every year, a large amount of food is thrown away around the world. This problem is called food loss. In some countries, restaurants and supermarkets throw away food that is still safe to eat, simply because it does not look perfect.",
+      "Food loss causes several problems. Producing food uses a lot of water, energy, and land. When food is wasted, all of these resources are wasted too. In addition, rotting food in landfills produces gases that are bad for the environment.",
+      "There are several ways to reduce food loss. Stores can sell imperfect vegetables at lower prices. Restaurants can offer smaller portions. At home, we can plan our meals and use leftovers. If everyone makes an effort, we can save both food and money."
+    ]},
+    sleep:{ title:"長文：睡眠と健康", paras:[
+      "Many young people today do not get enough sleep. They often stay up late to study or to use their smartphones. However, sleep is very important for both the body and the mind.",
+      "During sleep, the body repairs itself and the brain organizes the things we learned during the day. Studies show that students who sleep well remember information better and feel less stressed. On the other hand, a lack of sleep can lead to poor concentration and even health problems.",
+      "Experts recommend several habits for better sleep. We should go to bed at the same time every night and avoid bright screens before sleeping. A short walk or light reading can also help. By taking sleep seriously, we can improve both our health and our study results."
+    ]},
+    email_lisa:{ title:"メール：Lisa から Mika へ", paras:[
+      "From: Lisa — Hi Mika! Are you free this Saturday? I want to go to the new aquarium near the station. It opens at 10 a.m. We can see dolphins and big sharks. Let's meet at the station at nine thirty.",
+      "From: Mika — Hi Lisa! That sounds fun. I love dolphins! But I have piano lessons until ten on Saturday. Can we meet at eleven instead? After the aquarium, let's have lunch together."
+    ]},
+    ken_trip:{ title:"Ken の家族旅行", paras:[
+      "Last spring, Ken went to Hokkaido with his family. It was his first time to travel by plane. He was a little nervous, but the flight was fun.",
+      "In Hokkaido, they visited a big farm. Ken saw many cows and sheep. He also ate fresh ice cream. It was very delicious.",
+      "On the last day, it started to snow. Ken was surprised because it was spring. He made a small snowman with his sister. Ken wants to visit Hokkaido again."
+    ]},
+    cooking_club:{ title:"長文：新しいクラブ活動", paras:[
+      "Our high school started a new club this year: the cooking club. At first, only a few students joined, but now it has more than thirty members. Every week, the students cook dishes from different countries.",
+      "The club has become popular for several reasons. Students can learn useful skills, and they enjoy eating what they make. The teacher says that cooking together also helps students make new friends.",
+      "Last month, the club held a small event. They sold cookies and cakes at the school festival. The money they earned will be used to buy new cooking tools. The members are already planning their next event."
+    ]},
+    library_email:{ title:"メール：図書館からのお知らせ", paras:[
+      "From: City Library — Dear members, our library will be closed from August 1 to August 5 for cleaning. During this time, you cannot borrow or return books. If you have books due during this period, please return them by July 31.",
+      "From: City Library — After we reopen on August 6, we will have a new study room on the second floor. Students can use it for free, but they need to make a reservation online. We hope you will enjoy our new space."
+    ]}
+  };
+  // 3級「長文読解」ジャンル（答えはすべて本文中にある抜き出し型）
+  BANK["3"].reading = [
+    {t:"fill", p:"haruka", q:"空所(あ)に入る英語1語を本文からそのまま抜き出そう。ヒント：第1・第2段落に同じ語がある。", en:"...maybe many people can't find their favorite songs [ ___ ] now.", a:"easily", ex:"第1段落 find new songs more easily／第2段落 choose my favorite one easily と同じ easily。"},
+    {t:"fill", p:"haruka", q:"空所(い)に入る英語1語を本文から抜き出そう。ヒント：第2段落のCDの場面。", en:"If you only listen to a short part, you can't [ ___ ] the singer's true feelings.", a:"feel", ex:"第2段落 I could feel the singer's voice in my heart の feel。"},
+    {t:"fill", p:"haruka", q:"空所(う)に入る英語1語を本文から抜き出そう。ヒント：第3段落の lunch time の文。", en:"Good songs [ ___ ] people happy.", a:"make", ex:"第3段落 make lunch time fun の make。make A B＝AをBにする。"},
+    {t:"fill", p:"haruka", q:"空所(え)に入る英語1語を本文から抜き出そう。ヒント：第3段落の comments の文。", en:"...we hope you will [ ___ ] us many comments.", a:"send", ex:"第3段落 please send us your comments の send。send＋人＋物。"},
+    {t:"fill", p:"daiki", q:"空所(え)に入る英語2語を本文（第2段落）から抜き出そう。語と語は半角スペースで区切る。", en:"When I finished taking the picture, I thought it was [ ___ ]. However, I didn't get any prizes.", a:"the best", ex:"同じ段落の take the best picture の the best。直後の However（逆接）ともつながる。"},
+    {t:"fill", p:"daiki", q:"空所(う)に入る英語1語を本文から抜き出そう。ヒント：第3段落のおじいさんのことば。", en:"She said, \"This picture is really [ ___ ].\"", a:"good", ex:"第3段落 Your picture is already good の good が先生の really good につながる。"},
+    {t:"fill", p:"daiki", q:"空所(あ)に入る英語3語を本文から抜き出そう。ヒント：第2段落の最後。半角スペースで区切る。", en:"But I don't think that I [ ___ ] when I can't get a prize.", a:"should stop taking", ex:"第2段落 Maybe I should stop taking pictures の3語。前の気持ちとの対比。"},
+    {t:"fill", p:"daiki", q:"空所(い)に入る英語2語を本文から抜き出そう。ヒント：第3段落のおじいさんのことば。半角スペースで区切る。", en:"I will [ ___ ] pictures in high school.", a:"keep taking", ex:"第3段落 You should keep taking pictures の keep taking。keep ～ing＝〜し続ける。"}
+  ];
+  // 内容一致（選択式）の長文読解を追加
+  BANK["3"].reading = BANK["3"].reading.concat([
+    {t:"mc", p:"yuki", q:"質問: What did Yuki do every Saturday morning?", ch:["She cleaned the river.","She played soccer.","She studied at home.","She visited the zoo."], a:0, ex:"第1段落 we cleaned the river near the station。"},
+    {t:"mc", p:"yuki", q:"質問: How did Yuki feel about the activity at first?", ch:["She thought it would be boring.","She was very excited.","She was angry.","She was hungry."], a:0, ex:"第1段落 I thought it would be boring。"},
+    {t:"mc", p:"yuki", q:"質問: What did the old man teach Yuki?", ch:["The names of the birds.","How to swim.","How to cook.","The way to the station."], a:0, ex:"第2段落 taught me the names of the birds。"},
+    {t:"mc", p:"yuki", q:"質問: Why was Yuki happy?", ch:["A girl said the water was beautiful now.","She got a prize.","She found money.","School was closed."], a:0, ex:"第3段落 the girl の言葉でうれしくなった。"},
+    {t:"mc", p:"yuki", q:"質問: What will Yuki do next?", ch:["Join a group that plants flowers.","Move to another town.","Stop volunteering.","Buy a bird."], a:0, ex:"第4段落 a group that plants flowers in the park。"},
+    {t:"mc", p:"email", q:"質問: What will Kenta do at the festival?", ch:["Play the guitar with his band.","Sell takoyaki.","Show pictures.","Dance on the stage."], a:0, ex:"Kentaのメール play the guitar with my band。"},
+    {t:"mc", p:"email", q:"質問: What time will Aya arrive?", ch:["At 1 p.m.","At 2 p.m.","At 3 p.m.","At noon."], a:0, ex:"Ayaのメール I'll come at 1 p.m.。"},
+    {t:"mc", p:"email", q:"質問: What does Aya want to do before the show?", ch:["See the art club's pictures.","Eat lunch.","Buy a guitar.","Go home."], a:0, ex:"see the art club's pictures first。"},
+    {t:"mc", p:"email", q:"質問: Who will make the takoyaki?", ch:["Kenta's sister.","Aya.","Kenta.","The teacher."], a:0, ex:"My sister will make it。"}
+  ]);
+  BANK["4"].reading = [
+    {t:"mc", p:"max", q:"質問: What color is Max?", ch:["Brown.","Black.","White.","Gray."], a:0, ex:"第1段落 a big brown dog。"},
+    {t:"mc", p:"max", q:"質問: When did Tom get Max?", ch:["On his birthday, three years ago.","Last week.","Yesterday.","This morning."], a:0, ex:"got Max three years ago on his birthday。"},
+    {t:"mc", p:"max", q:"質問: What does Tom do every morning?", ch:["He walks Max in the park.","He swims in the river.","He plays soccer.","He reads books."], a:0, ex:"第2段落 Tom walks Max in the park。"},
+    {t:"mc", p:"max", q:"質問: What does Max love to do at the river?", ch:["Swimming.","Sleeping.","Eating.","Reading."], a:0, ex:"第3段落 Max loves swimming。"}
+  ];
+  BANK["4"].reading = BANK["4"].reading.concat([
+    {t:"mc", p:"email_lisa", q:"質問: Where does Lisa want to go?", ch:["To the new aquarium.","To the zoo.","To the library.","To the park."], a:0, ex:"Lisaのメール the new aquarium。"},
+    {t:"mc", p:"email_lisa", q:"質問: What time does the aquarium open?", ch:["At 10 a.m.","At 9 a.m.","At 11 a.m.","At noon."], a:0, ex:"It opens at 10 a.m.。"},
+    {t:"mc", p:"email_lisa", q:"質問: Why can't Mika meet at nine thirty?", ch:["She has piano lessons until ten.","She is sick.","She is sleeping.","She has no money."], a:0, ex:"I have piano lessons until ten。"},
+    {t:"mc", p:"email_lisa", q:"質問: What does Mika want to do after the aquarium?", ch:["Have lunch together.","Go home.","Buy a fish.","Play tennis."], a:0, ex:"let's have lunch together。"},
+    {t:"mc", p:"ken_trip", q:"質問: How did Ken travel to Hokkaido?", ch:["By plane.","By train.","By bus.","By car."], a:0, ex:"第1段落 travel by plane。"},
+    {t:"mc", p:"ken_trip", q:"質問: How did Ken feel before the flight?", ch:["A little nervous.","Very angry.","Very sleepy.","Very hungry."], a:0, ex:"第1段落 a little nervous。"},
+    {t:"mc", p:"ken_trip", q:"質問: What did Ken eat at the farm?", ch:["Fresh ice cream.","A hamburger.","Sushi.","Curry."], a:0, ex:"第2段落 ate fresh ice cream。"},
+    {t:"mc", p:"ken_trip", q:"質問: What surprised Ken on the last day?", ch:["It started to snow in spring.","He lost his bag.","He missed the plane.","He met a friend."], a:0, ex:"第3段落 it started to snow ... it was spring。"},
+    {t:"mc", p:"ken_trip", q:"質問: What does Ken want to do?", ch:["Visit Hokkaido again.","Move to Hokkaido.","Buy a farm.","Stop traveling."], a:0, ex:"第3段落 wants to visit Hokkaido again。"}
+  ]);
+  BANK["pre2"].reading = [
+    {t:"mc", p:"online", q:"質問: What is one good point of online lessons?", ch:["Students can learn at home.","Students must travel far.","Lessons cannot be repeated.","Students cannot use videos."], a:0, ex:"第1段落 learn at home / watch again。"},
+    {t:"mc", p:"online", q:"質問: What problem do some students have?", ch:["They find it hard to focus at home.","They have too many friends.","They cannot watch videos.","They travel too much."], a:0, ex:"第2段落 hard to focus at home。"},
+    {t:"mc", p:"online", q:"質問: What do teachers say is important?", ch:["Talking with classmates.","Sleeping in class.","Studying alone always.","Skipping lessons."], a:0, ex:"第2段落 talking with classmates is important。"},
+    {t:"mc", p:"online", q:"質問: What is the best way according to experts?", ch:["Using both online and classroom lessons.","Only online lessons.","Only classroom lessons.","No lessons at all."], a:0, ex:"第3段落 use both online and classroom lessons。"}
+  ];
+  BANK["pre2"].reading = BANK["pre2"].reading.concat([
+    {t:"mc", p:"cooking_club", q:"質問: How many members does the cooking club have now?", ch:["More than thirty.","Only three.","About ten.","Over a hundred."], a:0, ex:"第1段落 more than thirty members。"},
+    {t:"mc", p:"cooking_club", q:"質問: What do the students cook every week?", ch:["Dishes from different countries.","Only rice.","Only desserts.","Nothing."], a:0, ex:"第1段落 dishes from different countries。"},
+    {t:"mc", p:"cooking_club", q:"質問: According to the teacher, what does cooking together help students do?", ch:["Make new friends.","Earn money.","Win contests.","Skip class."], a:0, ex:"第2段落 helps students make new friends。"},
+    {t:"mc", p:"cooking_club", q:"質問: What did the club do at the school festival?", ch:["Sold cookies and cakes.","Sang songs.","Played soccer.","Cleaned the park."], a:0, ex:"第3段落 sold cookies and cakes。"},
+    {t:"mc", p:"cooking_club", q:"質問: How will the earned money be used?", ch:["To buy new cooking tools.","To buy uniforms.","To take a trip.","To pay teachers."], a:0, ex:"第3段落 buy new cooking tools。"},
+    {t:"mc", p:"library_email", q:"質問: Why will the library be closed?", ch:["For cleaning.","For a party.","For a contest.","For a sale."], a:0, ex:"第1段落 closed ... for cleaning。"},
+    {t:"mc", p:"library_email", q:"質問: If your books are due during the closed period, when should you return them?", ch:["By July 31.","By August 5.","By August 6.","Anytime."], a:0, ex:"第1段落 return them by July 31。"},
+    {t:"mc", p:"library_email", q:"質問: When will the library reopen?", ch:["On August 6.","On August 1.","On July 31.","Never."], a:0, ex:"第2段落 reopen on August 6。"},
+    {t:"mc", p:"library_email", q:"質問: What is new after reopening?", ch:["A study room on the second floor.","A swimming pool.","A new café.","A parking lot."], a:0, ex:"第2段落 a new study room on the second floor。"},
+    {t:"mc", p:"library_email", q:"質問: What do students need to do to use the study room?", ch:["Make a reservation online.","Pay a fee.","Bring a teacher.","Wait in line."], a:0, ex:"第2段落 need to make a reservation online。"}
+  ]);
+  BANK["5"].reading = [
+    {t:"mc", p:"ken_day", q:"質問: How old is Ken?", ch:["Twelve.","Ten.","Six.","Twenty."], a:0, ex:"第1段落 I am twelve years old。"},
+    {t:"mc", p:"ken_day", q:"質問: Where does Ken live?", ch:["In Osaka.","In Tokyo.","In Kyoto.","In Nagoya."], a:0, ex:"第1段落 I live in Osaka。"},
+    {t:"mc", p:"ken_day", q:"質問: How does Ken go to school?", ch:["By bike.","By bus.","By train.","On foot."], a:0, ex:"第3段落 I go to school by bike。"},
+    {t:"mc", p:"ken_day", q:"質問: What does Ken do after school?", ch:["He plays soccer.","He studies math.","He watches TV.","He sleeps."], a:0, ex:"第3段落 I play soccer with my friends。"}
+  ];
+  BANK["2"].reading = [
+    {t:"mc", p:"ai_tech", q:"質問: How do some hospitals use AI?", ch:["To find diseases earlier.","To clean rooms.","To cook food.","To sell tickets."], a:0, ex:"第1段落 use AI to find diseases earlier。"},
+    {t:"mc", p:"ai_tech", q:"質問: What is one concern about AI?", ch:["It may take away people's jobs.","It is too cheap.","It never makes mistakes.","It cannot learn."], a:0, ex:"第2段落 machines will take away their jobs。"},
+    {t:"mc", p:"ai_tech", q:"質問: Why do humans still need to check AI's results?", ch:["Because AI learns from data that may not be perfect.","Because AI is always right.","Because AI is too slow.","Because AI is expensive."], a:0, ex:"第2段落 learns from data that may not be perfect。"},
+    {t:"mc", p:"ai_tech", q:"質問: What do experts believe?", ch:["AI and humans should work together.","AI should replace all humans.","Humans should stop using AI.","AI should do nothing."], a:0, ex:"第3段落 AI and humans should work together。"},
+    {t:"mc", p:"ai_tech", q:"質問: What can humans do better than AI?", ch:["Make decisions that require feelings and creativity.","Do simple tasks quickly.","Store huge data.","Work without rest."], a:0, ex:"第3段落 humans can make decisions that require feelings and creativity。"}
+  ];
+  BANK["pre2plus"].reading = [
+    {t:"mc", p:"plastic", q:"質問: Why is plastic used in many products?", ch:["Because it is cheap, light, and useful.","Because it is heavy.","Because it is rare.","Because it is alive."], a:0, ex:"第1段落 cheap, light, and useful。"},
+    {t:"mc", p:"plastic", q:"質問: What happens to a lot of plastic waste?", ch:["It ends up in the ocean and harms sea animals.","It disappears at once.","It becomes food.","It turns into gold."], a:0, ex:"第1段落 ends up in the ocean, where it harms sea animals。"},
+    {t:"mc", p:"plastic", q:"質問: What have some countries done?", ch:["They have banned plastic bags.","They have banned books.","They have closed shops.","They have stopped recycling."], a:0, ex:"第2段落 some countries have banned plastic bags。"},
+    {t:"mc", p:"plastic", q:"質問: What are companies developing?", ch:["New materials that break down naturally.","Bigger plastic bags.","Faster cars.","New phones."], a:0, ex:"第2段落 new materials that break down naturally。"},
+    {t:"mc", p:"plastic", q:"質問: What can each of us do?", ch:["Reduce plastic use and recycle.","Use more plastic.","Throw waste in the sea.","Do nothing."], a:0, ex:"第3段落 reducing the plastic we use and by recycling。"}
+  ];
+  BANK["5"].reading = BANK["5"].reading.concat([
+    {t:"mc", p:"emma", q:"質問: Where is Emma's school?", ch:["Near her house.","In another city.","Next to the station.","By the sea."], a:0, ex:"第1段落 My school is near my house。"},
+    {t:"mc", p:"emma", q:"質問: How many classes does Emma have in the morning?", ch:["Four.","Two.","Six.","One."], a:0, ex:"第2段落 four classes in the morning。"},
+    {t:"mc", p:"emma", q:"質問: What is Emma's favorite subject?", ch:["Science.","Math.","Music.","History."], a:0, ex:"第2段落 My favorite subject is science。"},
+    {t:"mc", p:"emma", q:"質問: When does the tennis club practice?", ch:["On Mondays, Wednesdays, and Fridays.","Every day.","On weekends.","On Sundays only."], a:0, ex:"第3段落 practice on Mondays, Wednesdays, and Fridays。"},
+    {t:"mc", p:"emma", q:"質問: Who goes home with Emma?", ch:["Lisa.","Her brother.","Her teacher.","Nobody."], a:0, ex:"第3段落 Lisa is in the same club. We always go home together。"}
+  ]);
+  BANK["2"].reading = BANK["2"].reading.concat([
+    {t:"mc", p:"food_waste", q:"質問: Why do some stores throw away safe food?", ch:["Because it does not look perfect.","Because it is too expensive.","Because no one buys food.","Because it is poisonous."], a:0, ex:"第1段落 because it does not look perfect。"},
+    {t:"mc", p:"food_waste", q:"質問: What resources are wasted when food is wasted?", ch:["Water, energy, and land.","Only money.","Only time.","Nothing."], a:0, ex:"第2段落 water, energy, and land。"},
+    {t:"mc", p:"food_waste", q:"質問: What do rotting foods in landfills produce?", ch:["Gases bad for the environment.","Clean water.","Useful energy.","Fresh air."], a:0, ex:"第2段落 produces gases that are bad for the environment。"},
+    {t:"mc", p:"food_waste", q:"質問: What can stores do to reduce food loss?", ch:["Sell imperfect vegetables at lower prices.","Throw away more food.","Close earlier.","Raise prices."], a:0, ex:"第3段落 sell imperfect vegetables at lower prices。"},
+    {t:"mc", p:"food_waste", q:"質問: What can we do at home?", ch:["Plan meals and use leftovers.","Buy more than we need.","Cook only big portions.","Skip meals."], a:0, ex:"第3段落 plan our meals and use leftovers。"}
+  ]);
+  BANK["pre2plus"].reading = BANK["pre2plus"].reading.concat([
+    {t:"mc", p:"sleep", q:"質問: Why do many young people not get enough sleep?", ch:["They stay up late to study or use smartphones.","They wake up too late.","They sleep too much.","They have no homework."], a:0, ex:"第1段落 stay up late to study or to use their smartphones。"},
+    {t:"mc", p:"sleep", q:"質問: What does the brain do during sleep?", ch:["It organizes the things we learned.","It stops completely.","It forgets everything.","It grows bigger."], a:0, ex:"第2段落 the brain organizes the things we learned。"},
+    {t:"mc", p:"sleep", q:"質問: What can a lack of sleep cause?", ch:["Poor concentration and health problems.","Better memory.","More energy.","Less stress."], a:0, ex:"第2段落 a lack of sleep can lead to poor concentration and health problems。"},
+    {t:"mc", p:"sleep", q:"質問: What do experts recommend before sleeping?", ch:["Avoiding bright screens.","Drinking coffee.","Playing video games.","Studying all night."], a:0, ex:"第3段落 avoid bright screens before sleeping。"},
+    {t:"mc", p:"sleep", q:"質問: What is the benefit of taking sleep seriously?", ch:["Better health and study results.","More free time only.","Nothing changes.","Worse grades."], a:0, ex:"第3段落 improve both our health and our study results。"}
+  ]);
+
+  // 追加問題（拡充3：使える英語学+10、4技能別問題を全級拡充）
+  var MORE4 = {
+    "prep":{ meta:[
+      {t:"mc", q:"わからない単語を辞書で調べたあと、いちばん力になるのは？", ch:["その単語を使った例文ごと覚える","意味だけ赤線を引く","写真にとって満足する","とばして忘れる"], chJp:true, a:0, ex:"単語は例文・場面とセットだと記憶に残りやすい。"},
+      {t:"mc", q:"教科書の音読でおすすめのやり方は？", ch:["意味を思いうかべながら声に出す","ただ速く読む","下を向いて小声で読む","1回だけ読む"], chJp:true, a:0, ex:"意味を意識した音読は読解力・発信力の土台になる。"},
+      {t:"mc", q:"テストが返ってきたら、まずすると良いのは？", ch:["まちがえた問題をやり直して原因を知る","点数だけ見て終わる","答案をすてる","次まで放置する"], chJp:true, a:0, ex:"テスト直し＝いちばん伸びるチャンス。"},
+      {t:"mc", q:"単語帳の効果的な使い方は？", ch:["少しずつ何度もくり返す","1日で全部覚えようとする","ながめるだけ","最初のページだけ"], chJp:true, a:0, ex:"分散して反復すると記憶が定着する。"},
+      {t:"mc", q:"英語を聞きながら少し遅れてまねして言う練習を何という？", ch:["シャドーイング","リーディング","ライティング","ディベート"], chJp:true, a:0, ex:"シャドーイングは音とリズムをつかむ練習。"},
+      {t:"mc", q:"英作文を書き終えたら、最後にすると良いのは？", ch:["主語と動詞・つづりを見直す","すぐ提出する","全部消す","日本語に訳す"], chJp:true, a:0, ex:"見直し（プルーフリード）でケアレスミスを減らせる。"},
+      {t:"mc", q:"英語の本を読むとき、知らない単語が少し出てきたら？", ch:["話の流れから意味を推測して読み進める","1語ずつ全部辞書を引く","読むのをやめる","日本語訳だけ読む"], chJp:true, a:0, ex:"多読は推測しながら読み進めるのがコツ。"},
+      {t:"mc", q:"英語の勉強を続けるコツは？", ch:["小さな目標を立てて達成感を味わう","高い目標だけ立てる","他人と比べて落ちこむ","気が向いたときだけやる"], chJp:true, a:0, ex:"スモールステップが継続の秘訣。"},
+      {t:"mc", q:"新しい単語を覚えるとき、いっしょに確認すると良いのは？", ch:["発音（読み方）","重さ","ねだん","色"], chJp:true, a:0, ex:"発音とセットで覚えるとリスニング・スピーキングに効く。"},
+      {t:"mc", q:"会話力を上げる毎日の習慣としてよいのは？", ch:["身のまわりの物を英語で言ってみる","日本語で全部考える","単語を見るだけ","だまっている"], chJp:true, a:0, ex:"日常を英語にする習慣が発信力を育てる。"}
+    ]},
+    "7":{ technique:[
+      {t:"mc", q:"【7級リーディング】🌧️ 雨がふっている絵に合う英文は？", ch:["It is raining.","It is sunny.","It is snowing.","It is windy."], a:0, ex:"天気の表現。raining。"},
+      {t:"mc", q:"【7級リスニング】絵:🍎🍎🍎 質問『How many apples?』", ch:["Three.","Two.","One.","Five."], a:0, ex:"数を答える。Three。"},
+      {t:"mc", q:"【7級リーディング】絵:😺ねむっているねこ に合う英文は？", ch:["The cat is sleeping.","The cat is running.","The cat is eating.","The cat is jumping."], a:0, ex:"動作 sleeping。"}
+    ]},
+    "6":{ technique:[
+      {t:"mc", en:"A: How old are you?", q:"【6級リスニング】自然な応答は？", ch:["I'm eleven years old.","It's a dog.","Yes, I do.","On Monday."], a:0, ex:"年齢をたずねられたら年齢で答える。"},
+      {t:"mc", q:"【6級リーディング】“I go to school by bike. It is blue.” 内容に合う絵は？", ch:["青い自転車","赤い車","青いバス","緑の自転車"], chJp:true, a:0, ex:"乗り物（bike）と色（blue）が両方合う絵。"},
+      {t:"mc", en:"A: Can you swim?", q:"【6級リスニング】自然な応答は？", ch:["Yes, I can.","It's mine.","On Sunday.","I'm fine."], a:0, ex:"Can you ～? には Yes, I can.。"}
+    ]},
+    "5":{ technique:[
+      {t:"mc", en:"A: What subject do you like? B: (   )", q:"【5級・聞く/話す】自然な応答は？", ch:["I like science.","Yes, I do.","It's mine.","At seven."], a:0, ex:"好きな教科を答える。"},
+      {t:"mc", en:"A: Where is my pen? B: (   )", q:"【5級・聞く/話す】自然な応答は？", ch:["It's on the desk.","Yes, it is.","I'm twelve.","Thank you."], a:0, ex:"場所をたずねられたら位置で答える。"},
+      {t:"mc", en:"A: Do you have a dog? B: (   )", q:"【5級・聞く/話す】自然な応答は？", ch:["Yes, I do. It's cute.","It's raining.","At three.","Goodbye."], a:0, ex:"Do you ～? には Yes, I do.。"}
+    ]},
+    "4":{ technique:[
+      {t:"mc", en:"A: What did you do last weekend? B: (   )", q:"【4級・聞く/話す】自然な応答は？", ch:["I went to the zoo.","Yes, I do.","It's mine.","At seven."], a:0, ex:"過去の行動を答える。"},
+      {t:"mc", q:"【4級・読む】掲示: BOOK SALE / Date: Sat & Sun / Used books: 100 yen each. 質問: How much is one used book?", ch:["100 yen.","Free.","200 yen.","1000 yen."], a:0, ex:"100 yen each から。"},
+      {t:"mc", en:"A: Would you like some cake? B: (   )", q:"【4級・聞く/話す】自然な応答は？", ch:["Yes, please.","It was great.","At seven.","I'm sorry."], a:0, ex:"すすめには Yes, please.。"},
+      {t:"mc", q:"【4級・聞く】A: Let's meet at the station at three. B: OK, see you then. 質問: What time will they meet?", ch:["At three.","At two.","At four.","At five."], a:0, ex:"at three から。"}
+    ]},
+    "3":{ technique:[
+      {t:"mc", en:"A: I have a cold today. B: (   )", q:"【3級・聞く/話す】自然な応答は？", ch:["That's too bad. Take care.","Congratulations!","Here you are.","Yes, I do."], a:0, ex:"体調が悪い相手には That's too bad.。"},
+      {t:"mc", en:"A: Could you tell me the way to the post office? B: (   )", q:"【3級・聞く/話す】自然な応答は？", ch:["Sure. Go straight and turn left.","Yes, I did.","It's mine.","Thank you."], a:0, ex:"道案内には Sure＋指示。"},
+      {t:"mc", q:"【3級・読む】掲示: SCHOOL FESTIVAL / Oct 20 / Food tickets sold at the gate. 質問: Where are food tickets sold?", ch:["At the gate.","In the gym.","Online.","At the library."], a:0, ex:"sold at the gate から。"},
+      {t:"mc", q:"【3級・読む】Eメール: Thanks for the present! I really like the book you gave me. 質問: What did the writer receive?", ch:["A book.","A bike.","A cap.","A ticket."], a:0, ex:"the book you gave me から。"},
+      {t:"mc", q:"【3級・聞く】A: Are you free this afternoon? B: Sorry, I have to help my mother. 質問: What will B do this afternoon?", ch:["Help his mother.","Play soccer.","Go shopping.","Watch TV."], a:0, ex:"have to help my mother から。"},
+      {t:"mc", en:"A: How was the test? B: (   )", q:"【3級・聞く/話す】自然な応答は？", ch:["It was difficult, but I did my best.","Yes, I do.","It's mine.","At seven."], a:0, ex:"感想を述べる。"}
+    ]},
+    "pre2":{ technique:[
+      {t:"mc", en:"A: Do you have any plans after graduation? B: (   )", q:"【準2級・聞く/話す】自然な応答は？", ch:["I'm planning to study abroad.","Yes, I did.","It's over there.","Thank you."], a:0, ex:"予定を述べる。"},
+      {t:"mc", q:"【準2級・読む】長文: The volunteer club cleans the park every month. Last week, twenty students joined. 質問: How often does the club clean the park?", ch:["Every month.","Every day.","Once a year.","Every week."], a:0, ex:"every month から。"},
+      {t:"mc", en:"A: Would you mind helping me move this desk? B: (   )", q:"【準2級・聞く/話す】自然な応答は？", ch:["Of course not. Where to?","Yes, I did.","It's mine.","At seven."], a:0, ex:"Would you mind ～? の依頼には Of course not.（いいですよ）。"}
+    ]},
+    "pre2plus":{ technique:[
+      {t:"mc", en:"A: What's your view on school uniforms? B: (   )", q:"【準2+ 聞く/話す】意見を述べる応答は？", ch:["They save time, but limit individuality.","Yes, I wear.","It's over there.","Thank you."], a:0, ex:"長所と短所を入れて意見を述べる。"},
+      {t:"mc", q:"【準2+ 読む】長文: A recent study found that walking 30 minutes a day improves memory. 質問: What improves memory according to the study?", ch:["Walking 30 minutes a day.","Sleeping all day.","Eating sweets.","Watching TV."], a:0, ex:"walking 30 minutes a day から。"},
+      {t:"mc", en:"A: I'm worried about the presentation. B: (   )", q:"【準2+ 聞く/話す】自然な応答は？", ch:["Don't worry. You've practiced a lot.","Yes, I did.","It's mine.","Goodbye."], a:0, ex:"不安な相手をはげます応答。"}
+    ]},
+    "2":{ technique:[
+      {t:"mc", en:"A: What do you think about working abroad? B: (   )", q:"【2級・聞く/話す】意見を述べる応答は？", ch:["It's challenging, but it broadens your view.","Yes, I work.","It's over there.","Thank you."], a:0, ex:"意見＋理由・対比で述べる。"},
+      {t:"mc", q:"【2級・読む】長文: Electric cars are becoming popular because they produce less pollution. 質問: Why are electric cars becoming popular?", ch:["They produce less pollution.","They are cheap.","They are fast.","They are big."], a:0, ex:"because のあとが理由。"},
+      {t:"mc", en:"A: Could you go over this report for errors? B: (   )", q:"【2級・聞く/話す】依頼への応答は？", ch:["Sure, I'll check it now.","Yes, I did.","It's raining.","Goodbye."], a:0, ex:"go over＝点検する。依頼に応じる。"}
+    ]}
+  };
+  (function(){
+    for(var g in MORE4){ if(!BANK[g])BANK[g]={};
+      for(var ge in MORE4[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
+        BANK[g][ge]=BANK[g][ge].concat(MORE4[g][ge]); } }
+  })();
+
+  /* ============================ 採点ユーティリティ ============================ */
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function enHTML(s){return esc(s).replace(/Y/g,'<span class="y">Y</span>');}
+  function normSpell(x){return (x||"").toLowerCase().replace(/[’']/g,"").replace(/[^a-z]+/g," ").trim().replace(/\s+/g," ");}
+  function normExact(x){return (x||"").trim().replace(/[\/／　]+/g," ").replace(/\s+/g," ");}
+  // fill判定: "ok"(完全一致) / "warn"(綴りはOKだが記号・大文字ずれ) / "ng" / null(空)
+  function judgeFill(u,q){
+    var alts=q.ac?[q.a].concat(q.ac):[q.a];
+    var ue=normExact(u), us=normSpell(u);
+    if(us==="")return null;
+    var spell=false;
+    for(var i=0;i<alts.length;i++){
+      if(normExact(alts[i]).toLowerCase()===ue.toLowerCase())return "ok";
+      if(normSpell(alts[i])===us)spell=true;
+    }
+    return spell?"warn":"ng";
+  }
+
+  /* ============================ 成績の記録（端末保存） ============================ */
+  var STATS_KEY="mado_loop_stats_v1", GRADE_KEY="mado_loop_grade_v1";
+  function loadStats(){try{return JSON.parse(localStorage.getItem(STATS_KEY))||{};}catch(e){return {};}}
+  function saveStats(s){try{localStorage.setItem(STATS_KEY,JSON.stringify(s));}catch(e){}}
+  function record(grade,genre,ok){
+    var s=loadStats();
+    s[grade]=s[grade]||{}; s[grade][genre]=s[grade][genre]||{n:0,ok:0};
+    s[grade][genre].n++; if(ok)s[grade][genre].ok++; saveStats(s);
+  }
+  function acc(grade,genre){
+    var s=loadStats(), g=s[grade]&&s[grade][genre];
+    if(!g||!g.n)return null;
+    return {pct:Math.round(g.ok/g.n*100), n:g.n, ok:g.ok};
+  }
+  // 苦手ジャンルの自動おすすめ：正答率データから次にやるべきジャンルを判定
+  function recommendGenre(grade){
+    var list=availableGenres(grade).map(function(ge){var a=acc(grade,ge.id);
+      return {ge:ge, n:a?a.n:0, pct:a?a.pct:null};});
+    if(!list.length) return {type:"none"};
+    var untried=list.filter(function(x){return x.n===0;});
+    var enough =list.filter(function(x){return x.n>=3;}).sort(function(a,b){return a.pct-b.pct;});
+    if(enough.length && enough[0].pct<80) return {type:"weak", ge:enough[0].ge, pct:enough[0].pct};
+    if(untried.length) return {type:"untried", ge:untried[0].ge};
+    var few=list.filter(function(x){return x.n>0 && x.n<3;}).sort(function(a,b){return a.n-b.n;});
+    if(few.length) return {type:"more", ge:few[0].ge};
+    return {type:"good"};
+  }
+  function recCard(rec){
+    if(!rec||rec.type==="none") return "";
+    var ico,main,sub,btn,rc,act;
+    if(rec.type==="weak"){ rc=rec.ge.c; ico="🎯";
+      main='いまの苦手は <b style="color:'+rec.ge.c+'">'+esc(rec.ge.name)+'</b>（正答率 '+rec.pct+'%）';
+      sub='まずはここを集中トレーニング！'; btn=rec.ge.icon+' '+rec.ge.name+'を訓練する →'; act='train:'+rec.ge.id;
+    } else if(rec.type==="untried"){ rc=rec.ge.c; ico="✨";
+      main='まだ未挑戦の <b style="color:'+rec.ge.c+'">'+esc(rec.ge.name)+'</b> があるよ';
+      sub='まずは一度ためしてみよう。'; btn=rec.ge.icon+' '+rec.ge.name+'を試す →'; act='train:'+rec.ge.id;
+    } else if(rec.type==="more"){ rc=rec.ge.c; ico="📊";
+      main='<b style="color:'+rec.ge.c+'">'+esc(rec.ge.name)+'</b> をもう少し解いてみよう';
+      sub='何問か解くと、苦手ジャンルが見えてくるよ。'; btn=rec.ge.icon+' '+rec.ge.name+'を練習する →'; act='train:'+rec.ge.id;
+    } else { rc='var(--ok)'; ico="🎉";
+      main='どのジャンルも好調！'; sub='判定テストで実力をためそう。'; btn='📋 判定テストへ →'; act='test';
+    }
+    return '<div class="card rec" style="--rc:'+rc+'">'+
+      '<div class="rec-ico">'+ico+'</div>'+
+      '<div class="rec-txt"><div class="rec-h">今日のおすすめ</div>'+
+        '<div class="rec-main">'+main+'</div><div class="rec-sub">'+sub+'</div></div>'+
+      '<button class="act" id="recGo" data-act="'+act+'">'+btn+'</button></div>';
+  }
+  function loadGrade(){try{return localStorage.getItem(GRADE_KEY)||"3";}catch(e){return "3";}}
+  function saveGrade(g){try{localStorage.setItem(GRADE_KEY,g);}catch(e){}}
+
+  /* ---- 実力レベルの目安（直近の判定テスト結果から算出） ---- */
+  var LASTTEST_KEY="mado_loop_lasttest_v1";
+  var LEVEL_ORDER=["7","6","5","4","3","pre2","pre2plus","2"]; // 易→難
+  function saveLastTest(o){try{localStorage.setItem(LASTTEST_KEY,JSON.stringify(o));}catch(e){}}
+  function loadLastTest(){try{return JSON.parse(localStorage.getItem(LASTTEST_KEY));}catch(e){return null;}}
+  var LEVEL_BAR_LABELS=["7未満","7級","6級","5級","4級","3級","準2級","準2+","2級"]; // 9メモリ（バー座標0〜8）
+  // 直近の判定テストから、バー座標 L（0〜8の連続値・0.25刻みに丸め）を求める。
+  //   合格：その級メモリ〜+0.75（満点で次級の「手前」まで）。不合格：その級の-0.25〜-0.75（手前〜下の級+α）。
+  //   ※数値は一切表示しない。あくまで視覚的な「目安」。
+  function levelCoord(){
+    var lt=loadLastTest(); if(!lt) return null;
+    var m=LEVEL_ORDER.indexOf(lt.grade); if(m<0) return null; // 級判定対象外（prep等）は無視
+    var bar=m+1;                                   // バー座標（0=7未満なので+1）
+    var L;
+    if(lt.pass){ L=bar + Math.min(Math.max((lt.pct-65)/35,0),1)*0.75; }
+    else       { L=bar - 0.25 - Math.min(Math.max((65-lt.pct)/65,0),1)*0.5; }
+    L=Math.round(L*4)/4;                            // 0.25刻みにスナップ（離散的な「段」の感覚に）
+    return Math.min(Math.max(L,0),8);
+  }
+  function levelCaption(L){
+    if(L==null) return "まだ判定なし — 判定テストで力をはかろう";
+    if(L<1)     return "いまの目安：英検7級にチャレンジ中";
+    if(L>=8)    return "いまの目安：英検2級レベル（合格圏）";
+    var lb=LEVEL_BAR_LABELS, i=Math.floor(L+1e-9), f=L-i;
+    if(f<0.125) return "いまの目安：英検"+lb[i]+"ギリ合格";
+    if(f<0.375) return "いまの目安：英検"+lb[i]+" ＋α";
+    if(f<0.625) return "いまの目安：英検"+lb[i]+"と"+lb[i+1]+"の あいだ";
+    return "いまの目安：英検"+lb[i+1]+"の手前";
+  }
+  /* ---- 自己データ（4技能レーダー）と記録：直近◯・最高✩・新記録☆ ---- */
+  var RADAR_KEY="mado_radar_v1";
+  var RADAR_AX=[{id:"vocab",name:"単語",ang:-90},{id:"grammar",name:"文法",ang:0},{id:"technique",name:"4技能",ang:90},{id:"reading",name:"読解",ang:180}];
+  var RADAR_IDS=RADAR_AX.map(function(a){return a.id;});
+  function loadRadar(){try{return JSON.parse(localStorage.getItem(RADAR_KEY))||{};}catch(e){return {};}}
+  function saveRadar(r){try{localStorage.setItem(RADAR_KEY,JSON.stringify(r));}catch(e){}}
+  function radarOf(all,g){all[g]=all[g]||{}; var d=all[g]; d.recent=d.recent||{}; d.best=d.best||{}; return d;}
+  function bestLOf(grade){var d=loadRadar()[grade]; return d&&d.bestL!=null?d.bestL:null;}
+  // レベルバーの「最高(✩)」は全級を通じた最高位置（グローバル）で持つ
+  var BESTLEVEL_KEY="mado_bestlevel_v1";
+  function loadBestLevel(){
+    try{ var v=localStorage.getItem(BESTLEVEL_KEY); if(v!=null) return parseFloat(v);
+      var all=loadRadar(), mx=null;            // 旧データ（級別bestL）からの自動移行
+      for(var g in all){ if(LEVEL_ORDER.indexOf(g)>=0 && all[g] && all[g].bestL!=null){ if(mx==null||all[g].bestL>mx) mx=all[g].bestL; } }
+      return mx;
+    }catch(e){return null;}
+  }
+  function saveBestLevel(v){try{localStorage.setItem(BESTLEVEL_KEY,String(v));}catch(e){}}
+  // 模試後：各軸の今回%を記録、ベスト更新。新記録の軸集合を返す
+  function recordTestRadar(grade, byGenre){
+    var all=loadRadar(), d=radarOf(all,grade), nr={};
+    RADAR_AX.forEach(function(a){var pg=byGenre&&byGenre[a.id]; if(!pg||!pg.n)return;
+      var pct=Math.round(pg.ok/pg.n*100); d.recent[a.id]=pct; var prev=d.best[a.id];
+      if(prev==null){ d.best[a.id]=pct; if(pct>0)nr[a.id]=true; }
+      else if(pct>prev){ d.best[a.id]=pct; nr[a.id]=true; }
+    });
+    saveRadar(all); return nr;
+  }
+  // ジャンル訓練：今回セッション%を記録（ベストはn>=4で更新）。新記録ならtrue
+  function recordGenreRadar(grade, ax, pct, n){
+    if(RADAR_IDS.indexOf(ax)<0) return false;
+    var all=loadRadar(), d=radarOf(all,grade), rec=false; d.recent[ax]=pct;
+    if(n>=4){ var prev=d.best[ax];
+      if(prev==null){ d.best[ax]=pct; if(pct>0)rec=true; }
+      else if(pct>prev){ d.best[ax]=pct; rec=true; } }
+    saveRadar(all); return rec;
+  }
+  function recordLevelRadar(grade, L){
+    var gb=loadBestLevel(), rec=(gb==null||L>gb);                  // 先にグローバル最高で新記録判定
+    if(rec) saveBestLevel(L);
+    var all=loadRadar(), d=radarOf(all,grade); d.lastL=L;          // 級別（参考用）
+    if(d.bestL==null||L>d.bestL){ d.bestL=L; }
+    saveRadar(all);
+    return rec;
+  }
+  function radarPt(cx,cy,R,val,ang){var a=ang*Math.PI/180,r=R*(val||0)/100;return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
+  function radarLegend(){return '<div class="rlegend"><span><i class="lg-dot"></i>直近</span><span><i class="lg-star">✩</i>最高</span><span><i class="lg-big">☆</i>新記録</span></div>';}
+  // opt:{focus:genreId|null, newRec:{axis:true}}
+  function radarSVG(grade, opt){
+    opt=opt||{}; var d=loadRadar()[grade]||{}; var rec=d.recent||{}, best=d.best||{};
+    var cx=120,cy=124,R=86, s='<svg viewBox="0 0 240 250" class="radar">';
+    [25,50,75,100].forEach(function(lv){
+      var pts=RADAR_AX.map(function(a){var p=radarPt(cx,cy,R,lv,a.ang);return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ");
+      s+='<polygon points="'+pts+'" class="rg"/>';
+    });
+    RADAR_AX.forEach(function(a){var p=radarPt(cx,cy,R,100,a.ang);s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" class="rs"/>';});
+    var dim=!!opt.focus;
+    var bpts=RADAR_AX.map(function(a){var p=radarPt(cx,cy,R,best[a.id]||0,a.ang);return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ");
+    var rpts=RADAR_AX.map(function(a){var p=radarPt(cx,cy,R,rec[a.id]||0,a.ang);return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ");
+    s+='<polygon points="'+bpts+'" class="rbest'+(dim?' dim':'')+'"/>';
+    s+='<polygon points="'+rpts+'" class="rrec'+(dim?' dim':'')+'"/>';
+    RADAR_AX.forEach(function(a){
+      var bright=!opt.focus||opt.focus===a.id, dm=bright?'':' dm';
+      var lp=radarPt(cx,cy,R+18,100,a.ang);
+      s+='<text x="'+lp[0].toFixed(1)+'" y="'+lp[1].toFixed(1)+'" class="rlab'+dm+'">'+a.name+'</text>';
+      if(best[a.id]!=null){var q=radarPt(cx,cy,R,best[a.id],a.ang);s+='<text x="'+q[0].toFixed(1)+'" y="'+q[1].toFixed(1)+'" class="rstar'+dm+'">✩</text>';}
+      if(rec[a.id]!=null){var q2=radarPt(cx,cy,R,rec[a.id],a.ang);s+='<circle cx="'+q2[0].toFixed(1)+'" cy="'+q2[1].toFixed(1)+'" r="3.6" class="rdot'+dm+'"/>';}
+      if(opt.newRec&&opt.newRec[a.id]){var v=(rec[a.id]!=null?rec[a.id]:best[a.id]),q3=radarPt(cx,cy,R,v,a.ang);s+='<text x="'+q3[0].toFixed(1)+'" y="'+q3[1].toFixed(1)+'" class="rbig">★</text>';}
+    });
+    return s+'</svg>';
+  }
+  function renderData(){
+    setLoop(S.dataBack==="train"?"train":"home");
+    var gm=gradeMeta(S.grade), focus=S.dataFocus||null, nr=S.dataNewRec||null;
+    var note = focus
+      ? '今回測ったのは <b>'+esc(genreMeta(focus)?genreMeta(focus).name:focus)+'</b>。明るい軸が今回の記録です（他はダーク表示）。'
+      : '4技能の自己データ（直近◯・最高✩）。模試を受けると全軸がまとめて更新されます。';
+    if(S.dataBack==="train" && !focus) note='このジャンルはレーダー4軸（単語/文法/4技能/読解）の対象外です。';
+    app.innerHTML='<div class="card center">'+
+      '<div class="sectlabel" style="justify-content:center;color:var(--brand-ink)">📊 '+esc(gm.name)+' 自己データ</div>'+
+      '<div class="radar-wrap">'+radarSVG(S.grade,{focus:focus,newRec:nr})+'</div>'+
+      radarLegend()+
+      '<div class="hint" style="margin-top:6px;">'+note+'</div>'+
+      '<div class="actions" style="justify-content:center;margin-top:14px;"><button class="act sec" id="dBack">← もどる</button></div>'+
+    '</div>';
+    $("dBack").addEventListener("click",function(){go(S.dataBack||"home");});
+  }
+  function updateLevelChip(){
+    var el=document.getElementById("levelbar"); if(!el) return;
+    var lt=loadLastTest();
+    var L=levelCoord();
+    var bestL=loadBestLevel();   // 全級通じた最高位置
+    var nearest = (L==null)? -1 : Math.round(L);
+    var ticks="", scale="";
+    for(var i=0;i<9;i++){
+      ticks+='<span class="lb-tick" style="left:'+(i/8*100)+'%"></span>';
+      var tf = i===0?'translateX(0)':(i===8?'translateX(-100%)':'translateX(-50%)');
+      scale+='<span class="lb-cell'+(i===nearest?' on':'')+'" style="left:'+(i/8*100)+'%;transform:'+tf+'">'+esc(LEVEL_BAR_LABELS[i])+'</span>';
+    }
+    var markers="";
+    if(L!=null){
+      var atPeak=(bestL==null)||(L>=bestL-1e-9);
+      if(atPeak){ markers='<span class="lb-bigstar" style="left:'+(L/8*100).toFixed(2)+'%">★</span>'; }
+      else { markers='<span class="lb-best" style="left:'+(bestL/8*100).toFixed(2)+'%">★</span>'+
+                     '<span class="lb-pointer" style="left:'+(L/8*100).toFixed(2)+'%"></span>'; }
+    }
+    el.className="levelbar"+(L==null?" none":"");
+    el.innerHTML='<div class="lb-cap">'+esc(levelCaption(L))+'</div>'+
+                 '<div class="lb-track">'+ticks+markers+'</div>'+
+                 '<div class="lb-scale">'+scale+'</div>';
+  }
+
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+  /* ============================ アプリ状態 ============================ */
+  var S={ grade:loadGrade(), screen:"home", genre:"vocab",
+          q:null, picked:-1, answered:false,
+          recent:{},               // ジャンルごとの直近出題index（連続同問対策）
+          session:null, dataFocus:null, dataBack:"home", dataNewRec:null,
+          check:null, advance:null,
+          test:{mode:null, queue:[], idx:0, ok:0} };
+  var app=document.getElementById("app");
+  function $(id){return document.getElementById(id);}
+  // Enter統一：未回答ならEnterで判定（fill）、回答後はEnterで次へ（mc/fill共通・クリックも可）
+  document.addEventListener("keydown",function(e){
+    if(e.key!=="Enter")return;
+    if(!S.answered){ if(S.check){ e.preventDefault(); S.check(); } }
+    else { if(S.advance){ e.preventDefault(); S.advance(); } }
+  });
+
+  function setLoop(active){
+    var steps=document.querySelectorAll("#loop .step");
+    for(var i=0;i<steps.length;i++){
+      steps[i].classList.toggle("on", steps[i].getAttribute("data-st")===active);
+    }
+  }
+
+  /* ============================ ホーム ============================ */
+  function renderHome(){
+    setLoop("home");
+    var gm=gradeMeta(S.grade);
+    var rec=recommendGenre(S.grade);
+    var weakId=(rec.type==="weak")?rec.ge.id:null;
+    var gradeChips=GRADES.map(function(g){
+      return '<button class="gchip'+(g.id===S.grade?' on':'')+'" data-g="'+g.id+'" '+
+             'style="--gc:'+g.c+';--gcb:'+g.cbg+'">'+
+             (g.isNew?'<span class="new">NEW</span>':'')+
+             '<div class="gn">'+esc(g.name)+'</div>'+
+             '<div class="gs">'+esc(g.sub)+'</div></button>';
+    }).join("");
+
+    var html=''+
+    '<div class="card">'+
+      '<div class="sectlabel"><span class="dot"></span>① 級をえらぶ</div>'+
+      '<div class="grades">'+gradeChips+'</div>'+
+    '</div>'+
+    recCard(rec)+
+    '<div class="card">'+
+      '<div class="nowgrade">いまの級：<b>'+esc(gm.name)+'</b></div>'+
+      '<div class="hint" style="margin-bottom:14px;">ジャンルごとに訓練 → 判定テスト、をくり返して合格をめざそう。</div>'+
+      '<button class="act big" id="goTrain">🎓 ジャンルごとに訓練する</button>'+
+      '<div style="height:10px"></div>'+
+      '<button class="act sec big" id="goTest">📋 '+esc(gm.name)+' 判定テストを受ける</button>'+
+      '<div style="height:10px"></div>'+
+      '<button class="act ghost big" id="goData">📊 自己データ（4技能レーダー）</button>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="sectlabel"><span class="dot"></span>'+esc(gm.name)+' のジャンル別 正答率</div>'+
+      '<div class="genres">'+availableGenres(S.grade).map(function(ge){
+          var a=acc(S.grade,ge.id);
+          var pct=a?a.pct:0;
+          return '<div class="gtile" data-train="'+ge.id+'" style="--tc:'+ge.c+';--tcb:'+ge.cbg+'">'+
+                 (ge.id===weakId?'<span class="weakbadge">苦手</span>':'')+
+                 '<div class="gi">'+ge.icon+'</div>'+
+                 '<div class="gl">'+esc(ge.name)+'</div>'+
+                 '<div class="gd">'+esc(ge.desc)+'</div>'+
+                 '<div class="accwrap"><div class="accbar"><i style="width:'+pct+'%;background:'+ge.c+'"></i></div>'+
+                   '<span class="acclab'+(a?'':' none')+'">'+(a?a.pct+'%':'—')+'</span></div>'+
+                 '<div class="accsub">'+(a?('○ '+a.ok+' / '+a.n+' 問'):'まだ記録なし')+'</div>'+
+                 '</div>';
+        }).join("")+'</div>'+
+    '</div>';
+    app.innerHTML=html;
+
+    var chips=document.querySelectorAll(".gchip");
+    for(var i=0;i<chips.length;i++)chips[i].addEventListener("click",function(){
+      S.grade=this.getAttribute("data-g"); saveGrade(S.grade); renderHome();
+    });
+    $("goTrain").addEventListener("click",function(){S.genre="vocab";go("train");});
+    $("goTest").addEventListener("click",function(){go("testsetup");});
+    $("goData").addEventListener("click",function(){S.dataFocus=null;S.dataBack="home";S.dataNewRec=null;go("data");});
+    var tiles=document.querySelectorAll(".gtile");
+    for(var k=0;k<tiles.length;k++)tiles[k].addEventListener("click",function(){
+      S.genre=this.getAttribute("data-train"); go("train");
+    });
+    var rg=$("recGo");
+    if(rg)rg.addEventListener("click",function(){
+      var a=this.getAttribute("data-act");
+      if(a==="test"){go("testsetup");}
+      else{S.genre=a.split(":")[1];go("train");}
+    });
+  }
+
+  /* ============================ 訓練 ============================ */
+  function pickQuestion(){
+    var pool=(BANK[S.grade]&&BANK[S.grade][S.genre])||[];
+    if(!pool.length){S.q=null;return;}
+    var last=S.recent[S.grade+"/"+S.genre];
+    var idx=Math.floor(Math.random()*pool.length);
+    if(pool.length>1 && idx===last){idx=(idx+1)%pool.length;}
+    S.recent[S.grade+"/"+S.genre]=idx;
+    S.q=pool[idx]; S.picked=-1; S.answered=false;
+  }
+
+  function renderTrain(){
+    setLoop("train");
+    S.check=null; S.advance=null;
+    var gm=gradeMeta(S.grade);
+    // この級にS.genreが無ければ、利用できる先頭ジャンルに切り替え
+    var avail=availableGenres(S.grade);
+    if(avail.length && !avail.some(function(g){return g.id===S.genre;})){S.genre=avail[0].id;S.q=null;}
+    if(!S.session||S.session.grade!==S.grade||S.session.genre!==S.genre){S.session={grade:S.grade,genre:S.genre,n:0,ok:0,newRec:false};}
+    if(!S.q)pickQuestion();
+
+    var tabs=avail.map(function(ge){
+      return '<button class="pill'+(ge.id===S.genre?' on':'')+'" data-genre="'+ge.id+'" style="--pc:'+ge.c+'">'+ge.icon+' '+ge.name+'</button>';
+    }).join("");
+    var a=acc(S.grade,S.genre);
+    var statTxt=a? '正答率 <b>'+a.pct+'%</b>（'+a.ok+'/'+a.n+'）' : 'まだ記録なし';
+
+    var body;
+    if(!S.q){
+      body='<div class="muted" style="padding:20px 0;">このジャンルの問題はまだ準備中です（フェーズ③で追加）。</div>';
+    }else{
+      var gmn=genreMeta(S.genre);
+      body=''+
+        (S.q.p?renderPassage(S.q.p):'')+
+        '<div class="tech" style="--tc:'+gmn.c+';--tcb:'+gmn.cbg+'">'+gmn.icon+' '+esc(gmn.desc)+'</div>'+
+        '<div class="q">'+esc(S.q.q||"")+'</div>'+
+        (S.q.en?'<div class="sent">'+enHTML(S.q.en)+'</div>':'')+
+        renderInput(S.q)+
+        '<div id="fb"></div>'+
+        '<div class="actions" id="tactions"></div>';
+    }
+
+    app.innerHTML=''+
+    '<div class="card">'+
+      '<div class="tbar">'+tabs+'<span class="stat">'+statTxt+'</span></div>'+
+      '<div class="hint" style="margin-bottom:12px;">'+esc(gm.name)+'｜ランダムに例題が出ます。答えると採点・解説します。</div>'+
+      body+
+    '</div>'+
+    '<div class="actions">'+
+      '<button class="act ghost" id="backHome">← ホーム</button>'+
+      '<button class="act ghost" id="trainData">📊 自己データ</button>'+
+      '<button class="act sec" id="toTest">📋 判定テストへ進む →</button>'+
+    '</div>';
+
+    // ジャンルタブ
+    var pills=document.querySelectorAll(".pill[data-genre]");
+    for(var i=0;i<pills.length;i++)pills[i].addEventListener("click",function(){
+      S.genre=this.getAttribute("data-genre"); S.q=null; renderTrain();
+    });
+    $("backHome").addEventListener("click",function(){go("home");});
+    $("toTest").addEventListener("click",function(){go("testsetup");});
+    $("trainData").addEventListener("click",function(){
+      var isAx=RADAR_IDS.indexOf(S.genre)>=0;
+      S.dataFocus=isAx?S.genre:null; S.dataBack="train";
+      S.dataNewRec=(isAx&&S.session&&S.session.newRec)?(function(){var o={};o[S.genre]=true;return o;})():null;
+      go("data");
+    });
+
+    if(S.q)bindQuestion(S.q,/*isTest*/false);
+  }
+
+  // 入力UI（mc=選択肢ボタン / fill=テキスト）
+  function renderInput(q){
+    if(q.t==="fill"){
+      return '<div class="row"><span class="lbl">答え：</span>'+
+             '<input id="ans" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="答えを英語で入力"></div>'+
+             '<div class="sub">英語で入力 → Enterまたは「判定」</div>';
+    }
+    var enCls=q.chJp?'':' en';
+    // 表示順をシャッフル（data-iは元の番号を保持するので採点はそのまま正しい）
+    var order=shuffle(q.ch.map(function(_,i){return i;}));
+    return '<div class="choices">'+order.map(function(orig,disp){
+      var c=q.ch[orig];
+      return '<button class="ch'+enCls+'" data-i="'+orig+'"><span class="mk">'+(disp+1)+'</span><span class="txt">'+(q.chJp?esc(c):enHTML(c))+'</span></button>';
+    }).join("")+'</div>';
+  }
+
+  // 長文パッセージの表示
+  function renderPassage(pid){
+    var p=PASSAGES[pid]; if(!p)return "";
+    return '<div class="passage"><div class="ptitle">'+esc(p.title)+'</div><div class="pbody">'+
+      p.paras.map(function(t,i){return '<p><span class="pnum">【第'+(i+1)+'段落】</span>'+enHTML(t)+'</p>';}).join("")+
+      '</div></div>';
+  }
+
+  // 出題の採点ロジック（訓練・テスト共通の判定部分）
+  function bindQuestion(q,isTest){
+    var onResult = isTest ? testAnswered : trainAnswered;
+    if(q.t==="fill"){
+      var doCheck=function(){
+        if(S.answered)return;
+        var r=judgeFill($("ans").value,q);
+        if(r===null)return;
+        S.answered=true;
+        $("ans").disabled=true;
+        var ok=(r==="ok");
+        onResult(ok, r, '正答：<span class="en">'+enHTML(q.a)+'</span>');
+      };
+      $("ans").focus();
+      S.check=doCheck;   // Enterで判定（クリックの「判定」ボタンも可）
+      buildActions(isTest, doCheck);
+    }else{
+      var chs=document.querySelectorAll(".ch[data-i]");
+      for(var i=0;i<chs.length;i++)chs[i].addEventListener("click",function(){
+        if(S.answered)return;
+        var pick=parseInt(this.getAttribute("data-i"),10);
+        S.answered=true; S.picked=pick;
+        var ok=(pick===q.a);
+        // 視覚マーク
+        var all=document.querySelectorAll(".ch[data-i]");
+        for(var k=0;k<all.length;k++){
+          var ki=parseInt(all[k].getAttribute("data-i"),10);
+          if(ki===q.a)all[k].classList.add("right");
+          else if(ki===pick)all[k].classList.add("wrong");
+          else all[k].classList.add("dim");
+        }
+        onResult(ok, ok?"ok":"ng", '正答：<span class="'+(q.chJp?'':'en')+'">'+(q.chJp?esc(q.ch[q.a]):enHTML(q.ch[q.a]))+'</span>');
+      });
+      S.check=null;
+      buildActions(isTest, null);
+    }
+  }
+
+  function buildActions(isTest, fillCheck){
+    var wrap=$("tactions"); if(!wrap)return;
+    if(S.q.t==="fill" && !S.answered){
+      var b=document.createElement("button"); b.className="act"; b.textContent="判定";
+      b.addEventListener("click",fillCheck); wrap.appendChild(b);
+    }
+  }
+
+  // 訓練：採点後の表示
+  function trainAnswered(ok, kind, ansHTML){
+    record(S.grade,S.genre,ok);
+    if(S.session&&S.session.grade===S.grade&&S.session.genre===S.genre){ S.session.n++; if(ok)S.session.ok++;
+      if(recordGenreRadar(S.grade,S.genre,Math.round(S.session.ok/S.session.n*100),S.session.n)) S.session.newRec=true; }
+    var v = kind==="ok" ? '<div class="verdict ok">○　正解！</div>'
+          : kind==="warn" ? '<div class="verdict warn">△　つづりはOK！大文字・記号を直そう</div>'
+          : '<div class="verdict ng">✕　ちがうよ</div>';
+    var exp=S.q.ex?'<div class="exp">'+enHTML(S.q.ex)+'</div>':'';
+    $("fb").innerHTML='<div class="fbwrap">'+v+'<div class="ansrow">'+ansHTML+'</div>'+exp+'</div>';
+    var wrap=$("tactions"); wrap.innerHTML='';
+    var adv=function(){S.q=null;pickQuestion();renderTrain();};
+    var nx=document.createElement("button"); nx.className="act"; nx.textContent="次の問題 →";
+    nx.addEventListener("click",adv); wrap.appendChild(nx);
+    S.check=null; S.advance=adv;   // 採点後はEnterで次へ
+    // 上部の正答率も更新
+    var a=acc(S.grade,S.genre);
+    var st=document.querySelector(".stat");
+    if(st&&a)st.innerHTML='正答率 <b>'+a.pct+'%</b>（'+a.ok+'/'+a.n+'）';
+  }
+
+  /* ============================ 判定テスト ============================ */
+  var PASS=0.65, QUICK_N=8;
+  function gradePool(grade){
+    var arr=[];
+    GENRES.forEach(function(ge){
+      var qs=(BANK[grade]&&BANK[grade][ge.id])||[];
+      qs.forEach(function(q){arr.push(q);});
+    });
+    return arr;
+  }
+
+  function renderTestSetup(){
+    setLoop("test");
+    var gm=gradeMeta(S.grade), pool=gradePool(S.grade);
+    var quick=Math.min(QUICK_N,pool.length);
+    app.innerHTML=''+
+    '<div class="card center">'+
+      '<div class="sectlabel" style="justify-content:center;color:var(--brand-ink);font-size:16px;margin-bottom:8px;">📋 '+esc(gm.name)+' 判定テスト</div>'+
+      '<div class="hint" style="margin-bottom:16px;">英検の判定基準にならい、<b>正答率65%以上で合格</b>。モードをえらんでね。</div>'+
+      '<button class="act big" id="mFull">フルモード（全'+pool.length+'問）</button>'+
+      '<div class="hint" style="margin:6px 0 14px;">本番に近い問題数。じっくり実力を判定。</div>'+
+      '<button class="act sec big" id="mQuick">クイックモード（'+quick+'問）</button>'+
+      '<div class="hint" style="margin-top:6px;">少しずつ出題。短時間でサッと判定。</div>'+
+    '</div>'+
+    '<div class="actions"><button class="act ghost" id="backHome2">← ホーム</button></div>';
+    $("mFull").addEventListener("click",function(){startTest("full");});
+    $("mQuick").addEventListener("click",function(){startTest("quick");});
+    $("backHome2").addEventListener("click",function(){go("home");});
+  }
+
+  function startTest(mode){
+    var pool=shuffle(gradePool(S.grade).slice());
+    if(mode==="quick")pool=pool.slice(0,Math.min(QUICK_N,pool.length));
+    S.test={mode:mode, queue:pool, idx:0, ok:0, byGenre:{}};
+    go("test");
+  }
+
+  function renderTest(){
+    setLoop("test");
+    S.check=null; S.advance=null;
+    var t=S.test;
+    if(t.idx>=t.queue.length){return renderTestResult();}
+    S.q=t.queue[t.idx]; S.answered=false; S.picked=-1;
+    var gm=gradeMeta(S.grade);
+    app.innerHTML=''+
+    '<div class="card">'+
+      '<div class="prog">'+esc(gm.name)+' 判定テスト（'+(t.mode==="quick"?"クイック":"フル")+'）　'+(t.idx+1)+' / '+t.queue.length+'</div>'+
+      '<div class="ratebar"><i style="width:'+Math.round(t.idx/t.queue.length*100)+'%"></i></div>'+
+      (S.q.p?renderPassage(S.q.p):'')+
+      '<div class="q" style="margin-top:10px;">'+esc(S.q.q||"")+'</div>'+
+      (S.q.en?'<div class="sent">'+enHTML(S.q.en)+'</div>':'')+
+      renderInput(S.q)+
+      '<div id="fb"></div>'+
+      '<div class="actions" id="tactions"></div>'+
+    '</div>';
+    bindQuestion(S.q,/*isTest*/true);
+  }
+
+  // テスト：採点後（解説は出すが正答率には加算＝学習も兼ねる）
+  function testAnswered(ok, kind, ansHTML){
+    if(ok)S.test.ok++;
+    var gid=currentGenreOf(S.q);
+    record(S.grade, gid, ok); // ジャンル別正答率にも反映
+    var bg=S.test.byGenre||(S.test.byGenre={}); bg[gid]=bg[gid]||{n:0,ok:0}; bg[gid].n++; if(ok)bg[gid].ok++;
+    var v = kind==="ok" ? '<div class="verdict ok">○　正解！</div>'
+          : kind==="warn" ? '<div class="verdict warn">△　惜しい（綴りはOK・記号ミス）</div>'
+          : '<div class="verdict ng">✕　ちがうよ</div>';
+    var exp=S.q.ex?'<div class="exp">'+enHTML(S.q.ex)+'</div>':'';
+    $("fb").innerHTML='<div class="fbwrap">'+v+'<div class="ansrow">'+ansHTML+'</div>'+exp+'</div>';
+    var wrap=$("tactions"); wrap.innerHTML='';
+    var last=(S.test.idx>=S.test.queue.length-1);
+    var adv=function(){S.test.idx++;go("test");};
+    var nx=document.createElement("button"); nx.className="act"; nx.textContent=last?"結果を見る →":"次へ →";
+    nx.addEventListener("click",adv); wrap.appendChild(nx);
+    S.check=null; S.advance=adv;
+  }
+  // テスト用：問題がどのジャンル由来か（正答率記録のため）
+  function currentGenreOf(q){
+    var b=BANK[S.grade];
+    for(var k=0;k<GENRES.length;k++){
+      var arr=b[GENRES[k].id]||[];
+      if(arr.indexOf(q)>=0)return GENRES[k].id;
+    }
+    return "practice";
+  }
+
+  // ---- 成績を先生に送信（GAS連携） ----
+  // ★先生へ：mado_score_gas のウェブアプリURLを下に貼ると有効になります（?cls=3A&num=5&name=… で自動入力）。
+  var GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
+  function idStore(k,v){try{localStorage.setItem("mado_"+k,v);}catch(e){}}
+  function idLoad(k){try{return localStorage.getItem("mado_"+k)||"";}catch(e){return "";}}
+  function fillIdentity(){
+    var prm; try{prm=new URLSearchParams(location.search);}catch(e){prm=null;}
+    var c=$("scls"),n=$("sid"),m=$("snm"); if(!c)return;
+    c.value=(prm&&prm.get("cls"))||idLoad("cls")||"";
+    n.value=(prm&&prm.get("num"))||idLoad("num")||"";
+    m.value=(prm&&prm.get("name"))||idLoad("name")||"";
+  }
+  function sendScore(){
+    var r=S.lastResult||{}, msg=$("sendmsg");
+    var cls=$("scls").value.trim(), num=$("sid").value.trim(), name=$("snm").value.trim();
+    if(!cls||!num){msg.textContent="組と番号を入れてね";return;}
+    if(!GAS_URL){msg.textContent="（先生へ：HTML内の GAS_URL が未設定です）";return;}
+    idStore("cls",cls); idStore("num",num); idStore("name",name);
+    var btn=$("send"); btn.disabled=true; btn.textContent="送信中…";
+    var payload={cls:cls,num:num,name:name,ver:APP_VER,
+      grade:(gradeMeta(r.grade)?gradeMeta(r.grade).name:r.grade),
+      mode:(r.mode==="quick"?"クイック":"フル"),
+      score:r.score,total:r.total,pct:r.pct,pass:(r.pass?"合格":"不合格"),
+      ok:r.score,warn:0,ng:(r.total-r.score)};
+    fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
+      .then(function(res){return res.json();})
+      .then(function(j){ if(j&&j.result==="ok"){btn.textContent="送信OK ✓";msg.textContent="記録できたよ！おつかれさま。";}
+        else{throw new Error((j&&j.message)||"server error");} })
+      .catch(function(err){ btn.disabled=false; btn.textContent="先生に送信";
+        msg.textContent="送信できなかった…電波を確認してもう一度。（"+String(err).slice(0,40)+"）"; });
+  }
+
+  function renderTestResult(){
+    setLoop("test");
+    var t=S.test, gm=gradeMeta(S.grade);
+    var total=t.queue.length, pct=total?Math.round(t.ok/total*100):0;
+    var pass=(t.ok/total)>=PASS;
+    if(LEVEL_ORDER.indexOf(S.grade)>=0) saveLastTest({grade:S.grade, pct:pct, pass:pass, ts:Date.now()});
+    S.lastResult={grade:S.grade, score:t.ok, total:total, pct:pct, pass:pass, mode:t.mode};
+    var L=null; if(LEVEL_ORDER.indexOf(S.grade)>=0){ L=levelCoord(); recordLevelRadar(S.grade,L); }
+    var radNew=recordTestRadar(S.grade, t.byGenre||{});
+    var showRadar=(S.grade!=="prep");
+    var rec=recommendGenre(S.grade);
+    var primary = (rec.type==="weak")
+      ? '<button class="act" id="rWeak" data-g="'+rec.ge.id+'" style="background:'+rec.ge.c+';border-color:'+rec.ge.c+'">🎯 苦手な'+rec.ge.name+'を鍛える →</button>'
+      : '<button class="act" id="rTrain">🏋️ 訓練にもどる</button>';
+    app.innerHTML=''+
+    '<div class="card center">'+
+      '<div class="sectlabel" style="justify-content:center;color:var(--brand-ink)">'+esc(gm.name)+' 判定テスト 結果</div>'+
+      '<div class="ring" style="--p:'+pct+';--rc:'+(pass?'var(--ok)':'var(--ng)')+'">'+
+        '<div class="ring-hole"><div class="ring-pct">'+pct+'%</div><div class="ring-cap">正答率</div></div>'+
+      '</div>'+
+      '<div class="rscore">正解 <b>'+t.ok+'</b> / '+total+' 問</div>'+
+      '<div class="passmark '+(pass?'pass':'fail')+'">'+(pass?'🎉 合格ライン突破！':'残念・・・不合格')+'</div>'+
+      '<div class="threshold">合格基準：正答率65%以上（'+Math.ceil(total*PASS)+'問以上の正解で合格）</div>'+
+      (rec.type==="weak"?'<div class="hint" style="margin-top:10px;">いまの苦手は <b style="color:'+rec.ge.c+'">'+esc(rec.ge.name)+'</b>（正答率 '+rec.pct+'%）。鍛えてもう一度ループを回そう。</div>':'')+
+      (showRadar?('<div class="radar-wrap">'+radarSVG(S.grade,{newRec:radNew})+'</div>'+radarLegend()+'<div class="hint" style="margin-bottom:2px;">今回の4技能データ（直近◯・最高✩・新記録☆）</div>'):'')+
+      '<div class="actions" style="justify-content:center;margin-top:14px;">'+
+        primary+
+        '<button class="act sec" id="rRetry">📋 もう一度テスト</button>'+
+        '<button class="act ghost" id="rHome">🏠 ホーム</button>'+
+      '</div>'+
+      '<div class="send-box">'+
+        '<div class="send-h">📨 成績を先生に送信</div>'+
+        '<div class="rnum">'+
+          '<input id="scls" type="text" autocomplete="off" placeholder="組(例:3A)" aria-label="組">'+
+          '<input id="sid" type="text" inputmode="numeric" autocomplete="off" placeholder="番号" aria-label="番号">'+
+          '<input id="snm" type="text" autocomplete="off" placeholder="名前" aria-label="名前">'+
+        '</div>'+
+        '<button class="act" id="send">先生に送信</button>'+
+        '<div class="rnote" id="sendmsg">組・番号・名前を入れて「先生に送信」を押してね</div>'+
+      '</div>'+
+    '</div>';
+    var rw=$("rWeak"); if(rw)rw.addEventListener("click",function(){S.q=null;S.genre=this.getAttribute("data-g");go("train");});
+    var rt=$("rTrain"); if(rt)rt.addEventListener("click",function(){S.q=null;go("train");});
+    $("rRetry").addEventListener("click",function(){go("testsetup");});
+    $("rHome").addEventListener("click",function(){go("home");});
+    $("send").addEventListener("click",sendScore);
+    fillIdentity();
+  }
+
+  /* ============================ ルーター ============================ */
+  function go(screen){
+    S.screen=screen;
+    S.check=null; S.advance=null;
+    if(screen==="home")renderHome();
+    else if(screen==="train")renderTrain();
+    else if(screen==="testsetup")renderTestSetup();
+    else if(screen==="test")renderTest();
+    else if(screen==="testresult")renderTestResult();
+    else if(screen==="data")renderData();
+    updateLevelChip();
+  }
+
+  document.getElementById("ver").textContent=APP_VER;
+  go("home");
+})();
+</script>
+</body>
+</html>
