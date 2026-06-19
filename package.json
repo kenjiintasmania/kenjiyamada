@@ -1,0 +1,15 @@
+{
+  "name": "tango-app",
+  "version": "1.0.0",
+  "description": "英単語アプリ（基本編＝先生の単語集／拡張編＝NEW HORIZON、合計2000語）",
+  "scripts": {
+    "build": "python3 tools/build_words.py",
+    "test": "node tools/smoke_test.js",
+    "serve": "python3 -m http.server 8123"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "puppeteer-core": "^25.1.0"
+  }
+}
