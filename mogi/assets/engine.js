@@ -284,27 +284,29 @@ function showRes(q, ok, msg){
 }
 
 /* ---------- 採点 ---------- */
-function gradeAll(){
+function gradeAll(where){
   let score=0;
   computeTotal();
   ITEMS.forEach(o=>{ if(isActive(o)) score += o.grade(); });
   const total=EXAM._total;
-  const bar=document.getElementById("scorebar");
-  bar.classList.remove("hide");
-  document.getElementById("scoretext").textContent = score+" / "+total;
   const pct= total? score/total : 0;
   let msg="まだまだ！まちがいを直してもう一度。";
   if(pct>=1) msg="満点！パーフェクト！🎉";
   else if(pct>=0.9) msg="すごい！あと少しで満点！";
   else if(pct>=0.7) msg="いい調子！赤いところを見直そう。";
   else if(pct>=0.5) msg="半分こえた。解説を読んで復習しよう。";
-  document.getElementById("scoremsg").textContent = msg
-    + "（英作文・記述は自己採点です）";
-  bar.scrollIntoView({behavior:"smooth",block:"nearest"});
+  msg += "（英作文・記述は自己採点です）";
+  document.querySelectorAll(".scorebar").forEach(bar=>{
+    bar.classList.remove("hide");
+    const t=bar.querySelector(".big"); if(t) t.textContent = score+" / "+total;
+    const m=bar.querySelector(".msg"); if(m) m.textContent = msg;
+  });
+  const target=(where==="bottom")?document.getElementById("scorebar_b"):document.getElementById("scorebar");
+  (target||document.getElementById("scorebar")).scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 function resetAll(){
   render(EXAM, document.getElementById("quiz"));
-  document.getElementById("scorebar").classList.add("hide");
+  document.querySelectorAll(".scorebar").forEach(b=> b.classList.add("hide"));
   window.scrollTo({top:0,behavior:"smooth"});
 }
 

@@ -31,6 +31,15 @@
 
   <div id="quiz"></div>
 
+  <div class="controls" style="justify-content:center;margin-top:8px">
+    <button class="grade" onclick="MockExam.gradeAll('bottom')">採点する</button>
+    <button class="reset" onclick="MockExam.resetAll()">もう一度</button>
+  </div>
+  <div id="scorebar_b" class="scorebar hide" style="position:static">
+    <span class="big">0 / 0</span>
+    <span class="msg"></span>
+  </div>
+
   <footer>
     正進社 過去問ベース 模擬テスト ／ リスニングは放送文を読むシミュレーション方式<br>
     英作文・日本語記述は模範解答を見て自己採点します。
