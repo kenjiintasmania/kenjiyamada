@@ -40,6 +40,15 @@
   .card.mogi{border-color:#ffd9cc}
   .card.eiken{border-color:#cdd9ff}
   .card .ext{font-size:11px;color:#9a927e}
+  .mypage{display:flex;align-items:center;justify-content:center;gap:10px;
+    max-width:460px;margin:22px auto 0;text-decoration:none;color:#fff;
+    background:linear-gradient(90deg,#5b7cff,#39b3a6);border-radius:16px;
+    padding:14px 20px;font-weight:bold;font-size:17px;
+    box-shadow:0 6px 0 #cdd9ff;transition:transform .08s,box-shadow .12s}
+  .mypage:hover{transform:translateY(-2px);box-shadow:0 9px 0 #cdd9ff}
+  .mypage:active{transform:translateY(2px);box-shadow:0 2px 0 #cdd9ff}
+  .mypage .emoji{font-size:24px}
+  .mypage small{display:block;font-weight:normal;font-size:12px;opacity:.92}
   footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:30px}
 </style>
 </head>
@@ -66,6 +75,10 @@
         <div class="desc">英検対策のドリル（7〜2級）。級判定・4技能・長文。<br>ジャンル訓練 → 判定テストをループ。</div>
       </a>
     </div>
+    <a class="mypage" href="me/index.html">
+      <span class="emoji">📊</span>
+      <span>マイページ（成績まとめ）<small>3アプリの最新記録をまとめて確認・先生に送信</small></span>
+    </a>
     <footer>英語学習アプリ ／ 単語アプリ ＋ 模擬テスト ＋ 英検</footer>
   </div>
 </body>

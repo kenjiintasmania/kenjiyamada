@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5b7cff">
+<title>マイページ｜成績まとめ</title>
+<!--
+  マイページ（3アプリ成績まとめ）
+  ・この端末（同一サイト内）の 単語/模試/英検 の最新記録を読み取って表示します。
+    localStorage はサイト単位なので、3アプリは同じ記録を共有しています。
+  ・ページを開くたびに、最新（最高）記録を先生のスプレッドシートへ自動送信します。
+    送信先 SUMMARY_GAS_URL は英検アプリと同じGAS（同じスプレッドシート）。
+    先生がGASを score_gas.gs に更新（同じデプロイを新バージョンで再公開）すると有効化されます。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --accent:#ff7a59; --accent2:#39b3a6; --accent3:#5b7cff;
+    --words:#39b3a6; --mogi:#ff7a59; --eiken:#5b7cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 500px at 110% -10%,#e7ecff 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#d8f3ef 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.6;padding:18px 14px 80px}
+  .wrap{max-width:920px;margin:0 auto}
+  .crumbs{font-size:13px;margin:2px 0 10px}
+  .crumbs a{color:var(--accent3);text-decoration:none;font-weight:bold}
+  .crumbs a:hover{text-decoration:underline}
+  .hero{text-align:center;margin:6px 0 4px}
+  .hero h1{font-size:27px;margin:0}
+  .hero h1 .en{font-family:var(--en);color:var(--accent3)}
+  .hero p{color:#7a7363;font-size:14px;margin:8px 0 0}
+  .ver{color:#b3ab98;font-size:11px}
+
+  .card{background:#fff;border:3px solid var(--line);border-radius:18px;
+    padding:16px 16px 14px;margin:16px 0;box-shadow:0 6px 0 #efe7d4}
+  .card.words{border-color:#cfe6e1}
+  .card.mogi{border-color:#ffd9cc}
+  .card.eiken{border-color:#cdd9ff}
+  .card.id{border-color:#e6dcc6}
+  .card.send{border-color:#dfe6cf}
+  .card h2{font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .card h2 .emoji{font-size:22px}
+  .card h2 .tag{margin-left:auto;font-size:12px;color:#9a927e;font-weight:normal}
+
+  .idrow{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  .idrow label{display:flex;flex-direction:column;font-size:12px;color:#7a7363;gap:3px}
+  .idrow input{font:inherit;font-size:16px;padding:7px 9px;border:2px solid var(--line);
+    border-radius:10px;background:#fffdf6;width:110px}
+  .idrow input#f_name{width:160px}
+  .hint{font-size:12px;color:#9a927e;margin:8px 0 0}
+
+  .big-stat{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .big-stat .n{font-size:34px;font-weight:bold;font-family:var(--en);line-height:1}
+  .big-stat .u{font-size:14px;color:#7a7363}
+  .words .big-stat .n{color:var(--words)}
+  .mogi  .big-stat .n{color:var(--mogi)}
+  .eiken .big-stat .n{color:var(--eiken)}
+
+  .bar{display:block;height:12px;border-radius:8px;background:#efe9da;overflow:hidden;margin:8px 0 2px}
+  .bar i{display:block;height:100%;border-radius:8px;background:var(--accent3);transition:width .4s}
+  .words .bar i{background:var(--words)}
+  .mogi  .bar i{background:var(--mogi)}
+  .eiken .bar i{background:var(--eiken)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  @media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .mini{background:#fbf9f1;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px}
+  .mini .k{font-size:12px;color:#7a7363}
+  .mini .v{font-size:18px;font-weight:bold}
+  .mini .v small{font-size:12px;color:#9a927e;font-weight:normal}
+
+  table.exam{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  table.exam th,table.exam td{padding:6px 8px;border-bottom:1px solid #f0ead9;text-align:left}
+  table.exam th{color:#7a7363;font-weight:normal;font-size:12px}
+  table.exam td.sc{text-align:right;font-weight:bold;font-family:var(--en)}
+  table.exam td.sc .last{font-weight:normal;color:#9a927e;font-size:12px}
+  table.exam tr.none td{color:#b3ab98}
+  .pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:999px;font-weight:bold}
+  .pill.pass{background:#e3f6e8;color:#2e9e57}
+  .pill.fail{background:#fde7e1;color:#d9603e}
+
+  .level-label{font-size:20px;font-weight:bold;color:var(--eiken)}
+  .btn{font:inherit;font-size:16px;font-weight:bold;border:none;border-radius:12px;
+    padding:11px 20px;cursor:pointer;color:#fff;background:var(--accent3);
+    box-shadow:0 4px 0 #3f5fd6}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #3f5fd6}
+  .btn[disabled]{opacity:.6;box-shadow:none;cursor:default}
+  .btn.ghost{background:#fff;color:var(--accent3);border:2px solid var(--accent3);box-shadow:0 4px 0 #dfe2f5}
+  .sendrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  #sendmsg{font-size:13px;color:#7a7363}
+  #sendmsg.ok{color:#2e9e57}
+  #sendmsg.err{color:#d9603e}
+  .teacher{font-size:11.5px;color:#b3ab98;margin-top:8px;border-top:1px dashed #e7e0cf;padding-top:8px}
+  footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
+  <div class="hero">
+    <h1>マイページ <span class="en">My Page</span></h1>
+    <p>単語・模擬テスト・英検の <strong>最新の記録</strong> をまとめて見られます。<span class="ver" id="ver"></span></p>
+  </div>
+
+  <!-- 本人 -->
+  <div class="card id">
+    <h2><span class="emoji">🪪</span>あなたの情報</h2>
+    <div class="idrow">
+      <label>組<input id="f_cls" inputmode="text" placeholder="3A" autocomplete="off"></label>
+      <label>番号<input id="f_num" inputmode="numeric" placeholder="5" autocomplete="off"></label>
+      <label>名前<input id="f_name" placeholder="山田 太郎" autocomplete="off"></label>
+    </div>
+    <p class="hint">組と番号を入れておくと、記録が先生に届きます（名前は任意）。同じ端末・同じブラウザの記録だけ集計します。</p>
+  </div>
+
+  <!-- 単語 -->
+  <div class="card words">
+    <h2><span class="emoji">📕</span>単語アプリ<span class="tag">打ち込めた単語数</span></h2>
+    <div class="big-stat"><span class="n" id="w_n">–</span><span class="u">/ <span id="w_goal">2000</span> 語</span>
+      <span class="u" id="w_pct"></span></div>
+    <span class="bar"><i id="w_bar" style="width:0"></i></span>
+    <div class="grid">
+      <div class="mini"><div class="k">📕 基本編</div><div class="v"><span id="w_b">0</span><small> / <span id="w_bt">0</span></small></div></div>
+      <div class="mini"><div class="k">📗 拡張編</div><div class="v"><span id="w_e">0</span><small> / <span id="w_et">0</span></small></div></div>
+      <div class="mini"><div class="k">合計</div><div class="v"><span id="w_all2">0</span><small> 語</small></div></div>
+    </div>
+    <div class="grid">
+      <div class="mini"><div class="k">1年の語</div><div class="v"><span id="w_g1">0</span><small> / <span id="w_g1t">0</span></small></div></div>
+      <div class="mini"><div class="k">2年の語</div><div class="v"><span id="w_g2">0</span><small> / <span id="w_g2t">0</span></small></div></div>
+      <div class="mini"><div class="k">3年の語</div><div class="v"><span id="w_g3">0</span><small> / <span id="w_g3t">0</span></small></div></div>
+    </div>
+    <p class="hint"><a href="../words/index.html" style="color:var(--words);font-weight:bold;text-decoration:none">→ 単語アプリをひらく</a></p>
+  </div>
+
+  <!-- 模試 -->
+  <div class="card mogi">
+    <h2><span class="emoji">📝</span>模擬テスト<span class="tag">各回の最高点（100点満点）</span></h2>
+    <div class="big-stat"><span class="n" id="m_best">–</span><span class="u">点 ＝ いちばん良かった回</span>
+      <span class="u" id="m_done"></span></div>
+    <table class="exam" id="m_tbl"><thead><tr><th>テスト</th><th style="text-align:right">最高点 <span style="font-weight:normal">（直近）</span></th></tr></thead><tbody></tbody></table>
+    <p class="hint"><a href="../mogi/index.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">→ 模擬テストをひらく</a></p>
+  </div>
+
+  <!-- 英検 -->
+  <div class="card eiken">
+    <h2><span class="emoji">🎯</span>英検アプリ<span class="tag">いまの実力の目安</span></h2>
+    <div class="level-label" id="e_label">まだ判定なし</div>
+    <div class="grid">
+      <div class="mini"><div class="k">本番テスト 最高</div><div class="v" id="e_full">–</div></div>
+      <div class="mini"><div class="k">クイック 最高</div><div class="v" id="e_quick">–</div></div>
+      <div class="mini"><div class="k">平均の目安</div><div class="v" id="e_avg">–</div></div>
+    </div>
+    <div class="mini" style="margin-top:8px"><div class="k">直近の判定テスト</div><div class="v" id="e_recent">まだ受けていない</div></div>
+    <p class="hint"><a href="../eiken/index.html" style="color:var(--eiken);font-weight:bold;text-decoration:none">→ 英検アプリをひらく</a></p>
+  </div>
+
+  <!-- 送信 -->
+  <div class="card send">
+    <h2><span class="emoji">📨</span>先生に記録をとどける</h2>
+    <div class="sendrow">
+      <button class="btn" id="sendBtn">先生に送信</button>
+      <button class="btn ghost" id="reloadBtn">記録を読みなおす</button>
+      <span id="sendmsg">このページを開くと自動で送信します。</span>
+    </div>
+    <div class="teacher" id="teacherNote"></div>
+  </div>
+
+  <footer>マイページ ／ 単語・模擬テスト・英検の最新記録をまとめて表示・送信</footer>
+</div>
+
+<script src="../words/data/words.js"></script>
+<script>
+(function(){
+  "use strict";
+  var APP_VER="me 0.1";
+  // 送信先：英検アプリと同じGAS（＝同じスプレッドシート）。先生がGASを score_gas.gs に
+  // 更新すると、kind:"summary" を新タブ「成績まとめ」に集約します。空文字なら送信オフ。
+  var SUMMARY_GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
+
+  var $=function(id){return document.getElementById(id);};
+  $("ver").textContent=APP_VER;
+
+  /* ---------- localStorage ヘルパ ---------- */
+  function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  function lsJSON(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+  function lsNum(k){var v=lsGet(k);return v==null?null:parseFloat(v);}
+
+  /* ---------- 本人情報（英検と同じキーを共有） ---------- */
+  function idGet(k){return lsGet("mado_"+k)||"";}
+  function idSet(k,v){lsSet("mado_"+k,v);}
+  function fillIdentity(){
+    var prm=null; try{prm=new URLSearchParams(location.search);}catch(e){}
+    $("f_cls").value=(prm&&prm.get("cls"))||idGet("cls");
+    $("f_num").value=(prm&&prm.get("num"))||idGet("num");
+    $("f_name").value=(prm&&prm.get("name"))||idGet("name");
+  }
+  ["cls","num","name"].forEach(function(k){
+    $("f_"+k).addEventListener("input",function(){ idSet(k,this.value.trim()); });
+  });
+
+  /* ---------- 1) 単語：打ち込めた単語数 ---------- */
+  function readWords(){
+    var WORDS=window.WORDS||[], META=window.WORD_META||{};
+    var store=lsJSON("tango_v2")||{}, cleared=store.cleared||{};
+    var o={all:0,allT:WORDS.length||(META.total||2000),b:0,bT:0,e:0,eT:0,
+           g:{1:0,2:0,3:0},gT:{1:0,2:0,3:0}};
+    WORDS.forEach(function(w){
+      if(w.m==="b")o.bT++; else o.eT++;
+      if(o.gT[w.g]!=null)o.gT[w.g]++;
+      if(cleared[w.id]){ o.all++; if(w.m==="b")o.b++; else o.e++;
+        if(o.g[w.g]!=null)o.g[w.g]++; }
+    });
+    return o;
+  }
+  function renderWords(o){
+    $("w_n").textContent=o.all; $("w_all2").textContent=o.all;
+    $("w_goal").textContent=o.allT;
+    var pct=o.allT?Math.round(o.all/o.allT*100):0;
+    $("w_pct").textContent="（"+pct+"%）";
+    $("w_bar").style.width=pct+"%";
+    $("w_b").textContent=o.b; $("w_bt").textContent=o.bT;
+    $("w_e").textContent=o.e; $("w_et").textContent=o.eT;
+    [1,2,3].forEach(function(g){ $("w_g"+g).textContent=o.g[g]; $("w_g"+g+"t").textContent=o.gT[g]; });
+  }
+
+  /* ---------- 2) 模試：各回の最高点 ---------- */
+  var MOGI=[["chu2","中2 第1回"],["chu2_2","中2 第2回"],["chu2_3","中2 第3回"],
+            ["chu3_1","中3 第1回"],["chu3_2","中3 第2回"],["chu3_3","中3 第3回"],["chu3_4","中3 第4回"]];
+  function readMogi(){
+    var mb=lsJSON("mogi_best_v1")||{}, rows=[], best=0, done=0;
+    MOGI.forEach(function(p){
+      var r=mb[p[0]];
+      if(r){ done++; if((r.best||0)>best)best=r.best||0; }
+      rows.push({id:p[0],label:p[1],rec:r||null});
+    });
+    return {rows:rows,best:best,done:done,map:mb};
+  }
+  function renderMogi(m){
+    $("m_best").textContent=m.done?m.best:"–";
+    $("m_done").textContent=m.done?("／ "+m.done+"回ぶん挑戦ずみ"):"／ まだ挑戦していません";
+    var tb=$("m_tbl").querySelector("tbody"); tb.innerHTML="";
+    m.rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      if(r.rec){
+        tr.innerHTML='<td>'+r.label+'</td><td class="sc">'+r.rec.best+' / '+(r.rec.total||100)+
+          ' <span class="last">（直近 '+r.rec.last+'）</span></td>';
+      }else{
+        tr.className="none";
+        tr.innerHTML='<td>'+r.label+'</td><td class="sc" style="font-weight:normal">— 未挑戦</td>';
+      }
+      tb.appendChild(tr);
+    });
+  }
+
+  /* ---------- 3) 英検：実力の目安 ---------- */
+  var LBL=["7未満","7級","6級","5級","4級","3級","準2級","準2+","2級"];
+  function levelLabel(L){
+    if(L==null)return "まだ判定なし";
+    if(L<1)return "英検7級にチャレンジ中";
+    if(L>=8)return "英検2級レベル（合格圏）";
+    var i=Math.floor(L+1e-9),f=L-i;
+    if(f<0.125)return "英検"+LBL[i]+"ギリ合格";
+    if(f<0.375)return "英検"+LBL[i]+" ＋α";
+    if(f<0.625)return "英検"+LBL[i]+"と"+LBL[i+1]+"の あいだ";
+    return "英検"+LBL[i+1]+"の手前";
+  }
+  var GN={"7":"7級","6":"6級","5":"5級","4":"4級","3":"3級","pre2":"準2級","pre2plus":"準2級+","2":"2級"};
+  function readEiken(){
+    var avgO=lsJSON("mado_levelavg_v1");
+    return {
+      full:lsNum("mado_bestfull_v1"),
+      quick:lsNum("mado_bestquick_v1"),
+      avg:(avgO&&avgO.count)?avgO.sum/avgO.count:null,
+      last:lsJSON("mado_loop_lasttest_v1")
+    };
+  }
+  function renderEiken(e){
+    $("e_label").textContent=levelLabel(e.full!=null?e.full:e.avg);
+    $("e_full").textContent=e.full!=null?levelLabel(e.full):"–";
+    $("e_quick").textContent=e.quick!=null?levelLabel(e.quick):"–";
+    $("e_avg").textContent=e.avg!=null?levelLabel(e.avg):"–";
+    if(e.last){
+      var g=GN[e.last.grade]||e.last.grade||"";
+      $("e_recent").innerHTML=g+'（正答 '+e.last.pct+'%）'+
+        ' <span class="pill '+(e.last.pass?'pass':'fail')+'">'+(e.last.pass?'合格':'もう一歩')+'</span>';
+    }else{ $("e_recent").textContent="まだ受けていない"; }
+  }
+
+  /* ---------- 集約データ ---------- */
+  var DATA={};
+  function collect(){
+    DATA.w=readWords(); DATA.m=readMogi(); DATA.e=readEiken();
+  }
+  function renderAll(){
+    collect(); renderWords(DATA.w); renderMogi(DATA.m); renderEiken(DATA.e);
+  }
+
+  /* ---------- 先生へ送信（成績まとめ） ---------- */
+  function r2(x){return x==null?"":Math.round(x*100)/100;}
+  function buildPayload(){
+    var w=DATA.w,m=DATA.m,e=DATA.e;
+    var mb=m.map;
+    function ms(id){return mb[id]?mb[id].best:"";}
+    return {
+      kind:"summary", ver:APP_VER,
+      cls:$("f_cls").value.trim(), num:$("f_num").value.trim(), name:$("f_name").value.trim(),
+      // 単語（打ち込めた数）
+      w_all:w.all, w_goal:w.allT, w_basic:w.b, w_ext:w.e,
+      w_g1:w.g[1], w_g2:w.g[2], w_g3:w.g[3],
+      // 模試（各回ベスト・100点満点）
+      m_c2_1:ms("chu2"), m_c2_2:ms("chu2_2"), m_c2_3:ms("chu2_3"),
+      m_c3_1:ms("chu3_1"), m_c3_2:ms("chu3_2"), m_c3_3:ms("chu3_3"), m_c3_4:ms("chu3_4"),
+      m_best:m.done?m.best:"", m_done:m.done,
+      // 英検（レベル座標0〜8と目安ラベル）
+      e_full:r2(e.full), e_full_label:(e.full!=null?levelLabel(e.full):""),
+      e_quick:r2(e.quick), e_avg:r2(e.avg),
+      e_recent_grade:(e.last?(GN[e.last.grade]||e.last.grade):""),
+      e_recent_pct:(e.last?e.last.pct:""),
+      e_recent_pass:(e.last?(e.last.pass?"合格":"不合格"):"")
+    };
+  }
+  var sending=false;
+  function send(auto){
+    var msg=$("sendmsg"); msg.className="";
+    var cls=$("f_cls").value.trim(), num=$("f_num").value.trim();
+    if(!cls||!num){ msg.textContent="組と番号を入れると送信できます。"; return; }
+    if(!SUMMARY_GAS_URL){ msg.textContent="先生へ：送信先(GAS)が未設定です。"; return; }
+    if(sending)return; sending=true;
+    var btn=$("sendBtn"); btn.disabled=true; btn.textContent="送信中…";
+    msg.textContent=auto?"自動で送信しています…":"送信しています…";
+    var payload=buildPayload();
+    fetch(SUMMARY_GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)})
+      .then(function(res){return res.json();})
+      .then(function(j){
+        if(j&&j.result==="ok"){ msg.className="ok";
+          msg.textContent="先生に記録をとどけました ✓（"+new Date().toLocaleString("ja-JP")+"）"; }
+        else{ throw new Error((j&&j.message)||"server"); }
+      })
+      .catch(function(err){ msg.className="err";
+        msg.textContent="送信できませんでした。電波を確認して「先生に送信」を押してね。（"+String(err).slice(0,30)+"）"; })
+      .then(function(){ sending=false; btn.disabled=false; btn.textContent="先生に送信"; });
+  }
+
+  $("sendBtn").addEventListener("click",function(){ send(false); });
+  $("reloadBtn").addEventListener("click",function(){ renderAll();
+    $("sendmsg").className=""; $("sendmsg").textContent="記録を読みなおしました。"; });
+
+  /* ---------- 起動 ---------- */
+  fillIdentity();
+  renderAll();
+  // 先生向けメモ（送信先の状態）
+  $("teacherNote").textContent= SUMMARY_GAS_URL
+    ? "先生へ：このページは英検と同じスプレッドシートの「成績まとめ」タブに集約します（GASを score_gas.gs に更新してください）。"
+    : "先生へ：送信先(SUMMARY_GAS_URL)が未設定のため、送信は無効です。";
+  // 自動送信（本人情報があるときだけ）
+  if(SUMMARY_GAS_URL && $("f_cls").value.trim() && $("f_num").value.trim()){
+    setTimeout(function(){ send(true); }, 400);
+  }
+})();
+</script>
+</body>
+</html>

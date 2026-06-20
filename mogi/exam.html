@@ -64,7 +64,7 @@
   document.getElementById("crumb2").innerHTML=meta.crumb;
   const s=document.createElement("script");
   s.src=meta.file;
-  s.onload=function(){ MockExam.render(window.EXAM, document.getElementById("quiz")); };
+  s.onload=function(){ window.EXAM.id=id; MockExam.render(window.EXAM, document.getElementById("quiz")); };
   s.onerror=function(){ document.getElementById("quiz").innerHTML="<p>データを読み込めませんでした。</p>"; };
   document.body.appendChild(s);
 })();
