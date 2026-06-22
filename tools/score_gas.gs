@@ -22,6 +22,20 @@
 var SUMMARY_SHEET = "成績まとめ";       // (B) 1人1行の集約タブ
 var EIKEN_SHEET   = "英検テスト履歴";   // (A) 英検の1回ごとの追記タブ
 
+/* ===== 書き込み先スプレッドシート =====
+ * このスクリプトを「新しいプロジェクト」として作った場合（スプレッドシートに
+ * 紐づいていない場合）は、集約先スプレッドシートのIDを下に貼ってください。
+ *   シートのURL: https://docs.google.com/spreadsheets/d/【この部分がID】/edit
+ * ※スプレッドシートの［拡張機能］→［Apps Script］から作った場合は空のままでOK。
+ *   迷ったら「貼っておく」のが確実です（IDを入れれば常に正しく動きます）。      */
+var SPREADSHEET_ID = "";
+function getSS(){
+  if (SPREADSHEET_ID) return SpreadsheetApp.openById(SPREADSHEET_ID);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error("スプレッドシートが見つかりません。SPREADSHEET_ID にシートIDを貼ってください。");
+  return ss;
+}
+
 /* ===== (B) 成績まとめ：列の定義 ===== *
  * key   … 送信ペイロードのキー
  * head  … スプレッドシートの見出し
@@ -90,7 +104,7 @@ function json(obj){
 }
 
 function getSheet(name, header){
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sh = ss.getSheetByName(name);
   if (!sh){
     sh = ss.insertSheet(name);
