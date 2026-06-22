@@ -179,9 +179,10 @@
 (function(){
   "use strict";
   var APP_VER="me 0.1";
-  // 送信先：英検アプリと同じGAS（＝同じスプレッドシート）。先生がGASを score_gas.gs に
-  // 更新すると、kind:"summary" を新タブ「成績まとめ」に集約します。空文字なら送信オフ。
-  var SUMMARY_GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
+  // 送信先：成績まとめ用GAS（score_gas.gs をデプロイしたウェブアプリ）。
+  // kind:"summary" を、指定スプレッドシートの新タブ「成績まとめ」に1人1行で集約します。
+  // 空文字なら送信オフ。
+  var SUMMARY_GAS_URL="https://script.google.com/macros/s/AKfycbySJy2-r6GcYvwOIeoJRb360TkV0uglWjRvPAxJM5WDgVjhsn-qOhBcqNRebOe3Qbgn-A/exec";
 
   var $=function(id){return document.getElementById(id);};
   $("ver").textContent=APP_VER;
