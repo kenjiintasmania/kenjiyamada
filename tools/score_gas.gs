@@ -74,6 +74,17 @@ var SUMMARY_COLS = [
   {key:"e_recent_pass",  head:"英検_直近合否",  max:false}
 ];
 
+/* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
+ * ★先生へ：下の TEACHER_PIN を必ず自分だけが知る合言葉に変更してください。
+ *   管理ページ（/admin/）でスタート/ストップを押すときに使います。            */
+var TEACHER_PIN = "kaeru-1234";
+var UNIT_SHEET = "単元管理";        // ゲート状態（開/閉・セッション）。先生が見える化用も兼ねる
+var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
+// 単元テスト扱いにする試験ID（exam.html?id=… と一致）→ 表示名。複数登録可。
+var UNIT_EXAMS = {
+  "unit1": "中3 単元テスト①"
+};
+
 function doGet(e){
   return ContentService
     .createTextOutput(JSON.stringify({result:"ok", message:"score_gas alive"}))
@@ -86,6 +97,9 @@ function doPost(e){
     if (e && e.postData && e.postData.contents){
       data = JSON.parse(e.postData.contents);
     }
+    if (data.action === "status") return json(gateStatus(data.exam));
+    if (data.action === "gate")   return json(setGate(data));
+    if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "summary"){
       handleSummary(data);
     } else {
@@ -186,3 +200,86 @@ function toNum(v){
   return isNaN(n) ? null : n;
 }
 function numOrBlank(v){ var n=toNum(v); return n==null? "" : n; }
+
+/* ===================== 単元テスト：ゲート制御 ===================== *
+ * 単元管理シート列：A=試験ID B=タイトル C=状態(開/閉) D=セッション E=開始時刻 F=提出数 */
+function unitSheetEnsured(){
+  var sh = getSheet(UNIT_SHEET, ["試験ID","タイトル","状態","セッション","開始時刻","提出数"]);
+  var last = sh.getLastRow(), have = {};
+  if (last >= 2){
+    var v = sh.getRange(2,1,last-1,1).getValues();
+    for (var i=0;i<v.length;i++) have[String(v[i][0]).trim()] = true;
+  }
+  for (var ex in UNIT_EXAMS){ if (!have[ex]) sh.appendRow([ex, UNIT_EXAMS[ex], "閉", "", "", 0]); }
+  return sh;
+}
+function findUnitRow(sh, exam){
+  var last = sh.getLastRow(); if (last < 2) return -1;
+  var v = sh.getRange(2,1,last-1,1).getValues();
+  for (var i=0;i<v.length;i++){ if (String(v[i][0]).trim()===exam) return i+2; }
+  return -1;
+}
+// 状態の読み取り（ポーリング用・書き込みなし）
+function gateStatus(exam){
+  var title = UNIT_EXAMS[exam] || "";
+  if (!exam || !UNIT_EXAMS[exam]) return {result:"ok", open:false, exam:exam||"", title:title, session:""};
+  var sh = getSS().getSheetByName(UNIT_SHEET);
+  if (!sh) return {result:"ok", open:false, exam:exam, title:title, session:""};
+  var r = findUnitRow(sh, exam);
+  if (r < 0) return {result:"ok", open:false, exam:exam, title:title, session:""};
+  var row = sh.getRange(r,1,1,6).getValues()[0];
+  return {result:"ok", open:(String(row[2]).trim()==="開"), exam:exam, title:(row[1]||title),
+          session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0};
+}
+// スタート/ストップ（PIN必須）
+function setGate(data){
+  if (String(data.pin||"") !== TEACHER_PIN) return {result:"error", message:"合言葉(PIN)が違います"};
+  var exam = data.exam;
+  if (!exam || !UNIT_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try{
+    var sh = unitSheetEnsured();
+    var r = findUnitRow(sh, exam);
+    if (data.open){
+      var session = "S" + Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd-HHmmss");
+      sh.getRange(r,3,1,4).setValues([["開", session, new Date(), 0]]);
+      return {result:"ok", open:true, exam:exam, title:UNIT_EXAMS[exam], session:session, submissions:0};
+    } else {
+      sh.getRange(r,3).setValue("閉");
+      return {result:"ok", open:false, exam:exam, title:UNIT_EXAMS[exam], session:String(sh.getRange(r,4).getValue()||"")};
+    }
+  } finally { lock.releaseLock(); }
+}
+
+/* ===================== 単元テスト：提出（開いてる時のみ・1人1回） ===================== */
+function handleUnitTest(d){
+  var exam = d.exam;
+  if (!exam || !UNIT_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
+  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  try{
+    var st = gateStatus(exam);
+    if (!st.open) return {result:"locked", message:"いまは受付していません"};
+    if (d.session && String(d.session) !== String(st.session))
+      return {result:"locked", message:"受付が切り替わりました。もう一度ひらいてね"};
+    var session = st.session;
+    var log = getSheet(UNIT_LOG, ["提出日時","セッション","試験","組","番号","名前","得点","満点","正答率(%)","版"]);
+    var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+    if (!cls || !num) return {result:"error", message:"組と番号を入れてね"};
+    // 同一セッション・同一試験で同じ生徒は1回だけ
+    var last = log.getLastRow();
+    if (last >= 2){
+      var rows = log.getRange(2,2,last-1,4).getValues(); // セッション,試験,組,番号
+      for (var i=0;i<rows.length;i++){
+        if (String(rows[i][0])===session && String(rows[i][1])===exam &&
+            String(rows[i][2]).trim()===cls && String(rows[i][3]).trim()===num){
+          return {result:"dup", message:"もう提出ずみです"};
+        }
+      }
+    }
+    log.appendRow([ new Date(), session, exam, cls, num, d.name||"",
+      numOrBlank(d.score), numOrBlank(d.total), numOrBlank(d.pct), d.ver||"" ]);
+    var ush = unitSheetEnsured(), r = findUnitRow(ush, exam);
+    if (r > 0){ var c = ush.getRange(r,6); c.setValue((Number(c.getValue())||0)+1); }
+    return {result:"ok", message:"提出しました"};
+  } finally { lock.releaseLock(); }
+}

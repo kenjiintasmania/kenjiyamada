@@ -289,11 +289,12 @@ function gradeAll(where){
   computeTotal();
   ITEMS.forEach(o=>{ if(isActive(o)) score += o.grade(); });
   const total=EXAM._total;
-  try{ if(EXAM.id){ const k="mogi_best_v1", o=JSON.parse(localStorage.getItem(k)||"{}");
+  const pct= total? score/total : 0;
+  if(window.MockExam){ window.MockExam.last={score:score, total:total, pct:pct, id:EXAM.id}; }
+  try{ if(EXAM.id && !EXAM.unit){ const k="mogi_best_v1", o=JSON.parse(localStorage.getItem(k)||"{}");
     const prev=o[EXAM.id]||{best:0};
     o[EXAM.id]={title:EXAM.title||EXAM.id, best:Math.max(prev.best||0,score), last:score, total:total, ts:Date.now()};
     localStorage.setItem(k,JSON.stringify(o)); } }catch(e){}
-  const pct= total? score/total : 0;
   let msg="まだまだ！まちがいを直してもう一度。";
   if(pct>=1) msg="満点！パーフェクト！🎉";
   else if(pct>=0.9) msg="すごい！あと少しで満点！";

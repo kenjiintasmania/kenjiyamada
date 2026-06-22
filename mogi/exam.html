@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>模擬テスト</title>
 <link rel="stylesheet" href="assets/style.css">
+<style>
+  .hide{display:none}
+  .unit-panel{position:sticky;top:0;z-index:20;background:#fff7ed;border:2px solid #ffd9a8;
+    border-radius:14px;padding:12px 14px;margin:10px 0;box-shadow:0 4px 0 #ffe7c8}
+  .unit-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .unit-badge{font-weight:bold;font-size:14px;padding:5px 13px;border-radius:999px;white-space:nowrap}
+  .unit-badge.lock{background:#fde7e1;color:#d9603e}
+  .unit-badge.open{background:#e3f6e8;color:#2e9e57}
+  .unit-badge.done{background:#e7ecff;color:#3f5fd6}
+  .unit-id{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px}
+  .unit-id label{font-size:12px;color:#7a6a55;display:flex;align-items:center;gap:4px}
+  .unit-id input{font-family:inherit;font-size:15px;padding:5px 7px;border:1.5px solid #e7d9c2;
+    border-radius:8px;width:78px;background:#fffdf6}
+  .unit-id input#u_name{width:120px}
+  .unit-msg{font-size:13px;color:#8a6d4a;margin-top:9px;font-weight:bold}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -16,6 +32,19 @@
     </div>
     <div class="namebox"><span>組番名前</span><input id="name" placeholder="　　　　　　"></div>
   </header>
+
+  <div id="unitPanel" class="unit-panel hide">
+    <div class="unit-row">
+      <span id="unitStatus" class="unit-badge lock">🔒 ロック中</span>
+      <div class="unit-id">
+        <label>組 <input id="u_cls" placeholder="3A" autocomplete="off"></label>
+        <label>番号 <input id="u_num" inputmode="numeric" placeholder="5" autocomplete="off"></label>
+        <label>名前 <input id="u_name" placeholder="山田 太郎" autocomplete="off"></label>
+      </div>
+      <button id="u_submit" class="grade" disabled>採点して提出する</button>
+    </div>
+    <div id="unitMsg" class="unit-msg">先生が「スタート」すると問題が出て、解けるようになります。</div>
+  </div>
 
   <div id="scorebar" class="scorebar hide">
     <span class="big" id="scoretext">0 / 0</span>
@@ -49,6 +78,8 @@
 <script src="assets/engine.js"></script>
 <script>
 (function(){
+  // 成績集約GAS（マイページと同じデプロイ）。単元テストのゲート確認・提出に使用。
+  const GAS_URL="https://script.google.com/macros/s/AKfycbySJy2-r6GcYvwOIeoJRb360TkV0uglWjRvPAxJM5WDgVjhsn-qOhBcqNRebOe3Qbgn-A/exec";
   const id=(new URLSearchParams(location.search)).get("id")||"chu2";
   const C2='／ <a href="chu2.html">中2</a>', C3='／ <a href="chu3.html">中3</a>';
   const meta={
@@ -58,15 +89,86 @@
     chu3_1:{file:"data/chu3_1.js", title:'中3 第1回 模擬テスト <span class="en">Mock</span>', crumb:C3},
     chu3_2:{file:"data/chu3_2.js", title:'中3 第2回 模擬テスト <span class="en">Mock</span>', crumb:C3},
     chu3_3:{file:"data/chu3_3.js", title:'中3 第3回 模擬テスト <span class="en">Mock</span>', crumb:C3},
-    chu3_4:{file:"data/chu3_4.js", title:'中3 第4回 模擬テスト <span class="en">Mock</span>', crumb:C3}
+    chu3_4:{file:"data/chu3_4.js", title:'中3 第4回 模擬テスト <span class="en">Mock</span>', crumb:C3},
+    unit1: {file:"data/unit1.js",  title:'中3 単元テスト① <span class="en">Unit Test</span>', crumb:C3, unit:true}
   }[id]||{file:"data/chu2.js",title:"模擬テスト",crumb:""};
   document.getElementById("examTitle").innerHTML=meta.title;
   document.getElementById("crumb2").innerHTML=meta.crumb;
   const s=document.createElement("script");
   s.src=meta.file;
-  s.onload=function(){ window.EXAM.id=id; MockExam.render(window.EXAM, document.getElementById("quiz")); };
+  s.onload=function(){
+    window.EXAM.id=id;
+    if(meta.unit){ window.EXAM.unit=true; startUnit(id); }
+    else { MockExam.render(window.EXAM, document.getElementById("quiz")); }
+  };
   s.onerror=function(){ document.getElementById("quiz").innerHTML="<p>データを読み込めませんでした。</p>"; };
   document.body.appendChild(s);
+
+  function post(obj){
+    return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(obj)}).then(r=>r.json());
+  }
+
+  // 単元テスト：先生がゲートを開けた時だけ、問題表示＆提出を許可
+  function startUnit(id){
+    const $=i=>document.getElementById(i);
+    const quiz=$("quiz"), panel=$("unitPanel"), badge=$("unitStatus"), msg=$("unitMsg"), btn=$("u_submit");
+    const elc=$("u_cls"), eln=$("u_num"), elm=$("u_name");
+    panel.classList.remove("hide");
+    document.querySelectorAll(".controls").forEach(c=>c.classList.add("hide"));
+    const nb=document.querySelector(".namebox"); if(nb) nb.style.display="none";
+    try{ elc.value=localStorage.getItem("mado_cls")||""; eln.value=localStorage.getItem("mado_num")||"";
+         elm.value=localStorage.getItem("mado_name")||""; }catch(e){}
+    let session="", open=false, rendered=false, submitted=false;
+    function ensureRender(){ if(!rendered){ MockExam.render(window.EXAM, quiz); rendered=true; } }
+    function setOpen(o){
+      open=o; if(submitted) return;
+      if(open){
+        badge.textContent="✅ 受付中"; badge.className="unit-badge open";
+        ensureRender(); btn.disabled=false;
+        msg.textContent="問題を解いたら「採点して提出する」を押してね（提出は1回だけ）。";
+      }else{
+        badge.textContent="🔒 ロック中"; badge.className="unit-badge lock"; btn.disabled=true;
+        msg.textContent= rendered ? "いまは受付していません。先生の合図を待ってね。"
+                                  : "先生が「スタート」すると問題が出て、解けるようになります。";
+      }
+    }
+    function poll(){
+      post({action:"status", exam:id}).then(st=>{
+        if(st && st.result==="ok"){ session=st.session||""; setOpen(!!st.open); }
+      }).catch(()=>{});
+    }
+    poll(); setInterval(poll, 5000);
+    btn.addEventListener("click",function(){
+      if(submitted||!open) return;
+      const cls=elc.value.trim(), num=eln.value.trim(), name=elm.value.trim();
+      if(!cls||!num){ msg.textContent="組と番号を入れてね。"; return; }
+      quiz.querySelectorAll("input,textarea,button").forEach(el=>el.disabled=true);
+      btn.disabled=true; btn.textContent="提出中…";
+      MockExam.gradeAll();
+      const r=(window.MockExam&&window.MockExam.last)||{score:0,total:0,pct:0};
+      try{ localStorage.setItem("mado_cls",cls); localStorage.setItem("mado_num",num);
+           localStorage.setItem("mado_name",name); }catch(e){}
+      post({kind:"unittest", exam:id, session:session, cls:cls, num:num, name:name, ver:"unit 0.1",
+            score:r.score, total:r.total, pct:Math.round((r.pct||0)*100)})
+        .then(res=>{
+          if(res.result==="ok"||res.result==="dup"){
+            submitted=true; badge.textContent="✅ 提出ずみ"; badge.className="unit-badge done";
+            btn.textContent="提出ずみ"; btn.disabled=true;
+            msg.textContent=(res.result==="dup"?"もう提出ずみです。":"提出しました！おつかれさま🎉")
+              +"（点数 "+r.score+" / "+r.total+"）";
+          }else if(res.result==="locked"){
+            msg.textContent="いまは受付していません（先生にきいてね）。";
+            btn.disabled=false; btn.textContent="採点して提出する";
+          }else{
+            msg.textContent="送信できなかった…もう一度押してね。"+(res.message?"（"+res.message+"）":"");
+            btn.disabled=false; btn.textContent="採点して提出する";
+          }
+        })
+        .catch(()=>{ msg.textContent="送信エラー。電波を確認してもう一度。";
+          btn.disabled=false; btn.textContent="採点して提出する"; });
+    });
+  }
 })();
 </script>
 </body>
