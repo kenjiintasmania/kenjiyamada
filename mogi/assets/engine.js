@@ -306,8 +306,8 @@ function gradeAll(where){
     const t=bar.querySelector(".big"); if(t) t.textContent = score+" / "+total;
     const m=bar.querySelector(".msg"); if(m) m.textContent = msg;
   });
-  const target=(where==="bottom")?document.getElementById("scorebar_b"):document.getElementById("scorebar");
-  (target||document.getElementById("scorebar")).scrollIntoView({behavior:"smooth",block:"nearest"});
+  // 採点したら一番上（点数バー）まで自動で戻る
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 function resetAll(){
   render(EXAM, document.getElementById("quiz"));
