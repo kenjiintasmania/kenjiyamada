@@ -76,6 +76,19 @@
   .q.wrong .correctans{display:block;color:var(--ng)}
   .q.warn .correctans{display:block;color:var(--warn)}
 
+  .study-overlay{position:fixed;inset:0;z-index:50;background:rgba(43,43,58,.55);
+    display:flex;align-items:center;justify-content:center;padding:16px}
+  .study-overlay.hide{display:none}
+  .study-box{background:#fff;border-radius:18px;max-width:880px;width:100%;max-height:88vh;
+    overflow:auto;padding:18px 18px 6px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+  .study-box h2{margin:0 0 4px;font-size:20px}
+  .study-box .lead{font-size:13px;color:#8a8270;margin:0 0 10px}
+  .study-cat{font-weight:bold;color:var(--accent2);margin:12px 0 5px;font-size:15px}
+  .study-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 16px}
+  @media(max-width:560px){.study-list{grid-template-columns:1fr}}
+  .study-list>div{font-size:14px;padding:3px 0;border-bottom:1px dashed #eee}
+  .study-list .en{font-family:var(--en);color:var(--accent);font-weight:bold;margin-left:6px}
+  .study-actions{position:sticky;bottom:0;background:#fff;padding:12px 0 8px;text-align:center}
   footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:30px}
   @media print{
     body{background:#fff;padding:0}
@@ -104,13 +117,26 @@
   <div class="controls">
     <button class="grade" onclick="grade()">採点する</button>
     <button class="reset" onclick="resetAll()">もう一度</button>
+    <button class="reset" onclick="showStudy()">📖 答え一覧</button>
     <label class="toggle"><input type="checkbox" id="shuffle" onchange="render()">順番をシャッフル</label>
     <button class="ghost" onclick="window.print()">印刷</button>
   </div>
 
   <div id="quiz"></div>
 
-  <footer>2年 答えの単語 一斉テスト v1.1 ／ 36点満点</footer>
+  <div class="controls" style="justify-content:center;margin-top:6px">
+    <button class="reset" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 一番上にもどる</button>
+  </div>
+  <footer>「採点する」をおすと点数が出て、一番上にもどります。まちがえた問題は正解が出ます。記録は最初の採点だけ残ります。</footer>
+</div>
+
+<div id="studyOverlay" class="study-overlay">
+  <div class="study-box">
+    <h2>📖 答え一覧（おぼえてからテスト）</h2>
+    <p class="lead">まず答えを見ておぼえよう。じゅんびができたら「テストを始める」を押すと、答えがかくれてテストになります。</p>
+    <div id="studyBody"></div>
+    <div class="study-actions"><button class="grade" id="startBtn" onclick="hideStudy()">✏️ テストを始める</button></div>
+  </div>
 </div>
 
 <script>
@@ -165,11 +191,40 @@ function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.ran
 
 let inputs = [];
 
+/* ===== 記録（最高点・回数）と答え一覧 ===== */
+const TEST_ID="c2", MAX=36;
+let attemptGraded=false;
+function recordScore(score){
+  try{
+    const k="shuku_v1", o=JSON.parse(localStorage.getItem(k)||"{}");
+    const prev=o[TEST_ID]||{best:0,count:0};
+    o[TEST_ID]={best:Math.max(prev.best||0,score), max:MAX,
+      count:(prev.count||0)+1, last:score, ts:Date.now()};
+    localStorage.setItem(k,JSON.stringify(o));
+  }catch(e){}
+}
+function buildStudy(){
+  const body=document.getElementById("studyBody"); if(!body) return;
+  let html="";
+  DATA.forEach(sec=>{
+    html+='<div class="study-cat">'+sec.cat+'</div><div class="study-list">';
+    sec.items.forEach(it=>{
+      const ans = Array.isArray(it[1]) ? it[1].join(" / ") : it[1];
+      html+='<div>'+it[0]+' <span class="en">'+ans+'</span></div>';
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+function showStudy(){ document.getElementById("studyOverlay").classList.remove("hide"); }
+function hideStudy(){ document.getElementById("studyOverlay").classList.add("hide"); }
+
 function render(){
   const shuf = document.getElementById("shuffle").checked;
   const quiz = document.getElementById("quiz");
   quiz.innerHTML = ""; inputs = [];
   document.getElementById("scorebar").classList.add("hide");
+  attemptGraded=false;
 
   if(!shuf){
     DATA.forEach(sec=>{
@@ -238,10 +293,11 @@ function grade(){
   else if(pct>=0.5) msg = "半分こえた。なぞり書きを見直そう。";
   if(warnCount>0) msg += "　黄色は綴りはOK・大文字や . ? だけ直そう。";
   document.getElementById("scoremsg").textContent = msg;
-  bar.scrollIntoView({behavior:"smooth",block:"nearest"});
+  if(!attemptGraded){ attemptGraded=true; recordScore(score); }
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function resetAll(){ render(); window.scrollTo({top:0,behavior:"smooth"}); }
 
-render();
+buildStudy(); render(); showStudy();
 </script>
