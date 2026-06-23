@@ -43,7 +43,7 @@ function getSS(){
  *          false は毎回「最新の値」で上書き（直近の状態・氏名など）。       */
 var SUMMARY_COLS = [
   {key:"_ts",            head:"更新日時",       max:false},
-  {key:"cls",            head:"組",             max:false},
+  {key:"cls",            head:"学年",           max:false},
   {key:"num",            head:"番号",           max:false},
   {key:"name",           head:"名前",           max:false},
   // --- 単語（打ち込めた単語数） ---
@@ -77,7 +77,7 @@ var SUMMARY_COLS = [
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
  * ★先生へ：下の TEACHER_PIN を必ず自分だけが知る合言葉に変更してください。
  *   管理ページ（/admin/）でスタート/ストップを押すときに使います。            */
-var TEACHER_PIN = "kaeru-1234";
+var TEACHER_PIN = "PIN";
 var UNIT_SHEET = "単元管理";        // ゲート状態（開/閉・セッション）。先生が見える化用も兼ねる
 var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
 // 単元テスト扱いにする試験ID（exam.html?id=… と一致）→ 表示名。複数登録可。
@@ -133,8 +133,9 @@ function getSheet(name, header){
 
 /* ===== (A) 英検：1回ごとに追記 ===== */
 function handleEiken(d){
-  var header = ["日時","組","番号","名前","版","級","モード","得点","満点","正答率","合否"];
+  var header = ["日時","学年","番号","名前","版","級","モード","得点","満点","正答率","合否"];
   var sh = getSheet(EIKEN_SHEET, header);
+  sh.getRange(1,1,1,header.length).setValues([header]); // 既存ヘッダ(組→学年)も毎回そろえる
   sh.appendRow([
     new Date(),
     d.cls||"", d.num||"", d.name||"", d.ver||"",
@@ -157,8 +158,8 @@ function handleSummary(d){
   var lastRow = sh.getLastRow();
   var rowIndex = -1;
   if (lastRow >= 2){
-    // 「組 / 番号」で既存行を検索（2列＝組,3列＝番号）
-    var ids = sh.getRange(2,2,lastRow-1,2).getValues(); // [組,番号] × n
+    // 「学年 / 番号」で既存行を検索（2列＝学年,3列＝番号）
+    var ids = sh.getRange(2,2,lastRow-1,2).getValues(); // [学年,番号] × n
     for (var i=0;i<ids.length;i++){
       var k = String(ids[i][0]).trim() + " / " + String(ids[i][1]).trim();
       if (k === key){ rowIndex = i+2; break; }
@@ -262,13 +263,13 @@ function handleUnitTest(d){
     if (d.session && String(d.session) !== String(st.session))
       return {result:"locked", message:"受付が切り替わりました。もう一度ひらいてね"};
     var session = st.session;
-    var log = getSheet(UNIT_LOG, ["提出日時","セッション","試験","組","番号","名前","得点","満点","正答率(%)","版"]);
+    var log = getSheet(UNIT_LOG, ["提出日時","セッション","試験","学年","番号","名前","得点","満点","正答率(%)","版"]);
     var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
-    if (!cls || !num) return {result:"error", message:"組と番号を入れてね"};
+    if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
     // 同一セッション・同一試験で同じ生徒は1回だけ
     var last = log.getLastRow();
     if (last >= 2){
-      var rows = log.getRange(2,2,last-1,4).getValues(); // セッション,試験,組,番号
+      var rows = log.getRange(2,2,last-1,4).getValues(); // セッション,試験,学年,番号
       for (var i=0;i<rows.length;i++){
         if (String(rows[i][0])===session && String(rows[i][1])===exam &&
             String(rows[i][2]).trim()===cls && String(rows[i][3]).trim()===num){
@@ -282,4 +283,28 @@ function handleUnitTest(d){
     if (r > 0){ var c = ush.getRange(r,6); c.setValue((Number(c.getValue())||0)+1); }
     return {result:"ok", message:"提出しました"};
   } finally { lock.releaseLock(); }
+}
+
+/* ===================== データのリフレッシュ（先生が手動で1回実行） ===================== *
+ * Apps Scriptエディタで関数 refreshData を選んで［実行］すると、
+ *  ・各タブの見出しを最新（組→学年）にそろえ直し、
+ *  ・古い記録（2A/3A混在など）をすべて消去します。
+ * ※消したくない記録があるときは、先にシートを複製してから実行してください。     */
+function refreshData(){
+  var ss = getSS();
+  resetSheet(ss, SUMMARY_SHEET, SUMMARY_COLS.map(function(c){return c.head;}));
+  resetSheet(ss, EIKEN_SHEET, ["日時","学年","番号","名前","版","級","モード","得点","満点","正答率","合否"]);
+  resetSheet(ss, UNIT_LOG, ["提出日時","セッション","試験","学年","番号","名前","得点","満点","正答率(%)","版"]);
+  // 単元管理：すべて「閉」・提出数0にリセット
+  var u = ss.getSheetByName(UNIT_SHEET);
+  if (u) u.clear();
+  u = getSheet(UNIT_SHEET, ["試験ID","タイトル","状態","セッション","開始時刻","提出数"]);
+  for (var ex in UNIT_EXAMS) u.appendRow([ex, UNIT_EXAMS[ex], "閉", "", "", 0]);
+  return "リフレッシュ完了：見出しを学年にそろえ、古い記録を消去しました。";
+}
+function resetSheet(ss, name, header){
+  var sh = ss.getSheetByName(name) || ss.insertSheet(name);
+  sh.clear();
+  sh.appendRow(header);
+  sh.setFrozenRows(1);
 }

@@ -1884,19 +1884,21 @@
   var GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
   function idStore(k,v){try{localStorage.setItem("mado_"+k,v);}catch(e){}}
   function idLoad(k){try{return localStorage.getItem("mado_"+k)||"";}catch(e){return "";}}
+  function han(s){return (s||"").replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-65248);}).replace(/[^0-9]/g,"");}
   function fillIdentity(){
     var prm; try{prm=new URLSearchParams(location.search);}catch(e){prm=null;}
     var c=$("scls"),n=$("sid"),m=$("snm"); if(!c)return;
-    c.value=(prm&&prm.get("cls"))||idLoad("cls")||"";
-    n.value=(prm&&prm.get("num"))||idLoad("num")||"";
+    c.value=(prm&&prm.get("year"))||idLoad("year")||"";          // 学年(1〜3)
+    n.value=han((prm&&prm.get("num"))||idLoad("num"));            // 番号は半角のみ
     m.value=(prm&&prm.get("name"))||idLoad("name")||"";
+    n.addEventListener("input",function(){ this.value=han(this.value); });
   }
   function sendScore(){
     var r=S.lastResult||{}, msg=$("sendmsg");
-    var cls=$("scls").value.trim(), num=$("sid").value.trim(), name=$("snm").value.trim();
-    if(!cls||!num){msg.textContent="組と番号を入れてね";return;}
+    var cls=$("scls").value.trim(), num=han($("sid").value), name=$("snm").value.trim();
+    if(!cls||!num){msg.textContent="学年と番号を入れてね";return;}
     if(!GAS_URL){msg.textContent="（先生へ：HTML内の GAS_URL が未設定です）";return;}
-    idStore("cls",cls); idStore("num",num); idStore("name",name);
+    idStore("year",cls); idStore("num",num); idStore("name",name);
     var btn=$("send"); btn.disabled=true; btn.textContent="送信中…";
     var payload={cls:cls,num:num,name:name,ver:APP_VER,
       grade:(gradeMeta(r.grade)?gradeMeta(r.grade).name:r.grade),
@@ -1953,12 +1955,12 @@
       '<div class="send-box">'+
         '<div class="send-h">📨 成績を先生に送信</div>'+
         '<div class="rnum">'+
-          '<input id="scls" type="text" autocomplete="off" placeholder="組(例:3A)" aria-label="組">'+
-          '<input id="sid" type="text" inputmode="numeric" autocomplete="off" placeholder="番号" aria-label="番号">'+
+          '<select id="scls" aria-label="学年"><option value="">学年</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option></select>'+
+          '<input id="sid" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="番号" aria-label="番号">'+
           '<input id="snm" type="text" autocomplete="off" placeholder="名前" aria-label="名前">'+
         '</div>'+
         '<button class="act" id="send">先生に送信</button>'+
-        '<div class="rnote" id="sendmsg">組・番号・名前を入れて「先生に送信」を押してね</div>'+
+        '<div class="rnote" id="sendmsg">学年・番号・名前を入れて「先生に送信」を押してね</div>'+
       '</div>'+
     '</div>';
     var rw=$("rWeak"); if(rw)rw.addEventListener("click",function(){S.q=null;S.genre=this.getAttribute("data-g");go("train");});

@@ -112,11 +112,13 @@
   <div class="card id">
     <h2><span class="emoji">🪪</span>あなたの情報</h2>
     <div class="idrow">
-      <label>組<input id="f_cls" inputmode="text" placeholder="3A" autocomplete="off"></label>
-      <label>番号<input id="f_num" inputmode="numeric" placeholder="5" autocomplete="off"></label>
+      <label>学年<select id="f_cls">
+        <option value="">学年</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option>
+      </select></label>
+      <label>番号<input id="f_num" inputmode="numeric" pattern="[0-9]*" placeholder="5" autocomplete="off"></label>
       <label>名前<input id="f_name" placeholder="山田 太郎" autocomplete="off"></label>
     </div>
-    <p class="hint">組と番号を入れておくと、記録が先生に届きます（名前は任意）。同じ端末・同じブラウザの記録だけ集計します。</p>
+    <p class="hint">学年と番号を入れておくと、記録が先生に届きます（名前は任意）。同じ端末・同じブラウザの記録だけ集計します。</p>
   </div>
 
   <!-- 単語 -->
@@ -196,15 +198,16 @@
   /* ---------- 本人情報（英検と同じキーを共有） ---------- */
   function idGet(k){return lsGet("mado_"+k)||"";}
   function idSet(k,v){lsSet("mado_"+k,v);}
+  function han(s){return (s||"").replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-65248);}).replace(/[^0-9]/g,"");}
   function fillIdentity(){
     var prm=null; try{prm=new URLSearchParams(location.search);}catch(e){}
-    $("f_cls").value=(prm&&prm.get("cls"))||idGet("cls");
-    $("f_num").value=(prm&&prm.get("num"))||idGet("num");
+    $("f_cls").value=(prm&&prm.get("year"))||idGet("year");          // 学年(1〜3)
+    $("f_num").value=han((prm&&prm.get("num"))||idGet("num"));        // 番号は半角のみ
     $("f_name").value=(prm&&prm.get("name"))||idGet("name");
   }
-  ["cls","num","name"].forEach(function(k){
-    $("f_"+k).addEventListener("input",function(){ idSet(k,this.value.trim()); });
-  });
+  $("f_cls").addEventListener("change",function(){ idSet("year",this.value); });
+  $("f_num").addEventListener("input",function(){ this.value=han(this.value); idSet("num",this.value); });
+  $("f_name").addEventListener("input",function(){ idSet("name",this.value.trim()); });
 
   /* ---------- 1) 単語：打ち込めた単語数 ---------- */
   function readWords(){
@@ -311,7 +314,7 @@
     function ms(id){return mb[id]?mb[id].best:"";}
     return {
       kind:"summary", ver:APP_VER,
-      cls:$("f_cls").value.trim(), num:$("f_num").value.trim(), name:$("f_name").value.trim(),
+      cls:$("f_cls").value.trim(), num:han($("f_num").value), name:$("f_name").value.trim(),
       // 単語（打ち込めた数）
       w_all:w.all, w_goal:w.allT, w_basic:w.b, w_ext:w.e,
       w_g1:w.g[1], w_g2:w.g[2], w_g3:w.g[3],
@@ -330,8 +333,8 @@
   var sending=false;
   function send(auto){
     var msg=$("sendmsg"); msg.className="";
-    var cls=$("f_cls").value.trim(), num=$("f_num").value.trim();
-    if(!cls||!num){ msg.textContent="組と番号を入れると送信できます。"; return; }
+    var cls=$("f_cls").value.trim(), num=han($("f_num").value);
+    if(!cls||!num){ msg.textContent="学年と番号を入れると送信できます。"; return; }
     if(!SUMMARY_GAS_URL){ msg.textContent="先生へ：送信先(GAS)が未設定です。"; return; }
     if(sending)return; sending=true;
     var btn=$("sendBtn"); btn.disabled=true; btn.textContent="送信中…";

@@ -16,8 +16,8 @@
   .unit-badge.done{background:#e7ecff;color:#3f5fd6}
   .unit-id{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px}
   .unit-id label{font-size:12px;color:#7a6a55;display:flex;align-items:center;gap:4px}
-  .unit-id input{font-family:inherit;font-size:15px;padding:5px 7px;border:1.5px solid #e7d9c2;
-    border-radius:8px;width:78px;background:#fffdf6}
+  .unit-id input,.unit-id select{font-family:inherit;font-size:15px;padding:5px 7px;
+    border:1.5px solid #e7d9c2;border-radius:8px;width:78px;background:#fffdf6}
   .unit-id input#u_name{width:120px}
   .unit-msg{font-size:13px;color:#8a6d4a;margin-top:9px;font-weight:bold}
 </style>
@@ -30,15 +30,17 @@
       <h1 id="examTitle">模擬テスト</h1>
       <div class="sub" id="examSub">放送文を読んで／本文を読んで、答えをえらぼう・書こう</div>
     </div>
-    <div class="namebox"><span>組番名前</span><input id="name" placeholder="　　　　　　"></div>
+    <div class="namebox"><span>学年・番号・名前</span><input id="name" placeholder="　　　　　　"></div>
   </header>
 
   <div id="unitPanel" class="unit-panel hide">
     <div class="unit-row">
       <span id="unitStatus" class="unit-badge lock">🔒 ロック中</span>
       <div class="unit-id">
-        <label>組 <input id="u_cls" placeholder="3A" autocomplete="off"></label>
-        <label>番号 <input id="u_num" inputmode="numeric" placeholder="5" autocomplete="off"></label>
+        <label>学年 <select id="u_cls">
+          <option value="">学年</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option>
+        </select></label>
+        <label>番号 <input id="u_num" inputmode="numeric" pattern="[0-9]*" placeholder="5" autocomplete="off"></label>
         <label>名前 <input id="u_name" placeholder="山田 太郎" autocomplete="off"></label>
       </div>
       <button id="u_submit" class="grade" disabled>採点して提出する</button>
@@ -117,7 +119,9 @@
     panel.classList.remove("hide");
     document.querySelectorAll(".controls").forEach(c=>c.classList.add("hide"));
     const nb=document.querySelector(".namebox"); if(nb) nb.style.display="none";
-    try{ elc.value=localStorage.getItem("mado_cls")||""; eln.value=localStorage.getItem("mado_num")||"";
+    const han=s=>(s||"").replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248)).replace(/[^0-9]/g,"");
+    eln.addEventListener("input",()=>{ eln.value=han(eln.value); });
+    try{ elc.value=localStorage.getItem("mado_year")||""; eln.value=han(localStorage.getItem("mado_num")||"");
          elm.value=localStorage.getItem("mado_name")||""; }catch(e){}
     let session="", open=false, rendered=false, submitted=false;
     function ensureRender(){ if(!rendered){ MockExam.render(window.EXAM, quiz); rendered=true; } }
@@ -141,13 +145,13 @@
     poll(); setInterval(poll, 5000);
     btn.addEventListener("click",function(){
       if(submitted||!open) return;
-      const cls=elc.value.trim(), num=eln.value.trim(), name=elm.value.trim();
-      if(!cls||!num){ msg.textContent="組と番号を入れてね。"; return; }
+      const cls=elc.value.trim(), num=han(eln.value), name=elm.value.trim();
+      if(!cls||!num){ msg.textContent="学年と番号を入れてね。"; return; }
       quiz.querySelectorAll("input,textarea,button").forEach(el=>el.disabled=true);
       btn.disabled=true; btn.textContent="提出中…";
       MockExam.gradeAll();
       const r=(window.MockExam&&window.MockExam.last)||{score:0,total:0,pct:0};
-      try{ localStorage.setItem("mado_cls",cls); localStorage.setItem("mado_num",num);
+      try{ localStorage.setItem("mado_year",cls); localStorage.setItem("mado_num",num);
            localStorage.setItem("mado_name",name); }catch(e){}
       post({kind:"unittest", exam:id, session:session, cls:cls, num:num, name:name, ver:"unit 0.1",
             score:r.score, total:r.total, pct:Math.round((r.pct||0)*100)})
