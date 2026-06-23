@@ -98,6 +98,11 @@
   #sendmsg.ok{color:#2e9e57}
   #sendmsg.err{color:#d9603e}
   .teacher{font-size:11.5px;color:#b3ab98;margin-top:8px;border-top:1px dashed #e7e0cf;padding-top:8px}
+  .card.comment{border-color:#ffe1b0;background:linear-gradient(180deg,#fffaf0,#fff)}
+  .card.comment .praise{font-size:18px;font-weight:bold;color:#e08a2e;margin:2px 0 8px}
+  .card.comment .guide{font-size:15px;color:var(--ink);margin:0;background:#fff6e6;
+    border-radius:10px;padding:9px 12px}
+  .card.shuku{border-color:#ffd9cc}
   footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:24px}
 </style>
 </head>
@@ -107,6 +112,13 @@
   <div class="hero">
     <h1>マイページ <span class="en">My Page</span></h1>
     <p>単語・模擬テスト・英検の <strong>最新の記録</strong> をまとめて見られます。<span class="ver" id="ver"></span></p>
+  </div>
+
+  <!-- 先生からの一言・今日のミッション -->
+  <div class="card comment" id="commentCard">
+    <h2><span class="emoji">📣</span>きょうのミッション<span class="tag" id="c_policy"></span></h2>
+    <p class="praise" id="c_praise">…</p>
+    <p class="guide" id="c_guide">…</p>
   </div>
 
   <!-- 本人 -->
@@ -148,6 +160,15 @@
       <span class="u" id="m_done"></span></div>
     <table class="exam" id="m_tbl"><thead><tr><th>テスト</th><th style="text-align:right">最高点 <span style="font-weight:normal">（直近）</span></th></tr></thead><tbody></tbody></table>
     <p class="hint"><a href="../mogi/index.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">→ 模擬テストをひらく</a></p>
+  </div>
+
+  <!-- 習熟度 単語テスト -->
+  <div class="card shuku">
+    <h2><span class="emoji">📝</span>習熟度 単語テスト<span class="tag">最高点・挑戦回数</span></h2>
+    <table class="exam"><tbody id="s_tbl"></tbody></table>
+    <p class="hint">80点以上で「合格（先生に送信）」。
+      <a href="../mogi/vocab_chu2.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">→ 中2単語</a> ／
+      <a href="../mogi/vocab_chu3_2.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">中3単語</a></p>
   </div>
 
   <!-- 英検 -->
@@ -298,19 +319,108 @@
     }else{ $("e_recent").textContent="まだ受けていない"; }
   }
 
+  /* ---------- 4) 習熟度 単語テスト（最高点・回数） ---------- */
+  function readShuku(){
+    var o=lsJSON("shuku_v1")||{};
+    function one(id){ var r=o[id]; if(!r)return null;
+      return {best:r.best||0, max:r.max||0, count:r.count||0, last:r.last||0,
+        pct:r.max?Math.round((r.best||0)/r.max*100):0}; }
+    return {c2:one("c2"), c3:one("c3s2")};
+  }
+  function renderShuku(s){
+    var tb=$("s_tbl"); tb.innerHTML="";
+    [["中2 単語",s.c2],["中3 単語",s.c3]].forEach(function(p){
+      var label=p[0], r=p[1], tr=document.createElement("tr");
+      if(r){
+        var pass=r.pct>=80;
+        tr.innerHTML='<td>'+label+'</td><td class="sc">'+r.best+' / '+r.max+
+          ' <span class="last">（'+r.pct+'%・'+r.count+'回）</span> '+
+          '<span class="pill '+(pass?'pass':'fail')+'">'+(pass?'合格':'あと'+(80-r.pct)+'%')+'</span></td>';
+      }else{
+        tr.className="none";
+        tr.innerHTML='<td>'+label+'</td><td class="sc" style="font-weight:normal">— 未受験</td>';
+      }
+      tb.appendChild(tr);
+    });
+  }
+
+  /* ---------- 5) 学習方針コメント（ほめ1行＋指針1行） ---------- */
+  var POLICIES={ "":"（未設定）", kihon:"基本単語を固める", shuku:"習熟度の単語テストを仕上げる",
+    kihon_shuku:"基本単語＋習熟度（単語）", moshi:"模試で得点力", eiken:"英検対策", balance:"バランスよく全部" };
+  function records(){
+    var w=DATA.w,m=DATA.m,s=DATA.s,e=DATA.e;
+    var vC2=s.c2?s.c2.pct:0, vC3=s.c3?s.c3.pct:0;
+    return { mBest:m.done?m.best:0, mDone:m.done||0,
+      vC2:vC2, vC3:vC3, vBest:Math.max(vC2,vC3),
+      vC2n:s.c2?s.c2.count:0, vC3n:s.c3?s.c3.count:0,
+      wBasic:w.b, wBasicT:w.bT, wAll:w.all,
+      act:(m.done||0)+(s.c2?s.c2.count:0)+(s.c3?s.c3.count:0)+(w.all>0?1:0)+(e.last?1:0),
+      day:new Date().toISOString().slice(0,10) };
+  }
+  function praise(R,snap){
+    if(snap){
+      if(R.mBest>snap.mBest) return "模試が "+(R.mBest-snap.mBest)+"点アップ！すごい！🎉";
+      if(R.vBest>snap.vBest) return "単語テストの点が伸びてます！その調子！📈";
+      if(R.act>snap.act) return "新しい問題に挑戦してますね！えらい！✨";
+      if(R.mBest<snap.mBest||R.vBest<snap.vBest) return "前より少し下がったけど、続けているのがえらい！💪";
+      if(R.day!==snap.day && R.act>0) return "今日もがんばってますね！毎日コツコツえらい！🌟";
+    }
+    if(R.act>0) return "コツコツ続けてますね！その調子！🌟";
+    return "ようこそ！まずは1つやってみよう！😊";
+  }
+  function guidance(policy,R){
+    var shukuDone=(R.vC2>=80 && R.vC3>=80), someV=(R.vC2n>0||R.vC3n>0);
+    switch(policy){
+      case "shuku":
+        return shukuDone? "習熟度の単語はバッチリ！次は模試や英検に挑戦しよう。"
+          : "今は『習熟度の単語テスト』を優先。中2・中3とも80点以上を目指そう。";
+      case "kihon_shuku":
+        return shukuDone? "習熟度はクリア！次は基本単語アプリをマスターしよう。"
+          : "今は『習熟度の単語テスト』と『基本単語』を優先。まず単語テストで80点以上。";
+      case "kihon":
+        return (R.wBasic>=R.wBasicT&&R.wBasicT>0)? "基本単語は完ぺき！習熟度テストや模試に進もう。"
+          : "今は『基本単語』を優先。毎日コツコツ覚えよう（基本編 "+R.wBasic+"/"+R.wBasicT+" 語）。";
+      case "moshi":
+        return R.mDone? "今は『模試』を優先。いまの最高 "+R.mBest+"点、さらに上を目指そう。"
+          : "今は『模試』を優先。まず1回挑戦してみよう。";
+      case "eiken":
+        return "今は『英検対策』を優先。判定テストを受けて級を上げよう。";
+      case "balance":
+        if(!someV) return "まずは習熟度の単語テストから始めよう。";
+        if(!shukuDone) return "習熟度の単語テストで80点以上を目指そう。";
+        if(R.wBasic<R.wBasicT) return "基本単語アプリを進めよう（基本編 "+R.wBasic+"/"+R.wBasicT+"）。";
+        return "模試や英検にも挑戦して、力を伸ばそう！";
+      default:
+        return "まずは毎日少しずつ。単語アプリと習熟度テストから始めよう。";
+    }
+  }
+  var curPraise="";
+  function initComment(){
+    var R=records(), snap=lsJSON("mado_snap_v1");
+    curPraise=praise(R,snap);
+    lsSet("mado_snap_v1", JSON.stringify({mBest:R.mBest,vBest:R.vBest,act:R.act,day:R.day}));
+  }
+  function renderComment(policy){
+    policy=policy||"";
+    $("c_praise").textContent=curPraise||"🌟";
+    $("c_guide").textContent=guidance(policy,records());
+    $("c_policy").textContent=(policy&&POLICIES[policy])?("方針："+POLICIES[policy]):"";
+  }
+
   /* ---------- 集約データ ---------- */
   var DATA={};
   function collect(){
-    DATA.w=readWords(); DATA.m=readMogi(); DATA.e=readEiken();
+    DATA.w=readWords(); DATA.m=readMogi(); DATA.e=readEiken(); DATA.s=readShuku();
   }
   function renderAll(){
-    collect(); renderWords(DATA.w); renderMogi(DATA.m); renderEiken(DATA.e);
+    collect(); renderWords(DATA.w); renderMogi(DATA.m); renderEiken(DATA.e); renderShuku(DATA.s);
+    renderComment(lsGet("mado_policy")||"");
   }
 
   /* ---------- 先生へ送信（成績まとめ） ---------- */
   function r2(x){return x==null?"":Math.round(x*100)/100;}
   function buildPayload(){
-    var w=DATA.w,m=DATA.m,e=DATA.e;
+    var w=DATA.w,m=DATA.m,e=DATA.e,s=DATA.s;
     var mb=m.map;
     function ms(id){return mb[id]?mb[id].best:"";}
     return {
@@ -328,7 +438,10 @@
       e_quick:r2(e.quick), e_avg:r2(e.avg),
       e_recent_grade:(e.last?(GN[e.last.grade]||e.last.grade):""),
       e_recent_pct:(e.last?e.last.pct:""),
-      e_recent_pass:(e.last?(e.last.pass?"合格":"不合格"):"")
+      e_recent_pass:(e.last?(e.last.pass?"合格":"不合格"):""),
+      // 習熟度単語（80%以上だけ正式送信。回数は常に送る）
+      sv_c2:(s.c2&&s.c2.pct>=80)?s.c2.pct:"", sv_c2_n:(s.c2?s.c2.count:""),
+      sv_c3:(s.c3&&s.c3.pct>=80)?s.c3.pct:"", sv_c3_n:(s.c3?s.c3.count:"")
     };
   }
   var sending=false;
@@ -346,7 +459,8 @@
       .then(function(res){return res.json();})
       .then(function(j){
         if(j&&j.result==="ok"){ msg.className="ok";
-          msg.textContent="先生に記録をとどけました ✓（"+new Date().toLocaleString("ja-JP")+"）"; }
+          msg.textContent="先生に記録をとどけました ✓（"+new Date().toLocaleString("ja-JP")+"）";
+          if(j.policy!=null){ lsSet("mado_policy", j.policy); renderComment(j.policy); } }
         else{ throw new Error((j&&j.message)||"server"); }
       })
       .catch(function(err){ msg.className="err";
@@ -360,11 +474,9 @@
 
   /* ---------- 起動 ---------- */
   fillIdentity();
+  collect(); initComment();   // 先に集約してスナップショット比較（ほめ言葉のため）
   renderAll();
-  // 先生向けメモ（送信先の状態）
-  $("teacherNote").textContent= SUMMARY_GAS_URL
-    ? "先生へ：このページは英検と同じスプレッドシートの「成績まとめ」タブに集約します（GASを score_gas.gs に更新してください）。"
-    : "先生へ：送信先(SUMMARY_GAS_URL)が未設定のため、送信は無効です。";
+  $("teacherNote").textContent="";   // 先生向けメモは表示しない（生徒画面）
   // 自動送信（本人情報があるときだけ）
   if(SUMMARY_GAS_URL && $("f_cls").value.trim() && $("f_num").value.trim()){
     setTimeout(function(){ send(true); }, 400);

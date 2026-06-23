@@ -65,6 +65,25 @@
 
   <div id="serverNote" class="card"></div>
   <div id="exams"></div>
+
+  <div class="card">
+    <div class="exam-head"><span class="exam-title">📣 学習方針（マイページのコメント）</span></div>
+    <div class="meta">選んだ方針に合わせて、生徒のマイページに「ほめ言葉＋次の指針」が表示されます。</div>
+    <div class="btns" style="align-items:center">
+      <select id="policy" style="font:inherit;font-size:16px;padding:9px 10px;border:2px solid var(--line);border-radius:10px">
+        <option value="">（未設定）</option>
+        <option value="kihon">基本単語を固める</option>
+        <option value="shuku">習熟度の単語テストを仕上げる</option>
+        <option value="kihon_shuku">基本単語＋習熟度（単語）</option>
+        <option value="moshi">模試で得点力</option>
+        <option value="eiken">英検対策</option>
+        <option value="balance">バランスよく全部</option>
+      </select>
+      <button class="start" id="savePolicy">保存</button>
+    </div>
+    <div id="policyMsg" style="font-size:13px;color:#6a7689;margin-top:6px"></div>
+  </div>
+
   <div id="msg"></div>
 
   <div class="note">
@@ -161,6 +180,19 @@
   function pollOne(ex){ post({action:"status", exam:ex.id}).then(function(st){ updateServerNote(st); paint(ex,st); }).catch(function(){}); }
   function pollAll(){ EXAMS.forEach(pollOne); }
   pollAll(); setInterval(pollAll, 5000);
+
+  // 学習方針
+  var policySel=document.getElementById("policy"), policyMsg=document.getElementById("policyMsg");
+  function loadPolicy(){ post({action:"policy"}).then(function(r){ if(r&&r.policy!=null) policySel.value=r.policy; }).catch(function(){}); }
+  document.getElementById("savePolicy").addEventListener("click",function(){
+    if(!pin.value.trim()){ policyMsg.style.color="#d9603e"; policyMsg.textContent="合言葉(PIN)を入れてください。"; return; }
+    policyMsg.style.color="#6a7689"; policyMsg.textContent="保存中…";
+    post({action:"setpolicy", pin:pin.value.trim(), policy:policySel.value}).then(function(r){
+      if(r&&r.result==="ok"){ policyMsg.style.color="#2e9e57"; policyMsg.textContent="方針を保存しました ✓（生徒のマイページに反映されます）"; }
+      else { policyMsg.style.color="#d9603e"; policyMsg.textContent="保存できませんでした："+((r&&r.message)||"エラー"); }
+    }).catch(function(){ policyMsg.style.color="#d9603e"; policyMsg.textContent="通信エラー。電波を確認してね。"; });
+  });
+  loadPolicy();
 })();
 </script>
 </body>

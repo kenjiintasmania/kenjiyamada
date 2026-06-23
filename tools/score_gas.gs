@@ -71,7 +71,12 @@ var SUMMARY_COLS = [
   {key:"e_avg",          head:"英検_平均Lv",    max:false},
   {key:"e_recent_grade", head:"英検_直近級",    max:false},
   {key:"e_recent_pct",   head:"英検_直近正答率",max:false},
-  {key:"e_recent_pass",  head:"英検_直近合否",  max:false}
+  {key:"e_recent_pass",  head:"英検_直近合否",  max:false},
+  // 習熟度 単語テスト（80%以上のみ送信＝正式点／挑戦回数）
+  {key:"sv_c2",   head:"習熟度単語_中2",     max:true},
+  {key:"sv_c2_n", head:"習熟度単語_中2_回数", max:true},
+  {key:"sv_c3",   head:"習熟度単語_中3",     max:true},
+  {key:"sv_c3_n", head:"習熟度単語_中3_回数", max:true}
 ];
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
@@ -88,7 +93,8 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-1";
+var GAS_VERSION = "unit-gate-2";
+var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
   return ContentService
@@ -104,12 +110,14 @@ function doPost(e){
     }
     if (data.action === "status"){ var st=gateStatus(data.exam); st.ver=GAS_VERSION; return json(st); }
     if (data.action === "gate"){ var gs=setGate(data); gs.ver=GAS_VERSION; return json(gs); }
+    if (data.action === "policy")    return json({result:"ok", policy:getPolicy(), ver:GAS_VERSION});
+    if (data.action === "setpolicy"){ var ps=setPolicy(data); ps.ver=GAS_VERSION; return json(ps); }
     if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "summary"){
       handleSummary(data);
-    } else {
-      handleEiken(data);   // kind 無し＝英検の1回ごと（従来どおり）
+      return json({result:"ok", policy:getPolicy()});   // マイページのコメント用に方針を返す
     }
+    handleEiken(data);   // kind 無し＝英検の1回ごと（従来どおり）
     return json({result:"ok"});
   } catch(err){
     return json({result:"error", message:String(err)});
@@ -312,4 +320,19 @@ function resetSheet(ss, name, header){
   sh.clear();
   sh.appendRow(header);
   sh.setFrozenRows(1);
+}
+
+/* ===================== 学習方針（マイページのコメント用） ===================== *
+ * 「設定」シートの B2 に方針コードを保存。管理ページ(/admin)から設定します。 */
+function getPolicy(){
+  var sh = getSS().getSheetByName(SETTINGS_SHEET);
+  if (!sh) return "";
+  return String(sh.getRange("B2").getValue() || "");
+}
+function setPolicy(data){
+  if (String(data.pin||"") !== TEACHER_PIN) return {result:"error", message:"合言葉(PIN)が違います"};
+  var sh = getSheet(SETTINGS_SHEET, ["設定項目","値"]);
+  sh.getRange("A2").setValue("学習方針");
+  sh.getRange("B2").setValue(String(data.policy||""));
+  return {result:"ok", policy:String(data.policy||"")};
 }
