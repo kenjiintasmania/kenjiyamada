@@ -196,8 +196,36 @@
       seenRetry: {}, title: title, tag: tag,
       titleShort: scope === "__shuffle__" ? "シャッフル" : scope === "__retry__" ? "再挑戦" : scope
     };
-    show("study");
-    nextCard();
+    showWordList();
+  }
+
+  // ── 答え一覧を先に表示（おぼえてからテスト）──
+  function escWL(s){ return String(s==null?"":s).replace(/[<>&]/g,function(c){return c==="<"?"&lt;":c===">"?"&gt;":"&amp;";}); }
+  var wlOverlay = null;
+  function showWordList() {
+    if (!wlOverlay) {
+      wlOverlay = document.createElement("div");
+      wlOverlay.id = "wordListOverlay";
+      wlOverlay.style.cssText = "position:fixed;inset:0;z-index:60;background:rgba(20,24,40,.55);display:flex;align-items:center;justify-content:center;padding:16px";
+      wlOverlay.innerHTML =
+        '<div style="background:#fff;border-radius:18px;max-width:560px;width:100%;max-height:86vh;overflow:auto;padding:18px 18px 8px;box-shadow:0 12px 40px rgba(0,0,0,.35)">'+
+        '<h2 style="margin:0 0 4px;font-size:19px">📖 答え一覧（おぼえてからテスト）</h2>'+
+        '<p style="font-size:13px;color:#7a8094;margin:0 0 10px">この回に出る単語です。意味と英語をおぼえて、じゅんびができたら「テスト開始」を押そう。</p>'+
+        '<div id="wlBody"></div>'+
+        '<div style="position:sticky;bottom:0;background:#fff;padding:12px 0 6px;text-align:center">'+
+        '<button id="wlStart" class="btn clear" style="min-width:160px">✏️ テスト開始</button></div>'+
+        '</div>';
+      document.body.appendChild(wlOverlay);
+      wlOverlay.querySelector("#wlStart").addEventListener("click", function () {
+        wlOverlay.style.display = "none";
+        show("study"); nextCard();
+      });
+    }
+    wlOverlay.querySelector("#wlBody").innerHTML = session.queue.map(function (it) {
+      return '<div style="display:flex;justify-content:space-between;gap:12px;padding:5px 2px;border-bottom:1px dashed #eee;font-size:15px">'+
+        '<span>'+escWL(it.w.j)+'</span><b style="color:#4f7cff">'+escWL(it.w.w)+'</b></div>';
+    }).join("");
+    wlOverlay.style.display = "flex";
   }
 
   function poolForRetryInjection() {
