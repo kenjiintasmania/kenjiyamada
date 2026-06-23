@@ -127,10 +127,14 @@
   var STALE='⚠️ <b>サーバー（GAS）が古いコードのままです。</b><br>'+
     'Apps Scriptで〔デプロイ〕→〔デプロイを管理〕→ ✏️（編集）→ バージョン「新バージョン」→〔デプロイ〕してください。'+
     '<br>これを直すまで、スタートを押してもロックは解除されません。';
+  // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
+  function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   function updateServerNote(st){
     var el=document.getElementById("serverNote");
-    if(st && st.result==="ok" && !st.ver){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; }
-    else if(st && st.ver){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
+    if(st && st.ver){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
+    else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）
+    else if(st && st.result==="ok"){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版
+    else { el.style.display="none"; }
   }
 
   function setGate(ex, open){
@@ -138,8 +142,8 @@
     msg.className=""; msg.textContent=(open?"スタートしています…":"ストップしています…");
     post({action:"gate", pin:pin.value.trim(), exam:ex.id, open:open}).then(function(res){
       updateServerNote(res);
-      if(res && res.result==="ok" && !res.ver){
-        msg.className="err"; msg.textContent="サーバーが旧バージョンのため反映できません。上の案内のとおり再デプロイしてください。";
+      if(res && res.result==="ok" && !gateOK(res)){
+        msg.className="err"; msg.textContent="サーバーが旧バージョン（ゲート非対応）です。上の案内のとおり再デプロイしてください。";
       }else if(res && res.result==="ok" && (open ? res.open===true : true)){
         msg.className="ok"; msg.textContent=(open?"受付を開始しました ▶（新しいセッション）":"受付を終了しました ■");
         pollOne(ex);
