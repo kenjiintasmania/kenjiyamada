@@ -76,7 +76,12 @@
 (function(){
   var GAS_URL="https://script.google.com/macros/s/AKfycbySJy2-r6GcYvwOIeoJRb360TkV0uglWjRvPAxJM5WDgVjhsn-qOhBcqNRebOe3Qbgn-A/exec";
   // GAS の UNIT_EXAMS と同じ並び
-  var EXAMS=[{id:"unit1", title:"中3 単元テスト①"}];
+  var EXAMS=[
+    {id:"c2u1", title:"中2 単元テスト①"},
+    {id:"c2u2", title:"中2 単元テスト②"},
+    {id:"c3u1", title:"中3 単元テスト①"},
+    {id:"c3u2", title:"中3 単元テスト②"}
+  ];
 
   var $=function(i){return document.getElementById(i);};
   var pin=$("pin"), remember=$("remember"), msg=$("msg");
