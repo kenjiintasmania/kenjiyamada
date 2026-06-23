@@ -184,9 +184,9 @@ sections: [
 ]},
 
 /* ===== 大問6 並べかえ（X/Yコース選択） ===== */
-{ no:6, title:"並べかえ（X・Yコースのどちらかを選んで答えなさい）", lead:"［　］内の語を正しく並べかえ、英文を完成させましょう。文の最初にくる語も小文字で示しています。",
-  courses:[
-    { name:"Xコース", items:[
+{ no:6, title:"並べかえ", lead:"［　］内の語を正しく並べかえ、英文を完成させましょう。文の最初にくる語も小文字で示しています。",
+  groups:[
+    { items:[
       { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("run / where / you / will")+' ］ the relay this fall?　B: At the school ground.',
         words:["run","where","you","will"], answer:"Where will you run the relay this fall?",
         display:"Where will you run the relay this fall?" },
@@ -198,20 +198,7 @@ sections: [
         display:"If you are free tomorrow, let's practice the relay." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("was / your / running / brother")+' ］ on the ground at five yesterday?　B: Yes, he was.',
         words:["was","your","running","brother"], answer:"Was your brother running on the ground at five yesterday?",
-        display:"Was your brother running on the ground at five yesterday?" } ] },
-    { name:"Yコース", items:[
-      { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("you / cheering / were / loudly")+' ］ at nine this morning?　B: Yes, I was.',
-        words:["you","cheering","were","loudly"], answer:"Were you cheering loudly at nine this morning?",
-        display:"Were you cheering loudly at nine this morning?" },
-      { type:"wordorder", label:"(2)", pt:3, stem:'A: I didn\'t run ［ '+E("was / because / very / it")+' ］ hot this morning.　B: I see.',
-        words:["was","because","very","it"], answer:"I didn't run because it was very hot this morning.",
-        display:"I didn't run because it was very hot this morning." },
-      { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to the stadium ［ '+E("my / cheer / to / team")+' ］ last week.　B: That\'s nice.',
-        words:["my","cheer","to","team"], answer:"I went to the stadium to cheer my team last week.",
-        display:"I went to the stadium to cheer my team last week." },
-      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, come to the sports day with me.　B: OK.',
-        words:["are","you","if","free"], answer:"If you are free tomorrow, come to the sports day with me.",
-        display:"If you are free tomorrow, come to the sports day with me." } ] }
+        display:"Was your brother running on the ground at five yesterday?" } ] }
   ] },
 
 /* ===== 大問7 対話文（語句補充） ===== */

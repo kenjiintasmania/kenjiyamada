@@ -187,9 +187,9 @@ sections: [
 ]},
 
 /* ===== 大問6 並べかえ（X/Yコース選択） ===== */
-{ no:6, title:"並べかえ（X・Yコースのどちらかを選んで答えなさい）", lead:"［　］内の語を正しく並べかえ、英文を完成させましょう。文の最初にくる語も小文字で示しています。",
-  courses:[
-    { name:"Xコース", items:[
+{ no:6, title:"並べかえ", lead:"［　］内の語を正しく並べかえ、英文を完成させましょう。文の最初にくる語も小文字で示しています。",
+  groups:[
+    { items:[
       { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("visit / where / you / will")+' ］ next Sunday?　B: The old castle.',
         words:["visit","where","you","will"], answer:"Where will you visit next Sunday?",
         display:"Where will you visit next Sunday?" },
@@ -201,20 +201,7 @@ sections: [
         display:"If you are free this weekend, let's join the town tour." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("was / your / reading / sister")+' ］ the map at three yesterday?　B: Yes, she was.',
         words:["was","your","reading","sister"], answer:"Was your sister reading the map at three yesterday?",
-        display:"Was your sister reading the map at three yesterday?" } ] },
-    { name:"Yコース", items:[
-      { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("you / pictures / were / taking")+' ］ at four last evening?　B: Yes, I was.',
-        words:["you","pictures","were","taking"], answer:"Were you taking pictures at four last evening?",
-        display:"Were you taking pictures at four last evening?" },
-      { type:"wordorder", label:"(2)", pt:3, stem:'A: I stayed home ［ '+E("it / because / very / was")+' ］ rainy this morning.　B: I see.',
-        words:["it","because","very","was"], answer:"I stayed home because it was very rainy this morning.",
-        display:"I stayed home because it was very rainy this morning." },
-      { type:"wordorder", label:"(3)", pt:3, stem:'A: I visited ［ '+E("see / temple / to / the")+' ］ old garden last week.　B: That\'s nice.',
-        words:["see","temple","to","the"], answer:"I visited the temple to see the old garden last week.",
-        display:"I visited the temple to see the old garden last week." },
-      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, come to the museum with me.　B: OK.',
-        words:["are","you","if","free"], answer:"If you are free tomorrow, come to the museum with me.",
-        display:"If you are free tomorrow, come to the museum with me." } ] }
+        display:"Was your sister reading the map at three yesterday?" } ] }
   ] },
 
 /* ===== 大問7 対話文（語句補充） ===== */
