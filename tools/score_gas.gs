@@ -84,10 +84,12 @@ var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
 var UNIT_EXAMS = {
   "unit1": "中3 単元テスト①"
 };
+// デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
+var GAS_VERSION = "unit-gate-1";
 
 function doGet(e){
   return ContentService
-    .createTextOutput(JSON.stringify({result:"ok", message:"score_gas alive"}))
+    .createTextOutput(JSON.stringify({result:"ok", message:"score_gas alive", ver:GAS_VERSION}))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -97,8 +99,8 @@ function doPost(e){
     if (e && e.postData && e.postData.contents){
       data = JSON.parse(e.postData.contents);
     }
-    if (data.action === "status") return json(gateStatus(data.exam));
-    if (data.action === "gate")   return json(setGate(data));
+    if (data.action === "status"){ var st=gateStatus(data.exam); st.ver=GAS_VERSION; return json(st); }
+    if (data.action === "gate"){ var gs=setGate(data); gs.ver=GAS_VERSION; return json(gs); }
     if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "summary"){
       handleSummary(data);
