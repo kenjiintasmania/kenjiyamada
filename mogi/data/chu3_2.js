@@ -126,8 +126,7 @@ sections: [
     '<span class="sp"><span class="who">Saki:</span> That\'s interesting. In Japan, many families eat rice and miso soup. We often eat together and talk about our plans for the day.</span>'+
     '<span class="sp"><span class="who">Mr. Green:</span> Breakfast is a good chance to （　え　） together. But some people say young people don\'t eat breakfast now. Is that true?</span>'+
     '<span class="sp"><span class="who">Saki:</span> My brother is a high school student, and he sometimes skips breakfast.</span>'+
-    '<span class="sp"><span class="who">Leo:</span> Every morning?</span>'+
-    '<span class="sp"><span class="who">Saki:</span> （　お　）</span>'+
+    '<span class="sp"><span class="who">Leo:</span> Every morning? （　お　）</span>'+
     '<span class="sp"><span class="who">Saki:</span> My mother makes it every morning, but he sometimes gets up late.</span>'+
     '<span class="sp"><span class="who">Emma:</span> <u>(か) I became interested in Japanese breakfast</u> when I watched a Japanese movie. In the movie, a family ate rice and fish in the morning. So I tried natto in America.</span>'+
     '<span class="sp"><span class="who">Leo:</span> Really? I want to try a Japanese breakfast in France, but I can\'t find natto.</span>'+
