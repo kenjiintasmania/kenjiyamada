@@ -77,11 +77,17 @@
   function acceptableSet(w) {
     var set = {};
     function add(str) { var n = normalizeAnswer(str); if (n) set[n] = 1; }
-    add(w);
-    if (/[()]/.test(w)) {
-      add(w.replace(/\([^)]*\)/g, " "));   // 括弧（と中身）をすべて省いた形
-      add(w.replace(/[()]/g, " "));        // 括弧記号だけ外して中身は残す形
+    function addP(s) {
+      add(s);
+      if (/[()]/.test(s)) {
+        add(s.replace(/\([^)]*\)/g, " "));   // 括弧（と中身）をすべて省いた形
+        add(s.replace(/[()]/g, " "));        // 括弧記号だけ外して中身は残す形
+      }
     }
+    var main = (w && typeof w === "object") ? w.w : w;
+    var alts = (w && typeof w === "object" && w.alt) ? w.alt : [];
+    addP(main);
+    alts.forEach(addP);                      // 別表記（例: pencil case の旧表記 pencase）も正解扱い
     return set;
   }
 
@@ -305,7 +311,7 @@
     var raw = inp.value;
     if (!normalizeAnswer(raw)) { focusInput(); return; }   // 空入力は無視
     it.answered = true;
-    var ok = judge(raw, it.w.w);
+    var ok = judge(raw, it.w);   // 単語オブジェクトを渡す（w.alt の別表記も許容）
 
     inp.disabled = true;
     inp.classList.add(ok ? "correct" : "wrong");

@@ -109,7 +109,32 @@ function renderSection(sec){
     return box;
   }
 
-  (sec.groups||[]).forEach(g=> box.appendChild(renderGroup(g)));
+  // 読解大問（本文あり・リスニングでない）は、本文をまとめて左に固定し設問を右に置く2カラム。
+  // 本文と設問が別グループに分かれていても、まとめて横並びにする。
+  const groups = sec.groups||[];
+  const hasPassage = groups.some(g=>g.passage);
+  const isListening = groups.some(g=>g.script);
+  if(hasPassage && !isListening){
+    const cols  = el("div","read-cols");
+    const pcol  = el("div","passage-col");
+    const inner = el("div","passage-inner");
+    const qcol  = el("div","q-col");
+    groups.forEach(g=>{
+      if(g.intro)     inner.appendChild(el("div","lead", g.intro));
+      if(g.sceneNote) inner.appendChild(el("div","scene", g.sceneNote));
+      if(g.flyer)     inner.appendChild(el("div","flyer", g.flyer));
+      if(g.passage)   inner.appendChild(el("div","passage"+(g.passageEn?" en":""), g.passage));
+      if(g.note)      inner.appendChild(el("div","note", g.note));
+      (g.items||[]).forEach(it=> qcol.appendChild(renderItem(it,{})));
+    });
+    pcol.appendChild(inner);
+    cols.appendChild(pcol); cols.appendChild(qcol);
+    box.classList.add("has-passage");
+    box.appendChild(cols);
+    return box;
+  }
+
+  groups.forEach(g=> box.appendChild(renderGroup(g)));
   return box;
 }
 
@@ -130,8 +155,23 @@ function renderGroup(g){
     t.appendChild(btn); wrap.appendChild(t); wrap.appendChild(pas);
   }
   if(g.sceneNote) wrap.appendChild(el("div","scene", g.sceneNote));
+  // 本文（読解・対話）がある大問は、本文をピン留めした2カラム（スマホは本文を上部固定）
+  if(g.passage){
+    wrap.classList.add("has-passage");
+    const cols  = el("div","read-cols");
+    const pcol  = el("div","passage-col");
+    const inner = el("div","passage-inner");
+    if(g.flyer) inner.appendChild(el("div","flyer", g.flyer));
+    inner.appendChild(el("div","passage"+(g.passageEn?" en":""), g.passage));
+    if(g.note)  inner.appendChild(el("div","note", g.note));
+    pcol.appendChild(inner);
+    const qcol = el("div","q-col");
+    (g.items||[]).forEach(it=> qcol.appendChild(renderItem(it,{})));
+    cols.appendChild(pcol); cols.appendChild(qcol);
+    wrap.appendChild(cols);
+    return wrap;
+  }
   if(g.flyer)   wrap.appendChild(el("div","flyer", g.flyer));
-  if(g.passage) wrap.appendChild(el("div","passage"+(g.passageEn?" en":""), g.passage));
   if(g.note)    wrap.appendChild(el("div","note", g.note));
   (g.items||[]).forEach(it=> wrap.appendChild(renderItem(it,{})));
   return wrap;
