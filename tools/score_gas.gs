@@ -336,3 +336,62 @@ function setPolicy(data){
   sh.getRange("B2").setValue(String(data.policy||""));
   return {result:"ok", policy:String(data.policy||"")};
 }
+
+/* ===================== スプレッドシート用ボタン（メニュー） ===================== *
+ * シートを開くと上部に「📊 成績ツール」メニューが出ます（このスクリプトがシートに
+ * ひも付いている場合）。出ないときは Apps Script エディタで onOpen を1回実行してください。 */
+var CLASS_SIZE = { "2": 40, "3": 40 };   // ★各学年の人数（番号の最大）。クラスに合わせて変更してください。
+
+function onOpen(){
+  SpreadsheetApp.getUi().createMenu("📊 成績ツール")
+    .addItem("🔢 学年▶番号で並べかえ", "sortSummary")
+    .addSeparator()
+    .addItem("🟠 2年 未投稿者を表示", "missing2")
+    .addItem("🔵 3年 未投稿者を表示", "missing3")
+    .addToUi();
+}
+function missing2(){ listMissing(2); }
+function missing3(){ listMissing(3); }
+
+// 成績まとめを 学年(昇順)▶番号(昇順) で並べかえ（番号は数値順）
+function sortSummary(){
+  var sh = getSS().getSheetByName(SUMMARY_SHEET);
+  if (!sh || sh.getLastRow() < 3){ toastMsg("並べかえる成績がまだありません。"); return; }
+  var last = sh.getLastRow(), width = sh.getLastColumn();
+  var rng = sh.getRange(2, 1, last - 1, width);
+  var data = rng.getValues();
+  data.sort(function(a, b){
+    var ga = sortKey(a[1]), gb = sortKey(b[1]);   // 2列目＝学年
+    if (ga !== gb) return ga - gb;
+    return sortKey(a[2]) - sortKey(b[2]);          // 3列目＝番号
+  });
+  rng.setValues(data);
+  toastMsg("学年▶番号で並べかえました（" + (last - 1) + "件）。");
+}
+function sortKey(v){ var n = toNum(v); return (n == null) ? 1e9 : n; }   // 数値以外は末尾へ
+function toastMsg(m){ try{ getSS().toast(m, "成績ツール", 4); }catch(e){} }
+
+// 指定学年の未投稿者（成績まとめに番号が無い人）を計算
+function computeMissing(grade){
+  var g = String(grade);
+  var sh = getSS().getSheetByName(SUMMARY_SHEET);
+  var sub = {};
+  if (sh && sh.getLastRow() >= 2){
+    var v = sh.getRange(2, 2, sh.getLastRow() - 1, 2).getValues();   // [学年, 番号]
+    for (var i = 0; i < v.length; i++){
+      if (String(v[i][0]).trim() === g){ var n = toNum(v[i][1]); if (n != null) sub[n] = true; }
+    }
+  }
+  var maxN = CLASS_SIZE[g] || 40, miss = [];
+  for (var k = 1; k <= maxN; k++){ if (!sub[k]) miss.push(k); }
+  var cnt = 0; for (var s in sub) cnt++;
+  return { grade: g, max: maxN, submitted: cnt, missing: miss };
+}
+function listMissing(grade){
+  var r = computeMissing(grade);
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(r.grade + "年 未投稿者",
+    r.grade + "年（番号 1〜" + r.max + "）\n投稿ずみ：" + r.submitted + "人　／　未投稿：" + r.missing.length + "人\n\n" +
+    "未投稿の番号：\n" + (r.missing.length ? r.missing.join(", ") : "なし（全員投稿ずみ！）"),
+    ui.ButtonSet.OK);
+}
