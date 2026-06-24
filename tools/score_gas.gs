@@ -343,15 +343,27 @@ function setPolicy(data){
 var CLASS_SIZE = { "2": 40, "3": 40 };   // ★各学年の人数（番号の最大）。クラスに合わせて変更してください。
 
 function onOpen(){
-  SpreadsheetApp.getUi().createMenu("📊 成績ツール")
+  var ui = SpreadsheetApp.getUi();
+  var unitMenu = ui.createMenu("📝 単元テスト 未提出者")
+    .addItem("中2 単元テスト①", "um_c2u1")
+    .addItem("中2 単元テスト②", "um_c2u2")
+    .addItem("中3 単元テスト①", "um_c3u1")
+    .addItem("中3 単元テスト②", "um_c3u2");
+  ui.createMenu("📊 成績ツール")
     .addItem("🔢 学年▶番号で並べかえ", "sortSummary")
     .addSeparator()
-    .addItem("🟠 2年 未投稿者を表示", "missing2")
-    .addItem("🔵 3年 未投稿者を表示", "missing3")
+    .addItem("🟠 2年 未投稿者（マイページ送信）", "missing2")
+    .addItem("🔵 3年 未投稿者（マイページ送信）", "missing3")
+    .addSeparator()
+    .addSubMenu(unitMenu)
     .addToUi();
 }
 function missing2(){ listMissing(2); }
 function missing3(){ listMissing(3); }
+function um_c2u1(){ listMissingUnit("c2u1"); }
+function um_c2u2(){ listMissingUnit("c2u2"); }
+function um_c3u1(){ listMissingUnit("c3u1"); }
+function um_c3u2(){ listMissingUnit("c3u2"); }
 
 // 成績まとめを 学年(昇順)▶番号(昇順) で並べかえ（番号は数値順）
 function sortSummary(){
@@ -393,5 +405,46 @@ function listMissing(grade){
   ui.alert(r.grade + "年 未投稿者",
     r.grade + "年（番号 1〜" + r.max + "）\n投稿ずみ：" + r.submitted + "人　／　未投稿：" + r.missing.length + "人\n\n" +
     "未投稿の番号：\n" + (r.missing.length ? r.missing.join(", ") : "なし（全員投稿ずみ！）"),
+    ui.ButtonSet.OK);
+}
+
+// 単元テストの未提出者（現在＝直近のセッションで、単元テスト記録に番号が無い人）を計算
+function computeMissingUnit(examId){
+  var title = UNIT_EXAMS[examId] || examId;
+  var ush = getSS().getSheetByName(UNIT_SHEET);
+  var session = "", state = "";
+  if (ush && ush.getLastRow() >= 2){
+    var rows = ush.getRange(2, 1, ush.getLastRow() - 1, 4).getValues();   // 試験ID,タイトル,状態,セッション
+    for (var i = 0; i < rows.length; i++){
+      if (String(rows[i][0]).trim() === examId){ state = String(rows[i][2]); session = String(rows[i][3]); break; }
+    }
+  }
+  var g = examId.charAt(1);   // c2u1→"2", c3u2→"3"
+  var sub = {};
+  if (session){
+    var log = getSS().getSheetByName(UNIT_LOG);
+    if (log && log.getLastRow() >= 2){
+      var v = log.getRange(2, 2, log.getLastRow() - 1, 4).getValues();   // セッション,試験,学年,番号
+      for (var j = 0; j < v.length; j++){
+        if (String(v[j][0]) === session && String(v[j][1]) === examId){
+          var n = toNum(v[j][3]); if (n != null) sub[n] = true;
+        }
+      }
+    }
+  }
+  var maxN = CLASS_SIZE[g] || 40, miss = [];
+  for (var k = 1; k <= maxN; k++){ if (!sub[k]) miss.push(k); }
+  var cnt = 0; for (var s in sub) cnt++;
+  return { exam: examId, title: title, grade: g, session: session, state: state,
+           max: maxN, submitted: cnt, missing: miss, started: !!session };
+}
+function listMissingUnit(examId){
+  var r = computeMissingUnit(examId);
+  var ui = SpreadsheetApp.getUi();
+  if (!r.started){ ui.alert(r.title, "この単元テストはまだ一度も開始されていません。", ui.ButtonSet.OK); return; }
+  ui.alert(r.title + " 未提出者",
+    r.title + "（" + r.grade + "年・番号 1〜" + r.max + "）\n受付状態：" + (r.state === "開" ? "受付中" : "終了") +
+    "\nセッション：" + r.session + "\n\n提出ずみ：" + r.submitted + "人　／　未提出：" + r.missing.length + "人\n\n" +
+    "未提出の番号：\n" + (r.missing.length ? r.missing.join(", ") : "なし（全員提出ずみ！）"),
     ui.ButtonSet.OK);
 }
