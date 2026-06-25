@@ -1,0 +1,12 @@
+{
+  "name": "kenjiyamada-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "英語学習アプリ 検証ツール（模試の自動採点・構造チェック・単語サニティ）",
+  "scripts": {
+    "check": "node tools/check_exams.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

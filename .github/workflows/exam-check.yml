@@ -1,0 +1,20 @@
+name: 模試チェック（品質ゲート）
+
+# 全ブランチへの push と PR で、模試データの自動採点・構造チェック・単語サニティを走らせる。
+# 「問題工場」の各スレッド(qa/* gen/*)が出す PR は、必ずここを通ってから main にマージする。
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 依存をインストール
+        run: npm ci
+      - name: 模試・単語チェック（全模試100点／構造／相対参照訳なし）
+        run: npm run check
