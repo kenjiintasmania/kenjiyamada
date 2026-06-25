@@ -5,6 +5,9 @@ name: 模試チェック（品質ゲート）
 on:
   push:
   pull_request:
+  schedule:
+    - cron: "17 0 * * 1"   # 毎週月曜 00:17 UTC（≒月曜 9:17 JST）に定期チェック＝持続的な自走
+  workflow_dispatch:        # 手動実行も可
 
 jobs:
   check:
