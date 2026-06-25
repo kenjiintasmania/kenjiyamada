@@ -108,7 +108,7 @@ sections: [
     '<span class="sp"><span class="who">Riku:</span> Hi, Kate. I saw you at Midori Zoo last Saturday afternoon.</span>'+
     '<span class="sp"><span class="who">Kate:</span> Oh, Riku. Yes, I was there. My class had a school trip that day.</span>'+
     '<span class="sp"><span class="who">Riku:</span> （　ⓐ　）</span>'+
-    '<span class="sp"><span class="who">Kate:</span> No, I didn\'t. I watched the elephants with my friends. They were really big.</span>'+
+    '<span class="sp"><span class="who">Kate:</span> No, I didn\'t. The class was full that day, so I watched the elephants with my friends instead.</span>'+
     '<span class="sp"><span class="who">Riku:</span> I see. I often draw pictures of animals.</span>'+
     '<span class="sp"><span class="who">Kate:</span> <u>Me, too.</u> Look, these are my animal pictures.</span>'+
     '<span class="sp"><span class="who">Riku:</span> They are nice. （　ⓑ　）</span>'+
@@ -145,10 +145,9 @@ sections: [
            '<span class="who" style="font-family:var(--en)">Aya:</span> '+E("（　①　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Ben:</span> '+E("It's mine. My brother made it."),
       answers:["whose bird is this","whose bird is this one","whose wooden bird is this"], hint:"Whose で始める英文" } ] },
-  { intro:"(2) 英語の授業で、あなたの朝の過ごし方について話します。下の条件に合うように英文を書きなさい。",
-    note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
+  { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
-    { type:"wordorder", label:"", pt:6, stem:"朝の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+    { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",
       words:["six","get","I","at","up"], answer:"I get up at six." } ] }
 ]},
 

@@ -110,7 +110,7 @@ sections: [
     items:[
     { type:"wordorder", label:"(1)", pt:6, stem:"アオイが「約300（冊）」と答えています。数をたずねるエマのことばになるよう、次の語を正しく並べて英文を完成させなさい。",
       words:["do","many","have","How","you","books"], answer:"How many books do you have?" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"5時前に家でしなければならないことを表します（I have の続き）。次の語を正しく並べて英文を完成させなさい。",
+    { type:"wordorder", label:"(2)", pt:5, stem:"5時前に帰宅しなければならないことを表します（I have の続き）。次の語を正しく並べて英文を完成させなさい。",
       words:["home","to","go"], answer:"to go home" } ]}
 ]},
 
@@ -165,7 +165,7 @@ sections: [
     'I said, "Thank you. But my drawing is not good." She said, "It\'s all right, Riku. You should keep trying if you truly love books. '+
     'If you keep trying, your posters will improve." I said, "<u>(く) That</u> may be right. I\'ll try again."<br><br>'+
     '<b>④</b> The next month, I made a poster with my feelings. I wrote about the story I loved. Finally, at the next reading week, many students came to read.<br><br>'+
-    '<b>⑤</b> Of course, I sometimes think introducing books is difficult. But now, I don\'t think that I （　け　） when only a few people come. '+
+    '<b>⑤</b> Of course, I sometimes think introducing books is difficult. But now, I don\'t think that I （　け　） posters when only a few people come. '+
     'I don\'t work for numbers. I will keep sharing books in high school.',
     passageEn:true,
     note:'語注：library committee 図書委員会／reading week 読書週間／poster ポスター／introduce 紹介する／keep 〜ing 〜し続ける',

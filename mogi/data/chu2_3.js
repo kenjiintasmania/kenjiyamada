@@ -76,7 +76,7 @@ sections: [
     '<tr><td>15:00〜15:50</td><td>吹奏楽コンサート</td></tr></table>'+
     '<div class="note">料金　大人 600円／中・高校生 400円／小学生 200円</div>'+
     '<table style="margin-top:6px"><tr><th>楽器教室（毎月第2土曜日・参加無料）</th><th></th></tr>'+
-    '<tr><td>定員</td><td>（　③　）名</td></tr>'+
+    '<tr><td>定員</td><td>25名</td></tr>'+
     '<tr><td>時間</td><td>13:00〜／15:00〜</td></tr>'+
     '<tr><td>6月</td><td>たいこをたたこう</td></tr><tr><td>7月</td><td>リコーダーをふこう</td></tr>'+
     '<tr><td>8月</td><td>ギターをひこう</td></tr><tr><td>9月</td><td>うたをうたおう</td></tr></table>'+
@@ -88,7 +88,7 @@ sections: [
     '<span class="sp"><span class="who">Sota:</span> That sounds fun. I want to visit next month. Can you go with me?</span>'+
     '<span class="sp"><span class="who">Kate:</span> Yes, but I can\'t go in the morning. I help my mother then. I\'m free in the afternoon.</span>'+
     '<span class="sp"><span class="who">Sota:</span> That\'s OK. I want to listen to the brass band concert.</span>'+
-    '<span class="sp"><span class="who">Kate:</span> Then let\'s meet at two fifty, so we can listen to the concert from three.</span>'+
+    '<span class="sp"><span class="who">Kate:</span> Then let\'s meet at twelve fifty, so we can join the class from one.</span>'+
     '<span class="sp"><span class="who">Sota:</span> Good. Let\'s join the instrument class before the concert.</span>'+
     '<span class="sp"><span class="who">Kate:</span> Sure. We can play the guitar that day. I can\'t wait!</span>',
     note:'語注：flyer チラシ／instrument 楽器／brass band 吹奏楽／concert コンサート',
@@ -146,10 +146,9 @@ sections: [
            '<span class="who" style="font-family:var(--en)">Hana:</span> '+E("（　①　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Sam:</span> '+E("It's mine. My grandmother made it."),
       answers:["whose paper fan is this","whose fan is this","whose paper fan is this one"], hint:"Whose で始める英文" } ] },
-  { intro:"(2) 英語の授業で、あなたの週末の過ごし方について話します。下の条件に合うように英文を書きなさい。",
-    note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
+  { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
-    { type:"wordorder", label:"", pt:6, stem:"週末の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+    { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",
       words:["my","play","I","with","soccer","friends"], answer:"I play soccer with my friends." } ] }
 ]},
 

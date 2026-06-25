@@ -105,7 +105,7 @@ sections: [
     passage:
     'November 9<br><br>'+
     'Lily visited my house in the afternoon. When she came into my room, she said, "What a big CD shelf! '+
-    '<u>(1)</u> you have?" I said, "About five hundred." I showed her some of my favorite songs. We enjoyed listening to them together. '+
+    '<u>(1)</u>?" I said, "About five hundred." I showed her some of my favorite songs. We enjoyed listening to them together. '+
     'At four thirty, she said, "I want to stay here longer, but I have <u>(2)</u> before five. I\'m going to cook dinner with my father." '+
     'I wanted to talk with her more, but she left my house.',
     passageEn:true,

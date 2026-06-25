@@ -34,7 +34,7 @@ sections: [
       '<span class="sp"><span class="who">Mike:</span> No, she doesn\'t. She likes tennis. She practices it every Saturday.</span>'+
       '<span class="sp"><span class="who">Saki:</span> I see. Next week my friend Kumi will come to my house, and we will cook lunch together.</span>'+
       '<span class="sp"><span class="who">Mike:</span> That\'s nice. Where does Kumi live?</span>'+
-      '<span class="sp"><span class="who">Saki:</span> She lives near the station. She is coming over this Sunday evening.</span>',
+      '<span class="sp"><span class="who">Saki:</span> She lives near the station. She is coming over this Sunday afternoon.</span>',
     intro:"(2) マイクとサキの対話を聞き、英語の質問の答えを選びなさい。対話と質問は1回読まれます。",
     items:[
     { type:"mcq", label:"①", pt:3, stem:E("What did Mike do last Sunday?"),
@@ -45,7 +45,7 @@ sections: [
     { type:"mcq", label:"③", pt:3, stem:E("Where will Saki and Kumi cook lunch?"),
       choices:[ E("At Saki's home."), E("At a café near the station."), E("At Kumi's home."), E("At school.") ], answer:0 },
     { type:"mcq", label:"④", pt:3, stem:E("When will Kumi visit Saki?"),
-      choices:[ E("On Sunday morning."), E("On Sunday evening."),
+      choices:[ E("On Sunday morning."), E("On Sunday afternoon."),
                 E("On Saturday evening."), E("On Monday afternoon.") ], answer:1 } ] },
 
   { passage:
@@ -74,7 +74,7 @@ sections: [
     '<tr><td>14:30〜15:20</td><td>映画「宇宙の動物たち」</td></tr></table>'+
     '<div class="note">料金　大人 500円／中・高校生 300円／小学生 200円</div>'+
     '<table style="margin-top:6px"><tr><th>工作教室（毎月第1日曜日・参加無料）</th><th></th></tr>'+
-    '<tr><td>定員</td><td>（　③　）名</td></tr>'+
+    '<tr><td>定員</td><td>30名</td></tr>'+
     '<tr><td>時間</td><td>13:00〜／15:00〜</td></tr>'+
     '<tr><td>12月</td><td>ぼうしを作ろう</td></tr><tr><td>1月</td><td>けん玉を作ろう</td></tr>'+
     '<tr><td>2月</td><td>ロケットを作ろう</td></tr><tr><td>3月</td><td>たこを作ろう</td></tr></table>'+
@@ -144,10 +144,9 @@ sections: [
            '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My sister made it."),
       answers:["whose pen case is this","whose pencil case is this","whose pen case is this one"], hint:"Whose で始める英文" } ] },
-  { intro:"(2) 英語の授業で、あなたの夕方（夕食後）の過ごし方について話します。下の条件に合うように英文を書きなさい。",
-    note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
+  { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
-    { type:"wordorder", label:"", pt:6, stem:"夕方（夕食後）の過ごし方を表す英文です。次の語を正しく並べて英文を完成させなさい。",
+    { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",
       words:["after","do","homework","I","my","dinner"], answer:"I do my homework after dinner." } ] }
 ]},
 

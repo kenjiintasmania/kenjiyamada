@@ -103,7 +103,7 @@ sections: [
 ]},
 
 /* ===== 大問3 日記の英作文 ===== */
-{ no:3, title:"オーストラリアにホームステイしているユキ(Yuki)は、エマ(Emma)の家にホームステイしています。次は、ホームステイ中のユキの日記の一部と、その日のできごとを表したイラストです。日記とイラストの内容に合うように、(1)に4語以上、(2)に3語以上の英語を書き、日記を完成させなさい。", groups:[
+{ no:3, title:"オーストラリアにホームステイしているユキ(Yuki)は、エマ(Emma)の家にホームステイしています。次は、ホームステイ中のユキの日記の一部と、その日のできごとを表したイラストです。日記とイラストの内容に合うように、(1)(2)の語を正しく並べかえて、日記を完成させなさい。", groups:[
   { sceneNote:"イラスト：エマがキッチンでケーキを作り、夜にはかざりつけをしてみんなでパーティーをしている。",
     passage:
     'December 3<br><br>'+
@@ -123,7 +123,7 @@ sections: [
 { no:4, title:"ホワイト(White)先生の英語の授業で、Takashi、Hana、Yuto が、将来行きたい国について話し合いをしています。次の英文は、話し合いと、それを聞いて Mai が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. White:</span> Today, let\'s talk about countries. What country do you want to visit? Takashi, tell us first.</span>'+
-    '<span class="sp"><span class="who">Takashi:</span> I want to go to Canada. I\'m a big fan of nature. I want to visit beautiful lakes there because I only see them in pictures.</span>'+
+    '<span class="sp"><span class="who">Takashi:</span> I want to go to Canada. I\'m a big fan of nature. I want to <u>visit beautiful lakes</u> there because I only see them in pictures.</span>'+
     '<span class="sp"><span class="who">Mr. White:</span> That\'s nice. Do you want to take pictures in Canada?</span>'+
     '<span class="sp"><span class="who">Takashi:</span> Yes, I hope so. I want to be a nature photographer.</span>'+
     '<span class="sp"><span class="who">Mr. White:</span> Wonderful. I hope I\'ll see your beautiful photos someday.</span>'+
