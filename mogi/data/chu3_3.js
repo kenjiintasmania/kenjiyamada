@@ -147,7 +147,7 @@ sections: [
     { type:"fill", label:"(1)", pt:4, stem:"下線部の内容になるように、次の文の[　　]に入る最も適当な英語3語を、話し合いの中の Kenta の発言から抜き出して書きなさい。<br>"+E("Kenta wants to teach children [　　] in the future."),
       answers:["how to swim"], hint:"英語3語" },
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:2 },
+      choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("How much is this book?"), E("Whose pen is this?"),
                 E("Why did you come to Japan?"), E("What time is it now?") ], answer:2 },

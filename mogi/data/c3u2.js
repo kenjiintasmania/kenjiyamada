@@ -123,8 +123,7 @@ sections: [
     '<span class="sp"><span class="who">Aoi:</span> That\'s interesting. I like history books. I often read them at home and tell my family about the stories.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> Reading is a good chance to （　え　） many things. But some people say young people don\'t read books now. Is that true?</span>'+
     '<span class="sp"><span class="who">Aoi:</span> My brother is a high school student, and he sometimes doesn\'t read any books.</span>'+
-    '<span class="sp"><span class="who">Riku:</span> Every day?</span>'+
-    '<span class="sp"><span class="who">Aoi:</span> （　お　）</span>'+
+    '<span class="sp"><span class="who">Riku:</span> Every day? （　お　）</span>'+
     '<span class="sp"><span class="who">Aoi:</span> My mother buys him a book every month, but he is sometimes too busy with club activities.</span>'+
     '<span class="sp"><span class="who">Emma:</span> <u>(か) I became interested in Japanese stories</u> when I read a Japanese book in English. In the book, an old man helped a small bird. So I borrowed more Japanese books in America.</span>'+
     '<span class="sp"><span class="who">Riku:</span> Really? I want to read English stories at home, but I can\'t find easy ones.</span>'+
@@ -139,8 +138,8 @@ sections: [
     { type:"mcq", label:"(2)お", pt:3, stem:"（お）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("Who buys his books?"), E("Where does he sell them?"),
                 E("How does she read a book?"), E("When does she write a story?") ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"下線部(か)の内容を表すように、本文中から連続する英語5語を抜き出して書きなさい。",
-      answers:["i became interested in japanese stories"], hint:"英語5語" },
+    { type:"fill", label:"(3)", pt:4, stem:"下線部(か)の内容を表すように、本文中から連続する英語6語を抜き出して書きなさい。",
+      answers:["i became interested in japanese stories"], hint:"英語6語" },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("In America, all students read history books."),
                 E("Riku sometimes read a science book at the library."),
