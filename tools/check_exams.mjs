@@ -91,7 +91,14 @@ function checkWords(){
   if(rel.length) fail('words', `相対参照の訳（ランダムで意味不明）: ${rel.map(x=>x.id+':'+x.w).join(', ')}`);
   const empty = WORDS.filter(x=>!x.j || !String(x.j).trim());
   if(empty.length) fail('words', `訳が空: ${empty.map(x=>x.id+':'+x.w).join(', ')}`);
-  if(!rel.length && !empty.length) pass('words', `${WORDS.length}語・相対参照/空訳なし`);
+  // 答えバレ：英単語の答え(2文字以上のトークン)が訳の中に露出していないか（和→英テストの抜け穴）
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const reveal = WORDS.filter(x=>{
+    const word=String(x.w||'');
+    return word.split(/\s+/).filter(t=>t.length>=2).some(t=> new RegExp('(^|[^A-Za-z])'+esc(t)+'([^A-Za-z]|$)','i').test(x.j||''));
+  });
+  if(reveal.length) fail('words', `答えバレ（英単語が訳に露出）: ${reveal.map(x=>x.id+':'+x.w).join(', ')}`);
+  if(!rel.length && !empty.length && !reveal.length) pass('words', `${WORDS.length}語・相対参照/空訳/答えバレ なし`);
 }
 
 console.log('— 模試データ 自動採点＆構造チェック —');
