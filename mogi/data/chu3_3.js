@@ -110,7 +110,7 @@ sections: [
     'This afternoon, Jack took me to his room. He said, "I want to show you something." '+
     'On the shelf, there were so many beautiful seashells. I was surprised and said, "Wow! '+
     '<u>(1)</u>!" Jack smiled and said, "Yes. I started it five years ago." He gave me one as a present. '+
-    'In the evening, I sent <u>(2)</u> about the shells to my family in Japan. They were excited, too.',
+    'In the evening, I sent <u>(2)</u> to my family in Japan. They were excited, too.',
     passageEn:true,
     note:'語注：shelf たな／seashell 貝がら',
     items:[
@@ -147,7 +147,7 @@ sections: [
     { type:"fill", label:"(1)", pt:4, stem:"下線部の内容になるように、次の文の[　　]に入る最も適当な英語3語を、話し合いの中の Kenta の発言から抜き出して書きなさい。<br>"+E("Kenta wants to teach children [　　] in the future."),
       answers:["how to swim"], hint:"英語3語" },
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:2 },
+      choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("How much is this book?"), E("Whose pen is this?"),
                 E("Why did you come to Japan?"), E("What time is it now?") ], answer:2 },
@@ -189,8 +189,8 @@ sections: [
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["me","swimming","many things","taught"], answer:"Swimming taught me many things",
       display:"Swimming taught me many things" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語1語を、第2段落中から抜き出して書きなさい。<br>"+E("Mika's grandfather told her not to （　え　）."),
-      answers:["give"], hint:"第2段落の語・英語1語" },
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("Mika's grandfather told her not to （　え　）."),
+      answers:["give up"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>水泳は、あなたの（　①　）をより（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "体（からだ）","心（こころ）","頭（あたま）","声（こえ）" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

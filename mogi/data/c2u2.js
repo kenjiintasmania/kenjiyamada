@@ -75,7 +75,7 @@ sections: [
     '<tr><td>15:00〜15:40</td><td>川ぞいの道</td></tr></table>'+
     '<div class="note">参加料　大人 500円／中・高校生 300円／小学生 100円</div>'+
     '<table style="margin-top:6px"><tr><th>町しょうかい教室（毎月第2土曜日・参加無料）</th><th></th></tr>'+
-    '<tr><td>定員</td><td>（　③　）名</td></tr>'+
+    '<tr><td>定員</td><td>15名</td></tr>'+
     '<tr><td>時間</td><td>13:00〜／15:00〜</td></tr>'+
     '<tr><td>9月</td><td>町の地図を作ろう</td></tr><tr><td>10月</td><td>道案内カードを作ろう</td></tr>'+
     '<tr><td>11月</td><td>名所ポスターを作ろう</td></tr><tr><td>12月</td><td>町のしおりを作ろう</td></tr></table>'+
@@ -142,11 +142,10 @@ sections: [
     items:[
     { type:"fill", label:"①", pt:4,
       stem:'<div class="scene">絵：リクが手作りの町の地図（map）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Aoi:</span> '+E("（　①　） this?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Aoi:</span> '+E("（　①　）?")+'　'+
            '<span class="who" style="font-family:var(--en)">Riku:</span> '+E("It's mine. My father made it."),
       answers:["whose map is this","whose map is this one","whose town map is this"], hint:"Whose で始める英文" } ] },
-  { intro:"(2) 英語の授業で、あなたの旅行の思い出について話します。下の条件に合うように英文を書きなさい。",
-    note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
+  { intro:"(2) 英語の授業で、あなたの旅行の思い出について話します。次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"旅行先を表す英文です。次の語を正しく並べて英文を完成させなさい。",
       words:["Kyoto","to","summer","went","I","last"], answer:"I went to Kyoto last summer." } ] }

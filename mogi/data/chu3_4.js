@@ -126,8 +126,7 @@ sections: [
     '<span class="sp"><span class="who">Yuki:</span> That\'s interesting. In Japan, students eat the same school lunch in their classroom. We often clean the room and serve the food to each other.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> School lunch is a good chance to （　え　） together. But some people say students leave a lot of food now. Is that true?</span>'+
     '<span class="sp"><span class="who">Yuki:</span> My sister is a high school student, and she sometimes leaves her vegetables.</span>'+
-    '<span class="sp"><span class="who">Noah:</span> Every day?</span>'+
-    '<span class="sp"><span class="who">Yuki:</span> （　お　）</span>'+
+    '<span class="sp"><span class="who">Noah:</span> Every day? （　お　）</span>'+
     '<span class="sp"><span class="who">Yuki:</span> Our cook makes a salad every day, but she sometimes doesn\'t like the taste.</span>'+
     '<span class="sp"><span class="who">Olivia:</span> <u>(か) I became interested in Japanese lunch</u> when I watched a Japanese video. In the video, students carried the food and ate together. So I tried curry rice in America.</span>'+
     '<span class="sp"><span class="who">Noah:</span> Really? I want to try a Japanese school lunch in Italy, but I can\'t find natto.</span>'+

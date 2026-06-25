@@ -72,7 +72,7 @@ sections: [
     '<tr><td>14:00〜14:50</td><td>つなひき</td></tr></table>'+
     '<div class="note">入場料　大人 400円／中・高校生 200円／小学生 100円</div>'+
     '<table style="margin-top:6px"><tr><th>体験教室（毎月第1日曜日・参加無料）</th><th></th></tr>'+
-    '<tr><td>定員</td><td>（　③　）名</td></tr>'+
+    '<tr><td>定員</td><td>20名</td></tr>'+
     '<tr><td>時間</td><td>11:00〜／15:00〜</td></tr>'+
     '<tr><td>4月</td><td>玉入れに挑戦</td></tr><tr><td>5月</td><td>パン食い競走に挑戦</td></tr>'+
     '<tr><td>6月</td><td>障害物競走に挑戦</td></tr><tr><td>7月</td><td>二人三脚に挑戦</td></tr></table>'+
@@ -139,13 +139,12 @@ sections: [
     items:[
     { type:"fill", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りの応援うちわ（cheering fan）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　） this?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　）?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My brother made it."),
       answers:["whose cheering fan is this","whose fan is this","whose cheering fan is this one"], hint:"Whose で始める英文" } ] },
-  { intro:"(2) 英語の授業で、運動会に向けてあなたが練習することについて話します。下の条件に合うように英文を書きなさい。",
-    note:"【条件】① 主語と動詞を含む英文を2文以上で書く。② 全体で8語以上にする（. , ? などの符号は語数に含めない）。",
+  { intro:"(2) 運動会に向けてあなたが練習することを表す英文です。次の語を正しく並べて英文を完成させなさい。",
     items:[
-    { type:"wordorder", label:"", pt:6, stem:"運動会に向けて練習することを表す英文です。次の語を正しく並べて英文を完成させなさい。",
+    { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",
       words:["the","I","relay","practice","every","day"], answer:"I practice the relay every day." } ] }
 ]},
 
