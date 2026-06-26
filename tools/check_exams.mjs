@@ -12,7 +12,8 @@ import { dirname, resolve } from 'node:path';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const EXAMS = ['chu2','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','c2u1','c2u2','c3u1','c3u2','okayama1'];
+const EXAMS = ['chu2','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','c2u1','c2u2','c3u1','c3u2',
+  'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10'];
 const ENGINE = r('mogi/assets/engine.js');
 
 let fails = 0;
@@ -57,6 +58,22 @@ function structuralChecks(id, EXAM){
   });
 }
 
+// 話者連続：passage/script 内で同じ話者の <span class="who"> が2回続いていないか（QAで頻発した不具合）
+function speakerContinuity(id, EXAM){
+  (EXAM.sections||[]).forEach(s=>{
+    (s.groups||[]).forEach(g=>{
+      [g.passage, g.script].forEach(html=>{
+        if(!html) return;
+        const sp = [...String(html).matchAll(/<span class="who"[^>]*>([^<]+?)<\/span>/g)]
+          .map(m=>m[1].replace(/[:：]/g,'').replace(/\s+/g,'').trim()).filter(Boolean);
+        for(let i=1;i<sp.length;i++){
+          if(sp[i]===sp[i-1]) fail(id, `話者連続「${sp[i]}」が2回続く（passage/script）`);
+        }
+      });
+    });
+  });
+}
+
 function gradeExam(id){
   const dom = new JSDOM(`<!doctype html><div id=quiz></div><div class="scorebar" id=scorebar><span class=big id=scoretext></span><span class=msg></span></div><div class="scorebar" id=scorebar_b><span class=big></span><span class=msg></span></div><span id=totalpts></span>`, { url:'http://localhost' });
   const w = dom.window; w.scrollTo=()=>{}; w.Element.prototype.scrollIntoView=()=>{};
@@ -65,6 +82,7 @@ function gradeExam(id){
   w.EXAM.id = id;
   const EXAM = w.EXAM;
   structuralChecks(id, EXAM);
+  speakerContinuity(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   const items = itemsOf(EXAM);
   const qs = [...w.document.querySelectorAll('#quiz .q')];

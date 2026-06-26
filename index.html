@@ -59,6 +59,11 @@
   .challenge:active{transform:translateY(2px);box-shadow:0 2px 0 #f3c9d8}
   .challenge .emoji{font-size:24px}
   .challenge small{display:block;font-weight:normal;font-size:12px;opacity:.92}
+  .duo{display:flex;gap:14px;max-width:760px;margin:22px auto 0;flex-wrap:wrap}
+  .duo .challenge{margin:0;flex:1 1 240px;max-width:none}
+  .challenge.exam{background:linear-gradient(90deg,#5b7cff,#16399c);box-shadow:0 6px 0 #cdd9ff}
+  .challenge.exam:hover{box-shadow:0 9px 0 #cdd9ff}
+  .challenge.exam:active{box-shadow:0 2px 0 #cdd9ff}
   footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:30px}
 </style>
 </head>
@@ -85,10 +90,16 @@
         <div class="desc">英検対策のドリル（7〜2級）。級判定・4技能・長文。<br>ジャンル訓練 → 判定テストをループ。</div>
       </a>
     </div>
-    <a class="challenge" href="challenge/index.html">
-      <span class="emoji">⚡</span>
-      <span>挑戦モード<small>単語50問・英作文・英検二次プロンプト（練習専用・自己ベストは端末保存）</small></span>
-    </a>
+    <div class="duo">
+      <a class="challenge" href="challenge/index.html">
+        <span class="emoji">⚡</span>
+        <span>挑戦モード<small>単語50問・英作文・英検二次プロンプト（練習専用）</small></span>
+      </a>
+      <a class="challenge exam" href="mogi/okayama.html">
+        <span class="emoji">📝</span>
+        <span>入試模試<small>県立入試スタイル 全10パターン・各100点</small></span>
+      </a>
+    </div>
     <a class="mypage" href="me/index.html">
       <span class="emoji">📊</span>
       <span>マイページ（成績まとめ）<small>3アプリの最新記録をまとめて確認・先生に送信</small></span>
