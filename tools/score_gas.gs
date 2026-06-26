@@ -357,6 +357,8 @@ function onOpen(){
     .addItem("🟠 2年 未投稿者（マイページ送信）", "missing2")
     .addItem("🔵 3年 未投稿者（マイページ送信）", "missing3")
     .addSeparator()
+    .addItem("🔗 AI×成績 相関タブを作成/更新", "buildCorrelationTab")
+    .addSeparator()
     .addSubMenu(unitMenu)
     .addToUi();
 }
@@ -449,4 +451,78 @@ function listMissingUnit(examId){
     "\nセッション：" + r.session + "\n\n提出ずみ：" + r.submitted + "人　／　未提出：" + r.missing.length + "人\n\n" +
     "未提出の番号：\n" + (r.missing.length ? r.missing.join(", ") : "なし（全員提出ずみ！）"),
     ui.ButtonSet.OK);
+}
+
+/* ===================== AI×成績 相関タブ（成績ツールから1クリックで自動生成） ===================== *
+ * 「成績まとめ」（1人1行）に、AImodeログ（学年＋番号で集計）を横付けした「相関」シートを作る。
+ * 押すたびに最新化。AImodeのタブ名は「AI活用レベル(推定)」列の有無で自動検出するので、
+ * タブ名を手で指定する必要はありません。手動の数式入力も不要。                                  */
+var CORR_SHEET = "相関";
+function findAiLogSheet(ss){
+  var shs = ss.getSheets();
+  for (var i=0;i<shs.length;i++){
+    var lc = shs[i].getLastColumn(); if (lc < 1) continue;
+    var h = shs[i].getRange(1,1,1,lc).getValues()[0];
+    for (var j=0;j<h.length;j++){ if (String(h[j]).trim() === "AI活用レベル(推定)") return shs[i]; }
+  }
+  return null;
+}
+function buildCorrelationTab(){
+  var ss = getSS();
+  var sum = ss.getSheetByName(SUMMARY_SHEET);
+  if (!sum || sum.getLastRow() < 2){ toastMsg("成績まとめにデータがありません。"); return; }
+
+  // 成績まとめ：ヘッダ名→列番号（GAS更新で列が増減してもズレない）
+  var sH = sum.getRange(1,1,1,sum.getLastColumn()).getValues()[0];
+  var col    = function(name){ for (var i=0;i<sH.length;i++) if (String(sH[i]).trim()===name) return i; return -1; };
+  var colPre = function(pre){  for (var i=0;i<sH.length;i++) if (String(sH[i]).indexOf(pre)===0) return i; return -1; };
+  var cY=col("学年"), cN=col("番号"), cNm=col("名前"),
+      cW=col("単語_合計"), cMo=col("模試_最高点"), cEi=col("英検_平均Lv"), cSh=colPre("習熟度単語_中3");
+  var sData = sum.getRange(2,1,sum.getLastRow()-1,sum.getLastColumn()).getValues();
+
+  // AImodeログ：学年|番号 で集計（セッション数・最新レベル座標・最新AI活用レベル・議論+探求回数）
+  var ai = findAiLogSheet(ss), agg = {}, aiFound = !!ai;
+  if (ai && ai.getLastRow() >= 2){
+    var aH = ai.getRange(1,1,1,ai.getLastColumn()).getValues()[0];
+    var ac = function(name){ for (var i=0;i<aH.length;i++) if (String(aH[i]).trim()===name) return i; return -1; };
+    var aY=ac("学年"), aN=ac("番号"), aLv=ac("レベル座標"), aAI=ac("AI活用レベル(推定)");
+    var aData = ai.getRange(2,1,ai.getLastRow()-1,ai.getLastColumn()).getValues();
+    for (var r=0;r<aData.length;r++){
+      var y=String(aData[r][aY]).trim(), n=String(aData[r][aN]).trim(); if(!y||!n) continue;
+      var k=y+"|"+n, o=agg[k]||{s:0,lv:"",ai:"",deep:0};
+      o.s++;
+      var lv = aLv>=0?aData[r][aLv]:""; if(lv!==""&&lv!=null) o.lv=lv;
+      var al = aAI>=0?String(aData[r][aAI]).trim():"";  if(al) o.ai=al;
+      if(al==="議論"||al==="探求") o.deep++;
+      agg[k]=o;
+    }
+  }
+
+  // 成績×AImode を結合
+  var head=["学年","番号","名前","単語数","模試最高","英検平均Lv","習熟中3","AIセッション","最新レベル座標","最新AI活用Lv","議論+探求回数"];
+  var body=[];
+  for (var i=0;i<sData.length;i++){
+    var row=sData[i], y=String(row[cY]).trim(), n=String(row[cN]).trim(); if(!y||!n) continue;
+    var a=agg[y+"|"+n]||{s:0,lv:"",ai:"",deep:0};
+    body.push([ row[cY], row[cN], cNm>=0?row[cNm]:"",
+      cW>=0?row[cW]:"", cMo>=0?row[cMo]:"", cEi>=0?row[cEi]:"", cSh>=0?row[cSh]:"",
+      a.s, a.lv, a.ai, a.deep ]);
+  }
+  body.sort(function(p,q){ var a=sortKey(p[0]),b=sortKey(q[0]); return a!==b?a-b:sortKey(p[1])-sortKey(q[1]); });
+
+  // 書き込み（押すたび全消し→再生成）
+  var sh = ss.getSheetByName(CORR_SHEET) || ss.insertSheet(CORR_SHEET);
+  sh.clear();
+  var out=[head].concat(body);
+  sh.getRange(1,1,out.length,head.length).setValues(out);
+  sh.setFrozenRows(1);
+  // 相関係数（参考・右側）— データが2人以上そろうと数値が出る
+  var last=out.length;
+  sh.getRange(1, head.length+2, 4, 2).setValues([
+    ["相関係数（参考）",""],
+    ["模試最高 × AIセッション",      "=IFERROR(CORREL(E2:E"+last+",H2:H"+last+"),\"データ不足\")"],
+    ["英検平均Lv × 最新レベル座標",   "=IFERROR(CORREL(F2:F"+last+",I2:I"+last+"),\"データ不足\")"],
+    ["単語数 × AIセッション",        "=IFERROR(CORREL(D2:D"+last+",H2:H"+last+"),\"データ不足\")"]
+  ]);
+  ss.toast("相関タブを更新（"+body.length+"人）"+(aiFound?"":"／AImodeタブ未検出＝AI列は空"), "成績ツール", 6);
 }
