@@ -23,12 +23,14 @@ var SUMMARY_SHEET = "成績まとめ";       // (B) 1人1行の集約タブ
 var EIKEN_SHEET   = "英検テスト履歴";   // (A) 英検の1回ごとの追記タブ
 
 /* ===== 書き込み先スプレッドシート =====
- * このスクリプトを「新しいプロジェクト」として作った場合（スプレッドシートに
- * 紐づいていない場合）は、集約先スプレッドシートのIDを下に貼ってください。
- *   シートのURL: https://docs.google.com/spreadsheets/d/【この部分がID】/edit
- * ※スプレッドシートの［拡張機能］→［Apps Script］から作った場合は空のままでOK。
- *   迷ったら「貼っておく」のが確実です（IDを入れれば常に正しく動きます）。      */
-var SPREADSHEET_ID = "";
+ * ★IDを直書きしておくと、スクリプトが「単独プロジェクト」（スプレッドシートに
+ *   紐づいていない＝拡張機能メニューに自作メニューが出ない型）でも、必ず正しい
+ *   シートに書き込めます。これが /admin の「？取得できません」「保存できませんでした」
+ *   の主因――getActiveSpreadsheet() が null を返し getSS() が例外を投げる――を
+ *   根本から防ぎます。コピペし直してもこの行が残れば毎回確実に動きます。
+ *   別のブックに変えるときは下のIDだけ置きかえてください。
+ *   シートのURL: https://docs.google.com/spreadsheets/d/【この部分がID】/edit   */
+var SPREADSHEET_ID = "1x3jpH6zynyl-9Pw14XxvoNpza0N17vsLhKgky5dXNJs";
 function getSS(){
   if (SPREADSHEET_ID) return SpreadsheetApp.openById(SPREADSHEET_ID);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -95,7 +97,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-4";
+var GAS_VERSION = "unit-gate-5";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

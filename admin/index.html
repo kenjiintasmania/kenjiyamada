@@ -176,6 +176,7 @@
     if(st && st.ver){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
     else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）
     else if(st && st.result==="ok"){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版
+    else if(st && st.result==="error" && st.message){ el.style.display=""; el.className="card warn"; el.textContent="⚠️ サーバーからのエラー：「"+st.message+"」"; } // 真因をそのまま表示（例：スプレッドシートが見つかりません＝score_gasにIDを直書き＋新バージョンで再デプロイ）
     else { el.style.display="none"; }
   }
 
