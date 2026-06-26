@@ -95,7 +95,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-3";
+var GAS_VERSION = "unit-gate-4";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -114,6 +114,10 @@ function doPost(e){
     if (data.action === "gate"){ var gs=setGate(data); gs.ver=GAS_VERSION; return json(gs); }
     if (data.action === "policy")    return json({result:"ok", policy:getPolicy(), ver:GAS_VERSION});
     if (data.action === "setpolicy"){ var ps=setPolicy(data); ps.ver=GAS_VERSION; return json(ps); }
+    if (data.action === "buildcorr"){
+      if (String(data.pin||"") !== TEACHER_PIN) return json({result:"error", message:"合言葉(PIN)が違います", ver:GAS_VERSION});
+      return json({result:"ok", message:buildCorrelationTab(), ver:GAS_VERSION});
+    }
     if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "summary"){
       handleSummary(data);
@@ -524,5 +528,7 @@ function buildCorrelationTab(){
     ["英検平均Lv × 最新レベル座標",   "=IFERROR(CORREL(F2:F"+last+",I2:I"+last+"),\"データ不足\")"],
     ["単語数 × AIセッション",        "=IFERROR(CORREL(D2:D"+last+",H2:H"+last+"),\"データ不足\")"]
   ]);
-  ss.toast("相関タブを更新（"+body.length+"人）"+(aiFound?"":"／AImodeタブ未検出＝AI列は空"), "成績ツール", 6);
+  var msg = "相関タブを更新しました（"+body.length+"人"+(aiFound?"":"／AImodeタブ未検出＝AI列は空")+"）";
+  try{ ss.toast(msg, "成績ツール", 6); }catch(e){}   // Webアプリ実行時はUIが無いので握りつぶす
+  return msg;
 }

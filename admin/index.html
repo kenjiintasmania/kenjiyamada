@@ -84,6 +84,13 @@
     <div id="policyMsg" style="font-size:13px;color:#6a7689;margin-top:6px"></div>
   </div>
 
+  <div class="card">
+    <div class="exam-head"><span class="exam-title">🔗 AI×成績 相関タブ</span></div>
+    <div class="meta">「成績まとめ」×「AImodeログ」を<b>学年＋番号</b>で結合した「相関」シートを、スプレッドシートに作成/更新します（押すたび最新化）。</div>
+    <div class="btns"><button class="start" id="buildCorr">相関タブを作成/更新</button></div>
+    <div id="corrMsg" style="font-size:13px;color:#6a7689;margin-top:6px"></div>
+  </div>
+
   <div id="msg"></div>
 
   <div class="note">
@@ -193,6 +200,18 @@
     }).catch(function(){ policyMsg.style.color="#d9603e"; policyMsg.textContent="通信エラー。電波を確認してね。"; });
   });
   loadPolicy();
+
+  // AI×成績 相関タブ作成（GASの buildcorr アクション）
+  var corrMsg=document.getElementById("corrMsg");
+  document.getElementById("buildCorr").addEventListener("click",function(){
+    if(!pin.value.trim()){ corrMsg.style.color="#d9603e"; corrMsg.textContent="合言葉(PIN)を入れてください。"; return; }
+    corrMsg.style.color="#6a7689"; corrMsg.textContent="作成中…（数十秒かかることがあります）";
+    post({action:"buildcorr", pin:pin.value.trim()}).then(function(r){
+      if(r&&r.result==="ok"){ corrMsg.style.color="#2e9e57"; corrMsg.textContent="✓ "+((r&&r.message)||"相関タブを更新しました")+"（スプシの「相関」タブを確認）"; }
+      else if(r&&!gateOK(r)&&!r.message){ corrMsg.style.color="#d9603e"; corrMsg.textContent="サーバーが旧バージョンです。新バージョンで再デプロイしてください。"; }
+      else { corrMsg.style.color="#d9603e"; corrMsg.textContent="できませんでした："+((r&&r.message)||"エラー"); }
+    }).catch(function(){ corrMsg.style.color="#d9603e"; corrMsg.textContent="通信エラー。電波を確認してね。"; });
+  });
 })();
 </script>
 </body>
