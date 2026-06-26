@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e0529c">
+<title>挑戦モード｜英語学習アプリ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>⚡</text></svg>">
+<!--
+  挑戦モード（基本アプリ側・練習専用／成績システムとは連動しない）
+   1) 単語ランダム50問（基本・拡張）… words/data/words.js を再利用してタイピング採点
+   2) 英作文（中1 / 中1〜2 / 中1〜3）… 模範解答を見て自己採点（challenge/data/compose.js）
+   3) 英検二次プロンプト生成（3級/準2級/2級）… AIに貼り付けて模擬面接する“練習用”プロンプトを生成
+   ※ 3) の生成プロンプトは「思考モードのプロンプト（別スレで設計）」とは別物。単なる面接練習用。
+   ※ GAS送信・マイページ連動はしない（端末内で完結）。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --c1:#39b3a6; --c2:#ff7a59; --c3:#e0529c; --accent:#5b7cff;
+    --ok:#2e9e57; --okbg:#e3f6e8; --ng:#d9603e; --ngbg:#fde7e1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 500px at 110% -10%,#ffe0f0 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#d8f3ef 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.6;padding:18px 14px 80px}
+  .wrap{max-width:760px;margin:0 auto}
+  .crumbs{font-size:13px;margin-bottom:8px}
+  .crumbs a{color:var(--accent);text-decoration:none;font-weight:bold}
+  .hero{text-align:center;margin:4px 0 10px}
+  .hero h1{font-size:26px;margin:0}
+  .hero h1 .en{font-family:var(--en);color:var(--c3)}
+  .hero p{color:#7a7363;font-size:13.5px;margin:6px 0 0}
+  .hide{display:none!important}
+
+  /* モード選択 */
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+  @media(max-width:640px){.modes{grid-template-columns:1fr}}
+  .mode{display:block;width:100%;text-align:center;cursor:pointer;background:#fff;
+    border:3px solid var(--line);border-radius:18px;padding:20px 14px;font:inherit;
+    box-shadow:0 6px 0 #efe7d4;transition:transform .08s,box-shadow .12s}
+  .mode:hover{transform:translateY(-3px);box-shadow:0 9px 0 #e6dcc6}
+  .mode:active{transform:translateY(2px);box-shadow:0 3px 0 #e6dcc6}
+  .mode .emoji{font-size:40px;display:block;line-height:1}
+  .mode .t{font-size:18px;font-weight:bold;margin:8px 0 4px}
+  .mode .d{font-size:12.5px;color:#7a7363}
+  .mode.w{border-color:#cfe6e1}.mode.c{border-color:#ffd9cc}.mode.e{border-color:#f6cfe2}
+
+  .card{background:#fff;border:3px solid var(--line);border-radius:18px;
+    padding:16px;margin:14px 0;box-shadow:0 6px 0 #efe7d4}
+  .card.w{border-color:#cfe6e1}.card.c{border-color:#ffd9cc}.card.e{border-color:#f6cfe2}
+  h2{font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  h2 .emoji{font-size:22px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .seg button{font:inherit;font-size:15px;padding:8px 14px;border:2px solid var(--line);
+    border-radius:999px;background:#fff;cursor:pointer;color:#7a7363}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:bold}
+  .btn{font:inherit;font-size:16px;font-weight:bold;border:none;border-radius:12px;
+    padding:11px 22px;cursor:pointer;color:#fff;background:var(--accent);box-shadow:0 4px 0 #3f5fd6}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #3f5fd6}
+  .btn.ghost{background:#fff;color:var(--accent);border:2px solid var(--accent);box-shadow:0 4px 0 #dfe2f5}
+  .btn[disabled]{opacity:.5;box-shadow:none;cursor:default}
+  .hint{font-size:12.5px;color:#9a927e;margin:6px 0 0}
+
+  /* 単語 */
+  .prog{display:flex;align-items:center;gap:10px;font-size:13px;color:#7a7363;margin-bottom:6px}
+  .bar{flex:1;height:10px;border-radius:8px;background:#efe9da;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--c1);width:0;transition:width .3s}
+  .qj{font-size:24px;font-weight:bold;text-align:center;margin:14px 0 4px}
+  .qp{text-align:center;font-size:12px;color:#9a927e;margin-bottom:10px}
+  input.ans{font:inherit;font-size:20px;font-family:var(--en);padding:10px 12px;width:100%;
+    border:2px solid var(--line);border-radius:12px;text-align:center;background:#fffdf6}
+  input.ans.correct{border-color:var(--ok);background:var(--okbg)}
+  input.ans.wrong{border-color:var(--ng);background:var(--ngbg)}
+  .fb{margin:10px 0;padding:10px 12px;border-radius:12px;font-size:15px;display:none}
+  .fb.ok{display:block;background:var(--okbg);color:var(--ok)}
+  .fb.ng{display:block;background:var(--ngbg);color:var(--ng)}
+  .fb .en{font-family:var(--en);font-weight:bold;font-size:18px}
+  .miss{font-size:14px}
+  .miss li{padding:5px 2px;border-bottom:1px dashed #eee;display:flex;justify-content:space-between;gap:10px}
+  .miss li .en{font-family:var(--en);color:var(--c2);font-weight:bold}
+  .score-big{font-size:40px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+
+  /* 英作文 */
+  .ask{font-size:17px;font-weight:bold;margin:6px 0 8px}
+  textarea.compose{font:inherit;font-size:17px;font-family:var(--en);width:100%;min-height:64px;
+    padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:#fffdf6}
+  .model{margin:10px 0;padding:10px 12px;border-radius:12px;background:#fff6e6;display:none}
+  .model.show{display:block}
+  .model .lab{font-size:12px;color:#b07d2e;font-weight:bold}
+  .model .en{font-family:var(--en);font-size:18px}
+  .model .tip{font-size:12.5px;color:#9a927e;margin-top:4px}
+  .selfcheck{margin-top:8px;font-size:14px;display:flex;gap:14px;flex-wrap:wrap}
+  .selfcheck label{display:flex;align-items:center;gap:5px}
+
+  /* 英検プロンプト */
+  textarea.prompt{font:inherit;font-size:13.5px;width:100%;min-height:260px;padding:12px;
+    border:2px solid var(--line);border-radius:12px;background:#fbf9f1;line-height:1.7;white-space:pre-wrap}
+  .copybar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  #copymsg{font-size:13px;color:var(--ok)}
+  .howto{font-size:13px;color:#7a7363;background:#f3f6ff;border-radius:12px;padding:10px 12px;margin-top:10px}
+  .howto b{color:var(--ink)}
+  footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
+  <div class="hero">
+    <h1>挑戦モード <span class="en">Challenge</span></h1>
+    <p>力だめしの練習コーナー。記録は残さず、何度でも挑戦できます。</p>
+  </div>
+
+  <!-- モード選択 -->
+  <div id="pick">
+    <div class="modes">
+      <button class="mode w" data-go="word"><span class="emoji">🎯</span>
+        <div class="t">単語50問</div><div class="d">基本・拡張からランダム出題（タイピング）</div></button>
+      <button class="mode c" data-go="compose"><span class="emoji">✍️</span>
+        <div class="t">英作文</div><div class="d">中1／中1〜2／中1〜3 で出題・自己採点</div></button>
+      <button class="mode e" data-go="eiken"><span class="emoji">🗣️</span>
+        <div class="t">英検二次プロンプト</div><div class="d">級を選んで模擬面接プロンプトを生成</div></button>
+    </div>
+  </div>
+
+  <!-- 1) 単語50問 -->
+  <div id="word" class="hide">
+    <div class="card w" id="w_setup">
+      <h2><span class="emoji">🎯</span>単語ランダム50問</h2>
+      <div class="row"><span style="font-size:13px;color:#7a7363">出題範囲：</span>
+        <div class="seg" id="w_range">
+          <button data-v="both" class="on">基本＋拡張</button>
+          <button data-v="b">基本編だけ</button>
+          <button data-v="e">拡張編だけ</button>
+        </div></div>
+      <p class="hint">日本語の意味を見て、英語をタイプします。大文字小文字・記号・ハイフン/スペースの違いは正解扱い。別表記もOK。</p>
+      <div class="row"><button class="btn" id="w_start">▶ 50問スタート</button>
+        <button class="btn ghost" data-home>← モード選択へ</button></div>
+    </div>
+    <div class="card w hide" id="w_quiz">
+      <div class="prog"><span id="w_count">1 / 50</span><span class="bar"><i id="w_bar"></i></span>
+        <span id="w_score">○0</span></div>
+      <div class="qj" id="w_j">—</div>
+      <div class="qp" id="w_p"></div>
+      <input class="ans" id="w_ans" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英語を入力">
+      <div class="fb" id="w_fb"></div>
+      <div class="row" id="w_actSubmit"><button class="btn" id="w_submit">答え合わせ</button></div>
+      <div class="row hide" id="w_actNext"><button class="btn" id="w_next">次へ →</button></div>
+    </div>
+    <div class="card w hide" id="w_done">
+      <h2><span class="emoji">🏁</span>結果</h2>
+      <div class="score-big" id="w_final">0 / 50</div>
+      <p class="hint" id="w_finalmsg" style="text-align:center"></p>
+      <div id="w_misswrap" class="hide"><p style="font-weight:bold;margin:10px 0 4px">まちがえた語（復習）</p>
+        <ul class="miss" id="w_miss"></ul></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="w_again">もう一度50問</button>
+        <button class="btn ghost" data-home>← モード選択へ</button></div>
+    </div>
+  </div>
+
+  <!-- 2) 英作文 -->
+  <div id="compose" class="hide">
+    <div class="card c" id="c_setup">
+      <h2><span class="emoji">✍️</span>英作文</h2>
+      <div class="row"><span style="font-size:13px;color:#7a7363">範囲：</span>
+        <div class="seg" id="c_range">
+          <button data-v="1" class="on">中1</button>
+          <button data-v="2">中1〜2</button>
+          <button data-v="3">中1〜3</button>
+        </div></div>
+      <p class="hint">お題に合う英文を書いて、「答え合わせ」で模範解答と見くらべ、できたかを自分で記録します（自由英作文なので自動採点はしません）。</p>
+      <div class="row"><button class="btn" id="c_start">▶ スタート</button>
+        <button class="btn ghost" data-home>← モード選択へ</button></div>
+    </div>
+    <div class="card c hide" id="c_run">
+      <div class="prog"><span id="c_count">1 / 8</span><span class="bar"><i id="c_bar" style="background:var(--c2)"></i></span>
+        <span id="c_score">✓0</span></div>
+      <div class="ask" id="c_ask">—</div>
+      <textarea class="compose" id="c_ta" spellcheck="false" placeholder="英語で書こう"></textarea>
+      <div class="model" id="c_model">
+        <span class="lab">模範解答（例）</span><br><span class="en" id="c_model_en"></span>
+        <div class="tip" id="c_tip"></div>
+        <div class="selfcheck">自己採点：
+          <label><input type="radio" name="c_self" value="1"> できた</label>
+          <label><input type="radio" name="c_self" value="0" checked> まだ</label>
+        </div>
+      </div>
+      <div class="row" id="c_actCheck"><button class="btn" id="c_check">答え合わせ</button></div>
+      <div class="row hide" id="c_actNext"><button class="btn" id="c_next">次へ →</button></div>
+    </div>
+    <div class="card c hide" id="c_done">
+      <h2><span class="emoji">🏁</span>結果</h2>
+      <div class="score-big" id="c_final" style="color:var(--c2)">0 / 8</div>
+      <p class="hint" style="text-align:center">「できた」と記録した数です。まちがえたお題は、もう一度書いてみよう。</p>
+      <div class="row" style="margin-top:12px"><button class="btn" id="c_again">もう一度</button>
+        <button class="btn ghost" data-home>← モード選択へ</button></div>
+    </div>
+  </div>
+
+  <!-- 3) 英検二次プロンプト -->
+  <div id="eiken" class="hide">
+    <div class="card e">
+      <h2><span class="emoji">🗣️</span>英検二次 模擬面接プロンプト</h2>
+      <p class="hint" style="margin-top:0">級を選んで「プロンプトを作る」を押すと、AI（ChatGPT・Claude など）に貼り付けて<strong>面接官役で模擬面接</strong>をしてもらうための指示文ができます。コピーしてAIに貼り付けてください。<br>※これは面接の練習用です（思考モードのプロンプトとは別）。</p>
+      <div class="row"><span style="font-size:13px;color:#7a7363">級：</span>
+        <div class="seg" id="e_level">
+          <button data-v="g3" class="on">3級</button>
+          <button data-v="gp2">準2級</button>
+          <button data-v="g2">2級</button>
+        </div></div>
+      <div class="row"><button class="btn" id="e_gen">プロンプトを作る</button>
+        <button class="btn ghost" data-home>← モード選択へ</button></div>
+      <div id="e_out" class="hide" style="margin-top:10px">
+        <textarea class="prompt" id="e_text" readonly></textarea>
+        <div class="copybar"><button class="btn" id="e_copy">📋 コピー</button><span id="copymsg"></span></div>
+        <div class="howto"><b>使い方</b>：① 上の文をコピー → ② ChatGPT や Claude などのAIに貼り付け → ③ AIが面接官になって質問を1問ずつ出すので、英語で答える → ④ 最後に日本語で講評（直すと良い点・模範解答・合否の目安）が返ります。</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>挑戦モード ／ 練習専用（記録は残りません）</footer>
+</div>
+
+<script src="../words/data/words.js"></script>
+<script src="data/compose.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var WORDS=window.WORDS||[], COMPOSE=window.COMPOSE||[];
+
+  /* ---------- 画面切り替え ---------- */
+  var SCREENS=["pick","word","compose","eiken"];
+  function show(name){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==name); }); window.scrollTo(0,0); }
+  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click",function(){
+    var g=b.getAttribute("data-go"); show(g);
+    if(g==="word"){ resetWordView(); } if(g==="compose"){ resetComposeView(); }
+  });});
+  document.querySelectorAll("[data-home]").forEach(function(b){ b.addEventListener("click",function(){ show("pick"); });});
+  // セグメント（ボタン群）の選択
+  function segSetup(id, onPick){
+    var seg=$(id);
+    seg.querySelectorAll("button").forEach(function(btn){ btn.addEventListener("click",function(){
+      seg.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", b===btn); });
+      if(onPick) onPick(btn.getAttribute("data-v"));
+    });});
+    var on=seg.querySelector("button.on"); return on?on.getAttribute("data-v"):null;
+  }
+
+  /* ---------- 正誤判定（単語アプリと同じ正規化・別表記対応） ---------- */
+  function normalizeAnswer(s){
+    if(s==null) return "";
+    var t=String(s).replace(/[‘’ʼ′]/g,"'").replace(/[“”]/g,'"').replace(/[‐-―−]/g,"-").replace(/　/g," ");
+    t=t.trim().toLowerCase().replace(/-/g," ").replace(/\s+/g," ").trim();
+    t=t.replace(/^[\s.,!?;:"'()\[\]{}…~～、。･・]+/,"").replace(/[\s.,!?;:"'()\[\]{}…~～、。･・]+$/,"");
+    return t;
+  }
+  function acceptableSet(w){
+    var set={};
+    function add(str){ var n=normalizeAnswer(str); if(n) set[n]=1; }
+    function addP(s){ add(s); if(/[()]/.test(s)){ add(s.replace(/\([^)]*\)/g," ")); add(s.replace(/[()]/g," ")); } }
+    addP(w.w); (w.alt||[]).forEach(addP); return set;
+  }
+  function judge(input,w){ var n=normalizeAnswer(input); return n?!!acceptableSet(w)[n]:false; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+
+  /* ================= 1) 単語50問 ================= */
+  var wRange="both", wQueue=[], wIdx=0, wScore=0, wMiss=[];
+  segSetup("w_range", function(v){ wRange=v; });
+  function resetWordView(){ $("w_setup").classList.remove("hide"); $("w_quiz").classList.add("hide"); $("w_done").classList.add("hide"); }
+  $("w_start").addEventListener("click", startWord);
+  $("w_again").addEventListener("click", startWord);
+  function poolWords(){
+    return WORDS.filter(function(w){ return wRange==="both" ? true : w.m===wRange; });
+  }
+  function startWord(){
+    var pool=poolWords().slice();
+    if(pool.length<1){ alert("単語データが読み込めませんでした。"); return; }
+    shuffle(pool);
+    wQueue=pool.slice(0, Math.min(50,pool.length));
+    wIdx=0; wScore=0; wMiss=[];
+    $("w_setup").classList.add("hide"); $("w_done").classList.add("hide"); $("w_quiz").classList.remove("hide");
+    renderWord();
+  }
+  function renderWord(){
+    var w=wQueue[wIdx];
+    $("w_count").textContent=(wIdx+1)+" / "+wQueue.length;
+    $("w_bar").style.width=Math.round(wIdx/wQueue.length*100)+"%";
+    $("w_score").textContent="○"+wScore;
+    $("w_j").textContent=w.j||w.w; $("w_p").textContent=w.p||"";
+    var inp=$("w_ans"); inp.value=""; inp.disabled=false; inp.className="ans";
+    $("w_fb").className="fb"; $("w_fb").innerHTML="";
+    $("w_actSubmit").classList.remove("hide"); $("w_actNext").classList.add("hide");
+    setTimeout(function(){ try{inp.focus();}catch(e){} },40);
+  }
+  function submitWord(){
+    var w=wQueue[wIdx], inp=$("w_ans"); if(inp.disabled) return;
+    if(!normalizeAnswer(inp.value)){ try{inp.focus();}catch(e){} return; }
+    var ok=judge(inp.value,w); inp.disabled=true; inp.classList.add(ok?"correct":"wrong");
+    var fb=$("w_fb");
+    if(ok){ wScore++; fb.className="fb ok"; fb.innerHTML="○ 正解！　<span class='en'>"+esc(w.w)+"</span>"; }
+    else{ wMiss.push(w); fb.className="fb ng"; fb.innerHTML="✕ 正解は <span class='en'>"+esc(w.w)+"</span>（あなた："+esc(inp.value)+"）"; }
+    $("w_score").textContent="○"+wScore;
+    $("w_actSubmit").classList.add("hide"); $("w_actNext").classList.remove("hide");
+    try{$("w_next").focus();}catch(e){}
+  }
+  function nextWord(){ wIdx++; if(wIdx>=wQueue.length){ doneWord(); } else { renderWord(); } }
+  function doneWord(){
+    $("w_quiz").classList.add("hide"); $("w_done").classList.remove("hide");
+    var n=wQueue.length, pct=Math.round(wScore/n*100);
+    $("w_final").textContent=wScore+" / "+n;
+    $("w_finalmsg").textContent= pct>=90?"すばらしい！ほぼ完ぺき！🎉" : pct>=70?"いい調子！まちがいを見直そう。" : pct>=50?"半分こえた。復習で伸ばそう。" : "まずは復習から。コツコツいこう！";
+    if(wMiss.length){ $("w_misswrap").classList.remove("hide");
+      $("w_miss").innerHTML=wMiss.map(function(w){ return "<li><span>"+esc(w.j||"")+"</span><span class='en'>"+esc(w.w)+"</span></li>"; }).join("");
+    } else { $("w_misswrap").classList.add("hide"); }
+  }
+  $("w_submit").addEventListener("click", submitWord);
+  $("w_next").addEventListener("click", nextWord);
+  $("w_ans").addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); submitWord(); } });
+  document.addEventListener("keydown", function(e){
+    if($("w_quiz").classList.contains("hide")) return;
+    if(e.key==="Enter" && $("w_ans").disabled){ e.preventDefault(); nextWord(); }
+  });
+
+  /* ================= 2) 英作文 ================= */
+  var cMax=1, cQueue=[], cIdx=0, cScore=0, COUNT=8;
+  segSetup("c_range", function(v){ cMax=+v; });
+  function resetComposeView(){ $("c_setup").classList.remove("hide"); $("c_run").classList.add("hide"); $("c_done").classList.add("hide"); }
+  $("c_start").addEventListener("click", startCompose);
+  $("c_again").addEventListener("click", startCompose);
+  function startCompose(){
+    var pool=COMPOSE.filter(function(x){ return x.g<=cMax; }).slice();
+    if(!pool.length){ alert("お題が読み込めませんでした。"); return; }
+    shuffle(pool); cQueue=pool.slice(0, Math.min(COUNT,pool.length)); cIdx=0; cScore=0;
+    $("c_setup").classList.add("hide"); $("c_done").classList.add("hide"); $("c_run").classList.remove("hide");
+    renderCompose();
+  }
+  function renderCompose(){
+    var it=cQueue[cIdx];
+    $("c_count").textContent=(cIdx+1)+" / "+cQueue.length;
+    $("c_bar").style.width=Math.round(cIdx/cQueue.length*100)+"%";
+    $("c_score").textContent="✓"+cScore;
+    $("c_ask").textContent=it.jp;
+    $("c_ta").value=""; $("c_ta").disabled=false;
+    $("c_model").classList.remove("show");
+    $("c_model_en").textContent=it.model; $("c_tip").textContent=it.tip?("ねらい："+it.tip):"";
+    var r=document.querySelector('input[name="c_self"][value="0"]'); if(r) r.checked=true;
+    $("c_actCheck").classList.remove("hide"); $("c_actNext").classList.add("hide");
+    setTimeout(function(){ try{$("c_ta").focus();}catch(e){} },40);
+  }
+  function checkCompose(){
+    $("c_ta").disabled=true; $("c_model").classList.add("show");
+    $("c_actCheck").classList.add("hide"); $("c_actNext").classList.remove("hide");
+  }
+  function nextCompose(){
+    var sel=document.querySelector('input[name="c_self"]:checked');
+    if(sel && sel.value==="1") cScore++;
+    cIdx++; if(cIdx>=cQueue.length){ doneCompose(); } else { renderCompose(); }
+  }
+  function doneCompose(){
+    $("c_run").classList.add("hide"); $("c_done").classList.remove("hide");
+    $("c_final").textContent=cScore+" / "+cQueue.length;
+  }
+  $("c_check").addEventListener("click", checkCompose);
+  $("c_next").addEventListener("click", nextCompose);
+
+  /* ================= 3) 英検二次プロンプト ================= */
+  var eLevel="g3";
+  segSetup("e_level", function(v){ eLevel=v; $("e_out").classList.add("hide"); });
+  var PROMPTS={
+    g3:
+"あなたは英検3級の二次試験（面接）の試験官です。私（受験者）と、テキスト上で模擬面接をしてください。\n"+
+"※テキストなので、イラストは「英語の文章」で描写してください（絵の代わりに3〜4文で説明）。\n\n"+
+"【面接の流れ（必ず1問ずつ。私の返事を見てから次へ）】\n"+
+"0. 簡単なあいさつ（How are you today? など）→ 私の返事を待つ。\n"+
+"1. 面接カードを作る：\n"+
+"   ・英文パッセージ（20〜30語。中学生レベルの話題：学校・町・行事など）\n"+
+"   ・イラスト描写：人や場所のようすを英語3〜4文で説明（例：A girl is reading a book in the park.）\n"+
+"   提示したら「黙読してください」と言い、私の準備を待つ。\n"+
+"2. 音読：パッセージを声に出して読むよう指示（私はテキストで音読内容を返します）。\n"+
+"3. No.1：パッセージの内容についての質問。\n"+
+"4. No.2：イラスト描写についての質問（What / Where / How many など）。\n"+
+"5. No.3：イラスト描写についての別の質問。\n"+
+"6. No.4：私自身についての質問（カードと無関係。例：好きな食べ物とその理由）。\n"+
+"7. No.5：私自身についての別の質問。\n\n"+
+"【最後に・日本語で講評】良かった点／直すとより良い表現（具体的に）／各質問の模範解答例／本番なら合格の目安（◎○△）。\n\n"+
+"【お願い】絶対に1問ずつ。私が詰まったらやさしくヒントを1つ。英語で答えるよう励ましてください。では、あいさつから始めてください。",
+    gp2:
+"あなたは英検準2級の二次試験（面接）の試験官です。私（受験者）と、テキスト上で模擬面接をしてください。\n"+
+"※イラストは「英語の文章」で描写してください（絵の代わりに説明）。\n\n"+
+"【面接の流れ（必ず1問ずつ。私の返事を見てから次へ）】\n"+
+"0. あいさつ → 私の返事を待つ。\n"+
+"1. 面接カードを作る：\n"+
+"   ・英文パッセージ（50語程度。社会や身近なテーマ）\n"+
+"   ・イラスト描写：5人ほどの人物がそれぞれ別の行動をしている場面を英語で説明。\n"+
+"   黙読の時間を与える。\n"+
+"2. 音読：パッセージを音読するよう指示。\n"+
+"3. No.1：パッセージについての質問。\n"+
+"4. No.2：イラストの人物たちが「何をしているか」を説明させる質問（複数の動作）。\n"+
+"5. No.3：もう1つのイラスト描写を出し、その状況・人物について答えさせる質問。\n"+
+"6. No.4：あるテーマについて私自身の意見をたずねる（Do you think 〜? → Why?）。\n"+
+"7. No.5：身近な話題について私自身のことをたずねる。\n\n"+
+"【最後に・日本語で講評】良かった点／直すと良い表現／模範解答例／合格の目安（◎○△）。\n\n"+
+"【お願い】1問ずつ。詰まったらヒント1つ。英語での発話を促してください。では、あいさつから始めてください。",
+    g2:
+"あなたは英検2級の二次試験（面接）の試験官です。私（受験者）と、テキスト上で模擬面接をしてください。\n"+
+"※イラスト（3コマ）は「英語の文章」で描写してください。\n\n"+
+"【面接の流れ（必ず1問ずつ。私の返事を見てから次へ）】\n"+
+"0. あいさつ → 私の返事を待つ。\n"+
+"1. 面接カードを作る：\n"+
+"   ・英文パッセージ（60語程度。社会的トピック：環境・技術・教育など）\n"+
+"   ・3コマのイラスト描写：時間の流れに沿った3場面を英語で説明（各コマ1〜2文＋場面転換の文言）。\n"+
+"   黙読の時間を与える。\n"+
+"2. 音読：パッセージを音読するよう指示。\n"+
+"3. No.1：パッセージについての質問。\n"+
+"4. No.2：3コマのイラストを、自分のことばで物語のように説明させる（ナレーション）。\n"+
+"5. No.3：カードの話題に関連した社会的な質問に、私の意見を述べさせる（Agree/Disagree → 理由）。\n"+
+"6. No.4：より一般的な社会問題について、私の意見と理由をたずねる。\n\n"+
+"【最後に・日本語で講評】良かった点／直すと良い表現／論理と理由づけの講評／模範解答例／合格の目安（◎○△）。\n\n"+
+"【お願い】1問ずつ。意見は理由を2つ言えるよう促してください。では、あいさつから始めてください。"
+  };
+  $("e_gen").addEventListener("click", function(){
+    $("e_text").value=PROMPTS[eLevel]||""; $("e_out").classList.remove("hide"); $("copymsg").textContent="";
+    $("e_text").scrollTop=0;
+  });
+  $("e_copy").addEventListener("click", function(){
+    var ta=$("e_text"); ta.focus(); ta.select();
+    function done(){ $("copymsg").textContent="コピーしました ✓ AIに貼り付けてね"; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(done, function(){ try{document.execCommand("copy");done();}catch(e){ $("copymsg").textContent="長押しでコピーしてね"; } });
+    } else { try{ document.execCommand("copy"); done(); }catch(e){ $("copymsg").textContent="長押しでコピーしてね"; } }
+  });
+
+  /* ---------- helper ---------- */
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+})();
+</script>
+</body>
+</html>
