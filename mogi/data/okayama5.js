@@ -182,7 +182,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("お filled　か lose"), E("お filled　か reach"),
-                E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
+                E("お emptied　か lose"), E("お emptied　か reach") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "アオイは一生けんめい働いた。", "係員が停留所への案内の仕方を教えてくれた。",
                 "係員は速く話すべきだと言った。", "アオイは少しずつ訪れる人と楽に話せるようになった。" ], answer:2 },

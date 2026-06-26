@@ -119,9 +119,32 @@ function checkWords(){
   if(!rel.length && !empty.length && !reveal.length) pass('words', `${WORDS.length}語・相対参照/空訳/答えバレ なし`);
 }
 
+// 県立入試スタイル(okayama*)の横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか
+function okayamaDupCheck(){
+  const set = EXAMS.filter(id=>/^okayama\d+$/.test(id));
+  if(set.length<2) return;
+  const strip = s => String(s==null?'':s).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  const norm  = s => strip(s).toLowerCase().replace(/[.,!?;:"'’“”]/g,'').replace(/\s+/g,' ').trim();
+  const map = {};
+  const addS = (str,id,min)=>{ const k=norm(str); if(k.length<min) return; (map[k]=map[k]||{ids:new Set(),raw:strip(str)}).ids.add(id); };
+  for(const id of set){
+    const w={}; try{ new Function('window', r(`mogi/data/${id}.js`))(w); }catch(e){ continue; }
+    itemsOf(w.EXAM).forEach(it=>{
+      if(it.type==='wordorder') addS(it.answer,id,8);
+      else if(it.type==='fill') addS((it.answers&&it.answers[0])||'',id,6);
+      else if(it.type==='mcq'||it.type==='mcqMulti'||it.type==='bankpick') (it.choices||it.bank||[]).forEach(c=>addS(c,id,14));
+    });
+  }
+  const dups = Object.values(map).filter(o=>o.ids.size>=2);
+  if(dups.length) dups.forEach(o=> fail('okayama-dup', `重複「${o.raw}」 in [${[...o.ids].sort().join(', ')}]`));
+  else pass('okayama', `${set.length}本クロス重複なし（並べかえ/抜き出し/長い選択肢）`);
+}
+
 console.log('— 模試データ 自動採点＆構造チェック —');
 for(const id of EXAMS){ try{ gradeExam(id); }catch(e){ fail(id, `例外: ${e.message}`); } }
 console.log('— 単語データ —');
 checkWords();
-console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試100点・構造OK・単語サニティOK）');
+console.log('— 県立入試スタイルの横断重複 —');
+okayamaDupCheck();
+console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試100点・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK）');
 process.exit(fails ? 1 : 0);

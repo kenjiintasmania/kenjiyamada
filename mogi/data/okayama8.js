@@ -184,7 +184,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("お moved　か lose"), E("お moved　か reach"),
-                E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
+                E("お weakened　か lose"), E("お weakened　か reach") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "アヤは一生けんめい働いた。", "クラブの女性がごみの分別の仕方を教えてくれた。",
                 "女性はびんとかんを混ぜるべきだと言った。", "アヤは少しずつリサイクルの仕組みを学んだ。" ], answer:2 },
