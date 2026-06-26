@@ -1,0 +1,347 @@
+<!-- vocab_chu3_3.html  中3 第3回 習熟度「答えの単語」テスト -->
+<!-- 中3 第3回模試(chu3_3)の答え語・表現から作成（和→英・二段階採点・60点満点） -->
+<!-- v1.1: 綴り一致で○／大文字・文末記号の抜けは黄色で注意。動名詞3文にピリオド付与。 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3年 第3回習熟度 答えの単語 テスト</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📝</text></svg>">
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --accent:#ff7a59; --accent2:#39b3a6;
+    --ok:#2e9e5b; --okbg:#e8f7ee; --ng:#e0463a; --ngbg:#fdebe9;
+    --warn:#c98a00; --warnbg:#fff6df;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1200px 500px at 110% -10%,#ffe9d6 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#d8f3ef 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.5;padding:18px 14px 80px}
+  .wrap{max-width:880px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;
+    border-bottom:4px solid var(--ink);padding-bottom:12px;margin-bottom:8px}
+  h1{font-size:24px;margin:0;letter-spacing:.02em}
+  h1 .en{font-family:var(--en)}
+  .sub{font-size:13px;color:#8a8270}
+  .namebox{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:13px}
+  .namebox input{font-family:var(--jp);font-size:14px;border:none;border-bottom:2px dotted #b9b2a0;
+    background:transparent;padding:2px 4px;width:140px}
+  .namebox input:focus{outline:none;border-bottom-color:var(--accent)}
+
+  .scorebar{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;border-radius:14px;
+    padding:12px 16px;margin:14px 0;display:flex;align-items:center;gap:14px;
+    box-shadow:0 6px 18px rgba(43,43,58,.22)}
+  .scorebar .big{font-family:var(--en);font-size:26px;font-weight:bold}
+  .scorebar .msg{font-size:14px;opacity:.95}
+  .scorebar.hide{display:none}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 18px}
+  button{font-family:var(--jp);font-size:15px;font-weight:bold;border:none;border-radius:999px;
+    padding:11px 20px;cursor:pointer;transition:transform .06s,box-shadow .15s}
+  button:active{transform:translateY(1px)}
+  .grade{background:var(--accent);color:#fff;box-shadow:0 4px 0 #d65a3c}
+  .grade:active{box-shadow:0 1px 0 #d65a3c}
+  .reset{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .ghost{background:transparent;color:#8a8270;border:2px dashed #cfc8b6;font-weight:normal}
+  .toggle{display:flex;align-items:center;gap:7px;font-size:14px;color:#6f6856;cursor:pointer;
+    background:#fff;border:2px solid var(--line);border-radius:999px;padding:8px 16px}
+  .toggle input{width:16px;height:16px;accent-color:var(--accent2)}
+
+  section{margin:0 0 22px}
+  .cat{font-size:16px;font-weight:bold;color:var(--accent2);margin:0 0 10px;
+    display:flex;align-items:center;gap:8px}
+  .cat::before{content:"";width:14px;height:14px;border-radius:4px;background:var(--accent2)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .grid.one{grid-template-columns:1fr}
+  @media(max-width:560px){.grid,.grid.three{grid-template-columns:1fr}}
+
+  .q{background:#fff;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
+  .q .jp{font-size:14px;color:#5b5446;margin-bottom:5px}
+  .q input.ans{width:100%;font-family:var(--en);font-size:17px;color:var(--ink);
+    border:none;border-bottom:2px solid #c9c2b0;background:transparent;padding:4px 2px}
+  .q input.ans:focus{outline:none;border-bottom-color:var(--accent)}
+  .q.correct{background:var(--okbg);border-color:var(--ok)}
+  .q.warn{background:var(--warnbg);border-color:var(--warn)}
+  .q.wrong{background:var(--ngbg);border-color:var(--ng)}
+  .mark{float:right;font-family:var(--en);font-size:18px;font-weight:bold}
+  .mark.ok{color:var(--ok)} .mark.wa{color:var(--warn)} .mark.ng{color:var(--ng)}
+  .correctans{font-size:13px;margin-top:4px;display:none}
+  .correctans .ca-en{font-family:var(--en);font-size:15px}
+  .q.wrong .correctans{display:block;color:var(--ng)}
+  .q.warn .correctans{display:block;color:var(--warn)}
+
+  /* 不規則動詞：1行4欄 */
+  .verb{grid-column:1/-1;background:#fff;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
+  .verb .jp{font-size:14px;color:#5b5446;margin-bottom:6px}
+  .forms{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:560px){.forms{grid-template-columns:repeat(2,1fr)}}
+  .cell label{display:block;font-size:11px;color:#9a927e;font-family:var(--jp);margin-bottom:2px}
+  .cell input{width:100%;font-family:var(--en);font-size:16px;border:none;
+    border-bottom:2px solid #c9c2b0;background:transparent;padding:3px 2px}
+  .cell input:focus{outline:none;border-bottom-color:var(--accent)}
+  .cell.correct input{background:var(--okbg)} .cell.wrong input{background:var(--ngbg)}
+  .cell .ca{font-family:var(--en);font-size:13px;color:var(--ng);display:none;margin-top:2px}
+  .cell.wrong .ca{display:block}
+
+  .study-overlay{position:fixed;inset:0;z-index:50;background:rgba(43,43,58,.55);
+    display:flex;align-items:center;justify-content:center;padding:16px}
+  .study-overlay.hide{display:none}
+  .study-box{background:#fff;border-radius:18px;max-width:880px;width:100%;max-height:88vh;
+    overflow:auto;padding:18px 18px 6px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+  .study-box h2{margin:0 0 4px;font-size:20px}
+  .study-box .lead{font-size:13px;color:#8a8270;margin:0 0 10px}
+  .study-cat{font-weight:bold;color:var(--accent2);margin:12px 0 5px;font-size:15px}
+  .study-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 16px}
+  @media(max-width:560px){.study-list{grid-template-columns:1fr}}
+  .study-list>div{font-size:14px;padding:3px 0;border-bottom:1px dashed #eee}
+  .study-list .en{font-family:var(--en);color:var(--accent);font-weight:bold;margin-left:6px}
+  .study-actions{position:sticky;bottom:0;background:#fff;padding:12px 0 8px;text-align:center}
+  footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:30px}
+  @media print{
+    body{background:#fff;padding:0}
+    .controls,.toggle,.ghost{display:none}
+    .scorebar{position:static;box-shadow:none}
+  }
+</style>
+
+<div class="wrap">
+  <div style="font-size:13px;margin:0 0 8px"><a href="index.html" style="color:#5b7cff;text-decoration:none">← トップ（模擬テスト）にもどる</a></div>
+  <header>
+    <div>
+      <h1>3年 第3回習熟度 <span class="en">Vocab Test</span></h1>
+      <div class="sub">答えの単語・和訳を見て英語を書こう（全60問）</div>
+    </div>
+    <div class="namebox">
+      <span>学年番名前</span><input id="name" placeholder="　　　　　　">
+    </div>
+  </header>
+
+  <div id="scorebar" class="scorebar hide">
+    <span class="big" id="scoretext">0 / 60</span>
+    <span class="msg" id="scoremsg"></span>
+  </div>
+
+  <div class="controls">
+    <button class="grade" onclick="grade()">採点する</button>
+    <button class="reset" onclick="resetAll()">もう一度</button>
+    <button class="reset" onclick="showStudy()">📖 答え一覧</button>
+    <label class="toggle"><input type="checkbox" id="shuffle" onchange="render()">順番をシャッフル</label>
+    <button class="ghost" onclick="window.print()">印刷</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="controls" style="justify-content:center;margin-top:6px">
+    <button class="reset" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 一番上にもどる</button>
+  </div>
+  <footer>「採点する」をおすと点数が出て、一番上にもどります。まちがえた問題は正解が出ます。記録は最初の採点だけ残ります。</footer>
+</div>
+
+<div id="studyOverlay" class="study-overlay">
+  <div class="study-box">
+    <h2>📖 答え一覧（おぼえてからテスト）</h2>
+    <p class="lead">まず答えを見ておぼえよう。じゅんびができたら「テストを始める」を押すと、答えがかくれてテストになります。</p>
+    <div id="studyBody"></div>
+    <div class="study-actions"><button class="grade" id="startBtn" onclick="hideStudy()">✏️ テストを始める</button></div>
+  </div>
+</div>
+
+<script>
+/* ===== データ（中3 第3回模試 chu3_3 を分析：職業・現在完了・最上級・動名詞/to不定詞・連語・SVOO/SVOC・接続詞・不規則動詞）===== */
+const DATA = [
+  {cat:"① 職業 (jobs)", cols:3, items:[
+    ["医者","doctor"],["先生・教師","teacher"],["看護師","nurse"],
+    ["獣医","vet"],["コーチ","coach"],["ボランティア","volunteer"]
+  ]},
+  {cat:"② 現在完了でよく使う語", cols:2, items:[
+    ["（ずっと）3年間","for three years"],["どれくらい長く","how long"],
+    ["（今までに）一度も〜ない","never"],["すでに・もう","already"],
+    ["ちょうど（今）","just"],["〜以来","since"]
+  ]},
+  {cat:"③ 比較・最上級", cols:2, items:[
+    ["最も有名な","the most famous"],["最もよい","the best"],
+    ["（より）上手に","better"],["最も","the most"],
+    ["〜と同じくらい古い","as old as"],["より大きい","bigger"]
+  ]},
+  {cat:"④ 動名詞・to 不定詞", cols:2, items:[
+    ["泳ぐこと（主語）","Swimming"],["泳ぎ方","how to swim"],
+    ["練習し続ける","keep practicing"],["あきらめる","give up"],
+    ["〜することに決める","decide to"],["〜になりたい","want to be"]
+  ]},
+  {cat:"⑤ 連語・熟語", cols:2, items:[
+    ["〜の世話をする","take care of"],["〜を気にする","worry about"],
+    ["〜が得意だ","be good at"],["少しずつ","little by little"],
+    ["もちろん","of course"],["ぜひ〜したい","I'd love to"],
+    ["たくさんの","a lot of"],["〜について話す","talk about"]
+  ]},
+  {cat:"⑥ 第4・第5文型 (SVOO / SVOC)", cols:1, items:[
+    ["私に多くのことを教えた","taught me many things"],["あなたを幸せにする","make you happy"],
+    ["私に泳ぎ方を見せる","show me how to swim"],["それをより良くする","make it better"],
+    ["私に1つくれた","gave me one"],["体を強くする","make your body stronger"]
+  ]},
+  {cat:"⑦ 接続詞・つなぎ言葉", cols:3, items:[
+    ["もし〜ならば","if"],["〜するとき","when"],["〜なので","so"],
+    ["〜だけれど","but"],["〜ということ","that"],["〜する前に","before"]
+  ]},
+  {cat:"⑧ 不規則動詞の変化 (原形 - 過去 - 過去分詞 - ing)", verb:true, items:[
+    ["教える",["teach","taught","taught","teaching"]],
+    ["泳ぐ",["swim","swam","swum","swimming"]],
+    ["与える",["give","gave","given","giving"]],
+    ["来る",["come","came","come","coming"]]
+  ]}
+];
+
+/* ===== 正規化 ===== */
+function normSpell(s){          // 綴り判定：大小・記号・ハイフンを無視
+  return (s||"").toLowerCase().trim()
+    .replace(/[.,!?]/g,"")
+    .replace(/[-_/]/g," ")
+    .replace(/\s+/g," ").trim();
+}
+function normExact(s){          // 表記判定：大文字・記号は保持、スペースのみ整える
+  return (s||"").trim().replace(/\s+/g," ");
+}
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+let inputs = []; // 採点対象の {el, answer, verbcell}
+
+/* ===== 記録（最高点・回数）と答え一覧 ===== */
+const TEST_ID="c3s3", MAX=60;
+let attemptGraded=false;
+function recordScore(score){
+  try{
+    const k="shuku_v1", o=JSON.parse(localStorage.getItem(k)||"{}");
+    const prev=o[TEST_ID]||{best:0,count:0};
+    o[TEST_ID]={best:Math.max(prev.best||0,score), max:MAX,
+      count:(prev.count||0)+1, last:score, ts:Date.now()};
+    localStorage.setItem(k,JSON.stringify(o));
+  }catch(e){}
+}
+function buildStudy(){
+  const body=document.getElementById("studyBody"); if(!body) return;
+  let html="";
+  DATA.forEach(sec=>{
+    html+='<div class="study-cat">'+sec.cat+'</div><div class="study-list">';
+    sec.items.forEach(it=>{
+      const ans = Array.isArray(it[1]) ? it[1].join(" / ") : it[1];
+      html+='<div>'+it[0]+' <span class="en">'+ans+'</span></div>';
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+function showStudy(){ document.getElementById("studyOverlay").classList.remove("hide"); }
+function hideStudy(){ document.getElementById("studyOverlay").classList.add("hide"); }
+
+function render(){
+  const shuf = document.getElementById("shuffle").checked;
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+  inputs = [];
+  document.getElementById("scorebar").classList.add("hide");
+  attemptGraded=false;
+
+  let blocks = [];
+  DATA.forEach(sec=>{
+    sec.items.forEach(it=> blocks.push({sec, it}));
+  });
+  if(shuf) shuffleArr(blocks);
+
+  if(!shuf){
+    DATA.forEach(sec=>{
+      const s = document.createElement("section");
+      s.innerHTML = `<div class="cat">${sec.cat}</div>`;
+      const g = document.createElement("div");
+      g.className = "grid " + (sec.verb?"one":(sec.cols===3?"three":sec.cols===1?"one":""));
+      sec.items.forEach(it=> g.appendChild(makeCard(sec, it)));
+      s.appendChild(g); quiz.appendChild(s);
+    });
+  }else{
+    const s = document.createElement("section");
+    s.innerHTML = `<div class="cat">ランダム出題（全60問）</div>`;
+    const g = document.createElement("div"); g.className="grid";
+    blocks.forEach(b=> g.appendChild(makeCard(b.sec, b.it)));
+    s.appendChild(g); quiz.appendChild(s);
+  }
+}
+
+function makeCard(sec, it){
+  if(sec.verb){
+    const wrap = document.createElement("div"); wrap.className="verb";
+    const labels = ["原形","過去","過去分詞","-ing"];
+    let cells = "";
+    it[1].forEach((ans,i)=> cells += `
+      <div class="cell" data-i="${i}">
+        <label>${labels[i]}</label>
+        <input class="vf" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="ca"></div>
+      </div>`);
+    wrap.innerHTML = `<div class="jp">${it[0]}</div><div class="forms">${cells}</div>`;
+    const cellEls = wrap.querySelectorAll(".cell");
+    cellEls.forEach((c,i)=> inputs.push({el:c, input:c.querySelector("input"), answer:it[1][i], verbcell:true}));
+    return wrap;
+  }
+  const q = document.createElement("div"); q.className="q";
+  q.innerHTML = `<div class="jp">${it[0]}</div>
+    <input class="ans" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="correctans"></div>`;
+  inputs.push({el:q, input:q.querySelector("input"), answer:it[1]});
+  return q;
+}
+
+function grade(){
+  let score = 0, warnCount = 0;
+  inputs.forEach(o=>{
+    const raw = o.input.value;
+    const spellOK = raw.trim()!=="" && normSpell(raw)===normSpell(o.answer);
+    const exactOK = normExact(raw)===normExact(o.answer);
+    const state = !spellOK ? "wrong" : (exactOK ? "correct" : "warn");
+
+    o.el.classList.remove("correct","warn","wrong");
+    o.el.classList.add(state);
+
+    if(o.verbcell){
+      const ca = o.el.querySelector(".ca");
+      if(state==="wrong")      ca.textContent = o.answer;
+      else if(state==="warn")  ca.textContent = "小文字で → "+o.answer;
+      else                     ca.textContent = "";
+    }else{
+      let m = o.el.querySelector(".mark");
+      if(!m){m=document.createElement("span");m.className="mark";o.el.querySelector(".jp").appendChild(m);}
+      m.textContent = state==="wrong" ? "✕" : "○";
+      m.className = "mark " + (state==="correct"?"ok":state==="warn"?"wa":"ng");
+      const ca = o.el.querySelector(".correctans");
+      if(state==="wrong"){
+        ca.innerHTML = '<span class="ca-en">→ '+o.answer+'</span>';
+      }else if(state==="warn"){
+        ca.innerHTML = '惜しい！大文字や . ? を確認　<span class="ca-en">→ '+o.answer+'</span>';
+      }else{
+        ca.innerHTML = "";
+      }
+    }
+    if(spellOK){ score++; if(state==="warn") warnCount++; }
+  });
+  const bar = document.getElementById("scorebar");
+  bar.classList.remove("hide");
+  document.getElementById("scoretext").textContent = score+" / 60";
+  const pct = score/60;
+  let msg = "もう一度チャレンジ！赤いところは正解が出ています。";
+  if(pct>=1) msg = "全問正解！パーフェクト！🎉";
+  else if(pct>=0.9) msg = "すごい！あと少しで満点！";
+  else if(pct>=0.7) msg = "いい調子！赤いところを直そう。";
+  else if(pct>=0.5) msg = "半分こえた。なぞり書きを見直そう。";
+  if(warnCount>0) msg += "　黄色は綴りはOK・大文字や . ? だけ直そう。";
+  document.getElementById("scoremsg").textContent = msg;
+  if(!attemptGraded){ attemptGraded=true; recordScore(score); }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetAll(){ render(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+buildStudy(); render(); showStudy();
+</script>
