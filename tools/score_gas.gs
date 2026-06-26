@@ -73,10 +73,12 @@ var SUMMARY_COLS = [
   {key:"e_recent_pct",   head:"英検_直近正答率",max:false},
   {key:"e_recent_pass",  head:"英検_直近合否",  max:false},
   // 習熟度 単語テスト（80%以上のみ送信＝正式点／挑戦回数）
-  {key:"sv_c2",   head:"習熟度単語_中2",     max:true},
-  {key:"sv_c2_n", head:"習熟度単語_中2_回数", max:true},
-  {key:"sv_c3",   head:"習熟度単語_中3",     max:true},
-  {key:"sv_c3_n", head:"習熟度単語_中3_回数", max:true}
+  {key:"sv_c2",     head:"習熟度単語_中2",          max:true},
+  {key:"sv_c2_n",   head:"習熟度単語_中2_回数",      max:true},
+  {key:"sv_c3",     head:"習熟度単語_中3第2回",       max:true},
+  {key:"sv_c3_n",   head:"習熟度単語_中3第2回_回数",   max:true},
+  {key:"sv_c3_3",   head:"習熟度単語_中3第3回",       max:true},
+  {key:"sv_c3_3_n", head:"習熟度単語_中3第3回_回数",   max:true}
 ];
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
@@ -93,7 +95,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-2";
+var GAS_VERSION = "unit-gate-3";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

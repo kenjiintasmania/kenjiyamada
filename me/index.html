@@ -168,7 +168,8 @@
     <table class="exam"><tbody id="s_tbl"></tbody></table>
     <p class="hint">80点以上で「合格（先生に送信）」。
       <a href="../mogi/vocab_chu2.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">→ 中2単語</a> ／
-      <a href="../mogi/vocab_chu3_2.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">中3単語</a></p>
+      <a href="../mogi/vocab_chu3_2.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">中3第2回</a> ／
+      <a href="../mogi/vocab_chu3_3.html" style="color:var(--mogi);font-weight:bold;text-decoration:none">中3第3回</a></p>
   </div>
 
   <!-- 英検 -->
@@ -325,11 +326,11 @@
     function one(id){ var r=o[id]; if(!r)return null;
       return {best:r.best||0, max:r.max||0, count:r.count||0, last:r.last||0,
         pct:r.max?Math.round((r.best||0)/r.max*100):0}; }
-    return {c2:one("c2"), c3:one("c3s2")};
+    return {c2:one("c2"), c3:one("c3s2"), c3_3:one("c3s3")};
   }
   function renderShuku(s){
     var tb=$("s_tbl"); tb.innerHTML="";
-    [["中2 単語",s.c2],["中3 単語",s.c3]].forEach(function(p){
+    [["中2 単語",s.c2],["中3 第2回 単語",s.c3],["中3 第3回 単語",s.c3_3]].forEach(function(p){
       var label=p[0], r=p[1], tr=document.createElement("tr");
       if(r){
         var pass=r.pct>=80;
@@ -349,10 +350,10 @@
     kihon_shuku:"基本単語＋習熟度（単語）", moshi:"模試で得点力", eiken:"英検対策", balance:"バランスよく全部" };
   function records(){
     var w=DATA.w,m=DATA.m,s=DATA.s,e=DATA.e;
-    var vC2=s.c2?s.c2.pct:0, vC3=s.c3?s.c3.pct:0;
+    var vC2=s.c2?s.c2.pct:0, vC3=s.c3?s.c3.pct:0, vC3_3=s.c3_3?s.c3_3.pct:0;
     return { mBest:m.done?m.best:0, mDone:m.done||0,
-      vC2:vC2, vC3:vC3, vBest:Math.max(vC2,vC3),
-      vC2n:s.c2?s.c2.count:0, vC3n:s.c3?s.c3.count:0,
+      vC2:vC2, vC3:vC3, vC3_3:vC3_3, vBest:Math.max(vC2,vC3,vC3_3),
+      vC2n:s.c2?s.c2.count:0, vC3n:s.c3?s.c3.count:0, vC3_3n:s.c3_3?s.c3_3.count:0,
       wBasic:w.b, wBasicT:w.bT, wAll:w.all,
       act:(m.done||0)+(s.c2?s.c2.count:0)+(s.c3?s.c3.count:0)+(w.all>0?1:0)+(e.last?1:0),
       day:new Date().toISOString().slice(0,10) };
@@ -369,7 +370,7 @@
     return "ようこそ！まずは1つやってみよう！😊";
   }
   function guidance(policy,R){
-    var shukuDone=(R.vC2>=80 && R.vC3>=80), someV=(R.vC2n>0||R.vC3n>0);
+    var shukuDone=(R.vC2>=80 && R.vC3>=80 && R.vC3_3>=80), someV=(R.vC2n>0||R.vC3n>0||R.vC3_3n>0);
     switch(policy){
       case "shuku":
         return shukuDone? "習熟度の単語はバッチリ！次は模試や英検に挑戦しよう。"
@@ -441,7 +442,8 @@
       e_recent_pass:(e.last?(e.last.pass?"合格":"不合格"):""),
       // 習熟度単語（80%以上だけ正式送信。回数は常に送る）
       sv_c2:(s.c2&&s.c2.pct>=80)?s.c2.pct:"", sv_c2_n:(s.c2?s.c2.count:""),
-      sv_c3:(s.c3&&s.c3.pct>=80)?s.c3.pct:"", sv_c3_n:(s.c3?s.c3.count:"")
+      sv_c3:(s.c3&&s.c3.pct>=80)?s.c3.pct:"", sv_c3_n:(s.c3?s.c3.count:""),
+      sv_c3_3:(s.c3_3&&s.c3_3.pct>=80)?s.c3_3.pct:"", sv_c3_3_n:(s.c3_3?s.c3_3.count:"")
     };
   }
   var sending=false;
