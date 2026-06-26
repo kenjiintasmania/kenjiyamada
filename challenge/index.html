@@ -11,8 +11,9 @@
    1) 単語ランダム50問（基本・拡張）… words/data/words.js を再利用してタイピング採点
    2) 英作文（中1 / 中1〜2 / 中1〜3）… 模範解答を見て自己採点（challenge/data/compose.js）
    3) 英検二次プロンプト生成（3級/準2級/2級）… AIに貼り付けて模擬面接する“練習用”プロンプトを生成
+   ※ 英作文には「AIに添削してもらう」プロンプト生成も用意（任意）。
    ※ 3) の生成プロンプトは「思考モードのプロンプト（別スレで設計）」とは別物。単なる面接練習用。
-   ※ GAS送信・マイページ連動はしない（端末内で完結）。
+   ※ 自己ベストのみ端末(localStorage: challenge_v1)に保存。GAS送信・マイページ連動はしない。
 -->
 <style>
   :root{
@@ -189,12 +190,19 @@
           <label><input type="radio" name="c_self" value="0" checked> まだ</label>
         </div>
       </div>
+      <div id="c_aibox" class="hide" style="margin-top:8px">
+        <textarea class="prompt" id="c_aitext" readonly style="min-height:170px"></textarea>
+        <div class="copybar"><button class="btn" id="c_aicopy">📋 コピー</button><span id="c_aimsg" style="font-size:13px;color:var(--ok)"></span></div>
+        <div class="howto">この文をコピーして AI（ChatGPT・Claude など）に貼り付けると、あなたの英作文を添削してくれます。</div>
+      </div>
       <div class="row" id="c_actCheck"><button class="btn" id="c_check">答え合わせ</button></div>
-      <div class="row hide" id="c_actNext"><button class="btn" id="c_next">次へ →</button></div>
+      <div class="row hide" id="c_actNext"><button class="btn" id="c_next">次へ →</button>
+        <button class="btn ghost" id="c_aibtn">🤖 AIに添削してもらう</button></div>
     </div>
     <div class="card c hide" id="c_done">
       <h2><span class="emoji">🏁</span>結果</h2>
       <div class="score-big" id="c_final" style="color:var(--c2)">0 / 8</div>
+      <p class="hint" id="c_bestmsg" style="text-align:center;color:#e08a2e;font-weight:bold"></p>
       <p class="hint" style="text-align:center">「できた」と記録した数です。まちがえたお題は、もう一度書いてみよう。</p>
       <div class="row" style="margin-top:12px"><button class="btn" id="c_again">もう一度</button>
         <button class="btn ghost" data-home>← モード選択へ</button></div>
@@ -222,7 +230,7 @@
     </div>
   </div>
 
-  <footer>挑戦モード ／ 練習専用（記録は残りません）</footer>
+  <footer>挑戦モード ／ 練習専用（自己ベストは端末に保存・先生には送りません）</footer>
 </div>
 
 <script src="../words/data/words.js"></script>
@@ -232,6 +240,13 @@
   "use strict";
   var $=function(id){return document.getElementById(id);};
   var WORDS=window.WORDS||[], COMPOSE=window.COMPOSE||[];
+
+  /* ---------- ローカル記録（challenge_v1・練習用の自己ベスト／GAS非連動・先生に送らない） ---------- */
+  function lcRec(key,score,total){ try{ var o=JSON.parse(localStorage.getItem("challenge_v1")||"{}"); var p=o[key]||{best:0,count:0}; o[key]={best:Math.max(p.best||0,score),total:total,count:(p.count||0)+1,last:score,ts:Date.now()}; localStorage.setItem("challenge_v1",JSON.stringify(o)); return o[key]; }catch(e){ return null; } }
+  function copyTo(ta,msgEl){ ta.focus(); ta.select();
+    function done(){ msgEl.textContent="コピーしました ✓ AIに貼り付けてね"; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done,function(){try{document.execCommand("copy");done();}catch(e){msgEl.textContent="長押しでコピーしてね";}}); }
+    else { try{document.execCommand("copy");done();}catch(e){msgEl.textContent="長押しでコピーしてね";} } }
 
   /* ---------- 画面切り替え ---------- */
   var SCREENS=["pick","word","compose","eiken"];
@@ -314,6 +329,8 @@
     var n=wQueue.length, pct=Math.round(wScore/n*100);
     $("w_final").textContent=wScore+" / "+n;
     $("w_finalmsg").textContent= pct>=90?"すばらしい！ほぼ完ぺき！🎉" : pct>=70?"いい調子！まちがいを見直そう。" : pct>=50?"半分こえた。復習で伸ばそう。" : "まずは復習から。コツコツいこう！";
+    var wrec=lcRec("word_"+wRange, wScore, n);
+    if(wrec) $("w_finalmsg").textContent += "　🏅自己ベスト "+wrec.best+"/"+n+"（"+wrec.count+"回目）";
     if(wMiss.length){ $("w_misswrap").classList.remove("hide");
       $("w_miss").innerHTML=wMiss.map(function(w){ return "<li><span>"+esc(w.j||"")+"</span><span class='en'>"+esc(w.w)+"</span></li>"; }).join("");
     } else { $("w_misswrap").classList.add("hide"); }
@@ -347,6 +364,7 @@
     $("c_ask").textContent=it.jp;
     $("c_ta").value=""; $("c_ta").disabled=false;
     $("c_model").classList.remove("show");
+    $("c_aibox").classList.add("hide");
     $("c_model_en").textContent=it.model; $("c_tip").textContent=it.tip?("ねらい："+it.tip):"";
     var r=document.querySelector('input[name="c_self"][value="0"]'); if(r) r.checked=true;
     $("c_actCheck").classList.remove("hide"); $("c_actNext").classList.add("hide");
@@ -364,9 +382,21 @@
   function doneCompose(){
     $("c_run").classList.add("hide"); $("c_done").classList.remove("hide");
     $("c_final").textContent=cScore+" / "+cQueue.length;
+    var crec=lcRec("compose_"+cMax, cScore, cQueue.length);
+    $("c_bestmsg").textContent = crec?("🏅自己ベスト "+crec.best+"/"+cQueue.length+"（"+crec.count+"回目）"):"";
+  }
+  function composePrompt(){
+    var it=cQueue[cIdx]||{}, mine=($("c_ta").value||"").trim();
+    return "あなたは中学英語の先生です。次の「お題」に対する私の英作文を、やさしく日本語で添削してください。\n\n"+
+      "【お題】"+(it.jp||"")+"\n"+
+      "【私が書いた英作文】"+(mine||"（未記入）")+"\n"+
+      "【模範解答の一例】"+(it.model||"")+"\n\n"+
+      "次の形式で答えてください：\n①良い点（ほめる）\n②直すとよい点（文法・語彙・つづりを具体的に）\n③改善した英文の例\n④100点満点で採点（中学生レベルとして）";
   }
   $("c_check").addEventListener("click", checkCompose);
   $("c_next").addEventListener("click", nextCompose);
+  $("c_aibtn").addEventListener("click", function(){ $("c_aitext").value=composePrompt(); $("c_aibox").classList.remove("hide"); $("c_aimsg").textContent=""; $("c_aitext").scrollTop=0; });
+  $("c_aicopy").addEventListener("click", function(){ copyTo($("c_aitext"), $("c_aimsg")); });
 
   /* ================= 3) 英検二次プロンプト ================= */
   var eLevel="g3";
