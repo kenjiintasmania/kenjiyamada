@@ -118,7 +118,17 @@
 
   function post(obj){
     return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(obj)}).then(function(r){return r.json();});
+      body:JSON.stringify(obj)}).then(function(r){
+        return r.text().then(function(t){
+          try{ return JSON.parse(t); }      // 正常時：GASのJSON（{result:"ok"} 等）
+          catch(e){                          // JSONでない＝真因を文言化
+            var login=/<html|ServiceLogin|accounts\.google|サインイン|Sign in/i.test(t);
+            return {result:"error", message:(login
+              ? "GASのアクセスが『全員』でないかも（ログイン画面が返っています）。〔デプロイを管理〕→アクセスできるユーザー＝全員 に。"
+              : "サーバー応答がJSONではありません（HTTP "+r.status+"）。GASを〔新バージョン〕で再デプロイしてください。")};
+          }
+        });
+      });
   }
 
   // 画面組み立て
