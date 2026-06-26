@@ -34,7 +34,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("No, not yet. Can you show me how?"), E("Yes, I will buy a new brush."), E("It is a beautiful name."), E("You're welcome.") ], answer:0 } ] },
+      choices:[ E("No, not yet. Can you show me how?"), E("Yes, I will buy a new brush."), E("It is a beautiful name."), E("You have a nice brush.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How many origami cranes did you make for our guest?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -152,7 +152,7 @@ sections: [
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("How much is this yukata?"), E("Whose tea is this?"),
-                E("Why did you come to Japan?"), E("What time does the class start?") ], answer:2 },
+                E("Why did you decide to live in Japan?"), E("What time does the party start?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Yuki wants to teach Anna how to make origami."),
                 E("Ren doesn't like joining the tea ceremony."),
@@ -160,7 +160,7 @@ sections: [
                 E("Mr. Clark came to Japan to study Japanese cooking.") ], answer:0 },
     { type:"mcq", label:"(5)Y", pt:3, stem:"（Y）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("am good at tennis"), E("like cooking Japanese food"),
-                E("want to study math"), E("don't have any free time") ], answer:1 } ]}
+                E("want to study math"), E("am not a good cook") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 長文スピーチ（意見文）　33点 ===== */
@@ -171,7 +171,7 @@ sections: [
     '<b>②</b> In April, I started my homestay with Mika\'s family. At first, everything was new, and I was a little afraid. '+
     'I could not use chopsticks well, and I often felt shy. I sometimes wanted to stay in my room. '+
     'One day, Mika\'s grandmother saw me. She said, "Don\'t be afraid. If you keep trying, you will make many friends." '+
-    'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
+    'These words <u>(お) ___</u> me. I decided to try harder.<br><br>'+
     '<b>③</b> After that, I joined many activities. Mika also helped me a lot. '+
     'She taught me how to fold paper cranes. She said, "You should not pull the paper hard. Folding it slowly makes a beautiful shape." '+
     'I followed her advice. Little by little, I learned many parts of Japanese culture.<br><br>'+
@@ -183,15 +183,15 @@ sections: [
     note:'語注：homestay ホームステイ／chopsticks はし／shy はずかしがりの／fold 折る／custom 習慣／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か reach"),
-                E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
+      choices:[ E("お encouraged　か forget"), E("お encouraged　か follow"),
+                E("お worried　か forget"), E("お worried　か follow") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "エミリーは多くの活動に参加した。", "ミカが折りづるの折り方を教えてくれた。",
                 "ミカは紙を強く引っぱるべきだと言った。", "エミリーは少しずつ日本文化の多くの部分を学んだ。" ], answer:2 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["me","Japanese culture","a lot of things","taught"], answer:"Japanese culture taught me a lot of things",
       display:"Japanese culture taught me a lot of things" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("Mika's grandmother told Emily not to be （　え　）."),
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語1語を、第2段落中から抜き出して書きなさい。<br>"+E("Mika's grandmother told Emily not to be （　え　）."),
       answers:["afraid"], hint:"第2段落の語・英語1語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>日本文化を学ぶことは、この国を（　①　）（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "より深く","より大きく","より新しく","より静かに" ], answer:0 },

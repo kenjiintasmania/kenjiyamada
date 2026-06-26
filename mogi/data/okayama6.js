@@ -32,7 +32,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("Yes, I have. I made a small cup last summer."), E("No, I won't sell any bowls."), E("It is cloudy in the studio."), E("You're welcome.") ], answer:0 } ] },
+      choices:[ E("Yes, I have. I made a small cup last summer."), E("No, I won't sell any bowls."), E("It is cloudy in the studio."), E("The clay is on the table.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How long does it take to dry the clay before we fire it?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -63,7 +63,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["職場体験は午後に始まる。","参加者は紙の工場で働くことができる。",
-               "古い服は着なくてよい。","タオルは持って行かなくてよい。"], answer:1 },
+               "古い服は着なくてよい。","手がよごれる心配はない。"], answer:1 },
     { type:"fill", label:"(2)", pt:3, stem:"ユイの発言に対するあなたの答えを完成させなさい。<br>"+E("I really like making things with clay. So I will choose the （　　）.")+"（英語2語）",
       answers:["pottery studio"], hint:"英語2語" } ] }
 ]},
@@ -116,7 +116,7 @@ sections: [
     { type:"wordorder", label:"(1)", pt:6, stem:"たくさんの手作りの茶わんを見ておどろく場面です。次の語を正しく並べて英文を完成させなさい。",
       words:["have","so","bowls","you","many"], answer:"You have so many bowls" },
     { type:"wordorder", label:"(2)", pt:5, stem:"夜、茶わんの写真を家族に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
-      words:["of","them","picture","a"], answer:"a picture of them" } ]}
+      words:["photos","them","some","of"], answer:"some photos of them" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想　16点 ===== */
@@ -149,15 +149,15 @@ sections: [
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("How much is this cup?"), E("Whose website is this?"),
-                E("Why did you come to this town?"), E("What time does the market start?") ], answer:2 },
+                E("What made you stay in this town?"), E("What time does the market start?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Kaito wants to teach children how to make a cup."),
                 E("Yuna doesn't want to use the Internet."),
                 E("Ren wants to write a long book about pottery."),
                 E("Ms. Bell came to this town to study Japanese food.") ], answer:0 },
     { type:"mcq", label:"(5)Y", pt:3, stem:"（Y）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am good at swimming"), E("love our local pottery"),
-                E("want to study science"), E("don't have any hobbies") ], answer:1 } ]}
+      choices:[ E("live near the studio"), E("love our local pottery"),
+                E("want to be a doctor"), E("watch TV every night") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 長文スピーチ（意見文）　33点 ===== */
@@ -167,21 +167,22 @@ sections: [
     'When I was in my first year, I did not know much about traditional crafts. But now I really love them. I want to share my story with you.<br><br>'+
     '<b>②</b> Last spring, I joined a pottery class in our town. At first, making a cup with clay was very hard for me. '+
     'My cups often broke before they were finished, and I got tired soon. I sometimes wanted to stop going to the class. '+
-    'One day, the old craftsman saw me. He said, "Don\'t give up. If you keep trying, your hands will remember the shape." '+
-    'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
+    'One day, the old craftsman saw me. He said, "Don\'t lose hope. If you keep trying, your hands will remember the shape." '+
+    'These words <u>(お) ___</u> my heart, and I saw pottery in a new way. I decided to try harder.<br><br>'+
     '<b>③</b> After that, I practiced very hard. The craftsman also helped me a lot. '+
     'He taught me how to move my fingers slowly. He said, "You should not push the clay too fast. Working slowly makes a better cup." '+
     'I followed his advice. Little by little, I could make a nice cup.<br><br>'+
     '<b>④</b> Some people say that pottery is only an old hobby. That\'s true. <u>④ Making pottery is a good way to keep our culture alive</u>. '+
     'But it is more than that for me. <u>③ ( me / pottery / many things / taught )</u>. '+
-    'I learned that I should not stop trying. When I keep practicing, I can <u>(か) ___</u> my dream. '+
+    'I learned that I should not stop trying. If I never give up, I can <u>(か) ___</u> my dream. '+
+    'I will never let it go. '+
     'So please don\'t give up, and find something you love in your life!',
     passageEn:true,
     note:'語注：give up あきらめる／shape 形／finger 指／advice 助言／alive 生きている',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か reach"),
-                E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
+      choices:[ E("お warmed　か lose"), E("お warmed　か keep"),
+                E("お broke　か lose"), E("お broke　か keep") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "アオイは一生けんめい練習した。", "職人は指をゆっくり動かす方法を教えてくれた。",
                 "職人は粘土を速くおすべきだと言った。", "アオイは少しずつよいカップを作れるようになった。" ], answer:2 },
@@ -189,7 +190,7 @@ sections: [
       words:["me","pottery","many things","taught"], answer:"Pottery taught me many things",
       display:"Pottery taught me many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old craftsman told Aoi not to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+      answers:["lose hope"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>焼き物を作ることは、私たちの（　①　）を（　②　）残しておくためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "文化","お金","建物","言葉" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

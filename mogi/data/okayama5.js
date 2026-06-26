@@ -33,7 +33,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("You should take the blue tram."), E("No, I didn't read the book."), E("The library was closed yesterday."), E("You're welcome.") ], answer:0 } ] },
+      choices:[ E("You should take the blue tram."), E("No, I didn't read the book."), E("The library was closed yesterday."), E("The station is far from here.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How often does the tram for Midori come?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -112,12 +112,12 @@ sections: [
     '<u>(1)</u>!" Noah smiled and said, "Yes. This tram has run here for a hundred years." '+
     'In the evening, I sent <u>(2)</u> to my friends in Japan. They wanted to ride it, too.',
     passageEn:true,
-    note:'語注：tram 路面電車／outside 外を／shop 店',
+    note:'語注：tram 路面電車／outside 外を／shop 店／email メール',
     items:[
     { type:"wordorder", label:"(1)", pt:6, stem:"窓の外にたくさんの古い店が見えておどろく場面です。次の語を正しく並べて英文を完成させなさい。",
       words:["see","so","shops","can","I","many"], answer:"I can see so many shops" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"夜、路面電車の写真を友達に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
-      words:["of","it","picture","a"], answer:"a picture of it" } ]}
+    { type:"wordorder", label:"(2)", pt:5, stem:"夜、その路面電車のことを伝える長いメールを友達に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
+      words:["email","long","a"], answer:"a long email" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想　16点 ===== */
@@ -149,16 +149,16 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How much is this map?"), E("Whose book is this?"),
-                E("Why did you come to this town?"), E("What time does the library open?") ], answer:2 },
+      choices:[ E("How long is the tram line?"), E("Whose book is this?"),
+                E("What brought you to this town?"), E("What time does the library open?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Sota wants to put English signs at every tram stop."),
                 E("Yua doesn't like reading to children."),
                 E("Kai wants to write a long story about the library."),
                 E("Mr. Ross came to this town to study Japanese food.") ], answer:0 },
     { type:"mcq", label:"(5)Y", pt:3, stem:"（Y）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am good at swimming"), E("like reading to children"),
-                E("want to study science"), E("don't have any hobbies") ], answer:1 } ]}
+      choices:[ E("often visit a museum"), E("like reading to children"),
+                E("play soccer every day"), E("cannot speak English at all") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 長文スピーチ（意見文）　33点 ===== */
@@ -168,7 +168,7 @@ sections: [
     'When I was in my first year, I did not like talking with strangers. But now I really enjoy helping people. I want to share my story with you.<br><br>'+
     '<b>②</b> Last spring, I started to help at the station library. At first, the work was very hard for me. '+
     'Many visitors asked me which tram to take, and I could not answer well. I sometimes wanted to stop going there. '+
-    'One day, an old librarian saw me. She said, "Don\'t give up. If you keep trying, you will help many people." '+
+    'One day, an old librarian saw me. She said, "Don\'t run away. If you keep trying, you will help many people." '+
     'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
     '<b>③</b> From that day, I worked very hard. A kind staff member also helped me a lot. '+
     'She taught me how to show visitors the way to the tram stop. She said, "You should not speak too fast. Speaking slowly makes people feel safe." '+
@@ -178,10 +178,10 @@ sections: [
     'I learned that I should not stop trying. When I keep helping people, I can <u>(か) ___</u> my dream. '+
     'So please never give up, and find something you love in your own town!',
     passageEn:true,
-    note:'語注：give up あきらめる／stranger 知らない人／librarian 図書館員／staff member 係員／comfortable 心地よい／advice 助言',
+    note:'語注：run away にげる／give up あきらめる／stranger 知らない人／librarian 図書館員／staff member 係員／comfortable 心地よい／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か reach"),
+      choices:[ E("お filled　か lose"), E("お filled　か reach"),
                 E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "アオイは一生けんめい働いた。", "係員が停留所への案内の仕方を教えてくれた。",
@@ -190,7 +190,7 @@ sections: [
       words:["me","this work","many things","taught"], answer:"This work taught me many things",
       display:"This work taught me many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old librarian told Aoi not to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+      answers:["run away"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>図書館での手伝いは、訪れる人を（　①　）（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "より心地よく","より大きく","より静かに","より新しく" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

@@ -32,7 +32,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("Yes, I have. I played the trumpet last year."), E("No, I won't build a stage."), E("It is raining at the festival."), E("You're welcome.") ], answer:0 } ] },
+      choices:[ E("Yes, I have. I played the trumpet last year."), E("No, I won't build a stage."), E("It is raining at the festival."), E("Let's join the band next week.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How many members does your brass band have this year?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -63,7 +63,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["係の仕事は昼食の前に始まる。","参加者は入口で飲み物を売ることができる。",
-               "タオルは持って行かなくてよい。","新しい服を着なければならない。"], answer:1 },
+               "A班はステージで吹奏楽部を手伝う。","新しい服を着なければならない。"], answer:1 },
     { type:"fill", label:"(2)", pt:3, stem:"アヤの発言に対するあなたの答えを完成させなさい。<br>"+E("I really like drawing and painting. So I will choose the （　　）.")+"（英語2語）",
       answers:["welcome posters"], hint:"英語2語" } ] }
 ]},
@@ -117,7 +117,7 @@ sections: [
     { type:"wordorder", label:"(1)", pt:6, stem:"たくさんの古いトランペットを見ておどろく場面です。次の語を正しく並べて英文を完成させなさい。",
       words:["have","old","trumpets","you","many"], answer:"You have many old trumpets" },
     { type:"wordorder", label:"(2)", pt:5, stem:"夜、トランペットの写真を友達に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
-      words:["of","them","picture","a"], answer:"a picture of them" } ]}
+      words:["nice","some","photos"], answer:"some nice photos" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想　16点 ===== */
@@ -157,8 +157,8 @@ sections: [
                 E("Ren wants to write a long book about the brass band."),
                 E("Mr. Clark played the violin at every festival.") ], answer:0 },
     { type:"mcq", label:"(5)Y", pt:3, stem:"（Y）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am good at swimming"), E("like making sweets"),
-                E("want to study science"), E("don't have any free time") ], answer:1 } ]}
+      choices:[ E("play the trumpet well"), E("like making sweets"),
+                E("want to clean the gym"), E("can't cook at all") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 長文スピーチ（意見文）　33点 ===== */
@@ -169,7 +169,7 @@ sections: [
     '<b>②</b> Last spring, I joined the brass band. At first, playing the trumpet was very hard for me. '+
     'My sound was small, and I got tired soon. I sometimes wanted to stop coming to practice. '+
     'One day, an old man near the music room heard me. He said, "Don\'t give up. If you keep practicing, you will get better." '+
-    'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
+    'These words <u>(お) ___</u> me. I decided to try harder.<br><br>'+
     '<b>③</b> After that, I practiced very hard. The leader of the band also helped me a lot. '+
     'She taught me how to breathe slowly. She said, "You should not play in a hurry. Playing slowly first makes your sound better." '+
     'I followed her advice. Little by little, I could play longer songs.<br><br>'+
@@ -181,16 +181,16 @@ sections: [
     note:'語注：give up あきらめる／in a hurry あわてて／breathe 息をする／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か reach"),
-                E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
+      choices:[ E("お inspired　か doubt"), E("お inspired　か chase"),
+                E("お scared　か doubt"), E("お scared　か chase") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "サキは一生けんめい練習した。", "部長がゆっくり息をする方法を教えてくれた。",
                 "部長はあわてて演奏するべきだと言った。", "サキは少しずつ長い曲を演奏できるようになった。" ], answer:2 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["me","the brass band","many things","taught"], answer:"The brass band taught me many things",
       display:"The brass band taught me many things" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old man told Saki not to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("After the old man's words, Saki decided to （　え　）."),
+      answers:["try harder"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>トランペットを演奏することは、わたしたちの文化祭を（　①　）（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "よりわくわく","より静かに","より大きく","より新しく" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

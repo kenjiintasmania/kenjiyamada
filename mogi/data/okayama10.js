@@ -63,7 +63,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["防災キャンプは土曜日の夜に始まる。","参加者は安全な場所の地図を作ることができる。",
-               "水筒を持ってくる必要はない。","ぼうしを持ってくる必要はない。"], answer:1 },
+               "防災キャンプは1週間つづく。","参加者は救急の手当を学ぶことはできない。"], answer:1 },
     { type:"fill", label:"(2)", pt:3, stem:"アオイの発言に対するあなたの答えを完成させなさい。<br>"+E("I really want to learn how to help injured people. So I will choose Group （　　）.")+"（英語1語）",
       answers:["A"], hint:"英語1語（Group A〜Cのどれか）" } ] }
 ]},
@@ -73,14 +73,14 @@ sections: [
   { flyer:
     '<h4>Wakaba Town Disaster Walk!</h4>'+
     '<div class="note">Let\'s walk and check the safe places in our town together!</div>'+
-    '<table><tr><td>Date</td><td>September 13, 2026</td></tr>'+
+    '<table><tr><td>Date</td><td>September 26, 2026</td></tr>'+
     '<tr><td>Morning walk</td><td>9:00 a.m. – 10:30 a.m.</td></tr>'+
     '<tr><td>Afternoon walk</td><td>1:30 p.m. – 3:00 p.m.</td></tr>'+
     '<tr><td>People who can join</td><td>30 people for each walk</td></tr></table>'+
     '<div class="note">Guide … Mr. Aoki, a town volunteer. (He has helped our town for fifteen years.)<br>'+
     'Bring … good shoes, a cap, and some water.　→ You can join here.</div>',
     passage:
-    '<span class="sp"><span class="who">Sota:</span> Look, Rin. Did you know about this event?</span>'+
+    '<span class="sp"><span class="who">Sota:</span> Look, Rin. Have you heard about this disaster walk?</span>'+
     '<span class="sp"><span class="who">Rin:</span> Yes. Mr. Aoki is the （　あ　） helpful volunteer in our town.</span>'+
     '<span class="sp"><span class="who">Sota:</span> Really? I want to join, but I\'m not （　い　） that I can walk for ninety minutes.</span>'+
     '<span class="sp"><span class="who">Rin:</span> You don\'t need to worry about that. We can rest if we get tired.</span>'+
@@ -150,15 +150,15 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How old is this town?"), E("Whose bag is this?"),
-                E("Why did you come to this town?"), E("What time does the class start?") ], answer:2 },
+      choices:[ E("What did you teach before?"), E("Who helped your family then?"),
+                E("What made you decide to come here?"), E("How long will you stay here?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Saki wants to make a map of safe places for old people."),
                 E("Kenta thinks trees are not important for the town."),
                 E("Mr. Green came to this town to study Japanese."),
                 E("Riku doesn't want to know his neighbors.") ], answer:0 },
     { type:"mcq", label:"(5)X", pt:3, stem:"（X）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am a baseball fan"), E("like playing video games"),
+      choices:[ E("enjoy fishing on weekends"), E("want to travel around the world"),
                 E("want to help people in my town"), E("want to study music abroad") ], answer:2 } ]}
 ]},
 

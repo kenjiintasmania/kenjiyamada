@@ -64,7 +64,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["自然教室は金曜日に行われる。","参加者は岩場の小さな海の生き物を調べることができる。",
-               "ぼうしを持ってくる必要はない。","水は会場で配られる。"], answer:1 },
+               "B班は海鳥を観察しない。","水は会場で配られる。"], answer:1 },
     { type:"fill", label:"(2)", pt:3, stem:"サキの発言に対するあなたの答えを完成させなさい。<br>"+E("I really love riding a bike. So I will join Group （　　）.")+"（英語1語）",
       answers:["A"], hint:"英語1語（A・B・C のどれか）" } ] }
 ]},
@@ -152,16 +152,16 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How much is this map?"), E("Whose bike is this?"),
-                E("Why did you come to Japan?"), E("What time does the class start?") ], answer:2 },
+      choices:[ E("How long is this bridge?"), E("Whose boat is this?"),
+                E("What made you come to Japan?"), E("When does the ferry leave?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Kaito wants to make a small map of the coast."),
                 E("Yuto found no plastic on the beach."),
                 E("Mr. Reed came to Japan to study Japanese."),
                 E("Hina wants to clean the island beaches.") ], answer:0 },
     { type:"mcq", label:"(5)X", pt:3, stem:"（X）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am a soccer fan"), E("like playing video games"),
-                E("worry about the plastic on the beach"), E("want to study music") ], answer:2 } ]}
+      choices:[ E("often play tennis after school"), E("enjoy watching TV at home"),
+                E("worry about the plastic on the beach"), E("want to become a singer") ], answer:2 } ]}
 ]},
 
 /* ===== 大問5 意見文（読解） ===== */
@@ -184,16 +184,16 @@ sections: [
     note:'語注：sea slug ウミウシ／rock pool 岩場の潮だまり／give up あきらめる／hurt 傷つける／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か feel"),
-                E("お lost　か lose"), E("お lost　か feel") ], answer:1 },
+      choices:[ E("お lost　か see"), E("お changed　か see"),
+                E("お lost　か miss"), E("お changed　か miss") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "レイは何度も潮だまりを訪れた。", "先生は生き物を傷つけない見方を教えてくれた。",
                 "先生は石をたくさん動かすべきだと言った。", "レイは少しずつ多くの種類のウミウシを見つけられるようになった。" ], answer:2 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["me","the sea slug","many things","taught"], answer:"The sea slug taught me many things",
       display:"The sea slug taught me many things" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("Rei's teacher told her not to （　え　） when she looked for sea animals."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("At first, Rei almost wanted to （　え　） for anything interesting in the rock pools."),
+      answers:["stop looking"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>ウミウシは、海にいる（　①　）な（　②　）にすぎない。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "小さ（ちいさ）","大き（おおき）","めずらし","あぶな" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

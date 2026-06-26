@@ -34,7 +34,7 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
       choices:[ E("Yes, I have. I went there last summer."), E("No, I won't buy a new beach ball."),
-                E("It is snowing on the beach now."), E("You're welcome.") ], answer:0 } ] },
+                E("It is snowing on the beach now."), E("Sorry, I cannot swim well.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How many bags of trash did you collect along the river?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -118,8 +118,8 @@ sections: [
     items:[
     { type:"wordorder", label:"(1)", pt:6, stem:"たくさんの手作りの花びんを見ておどろく場面です。次の語を正しく並べて英文を完成させなさい。",
       words:["have","so","vases","you","many"], answer:"You have so many vases" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"夜、花びんの写真を友達に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
-      words:["of","them","picture","a"], answer:"a picture of them" } ]}
+    { type:"wordorder", label:"(2)", pt:5, stem:"夜、花びんの動画を友達に送る場面です（I sent の続き）。次の語を正しく並べて英文を完成させなさい。",
+      words:["of","them","video","a"], answer:"a video of them" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想　16点 ===== */
@@ -151,16 +151,16 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("bad"),E("easy"),E("difficult"),E("sad")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How much is this poster?"), E("Whose bag is this?"),
-                E("Why did you come to this town?"), E("What time does the cleanup start?") ], answer:2 },
+      choices:[ E("Where did you live before?"), E("Do you like teaching English?"),
+                E("Why did you decide to stay?"), E("What time does the cleanup start?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Sota wants to make an English poster about trash."),
                 E("Mio doesn't like making things with her aunt."),
                 E("Ken wants to clean the river only once a year."),
                 E("Mr. Parker came to this town to study Japanese food.") ], answer:0 },
     { type:"mcq", label:"(5)Y", pt:3, stem:"（Y）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am good at swimming"), E("like reusing old things"),
-                E("want to study science"), E("don't have any hobbies") ], answer:1 } ]}
+      choices:[ E("enjoy cleaning the river"), E("like reusing old things"),
+                E("want to become a pilot"), E("don't like making things") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 長文スピーチ（意見文）　33点 ===== */
@@ -170,20 +170,20 @@ sections: [
     'When I was in my first year, I did not think much about the sea. But now I really care about it. I want to share my story with you.<br><br>'+
     '<b>②</b> Last summer, I joined the beach cleanup. At first, picking up trash was very hard for me. '+
     'There was a lot of plastic on the sand, and I got tired soon. I sometimes wanted to stop joining the work. '+
-    'One day, a fisherman on the beach saw me. He said, "Don\'t give up. If you keep working, you will save many sea animals." '+
-    'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
+    'One day, a fisherman on the beach saw me. He said, "Don\'t feel down. If you keep working, you will save many sea animals." '+
+    'These words <u>(お) ___</u> my heart. I decided to try harder.<br><br>'+
     '<b>③</b> After that, I worked very hard. A kind woman in the club also helped me a lot. '+
     'She taught me how to separate the trash. She said, "You should not mix bottles and cans. Sorting them carefully helps the recycling center." '+
     'I followed her advice. Little by little, I learned how recycling works.<br><br>'+
     '<b>④</b> Some people say that cleaning is only hard work. That\'s true. <u>④ Cleaning the beach is a good way to make the sea more beautiful</u>. '+
     'But it is more than that for me. <u>③ ( me / the cleanup / many things / taught )</u>. '+
     'I learned that I should not stop trying. When I keep working, I can <u>(か) ___</u> my goal. '+
-    'So please don\'t give up, and find something you love in your town!',
+    'So please keep trying, and find something you love in your town!',
     passageEn:true,
-    note:'語注：give up あきらめる／plastic プラスチック／fisherman 漁師／separate / sort 分別する／advice 助言',
+    note:'語注：feel down 落ちこむ／plastic プラスチック／fisherman 漁師／separate / sort 分別する／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か reach"),
+      choices:[ E("お moved　か lose"), E("お moved　か reach"),
                 E("お lost　か lose"), E("お lost　か reach") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "アヤは一生けんめい働いた。", "クラブの女性がごみの分別の仕方を教えてくれた。",
@@ -192,7 +192,7 @@ sections: [
       words:["me","the cleanup","many things","taught"], answer:"The cleanup taught me many things",
       display:"The cleanup taught me many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The fisherman told Aya not to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+      answers:["feel down"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>海岸のそうじは、海を（　①　）（　②　）するためのよい方法だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "より美しく","より大きく","より静かに","より新しく" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

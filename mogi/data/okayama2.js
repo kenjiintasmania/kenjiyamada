@@ -31,7 +31,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("Yes, I made a bag there last summer."), E("No, the river was very clean."), E("It was a beautiful old house."), E("You're welcome.") ], answer:0 } ] },
+      choices:[ E("Yes, I made a bag there last summer."), E("No, the river was very clean."), E("It was a beautiful old house."), E("The denim studio opens at nine.") ], answer:0 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> How long does the river boat tour take?</span>'+
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
@@ -151,16 +151,16 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("bad"),E("difficult"),E("easy"),E("sad")], answer:2 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How much is this house?"), E("Whose bag is this?"),
-                E("When did you come to Wakaba?"), E("What time is it now?") ], answer:2 },
+      choices:[ E("How old is this river?"), E("How many boats does the town have?"),
+                E("When did you come to Wakaba?"), E("What is your favorite food?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Daichi's father gave him a pair of Wakaba jeans."),
                 E("Yuki has never ridden the river boat."),
                 E("Mr. Carter came to Wakaba to teach Japanese."),
                 E("Ren wants to take down the old houses.") ], answer:0 },
     { type:"mcq", label:"(5)X", pt:3, stem:"（X）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("am a soccer fan"), E("like the river boats"),
-                E("want to study music"), E("don't like old towns") ], answer:1 } ]}
+      choices:[ E("want to make my own jeans"), E("like the river boats"),
+                E("love the old houses"), E("enjoy watching soccer games") ], answer:1 } ]}
 ]},
 
 /* ===== 大問5 スピーチ（読解） ===== */
@@ -170,21 +170,21 @@ sections: [
     'Last year, I could not make anything by myself. But now I really enjoy making things by hand. I want to share my story with you.<br><br>'+
     '<b>②</b> Last spring, I joined a weekend class at the denim studio. At first, the work was very hard for me. '+
     'My jeans were not beautiful, and I often made mistakes. I sometimes wanted to stop going to the class. '+
-    'One day, an old worker at the studio saw me. He said, "Don\'t give up. If you keep trying, your hands will remember." '+
-    'These words <u>(お) ___</u> my mind. I decided to try harder.<br><br>'+
+    'One day, an old worker at the studio saw me. He said, "Don\'t give in. If you keep trying, your hands will remember." '+
+    'His words <u>(お) ___</u> my eyes. I decided to try harder.<br><br>'+
     '<b>③</b> After that, I practiced very hard. The old worker also helped me a lot. '+
     'He taught me how to cut the cloth and use the machine. He said, "You should not work too fast. Slow work makes your jeans stronger." '+
     'I followed his advice. Little by little, my jeans became better.<br><br>'+
     '<b>④</b> Some people say that jeans are only clothes. That\'s true. <u>④ Strong jeans are a good way to enjoy a long walk by the river</u>. '+
     'But they are more than that for me. <u>③ ( me / the town / taught / many things )</u>. '+
     'I learned that I should not stop trying. When I keep making things, I can <u>(か) ___</u> the joy of my work. '+
-    'So please don\'t give up, and find something you love!',
+    'So please don\'t give in, and find something you love!',
     passageEn:true,
-    note:'語注：by hand 手作業で／give up あきらめる／mistake 間違い／cloth 布／advice 助言',
+    note:'語注：by hand 手作業で／give in あきらめる・くじける／mistake 間違い／cloth 布／advice 助言',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お changed　か lose"), E("お changed　か feel"),
-                E("お lost　か lose"), E("お lost　か feel") ], answer:1 },
+      choices:[ E("お opened　か hide"), E("お opened　か share"),
+                E("お closed　か hide"), E("お closed　か share") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "ミウは一生けんめい練習した。", "年配の職人が布の切り方を教えてくれた。",
                 "職人はできるだけ速く作業すべきだと言った。", "ミウのジーンズは少しずつよくなった。" ], answer:2 },
@@ -192,7 +192,7 @@ sections: [
       words:["me","the town","taught","many things"], answer:"The town taught me many things",
       display:"The town taught me many things" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old worker told Miu not to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+      answers:["give in"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>じょうぶなジーンズは、川沿いの長い（　①　）を楽しむためのよい（　②　）だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "散歩（さんぽ）","食事（しょくじ）","ねむり","会議" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
