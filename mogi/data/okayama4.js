@@ -162,46 +162,46 @@ sections: [
 ]},
 
 /* ===== 大問5 長文スピーチ（読解） ===== */
-{ no:5, title:"次の英文は、ユウタ(Yuta)が地元のフルーツカフェについて発表したスピーチです。(1)〜(6)に答えなさい。", groups:[
+{ no:5, title:"次の英文は、レン(Ren)が地元のフルーツカフェについて発表したスピーチです。(1)〜(6)に答えなさい。", groups:[
   { passage:
-    '<b>①</b> Hello, everyone. I\'m Yuta. Today I want to talk about a small café in Wakaba Town. '+
+    '<b>①</b> Hello, everyone. I\'m Ren. Today I want to talk about a small café in Wakaba Town. '+
     'It is run by my aunt, and it uses only local fruit. I learned something important there, so I want to share my story.<br><br>'+
-    '<b>②</b> Last spring, my aunt opened the café near Wakaba Station. At first, only a few people came. '+
-    'She felt sad, and one day she said to me, "Maybe I should close this café." '+
-    'I didn\'t want her to give up. I said, "Your fruit cakes are wonderful. Please don\'t stop." '+
+    '<b>②</b> Last spring, my aunt opened the café near Wakaba Station. At first, only a few people came, so she <b>felt sad</b>. '+
+    'One day she said to me, "Maybe I should close this café." '+
+    'I didn\'t want her to stop, so I said, "Your fruit cakes are wonderful. Please keep going." '+
     'Her words and my words <u>(お) ___</u> in my mind for a long time.<br><br>'+
     '<b>③</b> After that, we thought about the café together. My aunt makes a peach cake every summer, and it is very popular. '+
     'But she only sold cakes. So I said, "Why don\'t you show people how you make them?" '+
     'She liked my idea. We held a small cooking event for children, and they made fruit juice with her. '+
     'Little by little, more people began to visit the café.<br><br>'+
     '<b>④</b> Some people say that a café is only a place to eat. That\'s true. <u>④ A café is a good place to enjoy sweet cakes</u>. '+
-    'But it is more than that for my aunt. <u>③ ( me / the café / many things / taught )</u>. '+
-    'I learned that we should not give up easily. When we keep trying, we can <u>(か) ___</u> our dream. '+
+    'But for my aunt, it means much more. <u>③ ( people / a café / together / brings )</u>. '+
+    'I learned that we should not give up easily. When we keep trying, our dreams will <u>(か) ___</u>. '+
     'So please visit a local shop in your town, and find something you love!',
     passageEn:true,
     note:'語注：run 〜を経営する／aunt おば／give up あきらめる／hold 〜を開く／popular 人気のある',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("お stayed　か lose"), E("お stayed　か reach"),
-                E("お left　か lose"), E("お left　か reach") ], answer:1 },
+      choices:[ E("お stayed　か disappear"), E("お stayed　か come true"),
+                E("お left　か disappear"), E("お left　か come true") ], answer:1 },
     { type:"mcq", label:"(2)", pt:4, stem:"第3段落で述べられている内容として、当てはまらないものを、ア〜エから1つ選びなさい。",
       choices:[ "おばは夏に桃のケーキを作る。", "おばはケーキだけを売っていた。",
                 "子ども向けの料理イベントを開いた。", "おばはカフェを閉めることに決めた。" ], answer:3 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["me","the café","many things","taught"], answer:"The café taught me many things",
-      display:"The café taught me many things" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("Yuta didn't want his aunt to （　え　）."),
-      answers:["give up"], hint:"第2段落の語・英語2語" },
+      words:["people","a café","together","brings"], answer:"A café brings people together",
+      display:"A café brings people together" },
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("At first, Ren's aunt （　え　） because only a few people came."),
+      answers:["felt sad"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>カフェは、あまいケーキを（　①　）のによい（　②　）だ。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "楽しむ","作る","売る","運ぶ" ], answer:0 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "場所","時間","本","道" ], answer:0 },
     { type:"mcqMulti", label:"(6)", pt:7, stem:"本文の内容と合っているものを、ア〜オから二つ選びなさい。",
-      choices:[ E("Yuta's aunt opened her café near Wakaba Station last spring."),
+      choices:[ E("Ren's aunt opened her café near Wakaba Station last spring."),
                 E("Many people came to the café from the first day."),
-                E("Yuta told his aunt to close the café."),
-                E("Children made fruit juice with Yuta's aunt at the event."),
-                E("Yuta thinks people should give up easily.") ], answer:[0,3] } ]}
+                E("Ren told his aunt to close the café."),
+                E("Children made fruit juice with Ren's aunt at the event."),
+                E("Ren thinks people should give up easily.") ], answer:[0,3] } ]}
 ]}
 
 ]};
