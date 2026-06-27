@@ -460,16 +460,16 @@ function listMissingUnit(examId){
 }
 
 /* ===================== AI×成績 相関タブ（成績ツールから1クリックで自動生成） ===================== *
- * 「成績まとめ」（1人1行）に、AIログ（学年＋番号で集計）を横付けした「相関」シートを作る。
- * 押すたびに最新化。AIログのタブ名は log_gas 側の設計（標準「AIログ」。旧称 AImodeログ）に依存せず、
- * 「AI活用レベル(推定)」列の有無で自動検出するので、改名されても追従します。手動の数式入力も不要。
+ * 「成績まとめ」（1人1行）に、AImodeログ（学年＋番号で集計）を横付けした「相関」シートを作る。
+ * 押すたびに最新化。タブ名（確定「AImodeログ」。log_gas の既定 TAB="AIログ" は本番で揃える）に依存せず、
+ * 「AI活用レベル(推定)」列の有無で自動検出するので、改名・二重タブでも追従します。手動の数式入力も不要。
  * ※ log_gas とは「学年・番号・レベル座標・AI活用レベル(推定)」の“列見出し名”で受け渡す契約。       */
 var CORR_SHEET = "相関";
 // 収集タブを列ヘッダで検出（タブ名に非依存）。移行中などで該当タブが複数あるときは、
-// データ行が最多のものを採用し、同数なら既知名（AIログ→AImodeログ）を優先＝常に本物を選ぶ。
+// データ行が最多のものを採用し、同数なら既知名（AImodeログ→AIログ）を優先＝常に本物を選ぶ。
 function findAiLogSheet(ss){
   var shs = ss.getSheets(), best=null, bestScore=-1;
-  var PREFER = {"AIログ":2, "AImodeログ":1};
+  var PREFER = {"AImodeログ":2, "AIログ":1};
   for (var i=0;i<shs.length;i++){
     var lc = shs[i].getLastColumn(); if (lc < 1) continue;
     var h = shs[i].getRange(1,1,1,lc).getValues()[0], hit=false;
@@ -494,7 +494,7 @@ function buildCorrelationTab(){
       cW=col("単語_合計"), cMo=col("模試_最高点"), cEi=col("英検_平均Lv"), cSh=colPre("習熟度単語_中3");
   var sData = sum.getRange(2,1,sum.getLastRow()-1,sum.getLastColumn()).getValues();
 
-  // AIログ：学年|番号 で集計（セッション数・最新レベル座標・最新AI活用レベル・議論+探求回数）
+  // AImodeログ：学年|番号 で集計（セッション数・最新レベル座標・最新AI活用レベル・議論+探求回数）
   var ai = findAiLogSheet(ss), agg = {}, aiFound = !!ai;
   if (ai && ai.getLastRow() >= 2){
     var aH = ai.getRange(1,1,1,ai.getLastColumn()).getValues()[0];
@@ -538,7 +538,7 @@ function buildCorrelationTab(){
     ["英検平均Lv × 最新レベル座標",   "=IFERROR(CORREL(F2:F"+last+",I2:I"+last+"),\"データ不足\")"],
     ["単語数 × AIセッション",        "=IFERROR(CORREL(D2:D"+last+",H2:H"+last+"),\"データ不足\")"]
   ]);
-  var msg = "相関タブを更新しました（"+body.length+"人"+(aiFound?"":"／AIログ未検出＝AI列は空")+"）";
+  var msg = "相関タブを更新しました（"+body.length+"人"+(aiFound?"":"／AImodeログ未検出＝AI列は空")+"）";
   try{ ss.toast(msg, "成績ツール", 6); }catch(e){}   // Webアプリ実行時はUIが無いので握りつぶす
   return msg;
 }
