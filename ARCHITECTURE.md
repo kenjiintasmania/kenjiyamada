@@ -360,7 +360,8 @@ PRのマージ＝**人（先生）のレビュー関門**。
 | 名簿 | `CLASS_SIZE = {"2":40,"3":40}`（未提出者算出の母数） | クラス人数に合わせて変更。 |
 | 初期化 | `refreshData()` を手動実行で見出し統一＋古い記録消去 | 学年表記の移行などで使用。 |
 
-GAS URL は2系統：**me/exam/admin = `AKfycbySJy2…`（score_gas）／eiken = 別URL**（同一スプレッドシート）。
+GAS URL は3系統（いずれも同一スプレッドシート）：**me/exam/admin = `AKfycbzJ2HThm…`（score_gas）／eiken = 別URL／AImode = `AKfycbySJy2…`（log_gas）**。
+> ⚠️ **score_gas と log_gas のURLを取り違えないこと**。admin/me/exam が誤って log_gas を向くと、`kind:"ai_log"` 以外は全部 `{result:"ignored"}` で捨てられ、「？取得できません／保存できませんでした：エラー／生徒が提出できない」が同時発生する（2026-06-29 に実際に発生→URL是正で解消）。両者は**別プロジェクト・別デプロイで常時並走**させる。
 **プロンプトモードは別コード系統**（専用GAS `log_gas.gs`／別URL `LOG_GAS_URL`／フロントは `mado-drill/AImode.html`）。ただし**書込先は成績と同一ブックの専用タブ「AImodeログ」**＝意図的統合で、成績と**学年＋番号**で突合できる。`score_gas.gs`／`SUMMARY_GAS_URL`／`成績まとめ` は不変（§8.0）。
 
 ---
