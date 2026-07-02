@@ -1,0 +1,9 @@
+body { font-family: serif; line-height: 1.8; margin: 1em; }
+h1 { text-align: center; }
+h2.pnum { text-align: center; font-size: 1.4em; border-bottom: 1px solid #999; padding-bottom: 0.3em; }
+ul.choices { list-style: none; padding: 0; margin-top: 1.5em; }
+ul.choices li { margin: 0.8em 0; }
+ul.choices a { display: block; text-decoration: none; border: 1px solid #666; border-radius: 6px; padding: 0.5em 1em; }
+p.jump { margin-top: 1.5em; text-align: right; }
+section.end p.fin { text-align: center; font-weight: bold; margin-top: 2em; }
+.notice { color: #555; font-size: 0.9em; }

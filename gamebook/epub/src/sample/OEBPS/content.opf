@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="pub-id">urn:uuid:7f9a2c3e-1b4d-4e8a-9c6f-5d2e8a7b3c1d</dc:identifier>
+    <dc:title>小さな洞窟の冒険（サンプル）</dc:title>
+    <dc:language>ja</dc:language>
+    <dc:creator>kenjiyamada gamebook</dc:creator>
+    <meta property="dcterms:modified">2026-07-02T00:00:00Z</meta>
+  </metadata>
+  <manifest>
+    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
+    <item id="css" href="style.css" media-type="text/css"/>
+    <item id="title" href="text/title.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p001" href="text/p001.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p002" href="text/p002.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p003" href="text/p003.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p004" href="text/p004.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p005" href="text/p005.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p006" href="text/p006.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p007" href="text/p007.xhtml" media-type="application/xhtml+xml"/>
+    <item id="p008" href="text/p008.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine>
+    <itemref idref="title"/>
+    <itemref idref="p001"/>
+    <itemref idref="p002"/>
+    <itemref idref="p003"/>
+    <itemref idref="p004"/>
+    <itemref idref="p005"/>
+    <itemref idref="p006"/>
+    <itemref idref="p007"/>
+    <itemref idref="p008"/>
+  </spine>
+</package>
