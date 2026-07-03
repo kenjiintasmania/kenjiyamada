@@ -56,9 +56,11 @@ for (const f of files) {
 }
 
 // 3. エンディング明示
+// 出口は「title.xhtml 以外の本文ファイルへのリンク」で数える
+// （番号パラグラフだけでなく、文字リンク迷宮などの名前付きノードも正規の行き先のため）
 let endings = 0;
 for (const f of files.filter(isPara)) {
-  const outsPara = [...(graph.get(f) ?? [])].filter(isPara);
+  const outsPara = [...(graph.get(f) ?? [])].filter((t) => t !== 'title.xhtml' && t !== f);
   const marked = /class="[^"]*\bend\b[^"]*"/.test(fs.readFileSync(path.join(textDir, f), 'utf8'));
   if (outsPara.length === 0 && !marked) {
     errors.push(`${f}: 行き先がないのにエンディング（class="end"）になっていない`);
