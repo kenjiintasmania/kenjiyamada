@@ -114,7 +114,7 @@
   <header>
     <div>
       <h1>3年 第3回習熟度 <span class="en">Vocab Test</span></h1>
-      <div class="sub">答えの単語・和訳を見て英語を書こう（全60問）</div>
+      <div class="sub">答えの単語・和訳を見て英語を書こう（全<span id="qcount">60</span>問・本番に出る語つき）</div>
     </div>
     <div class="namebox">
       <span>学年番名前</span><input id="name" placeholder="　　　　　　">
@@ -153,46 +153,67 @@
 
 <script>
 /* ===== データ（中3 第3回模試 chu3_3 を分析：職業・現在完了・最上級・動名詞/to不定詞・連語・SVOO/SVOC・接続詞・不規則動詞）===== */
+/* ★このリストは「本番（正進社 3年第3回＝岡山県型）に実際に出る答えの語」も
+   各ジャンルに合流させた“出る単語つき”版。出典側で確認済みの語には本番テーマ由来を含む。 */
 const DATA = [
-  {cat:"① 職業 (jobs)", cols:3, items:[
+  {cat:"① 職業・人 (jobs & people)", cols:3, items:[
     ["医者","doctor"],["先生・教師","teacher"],["看護師","nurse"],
-    ["獣医","vet"],["コーチ","coach"],["ボランティア","volunteer"]
+    ["獣医","vet"],["コーチ","coach"],["ボランティア","volunteer"],
+    ["おば（おばさん）","aunt"],["ホスト（ステイ先）の家族","host family"]
   ]},
-  {cat:"② 現在完了でよく使う語", cols:2, items:[
+  {cat:"② 場所・施設（本番でよく出る）", cols:2, items:[
+    ["文化センター","culture center"],["博物館","museum"],
+    ["農場","farm"],["病院","hospital"],
+    ["駅","station"],["庭・庭園","garden"]
+  ]},
+  {cat:"③ 現在完了（経験・完了）", cols:2, items:[
     ["（ずっと）3年間","for three years"],["どれくらい長く","how long"],
     ["（今までに）一度も〜ない","never"],["すでに・もう","already"],
-    ["ちょうど（今）","just"],["〜以来","since"]
+    ["ちょうど（今）","just"],["〜へ行ったことがある","have been to"],
+    ["何度も訪れたことがある","have visited many times"],["〜以来","since"]
   ]},
-  {cat:"③ 比較・最上級", cols:2, items:[
+  {cat:"④ 比較・最上級", cols:2, items:[
     ["最も有名な","the most famous"],["最もよい","the best"],
     ["（より）上手に","better"],["最も","the most"],
-    ["〜と同じくらい古い","as old as"],["より大きい","bigger"]
+    ["〜と同じくらい大切","as important as"],["最も高い山","the highest mountain"],
+    ["より大きい","bigger"]
   ]},
-  {cat:"④ 動名詞・to 不定詞", cols:2, items:[
-    ["泳ぐこと（主語）","Swimming"],["泳ぎ方","how to swim"],
+  {cat:"⑤ 動名詞・to 不定詞", cols:2, items:[
+    ["英語を勉強すること","studying English"],["泳ぎ方","how to swim"],
+    ["料理のしかた","the way to cook"],["見せる（ための）もの","something to show"],
     ["練習し続ける","keep practicing"],["あきらめる","give up"],
-    ["〜することに決める","decide to"],["〜になりたい","want to be"]
+    ["〜になりたい","want to be"]
   ]},
-  {cat:"⑤ 連語・熟語", cols:2, items:[
-    ["〜の世話をする","take care of"],["〜を気にする","worry about"],
-    ["〜が得意だ","be good at"],["少しずつ","little by little"],
-    ["もちろん","of course"],["ぜひ〜したい","I'd love to"],
-    ["たくさんの","a lot of"],["〜について話す","talk about"]
+  {cat:"⑥ 連語・熟語（本番でよく出る）", cols:2, items:[
+    ["切符を手に入れる","get a ticket"],["家事を手伝う","help with housework"],
+    ["〜によれば","according to"],["〜のおかげで","thanks to"],
+    ["帰り道に","on the way home"],["そのとき","at that time"],
+    ["〜の世話をする","take care of"]
   ]},
-  {cat:"⑥ 第4・第5文型 (SVOO / SVOC)", cols:1, items:[
-    ["私に多くのことを教えた","taught me many things"],["あなたを幸せにする","make you happy"],
-    ["私に泳ぎ方を見せる","show me how to swim"],["それをより良くする","make it better"],
-    ["私に1つくれた","gave me one"],["体を強くする","make your body stronger"]
+  {cat:"⑦ 第4・第5文型 (SVOO / SVOC)", cols:1, items:[
+    ["私に料理のしかたを教えた","taught me the way to cook"],["家族を幸せにする","make our family happy"],
+    ["私たちに話す時間をくれる","give us time to talk"],["それをより良くする","make it better"],
+    ["私に多くのことを教えた","taught me many things"],["体を強くする","make your body stronger"]
   ]},
-  {cat:"⑦ 接続詞・つなぎ言葉", cols:3, items:[
+  {cat:"⑧ 気持ち・様子の形容詞", cols:3, items:[
+    ["残念で・気の毒で","sorry"],["驚いて","surprised"],["確信して","sure"],
+    ["疲れて","tired"],["（仕事が）大変な・きつい","hard"],["悲しい","sad"]
+  ]},
+  {cat:"⑨ 家事・動作の動詞（本番テーマ）", cols:2, items:[
+    ["料理する","cook"],["そうじする","clean"],
+    ["（服・皿を）洗う","wash"],["洗濯物を干す","hang out the clothes"],
+    ["水を節約する","save water"],["犬を散歩させる","walk the dog"],
+    ["（バスなどが）出発する","leave"],["（山に）登る","climb"]
+  ]},
+  {cat:"⑩ 接続詞・つなぎ言葉", cols:3, items:[
     ["もし〜ならば","if"],["〜するとき","when"],["〜なので","so"],
     ["〜だけれど","but"],["〜ということ","that"],["〜する前に","before"]
   ]},
-  {cat:"⑧ 不規則動詞の変化 (原形 - 過去 - 過去分詞 - ing)", verb:true, items:[
+  {cat:"⑪ 不規則動詞の変化 (原形 - 過去 - 過去分詞 - ing)", verb:true, items:[
     ["教える",["teach","taught","taught","teaching"]],
     ["泳ぐ",["swim","swam","swum","swimming"]],
     ["与える",["give","gave","given","giving"]],
-    ["来る",["come","came","come","coming"]]
+    ["建てる",["build","built","built","building"]]
   ]}
 ];
 
@@ -211,13 +232,17 @@ function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.ran
 let inputs = []; // 採点対象の {el, answer, verbcell}
 
 /* ===== 記録（最高点・回数）と答え一覧 ===== */
-const TEST_ID="c3s3", MAX=60;
+const TEST_ID="c3s3";
+// 問題数はDATAから自動計算（動詞は4フォーム＝4問）。増減しても得点・％が自動追従。
+const MAX = DATA.reduce(function(n,sec){ return n + sec.items.reduce(function(m,it){
+  return m + (Array.isArray(it[1]) ? it[1].length : 1); }, 0); }, 0);
 let attemptGraded=false;
 function recordScore(score){
   try{
     const k="shuku_v1", o=JSON.parse(localStorage.getItem(k)||"{}");
-    const prev=o[TEST_ID]||{best:0,count:0};
-    o[TEST_ID]={best:Math.max(prev.best||0,score), max:MAX,
+    const prev=o[TEST_ID]||{best:0,count:0,max:MAX};
+    const same=(prev.max===MAX);   // 問題数が変わったら（内容更新）旧ベストは比較しない＝新しい満点基準でやり直し
+    o[TEST_ID]={best: same?Math.max(prev.best||0,score):score, max:MAX,
       count:(prev.count||0)+1, last:score, ts:Date.now()};
     localStorage.setItem(k,JSON.stringify(o));
   }catch(e){}
@@ -328,8 +353,8 @@ function grade(){
   });
   const bar = document.getElementById("scorebar");
   bar.classList.remove("hide");
-  document.getElementById("scoretext").textContent = score+" / 60";
-  const pct = score/60;
+  document.getElementById("scoretext").textContent = score+" / "+MAX;
+  const pct = score/MAX;
   let msg = "もう一度チャレンジ！赤いところは正解が出ています。";
   if(pct>=1) msg = "全問正解！パーフェクト！🎉";
   else if(pct>=0.9) msg = "すごい！あと少しで満点！";
@@ -344,4 +369,6 @@ function grade(){
 function resetAll(){ render(); window.scrollTo({top:0,behavior:"smooth"}); }
 
 buildStudy(); render(); showStudy();
+document.getElementById("qcount").textContent=MAX;
+document.getElementById("scoretext").textContent="0 / "+MAX;
 </script>
