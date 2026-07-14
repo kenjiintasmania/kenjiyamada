@@ -12,7 +12,7 @@ import { dirname, resolve } from 'node:path';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','c2u1','c2u2','c3u1','c3u2',
+const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','m332','c2u1','c2u2','c3u1','c3u2',
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10'];
 const ENGINE = r('mogi/assets/engine.js');
 
