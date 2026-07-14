@@ -4,7 +4,7 @@
 const E = s => '<span class="en">'+s+'</span>';
 
 window.EXAM = {
-title: "中3 模擬テスト 332",
+title: "中3 模擬テスト 331",
 sections: [
 
 /* ===== 大問1 リスニング（問題A〜D） ===== */
