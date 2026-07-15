@@ -340,7 +340,8 @@ function gradeAll(where){
   else if(pct>=0.9) msg="すごい！あと少しで満点！";
   else if(pct>=0.7) msg="いい調子！赤いところを見直そう。";
   else if(pct>=0.5) msg="半分こえた。解説を読んで復習しよう。";
-  msg += "（英作文・記述は自己採点です）";
+  // 自己採点(en/jp)問題が実際に含まれる試験だけ注記を出す（現行の模試は全問自動採点＝表示されない）
+  if(ITEMS.some(o=>isActive(o) && o.kind==="self")) msg += "（英作文・記述は自己採点です）";
   document.querySelectorAll(".scorebar").forEach(bar=>{
     bar.classList.remove("hide");
     const t=bar.querySelector(".big"); if(t) t.textContent = score+" / "+total;
