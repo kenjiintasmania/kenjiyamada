@@ -101,7 +101,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-6";
+var GAS_VERSION = "unit-gate-7";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -153,6 +153,12 @@ function getSheet(name, header){
     sh.appendRow(header);
     sh.setFrozenRows(1);
   }
+  // ★重要：列定義を増やした直後、既存タブのグリッド列数がヘッダより少ないと
+  //   getRange(1,1,1,header.length) が範囲外例外を投げて全送信が止まる。
+  //   （getRange/setValues はグリッドを自動拡張しない。自動拡張は appendRow のみ）
+  //   → 足りない分だけ右端に列を自動追加してから返す（足りていれば何もしない）。
+  if (sh.getMaxColumns() < header.length)
+    sh.insertColumnsAfter(sh.getMaxColumns(), header.length - sh.getMaxColumns());
   return sh;
 }
 
