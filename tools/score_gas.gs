@@ -84,7 +84,18 @@ var SUMMARY_COLS = [
   // --- 新作模試（★必ず末尾に追加＝途中に挟むと既存データが列ズレするため） ---
   {key:"m_c2_a1",   head:"模試_214",   max:true},
   {key:"m_331",     head:"模試_331",   max:true},
-  {key:"m_332",     head:"模試_332",   max:true}
+  {key:"m_332",     head:"模試_332",   max:true},
+  // --- 岡山県スタイル模試（回ごとのベスト・案B） ---
+  {key:"m_ok1",     head:"模試_岡山1",  max:true},
+  {key:"m_ok2",     head:"模試_岡山2",  max:true},
+  {key:"m_ok3",     head:"模試_岡山3",  max:true},
+  {key:"m_ok4",     head:"模試_岡山4",  max:true},
+  {key:"m_ok5",     head:"模試_岡山5",  max:true},
+  {key:"m_ok6",     head:"模試_岡山6",  max:true},
+  {key:"m_ok7",     head:"模試_岡山7",  max:true},
+  {key:"m_ok8",     head:"模試_岡山8",  max:true},
+  {key:"m_ok9",     head:"模試_岡山9",  max:true},
+  {key:"m_ok10",    head:"模試_岡山10", max:true}
 ];
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
@@ -101,7 +112,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-7";
+var GAS_VERSION = "unit-gate-8";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
