@@ -56,14 +56,14 @@ var SUMMARY_COLS = [
   {key:"w_g1",           head:"単語_1年",       max:true},
   {key:"w_g2",           head:"単語_2年",       max:true},
   {key:"w_g3",           head:"単語_3年",       max:true},
-  // --- 模試（各回ベスト・100点満点） ---
-  {key:"m_c2_1",         head:"模試_中2第1回",  max:true},
-  {key:"m_c2_2",         head:"模試_中2第2回",  max:true},
-  {key:"m_c2_3",         head:"模試_中2第3回",  max:true},
-  {key:"m_c3_1",         head:"模試_中3第1回",  max:true},
-  {key:"m_c3_2",         head:"模試_中3第2回",  max:true},
-  {key:"m_c3_3",         head:"模試_中3第3回",  max:true},
-  {key:"m_c3_4",         head:"模試_中3第4回",  max:true},
+  // --- 模試（各回ベスト・100点満点）※見出しは3桁コード。列の位置は従来と同じ（データ無傷） ---
+  {key:"m_c2_1",         head:"模試_211",       max:true},
+  {key:"m_c2_2",         head:"模試_212",       max:true},
+  {key:"m_c2_3",         head:"模試_213",       max:true},
+  {key:"m_c3_1",         head:"模試_321",       max:true},
+  {key:"m_c3_2",         head:"模試_322",       max:true},
+  {key:"m_c3_3",         head:"模試_324",       max:true},   // 旧 中3第3回（chu3_3）＝コード324
+  {key:"m_c3_4",         head:"模試_323",       max:true},   // 旧 中3第4回（chu3_4）＝コード323
   {key:"m_best",         head:"模試_最高点",    max:true},
   {key:"m_done",         head:"模試_挑戦回数",  max:true},
   // --- 英検（レベル目安） ---
@@ -80,7 +80,11 @@ var SUMMARY_COLS = [
   {key:"sv_c3",     head:"習熟度単語_中3第2回",       max:true},
   {key:"sv_c3_n",   head:"習熟度単語_中3第2回_回数",   max:true},
   {key:"sv_c3_3",   head:"習熟度単語_中3第3回",       max:true},
-  {key:"sv_c3_3_n", head:"習熟度単語_中3第3回_回数",   max:true}
+  {key:"sv_c3_3_n", head:"習熟度単語_中3第3回_回数",   max:true},
+  // --- 新作模試（★必ず末尾に追加＝途中に挟むと既存データが列ズレするため） ---
+  {key:"m_c2_a1",   head:"模試_214",   max:true},
+  {key:"m_331",     head:"模試_331",   max:true},
+  {key:"m_332",     head:"模試_332",   max:true}
 ];
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
@@ -97,7 +101,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-5";
+var GAS_VERSION = "unit-gate-6";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
