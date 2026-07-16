@@ -95,7 +95,9 @@ var SUMMARY_COLS = [
   {key:"m_ok7",     head:"模試_岡山7",  max:true},
   {key:"m_ok8",     head:"模試_岡山8",  max:true},
   {key:"m_ok9",     head:"模試_岡山9",  max:true},
-  {key:"m_ok10",    head:"模試_岡山10", max:true}
+  {key:"m_ok10",    head:"模試_岡山10", max:true},
+  // --- 活用編（動詞の変化形/形容詞の比較・1語形=1点・全600点） ---
+  {key:"w_katsuyo", head:"単語_活用",   max:true}
 ];
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
@@ -112,7 +114,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-8";
+var GAS_VERSION = "unit-gate-9";
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

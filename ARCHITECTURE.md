@@ -86,7 +86,7 @@
 | パス | 役割 | 主要技術・キー |
 |---|---|---|
 | `index.html` | 統合トップ。3アプリ＋マイページへの入口。 | 絵文字favicon、カード型ナビ |
-| `words/` | **単語アプリ**（基本編435＋拡張編1565＝2000語）。訳→英語タイピング式。 | `js/app.js`、`data/words.js`、`localStorage: tango_v2` |
+| `words/` | **単語アプリ**（基本編435＋拡張編1565＝2000語＋**活用編**200パターン/600点）。訳→英語タイピング式。 | `js/app.js`、`data/words.js`、`data/katsuyo.js`、`localStorage: tango_v2` |
 | `mogi/` | **模擬テスト**（中2×3・中3×4）＋**単元テスト**（c2u1/c2u2/c3u1/c3u2）＋**習熟度単語テスト**。 | `assets/engine.js`、`data/*.js`、`exam.html`、`vocab_*.html` |
 | `eiken/` | **英検アプリ**（7〜2級・級判定・4技能・長文）。`mado_loop.html` 収録。 | 単一HTML（2000行規模）、`localStorage: mado_*` |
 | `challenge/` | **挑戦モード**（練習専用・記録なし）。①単語ランダム50問（基本/拡張）②学年別英作文（自己採点）③英検二次プロンプト生成。 | `index.html`、`data/compose.js`、words.js再利用 |
@@ -107,7 +107,7 @@
 
 | キー | 形 | 意味 | 書く人 |
 |---|---|---|---|
-| `tango_v2` | `{cleared:{id:ts}, settings:{retry,sound,order}}` | 単語アプリ：打ち込めた語ID集合＋設定 | words |
+| `tango_v2` | `{cleared:{id:ts}, settings:{retry,sound,order}}` | 単語アプリ：打ち込めた語ID集合＋設定。**活用編も同じキーを共有**（id空間は文字列"v1_0"等で数値idと非衝突） | words |
 | `mogi_best_v1` | `{examId:{title,best,last,total,ts}}` | 模試：各回の最高/直近点（100点満点） | engine |
 | `shuku_v1` | `{c2:{best,max,count,last}, c3s2:{...}}` | 習熟度単語テスト：最高点・受験回数 | vocab_*.html |
 | `mado_year` / `mado_num` / `mado_name` | string | 本人情報（学年1〜3／番号＝半角／名前） | me, exam, eiken |
@@ -141,6 +141,18 @@ window.WORD_META = {total, target, posOrder, basicCount, extendedCount,
                     basicByPos, extendedByPos, droppedCount};
 window.WORDS = [{ id, w /*英語*/, j /*訳*/, p /*品詞*/, m:"b"|"e" /*基本/拡張*/,
                   g:1|2|3 /*学年*/, alt?:[/*別表記も正解*/] }, ...];
+```
+
+**活用編**（`words/data/katsuyo.js`、`words/tools/build_katsuyo.py` が `my_words.xlsx`
+の「7動詞の変化形」「過」「8比較表現」タブから自動生成）: 動詞150＋形容詞50＝200パターンを
+1パターン＝3疑似単語（原形→過去形→過去分詞形／原形→比較級→最上級）に展開し、`WORDS` と
+同じ `tango_v2.cleared` を共有（＝1語形=1点・打ち込めた語数の仕組みをそのまま再利用）。
+`words/js/app.js` はモード `'k'` の出題順を **kid（パターンID）単位でシャッフル**し、
+slot 0→1→2 の3連続を必ず守る（個別語をシャッフルしない・再挑戦注入もしない）。
+```js
+window.KATSUYO_META = {verbCount:150, adjCount:50, patternCount:200, maxScore:600};
+window.KATSUYO_WORDS = [{ id /*"v1_0"等*/, w, j /*意味＋開示済み語形*/, p:"動詞の活用"|"形容詞の比較",
+                          m:"k", kid /*パターンID*/, slot:0|1|2, slotLabel, alt? }, ...];
 ```
 
 **模試/単元テスト**（`mogi/data/*.js`、`engine.js` が描画＆採点）:

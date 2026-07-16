@@ -153,6 +153,20 @@
     <p class="hint"><a href="../words/index.html" style="color:var(--words);font-weight:bold;text-decoration:none">→ 単語アプリをひらく</a></p>
   </div>
 
+  <!-- 活用編（動詞の変化形／形容詞の比較） -->
+  <div class="card words">
+    <h2><span class="emoji">🔁</span>活用編<span class="tag">動詞・形容詞の変化形（全600点）</span></h2>
+    <div class="big-stat"><span class="n" id="k_score">–</span><span class="u">/ <span id="k_max">600</span> 点</span>
+      <span class="u" id="k_pct"></span></div>
+    <span class="bar"><i id="k_bar" style="width:0"></i></span>
+    <div class="grid">
+      <div class="mini"><div class="k">動詞の活用</div><div class="v"><span id="k_verb">0</span><small> / <span id="k_verbt">450</span></small></div></div>
+      <div class="mini"><div class="k">形容詞の比較</div><div class="v"><span id="k_adj">0</span><small> / <span id="k_adjt">150</span></small></div></div>
+      <div class="mini"><div class="k">満点パターン</div><div class="v"><span id="k_pat">0</span><small> / <span id="k_patt">200</span></small></div></div>
+    </div>
+    <p class="hint"><a href="../words/index.html" style="color:var(--words);font-weight:bold;text-decoration:none">→ 単語アプリ（活用編）をひらく</a></p>
+  </div>
+
   <!-- 模試 -->
   <div class="card mogi">
     <h2><span class="emoji">📝</span>模擬テスト<span class="tag">各回の最高点（100点満点）</span></h2>
@@ -200,6 +214,7 @@
 </div>
 
 <script src="../words/data/words.js"></script>
+<script src="../words/data/katsuyo.js"></script>
 <script>
 (function(){
   "use strict";
@@ -255,6 +270,34 @@
     $("w_b").textContent=o.b; $("w_bt").textContent=o.bT;
     $("w_e").textContent=o.e; $("w_et").textContent=o.eT;
     [1,2,3].forEach(function(g){ $("w_g"+g).textContent=o.g[g]; $("w_g"+g+"t").textContent=o.gT[g]; });
+  }
+
+  /* ---------- 1.5) 活用編：動詞の変化形／形容詞の比較（1語形=1点・全600点） ---------- *
+   * words/js/app.js と同じ localStorage("tango_v2".cleared) を共有。基本編/拡張編(2000語)とは
+   * 別のid空間（"v1_0"等の文字列id）なので混ざらない。全問未受験でもカードは常に表示する。 */
+  function readKatsuyo(){
+    var KW=window.KATSUYO_WORDS||[], META=window.KATSUYO_META||{};
+    var store=lsJSON("tango_v2")||{}, cleared=store.cleared||{};
+    var o={score:0, maxScore:META.maxScore||600, verb:0, verbMax:0, adj:0, adjMax:0,
+           patDone:0, patTotal:META.patternCount||200};
+    var byKid={};
+    KW.forEach(function(w){
+      if(w.p==="動詞の活用") o.verbMax++; else o.adjMax++;
+      var ok=!!cleared[w.id];
+      if(ok){ o.score++; if(w.p==="動詞の活用") o.verb++; else o.adj++; }
+      (byKid[w.kid]=byKid[w.kid]||[]).push(ok);
+    });
+    Object.keys(byKid).forEach(function(k){ if(byKid[k].every(Boolean)) o.patDone++; });
+    return o;
+  }
+  function renderKatsuyo(o){
+    $("k_score").textContent=o.score; $("k_max").textContent=o.maxScore;
+    var pct=o.maxScore?Math.round(o.score/o.maxScore*100):0;
+    $("k_pct").textContent="（"+pct+"%）";
+    $("k_bar").style.width=pct+"%";
+    $("k_verb").textContent=o.verb; $("k_verbt").textContent=o.verbMax;
+    $("k_adj").textContent=o.adj; $("k_adjt").textContent=o.adjMax;
+    $("k_pat").textContent=o.patDone; $("k_patt").textContent=o.patTotal;
   }
 
   /* ---------- 2) 模試：各回の最高点 ---------- */
@@ -415,17 +458,17 @@
   /* ---------- 集約データ ---------- */
   var DATA={};
   function collect(){
-    DATA.w=readWords(); DATA.m=readMogi(); DATA.e=readEiken(); DATA.s=readShuku();
+    DATA.w=readWords(); DATA.k=readKatsuyo(); DATA.m=readMogi(); DATA.e=readEiken(); DATA.s=readShuku();
   }
   function renderAll(){
-    collect(); renderWords(DATA.w); renderMogi(DATA.m); renderEiken(DATA.e); renderShuku(DATA.s);
+    collect(); renderWords(DATA.w); renderKatsuyo(DATA.k); renderMogi(DATA.m); renderEiken(DATA.e); renderShuku(DATA.s);
     renderComment(lsGet("mado_policy")||"");
   }
 
   /* ---------- 先生へ送信（成績まとめ） ---------- */
   function r2(x){return x==null?"":Math.round(x*100)/100;}
   function buildPayload(){
-    var w=DATA.w,m=DATA.m,e=DATA.e,s=DATA.s;
+    var w=DATA.w,k=DATA.k,m=DATA.m,e=DATA.e,s=DATA.s;
     var mb=m.map;
     function ms(id){return mb[id]?mb[id].best:"";}
     return {
@@ -434,6 +477,8 @@
       // 単語（打ち込めた数）
       w_all:w.all, w_goal:w.allT, w_basic:w.b, w_ext:w.e,
       w_g1:w.g[1], w_g2:w.g[2], w_g3:w.g[3],
+      // 活用編（動詞の変化形/形容詞の比較・全600点）
+      w_katsuyo:k.score,
       // 模試（各回ベスト・100点満点）
       m_c2_1:ms("chu2"), m_c2_2:ms("chu2_2"), m_c2_3:ms("chu2_3"),
       m_c3_1:ms("chu3_1"), m_c3_2:ms("chu3_2"), m_c3_3:ms("chu3_3"), m_c3_4:ms("chu3_4"),

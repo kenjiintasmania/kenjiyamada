@@ -5,11 +5,14 @@
 (function () {
   "use strict";
 
-  var WORDS = window.WORDS || [];
+  // 活用編（動詞の変化形／形容詞の比較変化）は別ファイル(data/katsuyo.js)。
+  // 疑似単語（1語形=1点）として同じ WORDS プールに合流させ、既存の正誤判定・記録機構をそのまま使う。
+  var WORDS = (window.WORDS || []).concat(window.KATSUYO_WORDS || []);
   var META = window.WORD_META || {};
   var STORE_KEY = "tango_v2";        // v1=フラッシュカード(見た語数)。意味が変わるため新キーへ
   var OLD_STORE_KEY = "tango_v1";
   var SET_SIZE = 20;                  // 1セットの語数
+  var SET_SIZE_K = 45;                // 活用編は1セット15パターン（=45問＝原形/過去形/過去分詞形×15）
   var RETRY_RATES = { off: 0, low: 0.12, normal: 0.22, high: 0.35 };
 
   /* ---------- 保存データ ---------- */
@@ -39,13 +42,14 @@
   }
 
   /* ---------- インデックス ---------- */
-  var byMode = { b: [], e: [] };
-  var byModePos = { b: {}, e: {} };
+  var byMode = { b: [], e: [], k: [] };
+  var byModePos = { b: {}, e: {}, k: {} };
   WORDS.forEach(function (w) {
     byMode[w.m].push(w);
     (byModePos[w.m][w.p] = byModePos[w.m][w.p] || []).push(w);
   });
-  var MODE_NAME = { b: "基本編", e: "拡張編" };
+  var MODE_NAME = { b: "基本編", e: "拡張編", k: "活用編" };
+  var K_POS_ORDER = ["動詞の活用", "形容詞の比較"];   // 活用編のカテゴリ表示順（META.posOrderは語彙アプリ用なので使わない）
 
   function clearedCount(list) {
     var n = 0; for (var i = 0; i < list.length; i++) if (isCleared(list[i].id)) n++; return n;
@@ -147,8 +151,9 @@
     var done = clearedCount(all);
     $("catModeProg").innerHTML = "打ち込めた <b>" + done + "</b> / " + all.length + " 語";
 
-    var posList = (curMode === "b" ? META.basicByPos : META.extendedByPos) ||
-      (META.posOrder || []).map(function (p) { return [p, (byModePos[curMode][p] || []).length]; }).filter(function (x) { return x[1]; });
+    var posList = curMode === "b" ? META.basicByPos
+      : curMode === "e" ? META.extendedByPos
+      : K_POS_ORDER.map(function (p) { return [p, (byModePos[curMode][p] || []).length]; }).filter(function (x) { return x[1]; });
 
     var html = "";
     posList.forEach(function (pc) {
@@ -173,28 +178,49 @@
 
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
+  // 活用編：kid（パターンID）でグルーピングし、パターン単位でシャッフル。
+  // パターン内の順（原形→過去形→過去分詞形 = slot 0→1→2）は必ず保つ（3連続で出題するため）。
+  function groupByPattern(list) {
+    var g = {}, order = [];
+    list.forEach(function (w) {
+      if (!g[w.kid]) { g[w.kid] = []; order.push(w.kid); }
+      g[w.kid].push(w);
+    });
+    return order.map(function (k) { return g[k].slice().sort(function (a, b) { return a.slot - b.slot; }); });
+  }
+  function kShuffleFlat(list) {
+    var groups = groupByPattern(list);
+    shuffle(groups);
+    var out = [];
+    groups.forEach(function (g) { out.push.apply(out, g); });
+    return out;
+  }
+
   function startSession(mode, scope) {
     var pool, title, tag, isReview = false, posLabel = "";
+    var isK = (mode === "k");   // 活用編：パターン単位でしかシャッフルしない（3連続を保つため）
     if (scope === "__shuffle__") {
       pool = byMode[mode].filter(function (w) { return !isCleared(w.id); });
       if (!pool.length) pool = byMode[mode].slice(), isReview = true;
-      shuffle(pool);
-      title = "🔀 ぜんぶシャッフル"; tag = "全品詞";
+      pool = isK ? kShuffleFlat(pool) : shuffle(pool);
+      title = "🔀 ぜんぶシャッフル"; tag = isK ? "全カテゴリ" : "全品詞";
     } else if (scope === "__retry__") {
       pool = byMode[mode].filter(function (w) { return isCleared(w.id); });
       if (!pool.length) { toast("まだ打ち込めた単語がありません"); return; }
-      shuffle(pool); isReview = true;
+      pool = isK ? kShuffleFlat(pool) : shuffle(pool);
+      isReview = true;
       title = "🔄 再挑戦"; tag = "復習";
     } else {
       posLabel = scope;
       var list = byModePos[mode][scope] || [];
       pool = list.filter(function (w) { return !isCleared(w.id); });
       if (!pool.length) { pool = list.slice(); isReview = true; }   // 全クリア済みなら復習
-      if (store.settings.order === "shuffle") shuffle(pool);
-      title = scope; tag = "品詞";
+      if (isK) pool = kShuffleFlat(pool);
+      else if (store.settings.order === "shuffle") shuffle(pool);
+      title = scope; tag = isK ? "カテゴリ" : "品詞";
     }
 
-    var queue = pool.slice(0, SET_SIZE).map(function (w) { return { w: w, retry: false }; });
+    var queue = pool.slice(0, isK ? SET_SIZE_K : SET_SIZE).map(function (w) { return { w: w, retry: false }; });
     session = {
       mode: mode, scope: scope, posLabel: posLabel, isReview: isReview,
       queue: queue, baseTotal: queue.length, baseDone: 0,
@@ -229,7 +255,7 @@
     }
     wlOverlay.querySelector("#wlBody").innerHTML = session.queue.map(function (it) {
       return '<div style="display:flex;justify-content:space-between;gap:12px;padding:5px 2px;border-bottom:1px dashed #eee;font-size:15px">'+
-        '<span>'+escWL(it.w.j)+'</span><b style="color:#4f7cff">'+escWL(it.w.w)+'</b></div>';
+        '<span style="white-space:pre-line">'+escWL(it.w.j)+'</span><b style="color:#4f7cff">'+escWL(it.w.w)+'</b></div>';
     }).join("");
     wlOverlay.style.display = "flex";
   }
@@ -245,7 +271,7 @@
   }
 
   function maybeInjectRetry() {
-    if (session.isReview) return;                       // 復習中は注入しない
+    if (session.isReview || session.mode === "k") return;   // 復習中／活用編（3連続を守るため）は注入しない
     var rate = RETRY_RATES[store.settings.retry] || 0;
     if (rate <= 0 || Math.random() > rate) return;
     var cand = poolForRetryInjection();
@@ -272,7 +298,7 @@
     // 出題：日本語の意味（訳）
     $("cardFront").textContent = w.j || w.w;
     $("cardFront").className = "card-front jp";
-    $("cardPos").textContent = w.p;
+    $("cardPos").textContent = w.slotLabel || w.p;   // 活用編は「原形/過去形/過去分詞形」等の語形を表示
     $("card").className = "card flip pos-" + w.p;
     setTimeout(function () { $("card").classList.remove("flip"); }, 300);
     $("retryBadge").classList.toggle("hidden", !it.retry);
@@ -372,7 +398,7 @@
     var list = session.scope === "__shuffle__" || session.scope === "__retry__"
       ? byMode[session.mode] : (byModePos[session.mode][session.scope] || []);
     var c = clearedCount(list), total = list.length;
-    msg += "<br><br>この" + (session.scope === "__shuffle__" ? "モード" : session.scope === "__retry__" ? "モード" : "品詞") +
+    msg += "<br><br>この" + (session.scope === "__shuffle__" ? "モード" : session.scope === "__retry__" ? "モード" : (session.mode === "k" ? "カテゴリ" : "品詞")) +
       "の進み具合：<b>" + c + " / " + total + "</b>";
     $("doneSummary").innerHTML = msg;
     show("done");
@@ -423,6 +449,7 @@
       "<ul>" +
       "<li><b>基本編（" + (m.basicCount || 0) + "語）</b>：先生の単語集から、品詞ごとに抜粋。</li>" +
       "<li><b>拡張編（" + (m.extendedCount || 0) + "語）</b>：NEW HORIZON のデータベースから、マイナー過ぎる語を除いて収録。</li>" +
+      "<li><b>活用編（" + (window.KATSUYO_META ? window.KATSUYO_META.patternCount : 200) + "パターン・" + (window.KATSUYO_META ? window.KATSUYO_META.maxScore : 600) + "点）</b>：動詞の変化形（原形→過去形→過去分詞形）と形容詞の比較変化（原形→比較級→最上級）を、3つ連続で出題。1語形＝1点。</li>" +
       "<li><b>打ち込めた単語数</b>：英語を正しく入力できた語が記録され、進み具合が残ります。</li>" +
       "<li><b>判定</b>：大文字小文字・前後の空白や記号・ハイフン／スペースの違いは正解とみなします。</li>" +
       "<li><b>シャッフル</b>：全品詞からランダムに出題。</li>" +
@@ -432,7 +459,8 @@
 
   /* ---------- helpers ---------- */
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  var POS_COLORS = { 名詞: "#4f7cff", 動詞: "#21b573", 形容詞: "#ff8a3d", 副詞: "#e0529c", 代名詞: "#7a6bff", 疑問詞: "#ff5d73", 前置詞: "#14b1c9", 接続詞: "#9b8b2e", 助動詞: "#0fae8e", 冠詞: "#8a93a6", 間投詞: "#d98324", 短縮形: "#6c7a92", 連語: "#b06bd6" };
+  var POS_COLORS = { 名詞: "#4f7cff", 動詞: "#21b573", 形容詞: "#ff8a3d", 副詞: "#e0529c", 代名詞: "#7a6bff", 疑問詞: "#ff5d73", 前置詞: "#14b1c9", 接続詞: "#9b8b2e", 助動詞: "#0fae8e", 冠詞: "#8a93a6", 間投詞: "#d98324", 短縮形: "#6c7a92", 連語: "#b06bd6",
+    "動詞の活用": "#21b573", "形容詞の比較": "#ff8a3d" };
   function POS_COLOR(p) { return POS_COLORS[p] || "#4f7cff"; }
   var toastTimer;
   function toast(msg) {

@@ -146,5 +146,39 @@ console.log('— 単語データ —');
 checkWords();
 console.log('— 県立入試スタイルの横断重複 —');
 okayamaDupCheck();
-console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試100点・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK）');
+console.log('— 活用編（動詞の変化形／形容詞の比較） —');
+checkKatsuyo();
+console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試100点・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK・活用編OK）');
 process.exit(fails ? 1 : 0);
+
+// 活用編：150+50=200パターン・1パターン3疑似単語（原形→slot0/1/2）・id/kid重複なし・英字妥当性
+function checkKatsuyo(){
+  let w;
+  try { w = {}; new Function('window', r('words/data/katsuyo.js'))(w); }
+  catch(e){ fail('katsuyo', `katsuyo.js が壊れています: ${e.message}`); return; }
+  const KW = w.KATSUYO_WORDS || [], META = w.KATSUYO_META || {};
+  if (KW.length !== 600) { fail('katsuyo', `疑似単語エントリ数が600でない: ${KW.length}`); return; }
+  if (META.maxScore !== 600 || META.patternCount !== 200) fail('katsuyo', `META不整合: ${JSON.stringify(META)}`);
+  const ids = new Set(KW.map(e=>e.id));
+  if (ids.size !== KW.length) fail('katsuyo', `idが重複している (${ids.size}/${KW.length})`);
+  const byKid = {};
+  KW.forEach(e => (byKid[e.kid] = byKid[e.kid] || []).push(e));
+  const kids = Object.keys(byKid);
+  if (kids.length !== 200) fail('katsuyo', `パターン数(kid)が200でない: ${kids.length}`);
+  let badGroup = 0;
+  kids.forEach(k => { const slots = byKid[k].map(e=>e.slot).sort().join(','); if (byKid[k].length !== 3 || slots !== '0,1,2') badGroup++; });
+  if (badGroup) fail('katsuyo', `原形/過去形(比較級)/過去分詞形(最上級)の3点セットが崩れているパターン: ${badGroup}件`);
+  const verbN = KW.filter(e=>e.p==='動詞の活用').length, adjN = KW.filter(e=>e.p==='形容詞の比較').length;
+  if (verbN !== 450) fail('katsuyo', `動詞の活用エントリ数が450でない: ${verbN}`);
+  if (adjN !== 150) fail('katsuyo', `形容詞の比較エントリ数が150でない: ${adjN}`);
+  const badWord = KW.filter(e => !/^[A-Za-z][A-Za-z ]*$/.test(e.w));
+  if (badWord.length) fail('katsuyo', `英字以外を含む答え: ${badWord.map(x=>x.id+':'+x.w).join(', ')}`);
+  const emptyJp = KW.filter(e => e.slot===0 && !String(e.j||'').trim());
+  if (emptyJp.length) fail('katsuyo', `意味が空: ${emptyJp.map(x=>x.id).join(', ')}`);
+  // words.js（基本編/拡張編）とidが衝突しないこと（別id空間・別ストア共存の前提）
+  let wj; try { wj = {}; new Function('window', r('words/data/words.js'))(wj); } catch(e){ wj = {WORDS:[]}; }
+  const wordIds = new Set((wj.WORDS||[]).map(x=>String(x.id)));
+  const collide = KW.filter(e => wordIds.has(String(e.id)));
+  if (collide.length) fail('katsuyo', `words.js の id と衝突: ${collide.map(x=>x.id).join(', ')}`);
+  if (!fails) pass('katsuyo', `動詞150×3=450／形容詞50×3=150／計200パターン・600点・id/kid重複なし・words.jsと非衝突`);
+}

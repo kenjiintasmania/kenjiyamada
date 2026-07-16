@@ -4,7 +4,7 @@
   --red:#ff6b6b; --amber:#ffb020;
   --ink:#1f2533; --ink-soft:#5b6477; --line:#e7eaf2;
   --bg:#f4f6fc; --card:#ffffff;
-  --basic:#ff8a3d; --ext:#23b6a4;
+  --basic:#ff8a3d; --ext:#23b6a4; --katsuyo:#7a6bff;
   --shadow:0 6px 20px rgba(31,37,51,.10);
   --radius:18px;
 }
@@ -52,9 +52,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .mode-emoji{grid-row:1/4;font-size:40px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;border-radius:14px}
 .mode-card.basic .mode-emoji{background:#fff1e6}
 .mode-card.ext   .mode-emoji{background:#e4f7f4}
+.mode-card.katsuyo .mode-emoji{background:#efedff}
 .mode-name{font-size:21px;font-weight:800}
 .mode-card.basic .mode-name{color:var(--basic)}
 .mode-card.ext   .mode-name{color:var(--ext)}
+.mode-card.katsuyo .mode-name{color:var(--katsuyo)}
 .mode-desc{color:var(--ink-soft);font-size:13px}
 .mode-prog{display:flex;align-items:center;gap:10px;margin-top:6px;grid-column:2}
 .mode-prog em{font-style:normal;font-size:12px;color:var(--ink-soft);white-space:nowrap}
@@ -62,6 +64,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--green);transition:width .4s}
 .mode-card.basic .bar i{background:var(--basic)}
 .mode-card.ext   .bar i{background:var(--ext)}
+.mode-card.katsuyo .bar i{background:var(--katsuyo)}
 .home-foot{display:flex;justify-content:center;gap:18px;margin-top:30px}
 .text-btn{color:var(--ink-soft);font-size:14px;padding:8px}
 .text-btn:active{color:var(--blue)}
@@ -100,6 +103,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .pos-名詞{--c:#4f7cff}.pos-動詞{--c:#21b573}.pos-形容詞{--c:#ff8a3d}.pos-副詞{--c:#e0529c}
 .pos-代名詞{--c:#7a6bff}.pos-疑問詞{--c:#ff5d73}.pos-前置詞{--c:#14b1c9}.pos-接続詞{--c:#9b8b2e}
 .pos-助動詞{--c:#0fae8e}.pos-冠詞{--c:#8a93a6}.pos-間投詞{--c:#d98324}.pos-短縮形{--c:#6c7a92}.pos-連語{--c:#b06bd6}
+.pos-動詞の活用{--c:#21b573}.pos-形容詞の比較{--c:#ff8a3d}
 .cat-tile .cat-chip{background:var(--c,#4f7cff)}
 .cat-tile .bar i{background:var(--c,#21b573)}
 
@@ -124,7 +128,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .card-pos{position:absolute;top:16px;left:18px;font-size:12px;font-weight:800;color:#fff;background:var(--c,#4f7cff);padding:3px 11px;border-radius:99px}
 .retry-badge{position:absolute;top:14px;right:16px;background:linear-gradient(135deg,#ffb020,#ff7a59);color:#fff;font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}
 .card-front{font-size:34px;font-weight:800;color:var(--ink);word-break:break-word;line-height:1.3}
-.card-front.jp{font-size:30px}
+.card-front.jp{font-size:30px;white-space:pre-line}
 .card-back{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);width:100%}
 .card-back .ans{font-size:32px;font-weight:800;color:var(--blue);word-break:break-word}
 .card-back .ans.jp{color:var(--ink)}
