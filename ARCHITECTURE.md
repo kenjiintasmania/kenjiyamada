@@ -107,7 +107,7 @@
 
 | キー | 形 | 意味 | 書く人 |
 |---|---|---|---|
-| `tango_v2` | `{cleared:{id:ts}, settings:{retry,sound,order}}` | 単語アプリ：打ち込めた語ID集合＋設定。**活用編も同じキーを共有**（id空間は文字列"v1_0"等で数値idと非衝突） | words |
+| `tango_v2` | `{cleared:{id:ts}, weak:{id:ts}, settings:{retry,sound,order}}` | 単語アプリ：打ち込めた語ID集合＋**苦手フラグ**（基本編/拡張編のみ対象。ミスで立ち正解で下りる＝背景記録）＋設定。**活用編(katsuyo)も cleared キーは共有**（id空間は文字列"v1_0"等で数値idと非衝突。weakは活用編には書かない） | words |
 | `mogi_best_v1` | `{examId:{title,best,last,total,ts}}` | 模試：各回の最高/直近点（100点満点） | engine |
 | `shuku_v1` | `{c2:{best,max,count,last}, c3s2:{...}}` | 習熟度単語テスト：最高点・受験回数 | vocab_*.html |
 | `mado_year` / `mado_num` / `mado_name` | string | 本人情報（学年1〜3／番号＝半角／名前） | me, exam, eiken |

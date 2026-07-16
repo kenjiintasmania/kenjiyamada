@@ -82,6 +82,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .special-tile:active{transform:scale(.97)}
 .special-tile.shuffle{background:linear-gradient(135deg,#5b8cff,#7a6bff);color:#fff}
 .special-tile.retry{background:linear-gradient(135deg,#ffb020,#ff7a59);color:#fff}
+.special-tile.weak{background:linear-gradient(135deg,#ff6b6b,#e0529c);color:#fff}
 .st-emoji{font-size:26px}
 .st-name{font-weight:800;font-size:16px}
 .st-sub{font-size:11px;opacity:.92}

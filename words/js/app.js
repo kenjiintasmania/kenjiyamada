@@ -18,12 +18,13 @@
   /* ---------- 保存データ ---------- */
   var store = loadStore();
   function loadStore() {
-    var def = { cleared: {}, settings: { retry: "normal", sound: true, order: "shuffle" } };
+    var def = { cleared: {}, weak: {}, settings: { retry: "normal", sound: true, order: "shuffle" } };
     try {
       var raw = localStorage.getItem(STORE_KEY);
       if (raw) {
         var o = JSON.parse(raw);
         o.cleared = o.cleared || {};
+        o.weak = o.weak || {};    // 苦手フラグ（基本編/拡張編の既存語のみ対象・背景記録）
         o.settings = Object.assign(def.settings, o.settings || {});
         return o;
       }
@@ -38,6 +39,14 @@
   function setCleared(id, v) {
     if (v) store.cleared[id] = Date.now();
     else delete store.cleared[id];
+    save();
+  }
+  // 苦手フラグ：ミスすると立ち、（苦手モード等で）正解すると下りる＝「直近の解答が正解だったか」。
+  // 活用編(mode 'k')は対象外＝既存2000語(基本編/拡張編)専用のバックグラウンド記録。
+  function isWeak(id) { return !!store.weak[id]; }
+  function setWeak(id, v) {
+    if (v) store.weak[id] = Date.now();
+    else delete store.weak[id];
     save();
   }
 
@@ -151,6 +160,17 @@
     var done = clearedCount(all);
     $("catModeProg").innerHTML = "打ち込めた <b>" + done + "</b> / " + all.length + " 語";
 
+    // 苦手単語タイル：活用編には出さない（既存2000語専用の機能のため）。件数を都度表示。
+    var weakTile = document.querySelector(".special-tile.weak");
+    if (weakTile) {
+      var isVocab = (curMode === "b" || curMode === "e");
+      weakTile.classList.toggle("hidden", !isVocab);
+      if (isVocab) {
+        var weakN = all.filter(function (w) { return isWeak(w.id); }).length;
+        weakTile.querySelector(".st-sub").textContent = weakN ? ("ミスしたことがある語（" + weakN + "語）") : "ミスした語はまだありません";
+      }
+    }
+
     var posList = curMode === "b" ? META.basicByPos
       : curMode === "e" ? META.extendedByPos
       : K_POS_ORDER.map(function (p) { return [p, (byModePos[curMode][p] || []).length]; }).filter(function (x) { return x[1]; });
@@ -210,6 +230,12 @@
       pool = isK ? kShuffleFlat(pool) : shuffle(pool);
       isReview = true;
       title = "🔄 再挑戦"; tag = "復習";
+    } else if (scope === "__weak__") {
+      pool = byMode[mode].filter(function (w) { return isWeak(w.id); });
+      if (!pool.length) { toast("苦手な単語はまだありません（すごいね！）"); return; }
+      shuffle(pool);
+      // isReview=false のまま＝間違えたらこのセッション内で再度出題（克服するまで練習）。
+      title = "😓 苦手単語に挑戦"; tag = "苦手";
     } else {
       posLabel = scope;
       var list = byModePos[mode][scope] || [];
@@ -226,7 +252,7 @@
       queue: queue, baseTotal: queue.length, baseDone: 0,
       results: { clear: 0, again: 0, retry: 0 },
       seenRetry: {}, title: title, tag: tag,
-      titleShort: scope === "__shuffle__" ? "シャッフル" : scope === "__retry__" ? "再挑戦" : scope
+      titleShort: scope === "__shuffle__" ? "シャッフル" : scope === "__retry__" ? "再挑戦" : scope === "__weak__" ? "苦手単語" : scope
     };
     showWordList();
   }
@@ -324,7 +350,7 @@
     $("studyCount").innerHTML = "<b>" + session.baseDone + "</b> / " + session.baseTotal;
     var c = (POS_COLOR(w.p));
     $("studyTitle").innerHTML = '<span class="tag" style="background:' + c + '">' + session.tag + "</span>" +
-      (session.scope === "__shuffle__" ? "ぜんぶシャッフル" : session.scope === "__retry__" ? "再挑戦" : session.scope);
+      (session.scope === "__shuffle__" ? "ぜんぶシャッフル" : session.scope === "__retry__" ? "再挑戦" : session.scope === "__weak__" ? "苦手単語に挑戦" : session.scope);
     $("studyTitle").style.setProperty("--c", c);
 
     focusInput();
@@ -363,6 +389,7 @@
 
   // 採点結果を成績・保存に反映
   function recordResult(ok, it) {
+    if (it.w.m !== "k") setWeak(it.w.id, !ok);   // 苦手フラグ：ミスで背景記録・正解で解除（活用編は対象外）
     if (it.retry) {
       session.results.retry++;
       if (ok) setCleared(it.w.id, true);
@@ -395,11 +422,16 @@
     var msg = "<b>" + r.clear + " 語</b> を打ち込めました！";
     if (r.again) msg += "<br>まちがえた語：" + r.again;
     if (r.retry) msg += "<br>🔄 再挑戦：" + r.retry + " 語";
-    var list = session.scope === "__shuffle__" || session.scope === "__retry__"
-      ? byMode[session.mode] : (byModePos[session.mode][session.scope] || []);
-    var c = clearedCount(list), total = list.length;
-    msg += "<br><br>この" + (session.scope === "__shuffle__" ? "モード" : session.scope === "__retry__" ? "モード" : (session.mode === "k" ? "カテゴリ" : "品詞")) +
-      "の進み具合：<b>" + c + " / " + total + "</b>";
+    if (session.scope === "__weak__") {
+      var remain = byMode[session.mode].filter(function (w) { return isWeak(w.id); }).length;
+      msg += "<br><br>残りの苦手単語：<b>" + remain + " 語</b>" + (remain ? "" : "　🎉 苦手単語ゼロ！");
+    } else {
+      var list = session.scope === "__shuffle__" || session.scope === "__retry__"
+        ? byMode[session.mode] : (byModePos[session.mode][session.scope] || []);
+      var c = clearedCount(list), total = list.length;
+      msg += "<br><br>この" + (session.scope === "__shuffle__" ? "モード" : session.scope === "__retry__" ? "モード" : (session.mode === "k" ? "カテゴリ" : "品詞")) +
+        "の進み具合：<b>" + c + " / " + total + "</b>";
+    }
     $("doneSummary").innerHTML = msg;
     show("done");
   }
@@ -454,6 +486,7 @@
       "<li><b>判定</b>：大文字小文字・前後の空白や記号・ハイフン／スペースの違いは正解とみなします。</li>" +
       "<li><b>シャッフル</b>：全品詞からランダムに出題。</li>" +
       "<li><b>再挑戦</b>：打ち込めた語をたまに自動で再出題します（設定で頻度を変更可）。</li>" +
+      "<li><b>苦手単語に挑戦</b>：ミスしたことがある語（基本編/拡張編）だけを出題。正解すると苦手からはずれ、また間違えると戻ります。</li>" +
       "</ul><p style='font-size:12px'>※ 成績はこの端末のブラウザに保存されます。</p></div>";
   }
 
@@ -475,7 +508,10 @@
     c.addEventListener("click", function () { curMode = c.getAttribute("data-mode"); renderCats(); show("cats"); });
   });
   document.querySelectorAll(".special-tile").forEach(function (t) {
-    t.addEventListener("click", function () { startSession(curMode, t.getAttribute("data-special") === "shuffle" ? "__shuffle__" : "__retry__"); });
+    t.addEventListener("click", function () {
+      var k = t.getAttribute("data-special");
+      startSession(curMode, k === "shuffle" ? "__shuffle__" : k === "retry" ? "__retry__" : "__weak__");
+    });
   });
   $("backBtn").addEventListener("click", goBack);
   $("topRight").addEventListener("click", function () { openModal(settingsHtml()); });
@@ -516,11 +552,11 @@
     var rs = e.target.getAttribute && e.target.getAttribute("data-reset");
     if (rs === "mode") {
       if (confirm(MODE_NAME[curMode] + " の成績をすべて消しますか？")) {
-        byMode[curMode].forEach(function (w) { delete store.cleared[w.id]; }); save();
+        byMode[curMode].forEach(function (w) { delete store.cleared[w.id]; delete store.weak[w.id]; }); save();
         closeModal(); renderHome(); renderCats(); toast("リセットしました");
       }
     } else if (rs === "all") {
-      if (confirm("すべての成績を消しますか？")) { store.cleared = {}; save(); closeModal(); renderHome(); renderCats(); toast("リセットしました"); }
+      if (confirm("すべての成績を消しますか？")) { store.cleared = {}; store.weak = {}; save(); closeModal(); renderHome(); renderCats(); toast("リセットしました"); }
     }
   }
 
