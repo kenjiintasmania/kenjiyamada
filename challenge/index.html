@@ -9,9 +9,9 @@
 <!--
   挑戦モード（基本アプリ側・練習専用／成績システムとは連動しない）
    1) 単語ランダム50問（基本・拡張）… words/data/words.js を再利用してタイピング採点
-   2) 英作文（中1 / 中1〜2 / 中1〜3）… 模範解答を見て自己採点（challenge/data/compose.js）
+   2) 並べ替え英作文（中1 / 中1〜2 / 中1〜3）… 単語をタップして英文を組み立てる自動採点
+       （challenge/data/compose.js）。自己採点は廃止＝mogi の wordorder と同じ自動判定。
    3) 英検二次プロンプト生成（3級/準2級/2級）… AIに貼り付けて模擬面接する“練習用”プロンプトを生成
-   ※ 英作文には「AIに添削してもらう」プロンプト生成も用意（任意）。
    ※ 3) の生成プロンプトは「思考モードのプロンプト（別スレで設計）」とは別物。単なる面接練習用。
    ※ 自己ベストのみ端末(localStorage: challenge_v1)に保存。GAS送信・マイページ連動はしない。
 -->
@@ -86,17 +86,25 @@
   .miss li .en{font-family:var(--en);color:var(--c2);font-weight:bold}
   .score-big{font-size:40px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
 
-  /* 英作文 */
-  .ask{font-size:17px;font-weight:bold;margin:6px 0 8px}
-  textarea.compose{font:inherit;font-size:17px;font-family:var(--en);width:100%;min-height:64px;
-    padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:#fffdf6}
+  /* 並べ替え英作文 */
+  .ask{font-size:19px;font-weight:bold;margin:6px 0 10px}
+  .wo-build{min-height:52px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+    padding:10px;border:2px dashed var(--line);border-radius:12px;background:#fffdf6;margin:4px 0 12px}
+  .wo-empty{color:#b3ab98;font-size:14px}
+  .wo-bank{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+  .wo-chip{font:inherit;font-family:var(--en);font-size:18px;font-weight:bold;color:var(--ink);
+    background:#fff;border:2px solid var(--line);border-radius:10px;padding:7px 13px;cursor:pointer;
+    box-shadow:0 3px 0 #efe7d4}
+  .wo-chip:active{transform:translateY(2px);box-shadow:0 1px 0 #efe7d4}
+  .wo-chip.in{background:#f3f6ff;border-color:#c9d4ff}
+  .wo-chip.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+  .wo-chip.ng{background:var(--ngbg);border-color:var(--ng);color:var(--ng)}
+  .wo-note{font-size:12.5px;color:#9a927e;margin:0 0 8px}
   .model{margin:10px 0;padding:10px 12px;border-radius:12px;background:#fff6e6;display:none}
   .model.show{display:block}
   .model .lab{font-size:12px;color:#b07d2e;font-weight:bold}
   .model .en{font-family:var(--en);font-size:18px}
   .model .tip{font-size:12.5px;color:#9a927e;margin-top:4px}
-  .selfcheck{margin-top:8px;font-size:14px;display:flex;gap:14px;flex-wrap:wrap}
-  .selfcheck label{display:flex;align-items:center;gap:5px}
 
   /* 英検プロンプト */
   textarea.prompt{font:inherit;font-size:13.5px;width:100%;min-height:260px;padding:12px;
@@ -122,7 +130,7 @@
       <button class="mode w" data-go="word"><span class="emoji">🎯</span>
         <div class="t">単語50問</div><div class="d">基本・拡張からランダム出題（タイピング）</div></button>
       <button class="mode c" data-go="compose"><span class="emoji">✍️</span>
-        <div class="t">英作文</div><div class="d">中1／中1〜2／中1〜3 で出題・自己採点</div></button>
+        <div class="t">並べ替え英作文</div><div class="d">単語をタップして英文を組み立て・自動採点</div></button>
       <button class="mode e" data-go="eiken"><span class="emoji">🗣️</span>
         <div class="t">英検二次プロンプト</div><div class="d">級を選んで模擬面接プロンプトを生成</div></button>
     </div>
@@ -163,17 +171,17 @@
     </div>
   </div>
 
-  <!-- 2) 英作文 -->
+  <!-- 2) 並べ替え英作文 -->
   <div id="compose" class="hide">
     <div class="card c" id="c_setup">
-      <h2><span class="emoji">✍️</span>英作文</h2>
+      <h2><span class="emoji">✍️</span>並べ替え英作文</h2>
       <div class="row"><span style="font-size:13px;color:#7a7363">範囲：</span>
         <div class="seg" id="c_range">
           <button data-v="1" class="on">中1</button>
           <button data-v="2">中1〜2</button>
           <button data-v="3">中1〜3</button>
         </div></div>
-      <p class="hint">お題に合う英文を書いて、「答え合わせ」で模範解答と見くらべ、できたかを自分で記録します（自由英作文なので自動採点はしません）。</p>
+      <p class="hint">日本語の意味に合うように、単語をタップして英文を組み立てよう。組み立てたら「答え合わせ」で<strong>自動採点</strong>します。大文字小文字・記号のちがいは正解あつかい。</p>
       <div class="row"><button class="btn" id="c_start">▶ スタート</button>
         <button class="btn ghost" data-home>← モード選択へ</button></div>
     </div>
@@ -181,29 +189,21 @@
       <div class="prog"><span id="c_count">1 / 8</span><span class="bar"><i id="c_bar" style="background:var(--c2)"></i></span>
         <span id="c_score">✓0</span></div>
       <div class="ask" id="c_ask">—</div>
-      <textarea class="compose" id="c_ta" spellcheck="false" placeholder="英語で書こう"></textarea>
+      <p class="wo-note">単語をタップして上の枠にならべよう。もう一度タップで取り消し。</p>
+      <div class="wo-build" id="c_build"></div>
+      <div class="wo-bank" id="c_bank"></div>
       <div class="model" id="c_model">
-        <span class="lab">模範解答（例）</span><br><span class="en" id="c_model_en"></span>
+        <span class="lab">正解</span> <span class="en" id="c_model_en"></span>
         <div class="tip" id="c_tip"></div>
-        <div class="selfcheck">自己採点：
-          <label><input type="radio" name="c_self" value="1"> できた</label>
-          <label><input type="radio" name="c_self" value="0" checked> まだ</label>
-        </div>
-      </div>
-      <div id="c_aibox" class="hide" style="margin-top:8px">
-        <textarea class="prompt" id="c_aitext" readonly style="min-height:170px"></textarea>
-        <div class="copybar"><button class="btn" id="c_aicopy">📋 コピー</button><span id="c_aimsg" style="font-size:13px;color:var(--ok)"></span></div>
-        <div class="howto">この文をコピーして AI（ChatGPT・Claude など）に貼り付けると、あなたの英作文を添削してくれます。</div>
       </div>
       <div class="row" id="c_actCheck"><button class="btn" id="c_check">答え合わせ</button></div>
-      <div class="row hide" id="c_actNext"><button class="btn" id="c_next">次へ →</button>
-        <button class="btn ghost" id="c_aibtn">🤖 AIに添削してもらう</button></div>
+      <div class="row hide" id="c_actNext"><button class="btn" id="c_next">次へ →</button></div>
     </div>
     <div class="card c hide" id="c_done">
       <h2><span class="emoji">🏁</span>結果</h2>
       <div class="score-big" id="c_final" style="color:var(--c2)">0 / 8</div>
       <p class="hint" id="c_bestmsg" style="text-align:center;color:#e08a2e;font-weight:bold"></p>
-      <p class="hint" style="text-align:center">「できた」と記録した数です。まちがえたお題は、もう一度書いてみよう。</p>
+      <p class="hint" style="text-align:center">正しく並べられた数です。まちがえたお題は、もう一度組み立ててみよう。</p>
       <div class="row" style="margin-top:12px"><button class="btn" id="c_again">もう一度</button>
         <button class="btn ghost" data-home>← モード選択へ</button></div>
     </div>
@@ -243,10 +243,6 @@
 
   /* ---------- ローカル記録（challenge_v1・練習用の自己ベスト／GAS非連動・先生に送らない） ---------- */
   function lcRec(key,score,total){ try{ var o=JSON.parse(localStorage.getItem("challenge_v1")||"{}"); var p=o[key]||{best:0,count:0}; o[key]={best:Math.max(p.best||0,score),total:total,count:(p.count||0)+1,last:score,ts:Date.now()}; localStorage.setItem("challenge_v1",JSON.stringify(o)); return o[key]; }catch(e){ return null; } }
-  function copyTo(ta,msgEl){ ta.focus(); ta.select();
-    function done(){ msgEl.textContent="コピーしました ✓ AIに貼り付けてね"; }
-    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done,function(){try{document.execCommand("copy");done();}catch(e){msgEl.textContent="長押しでコピーしてね";}}); }
-    else { try{document.execCommand("copy");done();}catch(e){msgEl.textContent="長押しでコピーしてね";} } }
 
   /* ---------- 画面切り替え ---------- */
   var SCREENS=["pick","word","compose","eiken"];
@@ -343,9 +339,14 @@
     if(e.key==="Enter" && $("w_ans").disabled){ e.preventDefault(); nextWord(); }
   });
 
-  /* ================= 2) 英作文 ================= */
-  var cMax=1, cQueue=[], cIdx=0, cScore=0, COUNT=8;
+  /* ================= 2) 並べ替え英作文（自動採点：mogi の wordorder と同じ判定） ================= */
+  var cMax=1, cQueue=[], cIdx=0, cScore=0, COUNT=8, cSeq=[], cGraded=false;
   segSetup("c_range", function(v){ cMax=+v; });
+  /* 正誤判定：記号・大文字小文字を無視して比較（mogi engine.js の normSpell と同等） */
+  function normSpell(s){
+    return String(s==null?"":s).toLowerCase().trim()
+      .replace(/[.,!?;:"'’“”]/g,"").replace(/[-_/]/g," ").replace(/\s+/g," ").trim();
+  }
   function resetComposeView(){ $("c_setup").classList.remove("hide"); $("c_run").classList.add("hide"); $("c_done").classList.add("hide"); }
   $("c_start").addEventListener("click", startCompose);
   $("c_again").addEventListener("click", startCompose);
@@ -362,21 +363,47 @@
     $("c_bar").style.width=Math.round(cIdx/cQueue.length*100)+"%";
     $("c_score").textContent="✓"+cScore;
     $("c_ask").textContent=it.jp;
-    $("c_ta").value=""; $("c_ta").disabled=false;
     $("c_model").classList.remove("show");
-    $("c_aibox").classList.add("hide");
-    $("c_model_en").textContent=it.model; $("c_tip").textContent=it.tip?("ねらい："+it.tip):"";
-    var r=document.querySelector('input[name="c_self"][value="0"]'); if(r) r.checked=true;
+    $("c_model_en").textContent=it.answer; $("c_tip").textContent=it.tip?("ねらい："+it.tip):"";
+    // 出題順をシャッフル（インデックスの並び。表示は words[bankOrder[k]]）
+    it._bank = shuffle(it.words.map(function(_,i){ return i; }));
+    cSeq=[]; cGraded=false;
+    drawCompose();
     $("c_actCheck").classList.remove("hide"); $("c_actNext").classList.add("hide");
-    setTimeout(function(){ try{$("c_ta").focus();}catch(e){} },40);
+  }
+  function drawCompose(){
+    var it=cQueue[cIdx], build=$("c_build"), bank=$("c_bank");
+    build.innerHTML=""; bank.innerHTML="";
+    if(cSeq.length===0){ var em=document.createElement("span"); em.className="wo-empty"; em.textContent="ここに単語をならべよう →"; build.appendChild(em); }
+    cSeq.forEach(function(wi,posi){
+      var c=document.createElement("button"); c.type="button"; c.className="wo-chip in"; c.textContent=it.words[wi];
+      if(!cGraded){ c.addEventListener("click", function(){ cSeq.splice(posi,1); drawCompose(); }); }
+      build.appendChild(c);
+    });
+    it._bank.forEach(function(wi){
+      if(cSeq.indexOf(wi)>=0) return;
+      var c=document.createElement("button"); c.type="button"; c.className="wo-chip"; c.textContent=it.words[wi];
+      if(!cGraded){ c.addEventListener("click", function(){ cSeq.push(wi); drawCompose(); }); }
+      bank.appendChild(c);
+    });
   }
   function checkCompose(){
-    $("c_ta").disabled=true; $("c_model").classList.add("show");
+    var it=cQueue[cIdx];
+    // 判定はタップした語をつないだ文字列を answer(正解文)と直接くらべる。
+    // これなら同じ語が複数あっても（例:"I ... I"）正しく判定できる。
+    var built=cSeq.map(function(wi){ return normSpell(it.words[wi]); }).join(" ");
+    var want=normSpell(it.answer);
+    var ok=(cSeq.length===it.words.length && built===want);
+    cGraded=true;
+    if(ok) cScore++;
+    drawCompose();
+    // チップに正誤色をつける
+    $("c_build").querySelectorAll(".wo-chip").forEach(function(c){ c.classList.add(ok?"ok":"ng"); });
+    $("c_score").textContent="✓"+cScore;
+    $("c_model").classList.toggle("show", !ok);   // 不正解のときだけ正解文を表示
     $("c_actCheck").classList.add("hide"); $("c_actNext").classList.remove("hide");
   }
   function nextCompose(){
-    var sel=document.querySelector('input[name="c_self"]:checked');
-    if(sel && sel.value==="1") cScore++;
     cIdx++; if(cIdx>=cQueue.length){ doneCompose(); } else { renderCompose(); }
   }
   function doneCompose(){
@@ -385,18 +412,8 @@
     var crec=lcRec("compose_"+cMax, cScore, cQueue.length);
     $("c_bestmsg").textContent = crec?("🏅自己ベスト "+crec.best+"/"+cQueue.length+"（"+crec.count+"回目）"):"";
   }
-  function composePrompt(){
-    var it=cQueue[cIdx]||{}, mine=($("c_ta").value||"").trim();
-    return "あなたは中学英語の先生です。次の「お題」に対する私の英作文を、やさしく日本語で添削してください。\n\n"+
-      "【お題】"+(it.jp||"")+"\n"+
-      "【私が書いた英作文】"+(mine||"（未記入）")+"\n"+
-      "【模範解答の一例】"+(it.model||"")+"\n\n"+
-      "次の形式で答えてください：\n①良い点（ほめる）\n②直すとよい点（文法・語彙・つづりを具体的に）\n③改善した英文の例\n④100点満点で採点（中学生レベルとして）";
-  }
   $("c_check").addEventListener("click", checkCompose);
   $("c_next").addEventListener("click", nextCompose);
-  $("c_aibtn").addEventListener("click", function(){ $("c_aitext").value=composePrompt(); $("c_aibox").classList.remove("hide"); $("c_aimsg").textContent=""; $("c_aitext").scrollTop=0; });
-  $("c_aicopy").addEventListener("click", function(){ copyTo($("c_aitext"), $("c_aimsg")); });
 
   /* ================= 3) 英検二次プロンプト ================= */
   var eLevel="g3";
