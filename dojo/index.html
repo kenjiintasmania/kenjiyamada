@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2e8b57">
+<title>読解道場｜入試読解トレーニング</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🥋</text></svg>">
+<!--
+  読解道場（高校入試レベル読解力向上・3層構造の Stage1/Stage2）
+   Stage1 学ぶ … テクカード（先生のテクニック＝英検アプリ「中学入学準備」・語順メソッド・
+                 リスニングメモ術＋提案テク）。説明→ミニ例題→修了スタンプ。
+   Stage2 鍛える … スキル種目ドリル S1「根拠さがし」（大問5対策）・S3「図表突合」（大問2対策）。
+                 1問ごとに正誤＋根拠（why/trap）＋関連テクを表示。全自動採点。
+   Stage3 実践 … 既存の岡山県模試10本（mogi/okayama.html へのリンク）。
+   ※ 記録は端末のみ（localStorage: dojo_v1）。GAS送信・マイページ連動は第2弾で検討。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --c1:#2e8b57; --c2:#ff7a59; --c3:#5b7cff; --accent:#2e8b57;
+    --ok:#2e9e57; --okbg:#e3f6e8; --ng:#d9603e; --ngbg:#fde7e1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 500px at 110% -10%,#dff3e8 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#e8ecff 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.6;padding:18px 14px 80px}
+  .wrap{max-width:820px;margin:0 auto}
+  .crumbs{font-size:13px;margin-bottom:8px}
+  .crumbs a{color:var(--c3);text-decoration:none;font-weight:bold}
+  .hero{text-align:center;margin:4px 0 10px}
+  .hero h1{font-size:26px;margin:0}
+  .hero h1 .en{font-family:var(--en);color:var(--c1)}
+  .hero p{color:#7a7363;font-size:13.5px;margin:6px 0 0}
+  .hide{display:none!important}
+  .card{background:#fff;border:3px solid var(--line);border-radius:18px;
+    padding:16px;margin:14px 0;box-shadow:0 6px 0 #e8e2d0}
+  h2{font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .btn{font:inherit;font-size:16px;font-weight:bold;border:none;border-radius:12px;
+    padding:11px 22px;cursor:pointer;color:#fff;background:var(--accent);box-shadow:0 4px 0 #1e6b41}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1e6b41}
+  .btn.ghost{background:#fff;color:var(--accent);border:2px solid var(--accent);box-shadow:0 4px 0 #dcefe4}
+  .hint{font-size:12.5px;color:#9a927e;margin:6px 0 0}
+
+  /* ホーム：3ステージ */
+  .stages{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+  @media(max-width:680px){.stages{grid-template-columns:1fr}}
+  .stage{display:block;width:100%;text-align:center;cursor:pointer;background:#fff;
+    border:3px solid #cfe6da;border-radius:18px;padding:20px 14px;font:inherit;
+    box-shadow:0 6px 0 #e8e2d0;transition:transform .08s}
+  .stage:hover{transform:translateY(-3px)}
+  .stage:active{transform:translateY(2px)}
+  .stage .emoji{font-size:38px;display:block;line-height:1}
+  .stage .t{font-size:17px;font-weight:bold;margin:8px 0 4px}
+  .stage .d{font-size:12.5px;color:#7a7363}
+  .stage .prog{font-size:12.5px;color:var(--c1);font-weight:bold;margin-top:6px}
+
+  /* テクカード一覧 */
+  .cat-label{font-size:14px;font-weight:bold;color:#7a7363;margin:14px 0 6px}
+  .tech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(max-width:560px){.tech-grid{grid-template-columns:1fr}}
+  .tech-tile{position:relative;text-align:left;font:inherit;cursor:pointer;background:#fff;
+    border:2px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 4px 0 #efe9da}
+  .tech-tile:active{transform:translateY(2px);box-shadow:0 2px 0 #efe9da}
+  .tech-tile .tid{font-family:var(--en);font-size:11px;color:#b3ab98;font-weight:bold}
+  .tech-tile .tname{font-size:15.5px;font-weight:bold}
+  .tech-tile .twhat{font-size:12px;color:#7a7363;margin-top:2px}
+  .tech-tile .from{position:absolute;top:10px;right:10px;font-size:10.5px;padding:2px 8px;border-radius:999px;background:#fff3e0;color:#b07d2e;font-weight:bold}
+  .tech-tile .from.mine{background:#e8ecff;color:#4a5fd0}
+  .tech-tile.done{border-color:var(--ok);background:#f4fbf6}
+  .tech-tile.done::after{content:"✅ 修了";position:absolute;bottom:8px;right:10px;font-size:11px;color:var(--ok);font-weight:bold}
+
+  /* テクカード詳細 */
+  .what{font-size:16px;font-weight:bold;background:#f4fbf6;border-left:5px solid var(--c1);
+    padding:10px 12px;border-radius:8px;margin:8px 0}
+  ol.how{font-size:14.5px;padding-left:22px;margin:8px 0}
+  ol.how li{margin:4px 0}
+
+  /* ドリル共通 */
+  .prog{display:flex;align-items:center;gap:10px;font-size:13px;color:#7a7363;margin-bottom:6px}
+  .bar{flex:1;height:10px;border-radius:8px;background:#efe9da;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--c1);width:0;transition:width .3s}
+  .passage{font-family:var(--en);font-size:16.5px;background:#fbf9f1;border:2px solid var(--line);
+    border-radius:12px;padding:12px 14px;margin:8px 0;line-height:1.7}
+  .q-text{font-size:16px;font-weight:bold;margin:10px 0 8px}
+  .choices{display:flex;flex-direction:column;gap:8px}
+  .choice{font:inherit;text-align:left;font-size:15px;padding:10px 12px;cursor:pointer;
+    border:2px solid var(--line);border-radius:12px;background:#fff}
+  .choice .en{font-family:var(--en)}
+  .choice:active{transform:translateY(1px)}
+  .choice.sel-ok{border-color:var(--ok);background:var(--okbg)}
+  .choice.sel-ng{border-color:var(--ng);background:var(--ngbg)}
+  .choice.reveal{border-color:var(--ok);border-style:dashed}
+  .choice[disabled]{cursor:default;opacity:.92}
+  .fb{margin:10px 0;padding:10px 12px;border-radius:12px;font-size:14px;display:none}
+  .fb.show{display:block;background:#fff6e6}
+  .fb .head{font-weight:bold;font-size:15px}
+  .fb .head.ok{color:var(--ok)} .fb .head.ng{color:var(--ng)}
+  .fb .trap{color:#b0632e;margin-top:4px}
+  .tech-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .chip{font-size:11.5px;padding:3px 10px;border-radius:999px;background:#e8ecff;color:#4a5fd0;font-weight:bold}
+  .score-big{font-size:40px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+  .weak-list button{font:inherit;font-size:13px;margin:3px 4px 0 0;padding:5px 12px;border-radius:999px;
+    border:2px solid #c9d4ff;background:#f3f6ff;color:#4a5fd0;font-weight:bold;cursor:pointer}
+
+  /* ちらし（S3） */
+  .flyer{background:#fff;border:2px dashed #b7d3c4;border-radius:12px;padding:12px 14px;margin:8px 0;font-family:var(--en)}
+  .flyer .fly-t{font-size:17px;font-weight:bold;color:var(--c1);margin-bottom:6px}
+  .flyer table{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0}
+  .flyer th,.flyer td{border:1px solid #d8e6dd;padding:5px 8px;text-align:left}
+  .flyer th{background:#f0f8f3}
+  .flyer .fly-n{font-size:12.5px;color:#7a7363;margin-top:6px;font-family:var(--jp)}
+  footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
+  <div class="hero">
+    <h1>読解道場 <span class="en">Dojo</span></h1>
+    <p>テクを学ぶ → スキルを鍛える → 県模試で実践。入試読解の訓練場。</p>
+  </div>
+
+  <!-- ホーム -->
+  <div id="home">
+    <div class="stages">
+      <button class="stage" data-go="techlist"><span class="emoji">📖</span>
+        <div class="t">① テクを学ぶ</div><div class="d">テクカードで解き方を身につける</div>
+        <div class="prog" id="h_tech"></div></button>
+      <button class="stage" data-go="drillmenu"><span class="emoji">💪</span>
+        <div class="t">② スキルを鍛える</div><div class="d">種目別ドリル（自動採点）</div>
+        <div class="prog" id="h_skill"></div></button>
+      <button class="stage" id="goMogi"><span class="emoji">🗾</span>
+        <div class="t">③ 県模試で実践</div><div class="d">岡山県スタイル模試 全10回</div>
+        <div class="prog">模擬テストへ →</div></button>
+    </div>
+    <p class="hint" style="text-align:center">記録はこの端末だけに保存されます（先生には送りません）。</p>
+  </div>
+
+  <!-- テクカード一覧 -->
+  <div id="techlist" class="hide">
+    <div class="card">
+      <h2>📖 テクカード</h2>
+      <p class="hint" style="margin-top:0">カードを開いて読んだら、ミニ例題で使い方を確認。全問正解で修了スタンプ✅。</p>
+      <div id="techGrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn ghost" data-go="home">← もどる</button></div>
+    </div>
+  </div>
+
+  <!-- テクカード詳細 -->
+  <div id="techview" class="hide">
+    <div class="card">
+      <h2 id="tv_title">—</h2>
+      <div class="what" id="tv_what"></div>
+      <ol class="how" id="tv_how"></ol>
+      <div id="tv_drill"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" data-go="techlist">← テク一覧へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 種目メニュー -->
+  <div id="drillmenu" class="hide">
+    <div class="card">
+      <h2>💪 スキル種目</h2>
+      <div class="stages" style="grid-template-columns:repeat(2,1fr)">
+        <button class="stage" data-skill="S1"><span class="emoji">🔍</span>
+          <div class="t">S1 根拠さがし</div><div class="d">内容一致・言い換えを見抜く（大問5対策）</div>
+          <div class="prog" id="m_S1"></div></button>
+        <button class="stage" data-skill="S3"><span class="emoji">📊</span>
+          <div class="t">S3 図表突合</div><div class="d">ちらし×条件の照合（大問2対策）</div>
+          <div class="prog" id="m_S3"></div></button>
+      </div>
+      <p class="hint">1回8問・ランダム出題。まちがえたら根拠とワナの解説＋関連テクが出ます。</p>
+      <div class="row" style="margin-top:8px"><button class="btn ghost" data-go="home">← もどる</button></div>
+    </div>
+  </div>
+
+  <!-- ドリル実行 -->
+  <div id="drillrun" class="hide">
+    <div class="card">
+      <div class="prog"><span id="d_count">1 / 8</span><span class="bar"><i id="d_bar"></i></span>
+        <span id="d_score">○0</span></div>
+      <div id="d_stim"></div>
+      <div class="q-text" id="d_q"></div>
+      <div class="choices" id="d_choices"></div>
+      <div class="fb" id="d_fb"></div>
+      <div class="row hide" id="d_next"><button class="btn" id="d_nextBtn">次へ →</button></div>
+    </div>
+  </div>
+
+  <!-- ドリル結果 -->
+  <div id="drilldone" class="hide">
+    <div class="card">
+      <h2>🏁 結果</h2>
+      <div class="score-big" id="r_final">0 / 8</div>
+      <p class="hint" id="r_best" style="text-align:center;color:#e08a2e;font-weight:bold"></p>
+      <div id="r_weak"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="r_again">もう一度</button>
+        <button class="btn ghost" data-go="drillmenu">← 種目メニューへ</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>読解道場 ／ テクを学ぶ→鍛える→県模試で実践（記録は端末のみ）</footer>
+</div>
+
+<script src="data/tech.js"></script>
+<script src="data/drill_s1.js"></script>
+<script src="data/drill_s3.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var TECHS=window.DOJO_TECHS||[], BANKS={S1:window.DOJO_S1||null, S3:window.DOJO_S3||null};
+  var CATS=["読解","図表","リスニング","英作文","勉強法・会話"];
+  var PER_SESSION=8;
+
+  /* ---------- 記録（dojo_v1・端末のみ） ---------- */
+  function load(){ try{ return JSON.parse(localStorage.getItem("dojo_v1")||"{}"); }catch(e){ return {}; } }
+  function save(st){ try{ localStorage.setItem("dojo_v1", JSON.stringify(st)); }catch(e){} }
+  function store(){ var st=load(); st.tech=st.tech||{}; st.skill=st.skill||{}; return st; }
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+  function techName(id){ var t=TECHS.filter(function(x){return x.id===id;})[0]; return t?(t.id+" "+t.name):id; }
+
+  /* ---------- 画面切り替え ---------- */
+  var SCREENS=["home","techlist","techview","drillmenu","drillrun","drilldone"];
+  function show(name){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==name); }); window.scrollTo(0,0);
+    if(name==="home") renderHome(); if(name==="techlist") renderTechList(); if(name==="drillmenu") renderDrillMenu(); }
+  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click",function(){ show(b.getAttribute("data-go")); });});
+  $("goMogi").addEventListener("click",function(){ location.href="../mogi/okayama.html"; });
+
+  /* ---------- ホーム ---------- */
+  function renderHome(){
+    var st=store();
+    var done=TECHS.filter(function(t){return st.tech[t.id];}).length;
+    $("h_tech").textContent="修了 "+done+" / "+TECHS.length+" 枚";
+    var parts=[];
+    ["S1","S3"].forEach(function(k){ var r=st.skill[k]; if(r&&r.count) parts.push(k+" ベスト"+r.best+"/"+PER_SESSION); });
+    $("h_skill").textContent=parts.length?parts.join("・"):"はじめてみよう";
+  }
+
+  /* ---------- テクカード一覧 ---------- */
+  function renderTechList(){
+    var st=store(), grid=$("techGrid"); grid.innerHTML="";
+    CATS.forEach(function(cat){
+      var list=TECHS.filter(function(t){return t.cat===cat;});
+      if(!list.length) return;
+      var lab=document.createElement("div"); lab.className="cat-label"; lab.textContent="◼ "+cat; grid.appendChild(lab);
+      var g=document.createElement("div"); g.className="tech-grid";
+      list.forEach(function(t){
+        var b=document.createElement("button"); b.className="tech-tile"+(st.tech[t.id]?" done":"");
+        b.innerHTML='<span class="from'+(t.from==="提案"?" mine":"")+'">'+esc(t.from)+'</span>'+
+          '<div class="tid">'+esc(t.id)+'</div><div class="tname">'+esc(t.name)+'</div>'+
+          '<div class="twhat">'+esc(t.what)+'</div>';
+        b.addEventListener("click",function(){ openTech(t.id); });
+        g.appendChild(b);
+      });
+      grid.appendChild(g);
+    });
+  }
+
+  /* ---------- テクカード詳細（説明＋ミニ例題） ---------- */
+  function openTech(id){
+    var t=TECHS.filter(function(x){return x.id===id;})[0]; if(!t) return;
+    $("tv_title").textContent="📖 "+t.id+" "+t.name+"（"+t.from+"）";
+    $("tv_what").textContent=t.what;
+    $("tv_how").innerHTML=(t.how||[]).map(function(h){return "<li>"+esc(h)+"</li>";}).join("");
+    var box=$("tv_drill"); box.innerHTML="";
+    var correct=0, answered=0;
+    (t.drill||[]).forEach(function(d,qi){
+      var wrap=document.createElement("div");
+      wrap.innerHTML='<div class="q-text">例題'+(t.drill.length>1?(qi+1):"")+'：'+esc(d.q)+'</div>';
+      var ch=document.createElement("div"); ch.className="choices";
+      var order=shuffle(d.choices.map(function(_,i){return i;}));
+      var fb=document.createElement("div"); fb.className="fb";
+      order.forEach(function(oi){
+        var b=document.createElement("button"); b.className="choice";
+        b.innerHTML=/[A-Za-z]/.test(d.choices[oi])&&!/[ぁ-んァ-ン]/.test(d.choices[oi])?'<span class="en">'+esc(d.choices[oi])+'</span>':esc(d.choices[oi]);
+        b.addEventListener("click",function(){
+          if(wrap.getAttribute("data-done")) return;
+          wrap.setAttribute("data-done","1"); answered++;
+          var ok=(oi===d.answer);
+          if(ok) correct++;
+          b.classList.add(ok?"sel-ok":"sel-ng");
+          if(!ok){ [].forEach.call(ch.children,function(c,k){ if(order[k]===d.answer) c.classList.add("reveal"); }); }
+          [].forEach.call(ch.children,function(c){ c.setAttribute("disabled","1"); });
+          fb.className="fb show";
+          fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+esc(d.ex||"");
+          if(answered===(t.drill||[]).length) finishTech(t, correct===t.drill.length);
+        });
+        ch.appendChild(b);
+      });
+      wrap.appendChild(ch); wrap.appendChild(fb); box.appendChild(wrap);
+    });
+    var st=store();
+    if(st.tech[t.id]){ var d0=document.createElement("p"); d0.className="hint"; d0.textContent="✅ このテクは修了ずみ（何度でも読み直せます）"; box.appendChild(d0); }
+    show("techview");
+  }
+  function finishTech(t, allOk){
+    var box=$("tv_drill"), p=document.createElement("p");
+    if(allOk){
+      var st=store(); st.tech[t.id]=1; save(st);
+      p.className="hint"; p.style.color="var(--ok)"; p.style.fontWeight="bold";
+      p.textContent="✅ 全問正解！ このテクは修了です。ドリルで実戦投入しよう。";
+    } else {
+      p.className="hint"; p.style.color="var(--ng)";
+      p.textContent="おしい！ もう一度カードを読んで、開き直して再挑戦しよう（修了は全問正解で）。";
+    }
+    box.appendChild(p);
+  }
+
+  /* ---------- 種目メニュー ---------- */
+  function renderDrillMenu(){
+    var st=store();
+    ["S1","S3"].forEach(function(k){
+      var r=st.skill[k], el=$("m_"+k);
+      el.textContent = BANKS[k]? (r&&r.count? "ベスト "+r.best+"/"+PER_SESSION+"（"+r.count+"回）":"未挑戦") : "準備中";
+    });
+  }
+  document.querySelectorAll("[data-skill]").forEach(function(b){
+    b.addEventListener("click",function(){ startDrill(b.getAttribute("data-skill")); });
+  });
+
+  /* ---------- ドリル実行 ---------- */
+  var dSkill=null, dQueue=[], dIdx=0, dScore=0, dMissTech={};
+  function startDrill(skill){
+    var bank=BANKS[skill];
+    if(!bank||!bank.items||!bank.items.length){ alert("この種目は準備中です。"); return; }
+    dSkill=skill; dQueue=shuffle(bank.items.slice()).slice(0,Math.min(PER_SESSION,bank.items.length));
+    dIdx=0; dScore=0; dMissTech={};
+    show("drillrun"); renderDrillQ();
+  }
+  function renderDrillQ(){
+    var it=dQueue[dIdx];
+    $("d_count").textContent=(dIdx+1)+" / "+dQueue.length;
+    $("d_bar").style.width=Math.round(dIdx/dQueue.length*100)+"%";
+    $("d_score").textContent="○"+dScore;
+    var stim=$("d_stim");
+    if(dSkill==="S1"){ stim.innerHTML='<div class="passage">'+it.passage+'</div>'; }
+    else { stim.innerHTML='<div class="flyer">'+it.flyer+'</div>'; }
+    $("d_q").textContent=it.q;
+    var ch=$("d_choices"); ch.innerHTML="";
+    var fb=$("d_fb"); fb.className="fb"; fb.innerHTML="";
+    $("d_next").classList.add("hide");
+    var order=shuffle(it.choices.map(function(_,i){return i;}));
+    order.forEach(function(oi){
+      var b=document.createElement("button"); b.className="choice";
+      var txt=it.choices[oi];
+      b.innerHTML=/[A-Za-z]/.test(txt)&&!/[ぁ-んァ-ン]/.test(txt)?'<span class="en">'+esc(txt)+'</span>':esc(txt);
+      b.addEventListener("click",function(){ answerDrill(it, oi, order, b); });
+      ch.appendChild(b);
+    });
+  }
+  function answerDrill(it, oi, order, btn){
+    var ch=$("d_choices");
+    if(ch.getAttribute("data-done")) return;
+    ch.setAttribute("data-done","1");
+    var ok=(oi===it.answer);
+    if(ok) dScore++;
+    else (it.tech||[]).forEach(function(tid){ dMissTech[tid]=(dMissTech[tid]||0)+1; });
+    btn.classList.add(ok?"sel-ok":"sel-ng");
+    if(!ok){ [].forEach.call(ch.children,function(c,k){ if(order[k]===it.answer) c.classList.add("reveal"); }); }
+    [].forEach.call(ch.children,function(c){ c.setAttribute("disabled","1"); });
+    var fb=$("d_fb"); fb.className="fb show";
+    fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+
+      '<div>'+esc(it.why||"")+'</div>'+
+      (!ok&&it.trap?'<div class="trap">⚠ ワナ：'+esc(it.trap)+'</div>':"")+
+      '<div class="tech-chips">'+(it.tech||[]).map(function(t){return '<span class="chip">'+esc(techName(t))+'</span>';}).join("")+'</div>';
+    $("d_score").textContent="○"+dScore;
+    $("d_next").classList.remove("hide");
+    try{$("d_nextBtn").focus();}catch(e){}
+  }
+  $("d_nextBtn").addEventListener("click",function(){
+    var ch=$("d_choices"); ch.removeAttribute("data-done");
+    dIdx++; if(dIdx>=dQueue.length){ doneDrill(); } else { renderDrillQ(); }
+  });
+  function doneDrill(){
+    show("drilldone");
+    $("r_final").textContent=dScore+" / "+dQueue.length;
+    var st=store(), r=st.skill[dSkill]||{best:0,count:0};
+    st.skill[dSkill]={best:Math.max(r.best||0,dScore), count:(r.count||0)+1, last:dScore, ts:Date.now()};
+    save(st);
+    $("r_best").textContent="🏅 自己ベスト "+st.skill[dSkill].best+"/"+dQueue.length+"（"+st.skill[dSkill].count+"回目）";
+    var weak=Object.keys(dMissTech).sort(function(a,b){return dMissTech[b]-dMissTech[a];});
+    var box=$("r_weak");
+    if(weak.length){
+      box.innerHTML='<p style="font-weight:bold;margin:10px 0 4px">復習におすすめのテク（まちがえた問題から）</p><div class="weak-list"></div>';
+      var wl=box.querySelector(".weak-list");
+      weak.forEach(function(tid){
+        var b=document.createElement("button"); b.textContent="📖 "+techName(tid)+"（×"+dMissTech[tid]+"）";
+        b.addEventListener("click",function(){ openTech(tid); });
+        wl.appendChild(b);
+      });
+    } else {
+      box.innerHTML='<p class="hint" style="text-align:center">全問正解！テクが body に入ってきてる。県模試で実践しよう🗾</p>';
+    }
+  }
+  $("r_again").addEventListener("click",function(){ startDrill(dSkill); });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>

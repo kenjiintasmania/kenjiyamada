@@ -90,6 +90,7 @@
 | `mogi/` | **模擬テスト**（中2×3・中3×4）＋**単元テスト**（c2u1/c2u2/c3u1/c3u2）＋**習熟度単語テスト**。 | `assets/engine.js`、`data/*.js`、`exam.html`、`vocab_*.html` |
 | `eiken/` | **英検アプリ**（7〜2級・級判定・4技能・長文）。`mado_loop.html` 収録。 | 単一HTML（2000行規模）、`localStorage: mado_*` |
 | `challenge/` | **挑戦モード**（練習専用・記録なし）。①単語ランダム50問（基本/拡張）②学年別**並べ替え英作文**（単語タップで組立・自動採点／自己採点は廃止）③英検二次プロンプト生成。 | `index.html`、`data/compose.js`（`{g,jp,answer,words,tip}`）、words.js再利用 |
+| `dojo/` | **読解道場**（入試読解の3層訓練：①テクカードで学ぶ→②スキル種目で鍛える→③岡山県模試10本で実践）。テクは先生由来（英検アプリ「中学入学準備」P01〜P10・語順メソッドW01・リスニングメモ術T11）＋提案T01〜T10。種目は S1根拠さがし（大問5対策）・S3図表突合（大問2対策）、各12問・1回8問ランダム・全自動採点。誤答時に根拠(why)/ワナ(trap)/関連テクを表示し、結果画面から弱いテクカードへ誘導（閉ループ）。 | `index.html`、`data/tech.js`（`{id,cat,name,from,what,how[],drill[]}`）、`data/drill_s1.js`/`drill_s3.js`（`{id,tech[],q,choices,answer,why,trap}`）、`localStorage: dojo_v1`（GAS非連動・第2弾でスキルタグ模試連携とスプシ列を検討） |
 | `me/` | **マイページ**。3アプリの記録を集約表示＋先生送信＋**育成コメント**。 | `index.html`、`localStorage` 読取、`SUMMARY_GAS_URL` |
 | `admin/` | **先生用管理ページ**。単元テストのゲート開閉・学習方針設定。 | PIN認証、5秒ポーリング、stale検出 |
 | `tools/score_gas.gs` | **バックエンド**。成績集約・単元ゲート・方針・英検・成績ツールメニュー。 | GAS、LockService、スプレッドシート |
