@@ -143,7 +143,7 @@ sections: [
     items:[
     { type:"fill", label:"①", pt:4,
       stem:'<div class="scene">絵：サムが手作りのうちわ（paper fan）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Hana:</span> '+E("（　①　） this?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Hana:</span> '+E("（　①　）?")+'　'+
            '<span class="who" style="font-family:var(--en)">Sam:</span> '+E("It's mine. My grandmother made it."),
       answers:["whose paper fan is this","whose fan is this","whose paper fan is this one"], hint:"Whose で始める英文" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",

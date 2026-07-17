@@ -146,7 +146,8 @@ function renderGroup(g){
     const t=el("div","script-toggle");
     const btn=el("button","ghost","▶ 放送文を読む（リスニング）");
     const pas=el("div","passage"); pas.style.display="none";
-    pas.innerHTML = g.script;
+    // 自分でスクリプトを読む代わりに、ブラウザの読み上げで「聞く」練習もできる案内
+    pas.innerHTML = '<div class="note">🔊 音声で聞きたいとき：右クリックからリーディングモード▶US English1を選択▶再生</div>' + g.script;
     btn.addEventListener("click",()=>{
       const open = pas.style.display==="none";
       pas.style.display = open?"block":"none";
@@ -255,7 +256,7 @@ function renderItem(it, ctx){
 
   if(it.type==="wordorder"){
     q.appendChild(el("div","stem", stem));
-    q.appendChild(el("div","note","（　）内の4語を正しい順にタップしよう。もう一度タップで取り消し。"));
+    q.appendChild(el("div","note","（　）内の"+it.words.length+"語だけを正しい順にタップしよう（カッコの外の語はそのまま）。もう一度タップで取り消し。"));
     const correct = orderTokens(it.words, it.answer);
     const build=el("div","wo-build");
     const bank=el("div","wo-bank");

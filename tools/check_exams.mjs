@@ -58,6 +58,27 @@ function structuralChecks(id, EXAM){
   });
 }
 
+// リスニング「メモ」提示ルール（2026-07改訂）：メモは（　）穴埋め形式で提示し、
+// fill の答えがメモ本文に書かれていてはならない（答えバレ禁止）。
+// 既存ファイルは据え置き（先生指示「今あるぶんはOK」）→ GRANDFATHER に列挙。新作から強制。
+const MEMO_GRANDFATHER = new Set(['chu2','chu2_2','chu2_3','chu2_a1','c2u1','c2u2','mock332','okayama6']);
+function memoFormat(id, EXAM){
+  if(MEMO_GRANDFATHER.has(id)) return;
+  (EXAM.sections||[]).forEach(s=>{
+    if(!(s.groups||[]).some(g=>g.script)) return;          // リスニング大問だけ対象
+    (s.groups||[]).forEach(g=>{
+      const pas = String(g.passage||'');
+      if(!/メモ/.test(pas)) return;
+      if(!/（\s*[あ-んア-ン①-⑩a-zA-Z]?\s*）|（　/.test(pas))
+        fail(id, 'リスニングのメモが（　）穴埋め形式になっていない');
+      (g.items||[]).forEach(it=>(it.answers||[]).forEach(a=>{
+        if(a && pas.toLowerCase().includes(String(a).toLowerCase()))
+          fail(id, `メモ本文に答え「${a}」が書かれている（答えバレ）`);
+      }));
+    });
+  });
+}
+
 // 話者連続：passage/script 内で同じ話者の <span class="who"> が2回続いていないか（QAで頻発した不具合）
 function speakerContinuity(id, EXAM){
   (EXAM.sections||[]).forEach(s=>{
@@ -83,6 +104,7 @@ function gradeExam(id){
   const EXAM = w.EXAM;
   structuralChecks(id, EXAM);
   speakerContinuity(id, EXAM);
+  memoFormat(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   const items = itemsOf(EXAM);
   const qs = [...w.document.querySelectorAll('#quiz .q')];

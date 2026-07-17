@@ -143,7 +143,7 @@ sections: [
     items:[
     { type:"fill", label:"①", pt:4,
       stem:'<div class="scene">絵：ベンが手作りの帽子（cap）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Nanami:</span> '+E("（　①　） this?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Nanami:</span> '+E("（　①　）?")+'　'+
            '<span class="who" style="font-family:var(--en)">Ben:</span> '+E("It's mine. My brother made it."),
       answers:["whose cap is this","whose cap is this one","whose hat is this"], hint:"Whose で始める英文" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",

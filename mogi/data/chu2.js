@@ -141,7 +141,7 @@ sections: [
     items:[
     { type:"fill", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りのペンケース（pen case）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　） this?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　）?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My sister made it."),
       answers:["whose pen case is this","whose pencil case is this","whose pen case is this one"], hint:"Whose で始める英文" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
