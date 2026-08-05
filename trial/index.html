@@ -140,36 +140,81 @@
     note.textContent="assets/site.js の TRIAL_GAS が空です。設定するまで、実証モードでは記録は送信されません（生徒用シートには入りません）。";
   }
 
-  /* ---- 接続テスト：GAS側の action:"ping" に応答させる（シートには何も書かない） ---- */
+  /* ---- 接続テスト：GAS側の action:"ping" に応答させる（シートには何も書かない） ----
+     403 は「コードの誤り」ではなく、ほぼ必ずデプロイの公開設定で起きる。
+     ブラウザからは 403 応答に CORS ヘッダが付かず、JS 側では状態を読めずに
+     "Failed to fetch" になることが多い。そこで原因の候補を順に文言化する。 */
+  function show(kind, html){
+    var res=$("testRes");
+    res.className="res show"+(kind?(" "+kind):"");
+    if(!kind){ res.style.background="#f1eee7"; res.style.color="#5a6473"; }
+    else { res.style.background=""; res.style.color=""; }
+    res.innerHTML=html;
+  }
+  function openLink(u){
+    return '<div style="margin-top:6px">確かめ方：<a href="'+u+'" target="_blank" rel="noopener">'+
+           'この送信先をブラウザで直接ひらく ↗</a>'+
+           '<br>JSONが出れば公開設定はOK。ログイン画面や「承認が必要」が出たら公開設定が原因です。</div>';
+  }
+  var FIX403 =
+    '<b>403（アクセス拒否）のときの直し方</b>'+
+    '<ol style="margin:6px 0 0;padding-left:20px">'+
+    '<li>GASエディタ →［デプロイ］→［デプロイを管理］→ 鉛筆マークで編集</li>'+
+    '<li><b>アクセスできるユーザー＝「全員」</b>にする（「自分のみ」「組織内」だと403）</li>'+
+    '<li>バージョンを<b>「新バージョン」</b>にして［デプロイ］</li>'+
+    '<li>学校や会社のGoogleアカウントで「全員」が選べない場合は、組織の制限です。'+
+    '個人のGoogleアカウントでデプロイし直すのが手早い回避策です</li></ol>';
+
   $("testBtn").addEventListener("click",function(){
-    var res=$("testRes"), btn=this;
+    var btn=this;
     var target = SITE.trialUrl("summary") || SITE.trialUrl("eiken");
     if(!target){
-      res.className="res show ng";
-      res.textContent="✗ 実証用の送信先が未設定です。先に assets/site.js の TRIAL_GAS を設定してください。";
+      show("ng","✗ 実証用の送信先が未設定です。先に assets/site.js の TRIAL_GAS を設定してください。");
+      return;
+    }
+    // 送信前に、URLそのものの誤りを先に潰す（403の典型的な原因）
+    if(/\/dev$/.test(target)){
+      show("ng","✗ URLの末尾が <code>/dev</code> です。これは<b>本人ログイン専用</b>のURLで、必ず403になります。"+
+                "［デプロイを管理］に表示される <b>/exec</b> で終わるURLを貼ってください。");
+      return;
+    }
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(target)){
+      show("ng","✗ URLの形が想定と違います。<code>https://script.google.com/macros/s/…/exec</code> の形か確認してください。<br>いまの値：<code>"+
+                target.slice(0,80)+"</code>");
       return;
     }
     btn.disabled=true; btn.textContent="確認中…";
-    res.className="res show"; res.style.background="#f1eee7"; res.style.color="#5a6473";
-    res.textContent="接続を確認しています…";
+    show("", "接続を確認しています…");
     fetch(target,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify({action:"ping"})})
-      .then(function(r){return r.json();})
-      .then(function(j){
-        if(j&&j.result==="ok"&&j.trial){
-          res.className="res show ok";
-          res.textContent="✓ 実証用シートに接続できました（版 "+(j.ver||"?")+"／シート名「"+(j.sheet||"")+"」）";
-        } else if(j&&j.trial===undefined&&j.ver){
-          res.className="res show ng";
-          res.textContent="✗ 生徒用のGASに向いている可能性があります（版 "+j.ver+"）。試用版GASのURLか確認してください。";
+      .then(function(r){
+        return r.text().then(function(t){ return {status:r.status, text:t}; });
+      })
+      .then(function(o){
+        var j=null; try{ j=JSON.parse(o.text); }catch(e){}
+        if(!j){
+          // JSONでない＝Googleのエラー画面やログイン画面が返っている
+          var login=/ServiceLogin|accounts\.google|サインイン|Sign in|承認が必要|authorization/i.test(o.text);
+          show("ng","✗ "+(o.status===403||login
+              ? "アクセスが拒否されました（403）。"
+              : "JSONが返りませんでした（HTTP "+o.status+"）。")+"<br>"+FIX403+openLink(target));
+          return;
+        }
+        if(j.result==="ok"&&j.trial){
+          show("ok","✓ 実証用シートに接続できました（版 "+(j.ver||"?")+"／シート名「"+(j.sheet||"")+"」）");
+        } else if(j.trial===undefined&&j.ver){
+          show("ng","✗ <b>生徒用のGAS</b>に向いています（版 "+j.ver+"）。試用版GAS（版が <code>trial-</code> で始まる）のURLを貼り直してください。");
+        } else if(j.result!=="ok"&&/ping/.test(o.text)===false&&j.message){
+          show("ng","✗ "+j.message+"<br>（GAS側の <code>TRIAL_SPREADSHEET_ID</code> を確認してください）");
         } else {
-          res.className="res show ng";
-          res.textContent="✗ "+((j&&j.message)||"応答が想定と違います");
+          show("ng","✗ 応答が想定と違います：<code>"+o.text.slice(0,120)+"</code><br>"+
+                    "<code>action:\"ping\"</code> に対応した版か確認してください（古い版を貼っていると起こります）。");
         }
       })
       .catch(function(e){
-        res.className="res show ng";
-        res.textContent="✗ 接続できませんでした（"+String(e).slice(0,60)+"）。デプロイのアクセス権を「全員」にしているか確認してください。";
+        // CORSで応答自体が読めない＝403のときの典型。原因の第一候補を提示する。
+        show("ng","✗ 応答を受け取れませんでした（"+String(e).slice(0,50)+"）。<br>"+
+                  "<b>いちばん多い原因は公開設定です（403）。</b>"+FIX403+openLink(target));
       })
       .then(function(){ btn.disabled=false; btn.textContent="接続テスト（書き込みなし）"; });
   });
