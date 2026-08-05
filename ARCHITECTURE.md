@@ -93,6 +93,8 @@
 | `dojo/` | **読解道場**（入試読解の3層訓練：①テクカードで学ぶ→②スキル種目で鍛える→③岡山県模試10本で実践）。テクは先生由来（英検アプリ「中学入学準備」P01〜P10・語順メソッドW01・リスニングメモ術T11）＋提案T01〜T10。種目は S1根拠さがし（大問5対策）・S3図表突合（大問2対策）、各12問・1回8問ランダム・全自動採点。誤答時に根拠(why)/ワナ(trap)/関連テクを表示し、結果画面から弱いテクカードへ誘導（閉ループ）。 | `index.html`、`data/tech.js`（`{id,cat,name,from,what,how[],drill[]}`）、`data/drill_s1.js`/`drill_s3.js`（`{id,tech[],q,choices,answer,why,trap}`）、`localStorage: dojo_v1`（GAS非連動・第2弾でスキルタグ模試連携とスプシ列を検討） |
 | `me/` | **マイページ**。3アプリの記録を集約表示＋先生送信＋**育成コメント**。 | `index.html`、`localStorage` 読取、`SUMMARY_GAS_URL` |
 | `admin/` | **先生用管理ページ**。単元テストのゲート開閉・学習方針設定。 | PIN認証、5秒ポーリング、stale検出 |
+| `trial/` | **実証用セット（試用版）**。外部での実地検証（麻生情報システム）の入口。アプリ本体は生徒用と同一のまま、送信先だけを実証用スプレッドシートに切り替える。状態表示・接続テスト（`action:"ping"`・書き込みなし）・解除ボタン。 | `index.html`、`SETUP.md`（手順書）、`assets/site.js`、`tools/score_gas_trial.gs` |
+| `assets/` | **サイト（送信先）切替の共通モジュール** `site.js`。`?site=aso` または端末記憶で実証モードを判定し、`SITE.gasFor(kind, 既定URL)` で送信先を解決する。通常モードでは既定URLをそのまま返す＝**生徒の経路は無改変**。実証モードで未設定なら `""` を返し送信を止める（生徒用ブックへ落ちない安全側の失敗）。実証中は全画面先頭に帯を出し、60日で自動失効。 | 全13画面が読み込み。送信点は `me`/`mogi/exam`/`eiken`/`admin` の4箇所のみ |
 | `tools/score_gas.gs` | **バックエンド**。成績集約・単元ゲート・方針・英検・成績ツールメニュー。 | GAS、LockService、スプレッドシート |
 | `tools/check_exams.mjs` | **品質ゲート**。全模試を実エンジンで採点→100点＋構造＋単語サニティ。 | Node＋jsdom、`npm run check` |
 | `factory/` | **問題工場**のハブ・ディスパッチ・QAレポート。 | `README.md`、`dispatch.md`、`reports/` |

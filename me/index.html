@@ -215,6 +215,7 @@
 
 <script src="../words/data/words.js"></script>
 <script src="../words/data/katsuyo.js"></script>
+<script src="../assets/site.js"></script>
 <script>
 (function(){
   "use strict";
@@ -223,6 +224,9 @@
   // kind:"summary" を、指定スプレッドシートの新タブ「成績まとめ」に1人1行で集約します。
   // 空文字なら送信オフ。
   var SUMMARY_GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
+  // 実証（試用版）モードのときだけ、送信先を実証用スプレッドシートのGASに差し替える。
+  // 通常モードでは上のURLがそのまま返る（生徒の経路は無改変）。assets/site.js 参照。
+  if(window.SITE) SUMMARY_GAS_URL = SITE.gasFor("summary", SUMMARY_GAS_URL);
 
   var $=function(id){return document.getElementById(id);};
   $("ver").textContent=APP_VER;
@@ -504,11 +508,18 @@
     var msg=$("sendmsg"); msg.className="";
     var cls=$("f_cls").value.trim(), num=han($("f_num").value);
     if(!cls||!num){ msg.textContent="学年と番号を入れると送信できます。"; return; }
-    if(!SUMMARY_GAS_URL){ msg.textContent="先生へ：送信先(GAS)が未設定です。"; return; }
+    if(!SUMMARY_GAS_URL){
+      msg.className="err";
+      msg.textContent = (window.SITE&&SITE.isTrial)
+        ? "実証用の送信先が未設定です（assets/site.js の TRIAL_GAS を設定してください）。"
+        : "先生へ：送信先(GAS)が未設定です。";
+      return;
+    }
     if(sending)return; sending=true;
     var btn=$("sendBtn"); btn.disabled=true; btn.textContent="送信中…";
     msg.textContent=auto?"自動で送信しています…":"送信しています…";
     var payload=buildPayload();
+    if(window.SITE) SITE.tag(payload);   // 実証モードのときだけ site を付与
     fetch(SUMMARY_GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify(payload)})
       .then(function(res){return res.json();})

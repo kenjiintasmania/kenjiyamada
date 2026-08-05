@@ -340,6 +340,7 @@
   <div class="foot">学校での反復学習用 ・ ループ式 英検トレーニング</div>
 </div>
 
+<script src="../assets/site.js"></script>
 <script>
 (function(){
   var APP_VER = "v0.25";
@@ -1883,6 +1884,8 @@
   // ---- 成績を先生に送信（GAS連携） ----
   // ★先生へ：mado_score_gas のウェブアプリURLを下に貼ると有効になります（?cls=3A&num=5&name=… で自動入力）。
   var GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
+  // 実証（試用版）モードのときだけ実証用GASへ。通常モードでは上のURLのまま（assets/site.js）。
+  if(window.SITE) GAS_URL = SITE.gasFor("eiken", GAS_URL);
   function idStore(k,v){try{localStorage.setItem("mado_"+k,v);}catch(e){}}
   function idLoad(k){try{return localStorage.getItem("mado_"+k)||"";}catch(e){return "";}}
   function han(s){return (s||"").replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-65248);}).replace(/[^0-9]/g,"");}
@@ -1898,7 +1901,9 @@
     var r=S.lastResult||{}, msg=$("sendmsg");
     var cls=$("scls").value.trim(), num=han($("sid").value), name=$("snm").value.trim();
     if(!cls||!num){msg.textContent="学年と番号を入れてね";return;}
-    if(!GAS_URL){msg.textContent="（先生へ：HTML内の GAS_URL が未設定です）";return;}
+    if(!GAS_URL){msg.textContent=(window.SITE&&SITE.isTrial)
+      ?"実証用の送信先が未設定です（assets/site.js の TRIAL_GAS）。"
+      :"（先生へ：HTML内の GAS_URL が未設定です）";return;}
     idStore("year",cls); idStore("num",num); idStore("name",name);
     var btn=$("send"); btn.disabled=true; btn.textContent="送信中…";
     var payload={cls:cls,num:num,name:name,ver:APP_VER,
@@ -1906,6 +1911,7 @@
       mode:(r.mode==="quick"?"クイック":"フル"),
       score:r.score,total:r.total,pct:r.pct,pass:(r.pass?"合格":"不合格"),
       ok:r.score,warn:0,ng:(r.total-r.score)};
+    if(window.SITE) SITE.tag(payload);   // 実証モードのときだけ site を付与
     fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
       .then(function(res){return res.json();})
       .then(function(j){ if(j&&j.result==="ok"){btn.textContent="送信OK ✓";msg.textContent="記録できたよ！おつかれさま。";}

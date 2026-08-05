@@ -99,9 +99,12 @@
   </div>
 </div>
 
+<script src="../assets/site.js"></script>
 <script>
 (function(){
   var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
+  // 実証（試用版）モードでは実証用GASを見る＝/admin/?site=aso で実証シート側の操作になる。
+  if(window.SITE) GAS_URL = SITE.gasFor("summary", GAS_URL);
   // GAS の UNIT_EXAMS と同じ並び
   var EXAMS=[
     {id:"c2u1", title:"中2 単元テスト①"},
@@ -117,6 +120,11 @@
   pin.addEventListener("input",savePin); remember.addEventListener("change",savePin);
 
   function post(obj){
+    // 実証モードで送信先が未設定のとき、空URLへ fetch すると自ページにPOSTして
+    // 意味の分からないエラーになる。ここで止めて原因を文言化する。
+    if(!GAS_URL) return Promise.resolve({result:"error",
+      message:"実証用の送信先が未設定です（assets/site.js の TRIAL_GAS を設定してください）。"});
+    if(window.SITE) SITE.tag(obj);
     return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify(obj)}).then(function(r){
         return r.text().then(function(t){
