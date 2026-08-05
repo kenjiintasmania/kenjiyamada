@@ -26,8 +26,8 @@
   /* ★ここに試用版GASのURLを貼る（summary と eiken は同じURLでOK）。
      空のままだと実証モードでは送信されません（生徒用には絶対に入りません）。 */
   var TRIAL_GAS = {
-    summary: "",     // マイページ・模試（単元テスト）用
-    eiken:   ""      // 英検アプリ用
+    summary: "https://script.google.com/macros/s/AKfycbyKM0YO4nJJbmql__uBVRXiaKKbDY7-wAK03xZo_Jjez6tCBTgsKnMYPkvtj3BcZd0IAg/exec",     // マイページ・模試（単元テスト）用
+    eiken:   "https://script.google.com/macros/s/AKfycbyKM0YO4nJJbmql__uBVRXiaKKbDY7-wAK03xZo_Jjez6tCBTgsKnMYPkvtj3BcZd0IAg/exec"      // 英検アプリ用
   };
 
   var SITES = {
