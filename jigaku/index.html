@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<title>自学マイページ｜通常授業の自学を記録する</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📔</text></svg>">
+<!--
+  jigaku/ ─ 自学促進アプリ（通常授業用マイページ）・第1弾＝単語レーン
+   流れ：① プロンプトを自分で組み立てる → ② 外部AIに出題させて答える
+         → ③ 提出ブロックを貼る → ④ このページが「自分で」採点する → ⑤ 記録
+
+   設計の核（探究カルテと同じ思想）：
+     ・AIが付けた○×は一切見ない。貼られた「わたしの答え」と「正解」だけから再採点する。
+       ＝AIに「全問正解にして」と言っても点は動かない。
+     ・さらに「正解」を先生の単語データ（words.js 2000語）と突合し、
+       教科書外の語をAIが出していないかを検算する。
+   プロンプトは生徒が自由にチューニングでき、固定するのは提出ブロックの書式だけ。
+   書式を守らせること自体をプロンプト運用スキルの訓練として扱う。
+   ※ 記録は端末のみ（localStorage: jigaku_v1）。スプシ送信はGAS側にタブ追加が要るため次段階。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#f7faf9; --line:#dde5e2;
+    --c1:#0f766e; --c1d:#0b5a54; --c2:#b45309; --c3:#5b7cff;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+    font-family:var(--jp);line-height:1.65;padding:0 0 70px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:22px 0 18px;margin-bottom:16px}
+  .hero h1{margin:0;font-size:23px}
+  .hero p{margin:6px 0 0;font-size:13px;color:#c9e6e1}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#a7e0d8;text-decoration:none;font-weight:bold}
+  .hide{display:none!important}
+  .card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0}
+  h2{font-size:16.5px;margin:0 0 10px}
+  h3{font-size:14px;margin:14px 0 6px;color:var(--gray)}
+  .btn{font:inherit;font-size:15px;font-weight:bold;border:none;border-radius:11px;
+    padding:10px 20px;cursor:pointer;color:#fff;background:var(--c1)}
+  .btn:hover{background:var(--c1d)}
+  .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
+  .btn.sm{font-size:13px;padding:7px 14px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  label{font-size:13px;font-weight:bold;display:block;margin:10px 0 4px}
+  input[type=text],select,textarea{font:inherit;font-size:14px;width:100%;
+    border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  .opts{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+  .opt{font-size:12.5px;border:2px solid var(--line);border-radius:999px;padding:5px 12px;
+    cursor:pointer;background:#fff;user-select:none}
+  .opt.on{border-color:var(--c1);background:#e7f4f2;color:var(--c1d);font-weight:bold}
+  pre.prompt{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:13px 15px;
+    font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+  /* レーン */
+  .lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:680px){.lanes{grid-template-columns:1fr}}
+  .lane{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
+    border-radius:14px;padding:16px 15px;transition:transform .08s}
+  .lane:hover{transform:translateY(-2px);border-color:var(--c1)}
+  .lane .emoji{font-size:30px;display:block;line-height:1}
+  .lane .t{font-size:16px;font-weight:bold;margin:7px 0 3px}
+  .lane .d{font-size:12.5px;color:var(--gray)}
+  .lane .st{font-size:12px;font-weight:bold;color:var(--c1);margin-top:7px}
+  .lane[disabled]{opacity:.55;cursor:default}
+  .lane[disabled]:hover{transform:none;border-color:var(--line)}
+  /* ステップ */
+  .steps{display:flex;gap:6px;font-size:12px;margin-bottom:12px;flex-wrap:wrap}
+  .steps span{padding:4px 11px;border-radius:999px;background:#eef2f1;color:var(--gray)}
+  .steps span.now{background:var(--c1);color:#fff;font-weight:bold}
+  /* 結果 */
+  .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+  th{background:#eef2f1;font-size:12px;white-space:nowrap}
+  tr.ng{background:var(--ngbg)}
+  .en{font-family:var(--en)}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin:10px 0;display:none}
+  .msg.show{display:block}
+  .msg.ok{background:var(--okbg);color:var(--ok)}
+  .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+  @media(max-width:620px){.kpi{grid-template-columns:1fr 1fr}}
+  .kpi div{background:#f2f7f6;border-radius:10px;padding:9px 11px}
+  .kpi b{display:block;font-size:19px;color:var(--c1)}
+  .kpi span{font-size:11.5px;color:var(--gray)}
+  code{background:#eef2f1;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
+  <h1>自学マイページ <span class="en">Jigaku</span></h1>
+  <p>教科書の範囲を自分でAIに出題させて、自分で答えて、ここで採点する。AIの丸つけは使いません。</p>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ ホーム ============ -->
+<div id="home">
+  <div class="card">
+    <h2>レーンをえらぶ</h2>
+    <div class="lanes">
+      <button class="lane" id="goTango"><span class="emoji">🔤</span>
+        <div class="t">単語</div>
+        <div class="d">教科書の範囲でAIに単語テストを作らせる。日本語→英語のつづりで勝負。</div>
+        <div class="st" id="st_tango"></div></button>
+      <button class="lane" disabled><span class="emoji">📐</span>
+        <div class="t">文法</div>
+        <div class="d">文法名を打つ→解説→選択・並び替え・作文で確認。</div>
+        <div class="st">準備中</div></button>
+      <button class="lane" disabled><span class="emoji">📖</span>
+        <div class="t">本文</div>
+        <div class="d">キーワードの妥当性を診てもらう→速読・応用問題。</div>
+        <div class="st">準備中</div></button>
+    </div>
+    <p class="hint">記録はこの端末だけに保存されます。先生への送信は次の段階で追加します。</p>
+  </div>
+
+  <div class="card" id="histCard">
+    <h2>これまでの自学</h2>
+    <div id="hist"></div>
+  </div>
+</div>
+
+<!-- ============ ① プロンプトを作る ============ -->
+<div id="build" class="hide">
+  <div class="steps"><span class="now">① プロンプトを作る</span><span>② AIに出題させる</span><span>③ 貼る</span><span>④ 採点</span></div>
+  <div class="card">
+    <h2>🔤 単語：自分でプロンプトを組み立てる</h2>
+    <div class="grid2">
+      <div>
+        <label for="f_unit">範囲（単元名・ページ・キーワードなど）</label>
+        <input type="text" id="f_unit" placeholder="例：Unit 3 / p.42〜45 / 職場体験の話">
+      </div>
+      <div>
+        <label for="f_n">問題数</label>
+        <select id="f_n"><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
+      </div>
+    </div>
+
+    <label>出し方の工夫（タップで選ぶ・いくつでも）</label>
+    <div class="opts" id="opts"></div>
+
+    <label for="f_mine">自分の工夫（自由に書き足す）</label>
+    <textarea id="f_mine" rows="3" placeholder="例：まちがえやすいつづりを多めに。前に間違えた invite と receive を必ず入れて。"></textarea>
+    <p class="hint">ここが自分の腕の見せどころ。うまくいった書き方は次の版に引き継がれます。</p>
+
+    <div class="row">
+      <button class="btn" id="mkPrompt">プロンプトを作る</button>
+      <button class="btn ghost sm" id="loadLast">前回の版を読み込む</button>
+      <span class="hint" id="verNote"></span>
+    </div>
+
+    <div id="promptBox" class="hide">
+      <h3>できたプロンプト（これをAIに貼る）</h3>
+      <pre class="prompt" id="promptText"></pre>
+      <div class="row">
+        <button class="btn" id="copyPrompt">📋 コピーする</button>
+        <button class="btn ghost" id="toPaste">コピーした → ③ 貼る画面へ</button>
+      </div>
+      <p class="hint">AIモードを開いて貼り付け → 出題されたら<b>自分で答える</b> → 最後に出てくる提出ブロックをコピーして戻ってきてください。</p>
+    </div>
+    <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
+  </div>
+</div>
+
+<!-- ============ ③ 貼る ============ -->
+<div id="paste" class="hide">
+  <div class="steps"><span>① 作る</span><span>② AIに出題させる</span><span class="now">③ 貼る</span><span>④ 採点</span></div>
+  <div class="card">
+    <h2>提出ブロックを貼る</h2>
+    <p class="hint" style="margin-top:0">AIが最後に出した <code>=== TANGO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。前後に余計な文が入っていても大丈夫です。</p>
+    <textarea id="f_paste" rows="12" placeholder="=== TANGO ===&#10;単元: Unit 3&#10;no | 日本語 | わたしの答え | 正解&#10;1 | 明るい | cheerful | cheerful&#10;..."></textarea>
+    <div class="msg" id="pasteMsg"></div>
+    <div class="row">
+      <button class="btn" id="doGrade">自分で採点する</button>
+      <button class="btn ghost sm" data-go="build">← プロンプトに戻る</button>
+      <button class="btn ghost sm" data-go="home">ホーム</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ④ 結果 ============ -->
+<div id="result" class="hide">
+  <div class="steps"><span>① 作る</span><span>② AIに出題させる</span><span>③ 貼る</span><span class="now">④ 採点</span></div>
+  <div class="card">
+    <h2>採点結果（このページが自分で計算しました）</h2>
+    <div class="score" id="r_score">– / –</div>
+    <div class="kpi">
+      <div><b id="k_pct">–</b><span>正答率</span></div>
+      <div><b id="k_weak">–</b><span>まちがえた語</span></div>
+      <div><b id="k_indb">–</b><span>教科書2000語にある語</span></div>
+      <div><b id="k_ver">–</b><span>プロンプトの版</span></div>
+    </div>
+    <div class="msg" id="r_note"></div>
+    <h3>まちがえた語（復習リスト）</h3>
+    <div id="r_weak"></div>
+    <h3>全問</h3>
+    <div id="r_all"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="saveRun">記録する</button>
+      <button class="btn ghost sm" data-go="build">もう1回つくる</button>
+      <button class="btn ghost sm" data-go="home">ホーム</button>
+    </div>
+    <div class="msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<footer>自学マイページ ／ AIの丸つけではなく、自分の答えから採点します</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../words/data/words.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i);};
+  var SCREENS=["home","build","paste","result"];
+  function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0);
+    if(n==="home") renderHome(); }
+  document.querySelectorAll("[data-go]").forEach(function(b){
+    b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
+  $("goTango").addEventListener("click",function(){ show("build"); prefill(); });
+
+  /* ---------- 記録（端末のみ） ---------- */
+  var KEY="jigaku_v1";
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  function store(){ var s=load(); s.prompts=s.prompts||[]; s.runs=s.runs||[]; return s; }
+
+  /* ---------- 教科書2000語の索引（正解の検算に使う） ---------- */
+  var IDX={};
+  (function(){ if(!window.WORDS) return;
+    WORDS.forEach(function(x){ IDX[norm(x.w)]=x; }); })();
+
+  function norm(s){
+    return String(s==null?"":s).toLowerCase().trim()
+      .replace(/[.,!?;:"'’“”（）()]/g,"").replace(/[-_/]/g," ").replace(/\s+/g," ").trim();
+  }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  /* ---------- ① プロンプトビルダー ---------- */
+  var OPTIONS=[
+    {k:"spell",  t:"つづりミスを狙う",     line:"- つづりをまちがえやすい語を多めに入れてください。"},
+    {k:"phrase", t:"連語・熟語も入れる",   line:"- 単語だけでなく、連語や熟語（2〜3語のかたまり）も入れてください。"},
+    {k:"ex",     t:"例文をつける",         line:"- それぞれの語に、教科書レベルの短い例文を1つ添えてください。"},
+    {k:"hard",   t:"むずかしめ",           line:"- 少しむずかしめ（応用・言いかえ）にしてください。"},
+    {k:"easy",   t:"やさしめ",             line:"- 基本語中心の、やさしめにしてください。"},
+    {k:"nohint", t:"ヒントなし",           line:"- ヒントは出さないでください。"},
+    {k:"why",    t:"まちがえたら理由も",   line:"- わたしがまちがえた語は、なぜまちがえやすいかを一言そえてください。"}
+  ];
+  var chosen={};
+  (function(){ var box=$("opts");
+    OPTIONS.forEach(function(o){
+      var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o.t;
+      b.addEventListener("click",function(){ chosen[o.k]=!chosen[o.k]; b.classList.toggle("on",!!chosen[o.k]); });
+      box.appendChild(b);
+    }); })();
+
+  function prefill(){
+    var s=store(), last=s.prompts[s.prompts.length-1];
+    $("verNote").textContent = last ? ("いまの最新は v"+last.v+"（"+new Date(last.ts).toLocaleDateString("ja-JP")+"）") : "まだ作ったことがありません";
+  }
+  $("loadLast").addEventListener("click",function(){
+    var s=store(), last=s.prompts[s.prompts.length-1];
+    if(!last){ $("verNote").textContent="前回の版がまだありません"; return; }
+    $("f_unit").value=last.unit||""; $("f_n").value=String(last.n||15); $("f_mine").value=last.mine||"";
+    chosen={}; (last.opts||[]).forEach(function(k){ chosen[k]=true; });
+    [].forEach.call($("opts").children,function(b,i){ b.classList.toggle("on", !!chosen[OPTIONS[i].k]); });
+    $("verNote").textContent="v"+last.v+" を読み込みました。書き足して v"+(last.v+1)+" にしよう。";
+  });
+
+  function buildPrompt(unit,n,opts,mine){
+    var lines=OPTIONS.filter(function(o){return opts.indexOf(o.k)>=0;}).map(function(o){return o.line;});
+    var p=[];
+    p.push("あなたは中学英語の先生です。わたしのために単語テストを作ってください。");
+    p.push("");
+    p.push("【範囲】"+(unit||"（教科書の今の単元）"));
+    p.push("【問題数】"+n+"問");
+    p.push("【出し方】日本語を見せて、わたしが英語のつづりを書く形式にしてください。");
+    p.push("【条件】");
+    p.push("- 上の範囲から出してください。");
+    if(lines.length) p.push(lines.join("\n"));
+    if(mine && mine.trim()) p.push("- "+mine.trim().replace(/\n/g,"\n- "));
+    p.push("");
+    p.push("【進め方】");
+    p.push("1. まず日本語だけを"+n+"問ならべて出題してください。答えはまだ書かないでください。");
+    p.push("2. わたしが答えを書きます。");
+    p.push("3. わたしが答えたら、最後に下の【提出ブロック】を出してください。");
+    p.push("");
+    p.push("【提出ブロック】※この書式は1文字も変えないでください");
+    p.push("=== TANGO ===");
+    p.push("単元: "+(unit||"（単元名）"));
+    p.push("no | 日本語 | わたしの答え | 正解");
+    p.push("1 | （日本語の意味） | （わたしが書いた答えをそのまま） | （正しい英語）");
+    p.push("2 | ... ");
+    p.push("=== END ===");
+    p.push("");
+    p.push("・「わたしの答え」には、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
+    p.push("・○×や点数は書かないでください。採点はわたしのアプリがやります。");
+    p.push("・区切りは半角の縦棒 | を使ってください。");
+    return p.join("\n");
+  }
+
+  var current=null;
+  $("mkPrompt").addEventListener("click",function(){
+    var unit=$("f_unit").value.trim(), n=parseInt($("f_n").value,10)||15;
+    var opts=OPTIONS.filter(function(o){return chosen[o.k];}).map(function(o){return o.k;});
+    var mine=$("f_mine").value;
+    var s=store(), v=(s.prompts.length? s.prompts[s.prompts.length-1].v : 0)+1;
+    var text=buildPrompt(unit,n,opts,mine);
+    current={v:v, ts:Date.now(), unit:unit, n:n, opts:opts, mine:mine, text:text};
+    s.prompts.push(current); save(s);
+    $("promptText").textContent=text;
+    $("promptBox").classList.remove("hide");
+    $("verNote").textContent="v"+v+" として保存しました";
+  });
+  $("copyPrompt").addEventListener("click",function(){
+    var t=$("promptText").textContent, b=this;
+    function done(){ b.textContent="コピーしました ✓"; setTimeout(function(){ b.textContent="📋 コピーする"; },1600); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,fallback); }
+    else fallback();
+    function fallback(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta);
+      ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} document.body.removeChild(ta); }
+  });
+  $("toPaste").addEventListener("click",function(){ show("paste"); });
+
+  /* ---------- ③ 提出ブロックの解析 ---------- */
+  function parseBlock(raw){
+    var txt=String(raw||"").replace(/\r/g,"");
+    var i=txt.indexOf("=== TANGO ==="), j=txt.indexOf("=== END ===");
+    var body = (i>=0) ? txt.slice(i+13, j>i? j : txt.length) : txt;   // マーカーが無くても表だけで通す
+    var unit="";
+    var rows=[], bad=0;
+    body.split("\n").forEach(function(line){
+      var s=line.replace(/｜/g,"|").trim();
+      if(!s) return;
+      var mu=s.match(/^単元\s*[:：]\s*(.+)$/); if(mu){ unit=mu[1].trim(); return; }
+      if(s.indexOf("|")<0) return;
+      var c=s.split("|").map(function(x){return x.trim();});
+      if(c.length<4) { bad++; return; }
+      if(/^no$/i.test(c[0])||/日本語/.test(c[1])) return;              // 見出し行
+      if(!/^\d+$/.test(c[0].replace(/[^0-9]/g,""))) { bad++; return; }
+      var ja=c[1], mine=c[2], ans=c[3];
+      if(!ja&&!ans) { bad++; return; }
+      rows.push({no:parseInt(c[0].replace(/[^0-9]/g,""),10), ja:ja, mine:mine, ans:ans});
+    });
+    return {unit:unit, rows:rows, bad:bad, hadMarker:(i>=0)};
+  }
+
+  var graded=null;
+  $("doGrade").addEventListener("click",function(){
+    var msg=$("pasteMsg"); msg.className="msg";
+    var p=parseBlock($("f_paste").value);
+    if(!p.rows.length){
+      msg.className="msg show ng";
+      msg.innerHTML="✗ 提出ブロックを読み取れませんでした。<br>AIにこう言い直してみよう：<br>"+
+        "<code>さっきの結果を、no | 日本語 | わたしの答え | 正解 の4列で、=== TANGO === と === END === ではさんで出し直して</code>";
+      return;
+    }
+    // ── 採点：AIの○×は使わず、わたしの答えと正解の一致だけで判定する
+    var ok=0, weak=[], inDb=0, notDb=[];
+    p.rows.forEach(function(r){
+      r.ok = !!(norm(r.mine) && norm(r.mine)===norm(r.ans));
+      if(r.ok) ok++; else weak.push(r);
+      var hit=IDX[norm(r.ans)];
+      r.db=hit||null;
+      if(hit) inDb++; else notDb.push(r.ans);
+    });
+    var total=p.rows.length, pct=total?Math.round(ok/total*100):0;
+    graded={ts:Date.now(), unit:p.unit||($("f_unit").value.trim()), total:total, ok:ok, pct:pct,
+            rows:p.rows, promptV:(current?current.v:null), notDb:notDb};
+
+    $("r_score").textContent=ok+" / "+total;
+    $("k_pct").textContent=pct+"%";
+    $("k_weak").textContent=weak.length+"語";
+    $("k_indb").textContent=inDb+" / "+total;
+    $("k_ver").textContent=current?("v"+current.v):"—";
+
+    var note=$("r_note"); note.className="msg show ok";
+    var extra="";
+    if(p.bad) extra+=" 読み取れなかった行が"+p.bad+"行ありました。";
+    if(notDb.length) extra+=" 教科書2000語に無い語が"+notDb.length+"語（"+esc(notDb.slice(0,3).join("、"))+"…）。範囲外かもしれません。";
+    note.innerHTML="AIの丸つけは使わず、貼られた「わたしの答え」と「正解」だけで採点しました。"+esc(extra);
+    if(p.bad||notDb.length) note.className="msg show ng";
+
+    $("r_weak").innerHTML = weak.length ? table(weak) :
+      '<p class="hint">まちがいなし。次はむずかしめの条件を足してみよう。</p>';
+    $("r_all").innerHTML = table(p.rows);
+    $("saveMsg").className="msg";
+    show("result");
+  });
+
+  function table(rows){
+    var h='<table><thead><tr><th>#</th><th>日本語</th><th>わたしの答え</th><th>正解</th><th>判定</th><th>教科書</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr class="'+(r.ok?"":"ng")+'"><td>'+r.no+'</td><td>'+esc(r.ja)+'</td>'+
+         '<td class="en">'+esc(r.mine||"（空）")+'</td><td class="en">'+esc(r.ans)+'</td>'+
+         '<td>'+(r.ok?"○":"×")+'</td>'+
+         '<td>'+(r.db?(esc(r.db.p)+"・"+r.db.g+"年"):"—")+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+
+  /* ---------- ⑤ 記録 ---------- */
+  $("saveRun").addEventListener("click",function(){
+    if(!graded) return;
+    var s=store();
+    s.runs.push({ts:graded.ts, unit:graded.unit, total:graded.total, ok:graded.ok, pct:graded.pct,
+      promptV:graded.promptV, weak:graded.rows.filter(function(r){return !r.ok;})
+        .map(function(r){return {ja:r.ja, ans:r.ans, mine:r.mine};})});
+    save(s);
+    var m=$("saveMsg"); m.className="msg show ok";
+    m.textContent="記録しました（この端末に保存）。これまで"+s.runs.length+"回。";
+    this.disabled=true;
+  });
+
+  /* ---------- ホーム：履歴 ---------- */
+  function renderHome(){
+    var s=store();
+    $("st_tango").textContent = s.runs.length ? (s.runs.length+"回・最新"+s.runs[s.runs.length-1].pct+"%") : "はじめてみよう";
+    var box=$("hist");
+    if(!s.runs.length){ box.innerHTML='<p class="hint">まだ記録がありません。単語レーンから始めてみよう。</p>'; return; }
+    var h='<table><thead><tr><th>日付</th><th>範囲</th><th>点</th><th>正答率</th><th>版</th></tr></thead><tbody>';
+    s.runs.slice().reverse().slice(0,12).forEach(function(r){
+      h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td><td>'+esc(r.unit||"—")+'</td>'+
+         '<td>'+r.ok+' / '+r.total+'</td><td>'+r.pct+'%</td><td>'+(r.promptV?("v"+r.promptV):"—")+'</td></tr>';
+    });
+    box.innerHTML=h+'</tbody></table>';
+    var weak={};
+    s.runs.forEach(function(r){ (r.weak||[]).forEach(function(w){ var k=w.ans||w.ja; weak[k]=(weak[k]||0)+1; }); });
+    var top=Object.keys(weak).sort(function(a,b){return weak[b]-weak[a];}).slice(0,10);
+    if(top.length) box.innerHTML+='<h3>くり返しまちがえている語</h3><p class="en" style="font-size:14px">'+
+      top.map(function(k){return esc(k)+"("+weak[k]+")";}).join("　")+'</p>';
+  }
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
