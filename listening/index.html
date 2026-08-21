@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6d28d9">
+<title>音の道場｜疑似リスニング・スピーキング</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🎧</text></svg>">
+<!--
+  listening/ ─ 音の道場（疑似リスニング／疑似スピーキング）
+   音声ファイルを1つも持たずにリスニングを載せるための仕組み。
+   ブラウザ内蔵の読み上げ(speechSynthesis)で英文を鳴らし、マイク認識(SpeechRecognition)で答える。
+
+   流れ：① 素材を作らせるプロンプトをコピー → ② AIモードで生成 → ③ 貼る
+        → ④ 聞いて答える（スクリプトは隠す） → ⑤ 自動採点 → ⑥ スクリプト開示
+
+   設計の核（探究カルテ・自学マイページと同じ）：
+     ・リスニングは選択式なので、貼られた「正解番号」と生徒の選択だけで採点する。
+     ・スピーキングは機械採点できないので点をつけない。生徒自身の発話から
+       測れる観測値（語数・秒数・キーワード・つなぎ語）だけを出す。AIの講評は任意。
+   ※ 記録は端末のみ（localStorage: listening_v1）。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#faf8ff; --line:#e4dff2;
+    --c1:#6d28d9; --c1d:#5b21b6; --c2:#b45309;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+    font-family:var(--jp);line-height:1.65;padding:0 0 70px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#6d28d9,#4c1d95);color:#fff;padding:22px 0 18px;margin-bottom:16px}
+  .hero h1{margin:0;font-size:23px}
+  .hero p{margin:6px 0 0;font-size:13px;color:#ddd0f7}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#c9b6f5;text-decoration:none;font-weight:bold}
+  .hide{display:none!important}
+  .card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0}
+  h2{font-size:16.5px;margin:0 0 10px}
+  h3{font-size:14px;margin:14px 0 6px;color:var(--gray)}
+  .btn{font:inherit;font-size:15px;font-weight:bold;border:none;border-radius:11px;
+    padding:10px 20px;cursor:pointer;color:#fff;background:var(--c1)}
+  .btn:hover{background:var(--c1d)}
+  .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
+  .btn.sm{font-size:13px;padding:7px 14px}
+  .btn.big{font-size:17px;padding:14px 30px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.rec{background:#b3402a}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  label{font-size:13px;font-weight:bold;display:block;margin:10px 0 4px}
+  input[type=text],select,textarea{font:inherit;font-size:14px;width:100%;
+    border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  pre.prompt{background:#1e1b31;color:#e6e1f5;border-radius:12px;padding:13px 15px;
+    font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:620px){.modes{grid-template-columns:1fr}}
+  .mode{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
+    border-radius:14px;padding:16px 15px;transition:transform .08s}
+  .mode:hover{transform:translateY(-2px);border-color:var(--c1)}
+  .mode .emoji{font-size:30px;display:block;line-height:1}
+  .mode .t{font-size:16px;font-weight:bold;margin:7px 0 3px}
+  .mode .d{font-size:12.5px;color:var(--gray)}
+  .mode .st{font-size:12px;font-weight:bold;color:var(--c1);margin-top:7px}
+  .steps{display:flex;gap:6px;font-size:12px;margin-bottom:12px;flex-wrap:wrap}
+  .steps span{padding:4px 11px;border-radius:999px;background:#f0ebfb;color:var(--gray)}
+  .steps span.now{background:var(--c1);color:#fff;font-weight:bold}
+  /* 再生パネル */
+  .player{background:#1e1b31;color:#fff;border-radius:14px;padding:16px 18px;text-align:center}
+  .player .title{font-size:14px;color:#c9b6f5}
+  .player .cnt{font-size:13px;color:#ddd0f7;margin-top:6px}
+  .player .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .player .btns .btn{background:#fff;color:#4c1d95}
+  .player .btns .btn.ghost{background:transparent;color:#fff;border-color:#7c5bd0}
+  .speaking{display:inline-block;margin-top:10px;font-size:13px;color:#a5f3c8}
+  .locked{filter:blur(5px);user-select:none;pointer-events:none}
+  .script{font-family:var(--en);font-size:15.5px;background:#f6f3fd;border:2px solid var(--line);
+    border-radius:12px;padding:12px 14px;line-height:1.75;white-space:pre-wrap}
+  .q{border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fff}
+  .q .qt{font-weight:bold;font-size:14.5px;margin-bottom:8px}
+  .choices{display:flex;flex-direction:column;gap:7px}
+  .choice{font:inherit;text-align:left;font-size:14px;padding:9px 12px;cursor:pointer;
+    border:2px solid var(--line);border-radius:10px;background:#fff}
+  .choice.sel{border-color:var(--c1);background:#f3ecfe}
+  .choice.ok{border-color:var(--ok);background:var(--okbg)}
+  .choice.ng{border-color:var(--ng);background:var(--ngbg)}
+  .choice[disabled]{cursor:default}
+  .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+  @media(max-width:620px){.kpi{grid-template-columns:1fr 1fr}}
+  .kpi div{background:#f4f0fc;border-radius:10px;padding:9px 11px}
+  .kpi b{display:block;font-size:19px;color:var(--c1)}
+  .kpi span{font-size:11.5px;color:var(--gray)}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin:10px 0;display:none}
+  .msg.show{display:block}
+  .msg.ok{background:var(--okbg);color:var(--ok)}
+  .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .msg.info{background:#f0ebfb;color:var(--gray)}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+  th{background:#f4f0fc;font-size:12px;white-space:nowrap}
+  code{background:#f0ebfb;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  .en{font-family:var(--en)}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
+  <h1>音の道場 <span class="en">Sound Dojo</span></h1>
+  <p>音声ファイルなしでリスニング。ブラウザに英文を読ませて聞き、マイクで答える。</p>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ ホーム ============ -->
+<div id="home">
+  <div class="card">
+    <h2>モードをえらぶ</h2>
+    <div class="modes">
+      <button class="mode" id="goL"><span class="emoji">🎧</span>
+        <div class="t">疑似リスニング</div>
+        <div class="d">過去問や英検の放送文をAIに作らせて、ブラウザに読ませて聞く。スクリプトは答えるまで隠れます。</div>
+        <div class="st" id="st_l"></div></button>
+      <button class="mode" id="goS"><span class="emoji">🎤</span>
+        <div class="t">疑似スピーキング</div>
+        <div class="d">英検二次の質問を読み上げてもらい、マイクで答える。話した言葉から観測値を出します。</div>
+        <div class="st" id="st_s"></div></button>
+    </div>
+    <div class="msg" id="envMsg"></div>
+  </div>
+  <div class="card" id="histCard">
+    <h2>これまでの記録</h2>
+    <div id="hist"></div>
+  </div>
+</div>
+
+<!-- ============ リスニング：① 素材を作る ============ -->
+<div id="lBuild" class="hide">
+  <div class="steps"><span class="now">① 素材を作らせる</span><span>② 貼る</span><span>③ 聞いて答える</span><span>④ 採点</span></div>
+  <div class="card">
+    <h2>🎧 リスニング素材をAIに作らせる</h2>
+    <div class="grid2">
+      <div><label for="l_src">もとにするもの</label>
+        <select id="l_src">
+          <option value="okayama">県立入試スタイル（対話・メモ・説明）</option>
+          <option value="eiken">英検のリスニング（応答・会話・文）</option>
+          <option value="text">教科書の本文から</option>
+          <option value="free">自分で決める</option>
+        </select></div>
+      <div><label for="l_n">問題数</label>
+        <select id="l_n"><option>3</option><option selected>5</option><option>8</option></select></div>
+    </div>
+    <label for="l_topic">場面・話題（自由に）</label>
+    <input type="text" id="l_topic" placeholder="例：職場体験の相談 / 図書館のイベント / 電車の乗りかえ">
+    <label for="l_mine">自分の工夫（自由に書き足す）</label>
+    <textarea id="l_mine" rows="2" placeholder="例：数字と曜日をまぎらわしくして。ひっかけを入れて。"></textarea>
+    <div class="row">
+      <button class="btn" id="l_mk">プロンプトを作る</button>
+      <span class="hint" id="l_ver"></span>
+    </div>
+    <div id="l_pbox" class="hide">
+      <h3>できたプロンプト（AIに貼る）</h3>
+      <pre class="prompt" id="l_ptext"></pre>
+      <div class="row">
+        <button class="btn" id="l_copy">📋 コピーする</button>
+        <button class="btn ghost" id="l_toPaste">コピーした → ② 貼る</button>
+      </div>
+    </div>
+    <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
+  </div>
+</div>
+
+<!-- ============ リスニング：② 貼る ============ -->
+<div id="lPaste" class="hide">
+  <div class="steps"><span>① 作らせる</span><span class="now">② 貼る</span><span>③ 聞いて答える</span><span>④ 採点</span></div>
+  <div class="card">
+    <h2>AIが出した素材を貼る</h2>
+    <p class="hint" style="margin-top:0"><code>=== LISTENING ===</code> から <code>=== END ===</code> までを貼り付けてください。</p>
+    <textarea id="l_paste" rows="12" placeholder="=== LISTENING ===&#10;題: 職場体験の相談&#10;回数: 2&#10;--- SCRIPT ---&#10;A: Hi, Mei. What are you going to do next week?&#10;B: I'm going to work at a flower shop.&#10;--- QUESTIONS ---&#10;1 | What will Mei do next week? | work at a flower shop | study at home | visit a museum | play tennis | 1&#10;=== END ==="></textarea>
+    <div class="msg" id="l_pmsg"></div>
+    <div class="row">
+      <button class="btn" id="l_start">この素材で聞く</button>
+      <button class="btn ghost sm" data-go="lBuild">← もどる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ リスニング：③ 聞いて答える ============ -->
+<div id="lPlay" class="hide">
+  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span class="now">③ 聞いて答える</span><span>④ 採点</span></div>
+  <div class="card">
+    <div class="player">
+      <div class="title" id="l_title">—</div>
+      <div class="cnt" id="l_cnt">—</div>
+      <div class="btns">
+        <button class="btn big" id="l_play">▶ 放送を聞く</button>
+        <button class="btn ghost" id="l_stop">■ 止める</button>
+        <button class="btn ghost sm" id="l_slow">🐢 ゆっくり</button>
+      </div>
+      <div class="speaking hide" id="l_speaking">🔊 再生中…</div>
+    </div>
+    <div class="msg" id="l_ttsMsg"></div>
+    <div id="l_qs"></div>
+    <div class="row">
+      <button class="btn" id="l_grade">採点する</button>
+      <button class="btn ghost sm" id="l_reveal">スクリプトを見る（答える前に見ると練習になりません）</button>
+    </div>
+    <div id="l_scriptBox" class="hide"><h3>放送文</h3><div class="script" id="l_script"></div></div>
+  </div>
+</div>
+
+<!-- ============ リスニング：④ 採点 ============ -->
+<div id="lResult" class="hide">
+  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span>③ 聞いて答える</span><span class="now">④ 採点</span></div>
+  <div class="card">
+    <h2>採点結果</h2>
+    <div class="score" id="lr_score">– / –</div>
+    <div class="kpi">
+      <div><b id="lr_pct">–</b><span>正答率</span></div>
+      <div><b id="lr_play">–</b><span>再生した回数</span></div>
+      <div><b id="lr_rate">–</b><span>速さ</span></div>
+      <div><b id="lr_ver">–</b><span>プロンプトの版</span></div>
+    </div>
+    <div id="lr_detail"></div>
+    <h3>放送文（答え合わせ）</h3>
+    <div class="script" id="lr_script"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="lr_save">記録する</button>
+      <button class="btn ghost sm" data-go="lBuild">もう1本つくる</button>
+      <button class="btn ghost sm" data-go="home">ホーム</button>
+    </div>
+    <div class="msg" id="lr_msg"></div>
+  </div>
+</div>
+
+<!-- ============ スピーキング ============ -->
+<div id="sBuild" class="hide">
+  <div class="steps"><span class="now">① 質問を作らせる</span><span>② 貼る</span><span>③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="card">
+    <h2>🎤 英検二次の質問をAIに作らせる</h2>
+    <div class="grid2">
+      <div><label for="s_grade">級</label>
+        <select id="s_grade"><option>5級</option><option>4級</option><option selected>3級</option><option>準2級</option><option>2級</option></select></div>
+      <div><label for="s_n">質問数</label>
+        <select id="s_n"><option>3</option><option selected>5</option></select></div>
+    </div>
+    <label for="s_topic">話題（自由に）</label>
+    <input type="text" id="s_topic" placeholder="例：好きなスポーツ / 休みの日の過ごし方">
+    <div class="row">
+      <button class="btn" id="s_mk">プロンプトを作る</button>
+    </div>
+    <div id="s_pbox" class="hide">
+      <h3>できたプロンプト（AIに貼る）</h3>
+      <pre class="prompt" id="s_ptext"></pre>
+      <div class="row">
+        <button class="btn" id="s_copy">📋 コピーする</button>
+        <button class="btn ghost" id="s_toPaste">コピーした → ② 貼る</button>
+      </div>
+    </div>
+    <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
+  </div>
+</div>
+
+<div id="sPaste" class="hide">
+  <div class="steps"><span>① 作らせる</span><span class="now">② 貼る</span><span>③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="card">
+    <h2>質問を貼る</h2>
+    <textarea id="s_paste" rows="9" placeholder="=== SPEAKING ===&#10;題: 3級 二次（好きなスポーツ）&#10;1 | What sport do you like?&#10;2 | Why do you like it?&#10;=== END ==="></textarea>
+    <div class="msg" id="s_pmsg"></div>
+    <div class="row">
+      <button class="btn" id="s_start">この質問で練習する</button>
+      <button class="btn ghost sm" data-go="sBuild">← もどる</button>
+    </div>
+  </div>
+</div>
+
+<div id="sPlay" class="hide">
+  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span class="now">③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="card">
+    <div class="player">
+      <div class="title" id="s_qno">質問 1</div>
+      <div class="cnt" id="s_qtext">—</div>
+      <div class="btns">
+        <button class="btn" id="s_ask">🔊 質問を聞く</button>
+        <button class="btn rec" id="s_rec">🎤 話して答える</button>
+        <button class="btn ghost sm" id="s_next">次の質問 →</button>
+      </div>
+      <div class="speaking hide" id="s_state">—</div>
+    </div>
+    <div class="msg" id="s_msg"></div>
+    <label for="s_ans">答え（マイクが使えないときは打ち込んでOK）</label>
+    <textarea id="s_ans" rows="3" placeholder="I like soccer. I play it every Sunday with my friends."></textarea>
+    <div class="row">
+      <button class="btn ghost sm" id="s_keep">この答えを記録して次へ</button>
+      <button class="btn" id="s_done">ふりかえりを見る</button>
+    </div>
+    <div id="s_kept"></div>
+  </div>
+</div>
+
+<div id="sResult" class="hide">
+  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span>③ 話して答える</span><span class="now">④ ふりかえり</span></div>
+  <div class="card">
+    <h2>ふりかえり（点はつけません）</h2>
+    <p class="hint" style="margin-top:0">話す力は機械では正しく採点できないので、<b>自分が実際に言った言葉から測れることだけ</b>を出します。</p>
+    <div class="kpi">
+      <div><b id="sr_words">–</b><span>話した語数（合計）</span></div>
+      <div><b id="sr_avg">–</b><span>1問あたり</span></div>
+      <div><b id="sr_key">–</b><span>質問の語を使えた数</span></div>
+      <div><b id="sr_link">–</b><span>つなぎ語の種類</span></div>
+    </div>
+    <div id="sr_detail"></div>
+    <h3>AIに講評してもらう（任意）</h3>
+    <p class="hint" style="margin-top:0">下をコピーしてAIに貼ると、言い方のアドバイスがもらえます。点数は求めない書き方にしてあります。</p>
+    <pre class="prompt" id="sr_review"></pre>
+    <div class="row">
+      <button class="btn" id="sr_copy">📋 コピーする</button>
+      <button class="btn ghost sm" id="sr_save">記録する</button>
+      <button class="btn ghost sm" data-go="home">ホーム</button>
+    </div>
+    <div class="msg" id="sr_msg"></div>
+  </div>
+</div>
+
+<footer>音の道場 ／ 音声ファイルを持たずに、聞く・話すを練習する</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i);};
+  var SCREENS=["home","lBuild","lPaste","lPlay","lResult","sBuild","sPaste","sPlay","sResult"];
+  function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0);
+    if(n==="home") renderHome(); }
+  document.querySelectorAll("[data-go]").forEach(function(b){
+    b.addEventListener("click",function(){ stopAll(); show(b.getAttribute("data-go")); }); });
+  $("goL").addEventListener("click",function(){ show("lBuild"); });
+  $("goS").addEventListener("click",function(){ show("sBuild"); });
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function norm(s){ return String(s==null?"":s).toLowerCase().replace(/[^a-z0-9' ]/g," ")
+    .replace(/\s+/g," ").trim(); }
+
+  /* ---------- 記録 ---------- */
+  var KEY="listening_v1";
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  function store(){ var s=load(); s.lRuns=s.lRuns||[]; s.sRuns=s.sRuns||[]; s.pv=s.pv||0; return s; }
+
+  /* ---------- 環境チェック（読み上げ・マイク） ---------- */
+  var TTS = ("speechSynthesis" in window);
+  var SR  = (window.SpeechRecognition || window.webkitSpeechRecognition || null);
+  (function(){
+    var m=$("envMsg"), a=[];
+    a.push(TTS ? "🔊 読み上げ：使えます" : "🔊 読み上げ：この端末では使えません（スクリプトを見て読む形になります）");
+    a.push(SR ? "🎤 マイク：使えます（Chrome）" : "🎤 マイク：この端末では使えません（打ち込みで答えられます）");
+    m.className="msg show "+((TTS&&SR)?"info":"ng");
+    m.innerHTML=a.join("　／　");
+  })();
+
+  /* ---------- 読み上げ ---------- */
+  var voice=null, rate=1.0;
+  function pickVoice(){
+    if(!TTS) return null;
+    var vs=speechSynthesis.getVoices()||[];
+    voice = vs.filter(function(v){ return /^en(-|_|$)/i.test(v.lang); })[0] || vs[0] || null;
+    return voice;
+  }
+  if(TTS){ pickVoice(); if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=pickVoice; }
+  function speak(text, onEnd){
+    if(!TTS){ if(onEnd) onEnd(); return false; }
+    // 端末によっては onend が来ないことがある。表示が固まらないよう、
+    // 語数から見積もった時間で必ず終了扱いにする保険をかける。
+    var done=false, timer=null;
+    function finish(){ if(done) return; done=true; if(timer) clearTimeout(timer); if(onEnd) onEnd(); }
+    try{
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(text);
+      u.lang="en-US"; u.rate=rate; if(voice) u.voice=voice;
+      u.onend=finish; u.onerror=finish;
+      speechSynthesis.speak(u);
+      var words=String(text).trim().split(/\s+/).length;
+      timer=setTimeout(finish, Math.max(4000, Math.round(words/(2.6*rate)*1000)+2500));
+      return true;
+    }catch(e){ finish(); return false; }
+  }
+  function stopAll(){ try{ if(TTS) speechSynthesis.cancel(); }catch(e){}
+    try{ if(recog) recog.abort(); }catch(e){} }
+
+  /* ---------- ① リスニングのプロンプト ---------- */
+  var SRC={
+    okayama:"岡山県の公立高校入試のリスニングと同じ形式（短い対話や説明を聞いて、内容に合うものを選ぶ）",
+    eiken:"英検のリスニングと同じ形式（対話の応答を選ぶ／会話の内容を選ぶ）",
+    text:"わたしの教科書の本文をもとにした形式",
+    free:"あなたにおまかせ"
+  };
+  function lPrompt(src,n,topic,mine){
+    var p=[];
+    p.push("あなたは中学英語の先生です。わたしのリスニング練習の素材を作ってください。");
+    p.push("");
+    p.push("【形式】"+(SRC[src]||SRC.free));
+    p.push("【問題数】"+n+"問");
+    p.push("【場面・話題】"+(topic||"（おまかせ）"));
+    p.push("【英文のレベル】中学生が聞いて分かるレベル。1文は短めに。");
+    if(mine&&mine.trim()) p.push("【わたしからの注文】"+mine.trim());
+    p.push("");
+    p.push("【いちばん大事なお願い】");
+    p.push("わたしのアプリが読み上げるので、下の書式で出してください。書式は1文字も変えないでください。");
+    p.push("");
+    p.push("=== LISTENING ===");
+    p.push("題: （日本語で場面の名前）");
+    p.push("回数: 2");
+    p.push("--- SCRIPT ---");
+    p.push("（ここに放送する英文。会話ならA:／B:を行頭につける）");
+    p.push("--- QUESTIONS ---");
+    p.push("1 | （英語の質問） | 選択肢1 | 選択肢2 | 選択肢3 | 選択肢4 | 正解の番号");
+    p.push("2 | ...");
+    p.push("=== END ===");
+    p.push("");
+    p.push("・区切りは半角の縦棒 | を使ってください。最後の欄は正解の番号（1〜4）だけを書いてください。");
+    p.push("・SCRIPT には日本語を混ぜないでください（そのまま読み上げるため）。");
+    p.push("・答えの解説は === END === より後ろに書いてください。");
+    return p.join("\n");
+  }
+  $("l_mk").addEventListener("click",function(){
+    var s=store(); s.pv=(s.pv||0)+1; save(s);
+    var t=lPrompt($("l_src").value, $("l_n").value, $("l_topic").value.trim(), $("l_mine").value);
+    $("l_ptext").textContent=t; $("l_pbox").classList.remove("hide");
+    $("l_ver").textContent="v"+s.pv+" として数えました";
+  });
+  function copyFrom(id, btn, label){
+    var t=$(id).textContent;
+    function done(){ btn.textContent="コピーしました ✓"; setTimeout(function(){ btn.textContent=label; },1600); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,fb); } else fb();
+    function fb(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){} document.body.removeChild(ta); }
+  }
+  $("l_copy").addEventListener("click",function(){ copyFrom("l_ptext", this, "📋 コピーする"); });
+  $("l_toPaste").addEventListener("click",function(){ show("lPaste"); });
+
+  /* ---------- ② 解析 ---------- */
+  function parseListening(raw){
+    var t=String(raw||"").replace(/\r/g,"").replace(/｜/g,"|");
+    var i=t.indexOf("=== LISTENING ==="), j=t.indexOf("=== END ===");
+    var body=(i>=0)? t.slice(i+17, j>i? j : t.length) : t;
+    var title="", reps=2, script="", qs=[], bad=0, sec="";
+    body.split("\n").forEach(function(line){
+      var s=line.trim();
+      if(/^---\s*SCRIPT\s*---$/i.test(s)){ sec="script"; return; }
+      if(/^---\s*QUESTIONS?\s*---$/i.test(s)){ sec="q"; return; }
+      var mt=s.match(/^題\s*[:：]\s*(.+)$/); if(mt){ title=mt[1].trim(); return; }
+      var mr=s.match(/^回数\s*[:：]\s*(\d+)/); if(mr){ reps=Math.max(1,Math.min(3,parseInt(mr[1],10))); return; }
+      if(sec==="script"){ script+= (script?"\n":"")+line.replace(/\s+$/,""); return; }
+      if(sec==="q"||s.indexOf("|")>=0){
+        if(s.indexOf("|")<0) return;
+        var c=s.split("|").map(function(x){return x.trim();});
+        if(c.length<4){ bad++; return; }
+        var no=parseInt(c[0].replace(/[^0-9]/g,""),10);
+        if(!no){ bad++; return; }
+        var ansRaw=c[c.length-1];
+        var ans=parseInt(ansRaw.replace(/[^0-9]/g,""),10);
+        if(!ans){ var k="アイウエ".indexOf(ansRaw.replace(/[^ア-エ]/g,"")); if(k>=0) ans=k+1; }
+        var ch=c.slice(2,c.length-1).filter(function(x){return x!=="";});
+        if(!ch.length||!ans||ans>ch.length){ bad++; return; }
+        qs.push({no:no, q:c[1], choices:ch, ans:ans-1});
+      }
+    });
+    return {title:title, reps:reps, script:script.trim(), qs:qs, bad:bad};
+  }
+
+  var cur=null, played=0, picked={};
+  $("l_start").addEventListener("click",function(){
+    var m=$("l_pmsg"); m.className="msg";
+    var p=parseListening($("l_paste").value);
+    if(!p.script || !p.qs.length){
+      m.className="msg show ng";
+      m.innerHTML="✗ 素材を読み取れませんでした。<br>AIにこう言い直そう：<code>=== LISTENING === / --- SCRIPT --- / --- QUESTIONS --- の書式で、質問は 番号 | 質問 | 選択肢1 | 選択肢2 | 選択肢3 | 選択肢4 | 正解番号 の形で出し直して</code>";
+      return;
+    }
+    cur=p; played=0; picked={};
+    $("l_title").textContent=p.title||"リスニング";
+    $("l_cnt").textContent="放送は"+p.reps+"回まで聞けます（残り "+p.reps+"）";
+    $("l_script").textContent=p.script;
+    $("l_scriptBox").classList.add("hide");
+    $("l_ttsMsg").className="msg"+(TTS?"":" show ng");
+    if(!TTS) $("l_ttsMsg").textContent="この端末では読み上げが使えません。「スクリプトを見る」で文字で読んで練習してください。";
+    renderQs();
+    show("lPlay");
+  });
+  function renderQs(){
+    var box=$("l_qs"); box.innerHTML="";
+    cur.qs.forEach(function(q,qi){
+      var d=document.createElement("div"); d.className="q";
+      d.innerHTML='<div class="qt">'+(qi+1)+'. <span class="en">'+esc(q.q)+'</span></div>';
+      var ch=document.createElement("div"); ch.className="choices";
+      q.choices.forEach(function(c,ci){
+        var b=document.createElement("button"); b.className="choice";
+        b.innerHTML='<span class="en">'+(ci+1)+'. '+esc(c)+'</span>';
+        b.addEventListener("click",function(){
+          picked[qi]=ci;
+          [].forEach.call(ch.children,function(x,k){ x.classList.toggle("sel",k===ci); });
+        });
+        ch.appendChild(b);
+      });
+      d.appendChild(ch); box.appendChild(d);
+    });
+  }
+  $("l_play").addEventListener("click",function(){
+    if(!cur) return;
+    if(played>=cur.reps){ $("l_cnt").textContent="もう聞けません（"+cur.reps+"回ぶん再生ずみ）"; return; }
+    played++;
+    $("l_cnt").textContent="放送は"+cur.reps+"回まで（残り "+(cur.reps-played)+"）";
+    $("l_speaking").classList.remove("hide");
+    var okStart=speak(cur.script, function(){ $("l_speaking").classList.add("hide"); });
+    if(!okStart) $("l_speaking").classList.add("hide");
+    if(played===1 && TTS){   // 音が出ない端末でも詰まらないように逃げ道を示す
+      var tm=$("l_ttsMsg"); tm.className="msg show info";
+      tm.textContent="音が出ないときは、下の「スクリプトを見る」で文字を読んで練習してください。";
+    }
+  });
+  $("l_stop").addEventListener("click",function(){ stopAll(); $("l_speaking").classList.add("hide"); });
+  $("l_slow").addEventListener("click",function(){
+    rate = (rate===1.0)? 0.75 : 1.0;
+    this.textContent = (rate===1.0)? "🐢 ゆっくり" : "🐇 ふつうに";
+  });
+  $("l_reveal").addEventListener("click",function(){ $("l_scriptBox").classList.toggle("hide"); });
+
+  $("l_grade").addEventListener("click",function(){
+    if(!cur) return;
+    stopAll();
+    var ok=0;
+    cur.qs.forEach(function(q,qi){ if(picked[qi]===q.ans) ok++; });
+    var total=cur.qs.length, pct=total?Math.round(ok/total*100):0;
+    $("lr_score").textContent=ok+" / "+total;
+    $("lr_pct").textContent=pct+"%";
+    $("lr_play").textContent=played+"回";
+    $("lr_rate").textContent=(rate===1.0?"ふつう":"ゆっくり");
+    $("lr_ver").textContent="v"+(store().pv||0);
+    var h='<table><thead><tr><th>#</th><th>質問</th><th>えらんだ</th><th>正解</th><th>判定</th></tr></thead><tbody>';
+    cur.qs.forEach(function(q,qi){
+      var mine=(picked[qi]!=null)? (picked[qi]+1)+". "+q.choices[picked[qi]] : "（未回答）";
+      h+='<tr><td>'+(qi+1)+'</td><td class="en">'+esc(q.q)+'</td><td class="en">'+esc(mine)+
+         '</td><td class="en">'+(q.ans+1)+". "+esc(q.choices[q.ans])+'</td><td>'+
+         (picked[qi]===q.ans?"○":"×")+'</td></tr>';
+    });
+    $("lr_detail").innerHTML=h+'</tbody></table>';
+    $("lr_script").textContent=cur.script;
+    $("lr_msg").className="msg";
+    $("lr_save").disabled=false;
+    show("lResult");
+  });
+  $("lr_save").addEventListener("click",function(){
+    var s=store();
+    var ok=0; cur.qs.forEach(function(q,qi){ if(picked[qi]===q.ans) ok++; });
+    s.lRuns.push({ts:Date.now(), title:cur.title, total:cur.qs.length, ok:ok,
+      pct:Math.round(ok/cur.qs.length*100), played:played, rate:rate});
+    save(s);
+    var m=$("lr_msg"); m.className="msg show ok"; m.textContent="記録しました（この端末に保存）。";
+    this.disabled=true;
+  });
+
+  /* ---------- スピーキング ---------- */
+  function sPrompt(grade,n,topic){
+    var p=[];
+    p.push("あなたは英検"+grade+"の面接官です。二次試験の練習の質問を作ってください。");
+    p.push("");
+    p.push("【級】"+grade);
+    p.push("【質問数】"+n+"問");
+    p.push("【話題】"+(topic||"（おまかせ）"));
+    p.push("【レベル】"+grade+"の受験者が答えられる長さ・語彙にしてください。");
+    p.push("");
+    p.push("【いちばん大事なお願い】");
+    p.push("わたしのアプリが読み上げるので、下の書式で出してください。書式は1文字も変えないでください。");
+    p.push("");
+    p.push("=== SPEAKING ===");
+    p.push("題: （日本語で話題の名前）");
+    p.push("1 | （英語の質問）");
+    p.push("2 | ...");
+    p.push("=== END ===");
+    p.push("");
+    p.push("・質問は英語だけで書いてください（そのまま読み上げます）。");
+    p.push("・模範解答は === END === より後ろに書いてください。");
+    return p.join("\n");
+  }
+  $("s_mk").addEventListener("click",function(){
+    var t=sPrompt($("s_grade").value, $("s_n").value, $("s_topic").value.trim());
+    $("s_ptext").textContent=t; $("s_pbox").classList.remove("hide");
+  });
+  $("s_copy").addEventListener("click",function(){ copyFrom("s_ptext", this, "📋 コピーする"); });
+  $("s_toPaste").addEventListener("click",function(){ show("sPaste"); });
+
+  function parseSpeaking(raw){
+    var t=String(raw||"").replace(/\r/g,"").replace(/｜/g,"|");
+    var i=t.indexOf("=== SPEAKING ==="), j=t.indexOf("=== END ===");
+    var body=(i>=0)? t.slice(i+16, j>i? j : t.length) : t;
+    var title="", qs=[];
+    body.split("\n").forEach(function(line){
+      var s=line.trim(); if(!s) return;
+      var mt=s.match(/^題\s*[:：]\s*(.+)$/); if(mt){ title=mt[1].trim(); return; }
+      var m=s.match(/^(\d+)\s*[|.)．]\s*(.+)$/);
+      if(m && /[A-Za-z]/.test(m[2])) qs.push({no:parseInt(m[1],10), q:m[2].trim()});
+    });
+    return {title:title, qs:qs};
+  }
+
+  var sCur=null, sIdx=0, sAns=[], recog=null;
+  $("s_start").addEventListener("click",function(){
+    var m=$("s_pmsg"); m.className="msg";
+    var p=parseSpeaking($("s_paste").value);
+    if(!p.qs.length){
+      m.className="msg show ng";
+      m.innerHTML="✗ 質問を読み取れませんでした。<br>AIにこう言い直そう：<code>=== SPEAKING === と === END === ではさんで、1 | 質問 の形で英語だけで出し直して</code>";
+      return;
+    }
+    sCur=p; sIdx=0; sAns=[];
+    $("s_kept").innerHTML="";
+    renderS(); show("sPlay");
+  });
+  function renderS(){
+    var q=sCur.qs[sIdx];
+    $("s_qno").textContent="質問 "+(sIdx+1)+" / "+sCur.qs.length;
+    $("s_qtext").textContent=q.q;
+    $("s_ans").value=sAns[sIdx]||"";
+    $("s_state").classList.add("hide");
+    var m=$("s_msg"); m.className="msg"+(SR?"":" show ng");
+    if(!SR) m.textContent="この端末ではマイクが使えません。答えを打ち込んでください（練習の効果は同じように測れます）。";
+    $("s_rec").disabled=!SR;
+  }
+  $("s_ask").addEventListener("click",function(){
+    $("s_state").classList.remove("hide"); $("s_state").textContent="🔊 質問を読んでいます…";
+    var started=speak(sCur.qs[sIdx].q, function(){ $("s_state").classList.add("hide"); });
+    if(!started){ $("s_state").textContent="読み上げが使えないので、上の文字を読んでください。"; }
+  });
+  $("s_rec").addEventListener("click",function(){
+    if(!SR) return;
+    var btn=this;
+    try{
+      recog=new SR(); recog.lang="en-US"; recog.interimResults=false; recog.maxAlternatives=1;
+      $("s_state").classList.remove("hide"); $("s_state").textContent="🎤 聞いています…話してください";
+      btn.disabled=true;
+      recog.onresult=function(ev){
+        var t=""; for(var k=0;k<ev.results.length;k++) t+=ev.results[k][0].transcript+" ";
+        $("s_ans").value=($("s_ans").value?$("s_ans").value+" ":"")+t.trim();
+      };
+      recog.onerror=function(e){ $("s_state").textContent="マイクが使えませんでした（"+(e.error||"")+"）。打ち込みでもOK。"; };
+      recog.onend=function(){ btn.disabled=false; setTimeout(function(){ $("s_state").classList.add("hide"); },900); };
+      recog.start();
+    }catch(e){ btn.disabled=false; $("s_state").textContent="マイクを起動できませんでした。打ち込みでもOK。"; }
+  });
+  function keep(){ sAns[sIdx]=$("s_ans").value.trim(); }
+  $("s_keep").addEventListener("click",function(){
+    keep(); stopAll();
+    var box=$("s_kept");
+    box.innerHTML='<h3>ここまでの答え</h3>'+sCur.qs.map(function(q,i){
+      return '<div class="hint"><b>Q'+(i+1)+'</b> <span class="en">'+esc(q.q)+'</span><br>→ <span class="en">'+
+        esc(sAns[i]||"（まだ）")+'</span></div>'; }).join("");
+    if(sIdx<sCur.qs.length-1){ sIdx++; renderS(); }
+  });
+  $("s_next").addEventListener("click",function(){
+    keep(); stopAll();
+    sIdx=(sIdx+1)%sCur.qs.length; renderS();
+  });
+
+  var LINKERS=["because","for example","i think","but","so","also","first","then","and"];
+  $("s_done").addEventListener("click",function(){
+    keep(); stopAll();
+    var totalW=0, keyHit=0, linkSet={}, rows=[];
+    sCur.qs.forEach(function(q,i){
+      var a=sAns[i]||"";
+      var w=norm(a).split(" ").filter(Boolean);
+      totalW+=w.length;
+      // 質問の内容語（3文字以上・機能語を除く）を、答えで使えたか
+      var stop={the:1,a:1,an:1,do:1,does:1,did:1,you:1,your:1,what:1,why:1,how:1,when:1,where:1,
+                is:1,are:1,was:1,were:1,and:1,or:1,to:1,of:1,in:1,on:1,for:1,with:1,it:1,that:1,this:1};
+      var qw=norm(q.q).split(" ").filter(function(x){ return x.length>=3 && !stop[x]; });
+      var used=qw.filter(function(x){ return w.indexOf(x)>=0; });
+      if(used.length) keyHit++;
+      LINKERS.forEach(function(L){ if(norm(a).indexOf(L)>=0) linkSet[L]=1; });
+      rows.push({q:q.q, a:a, w:w.length, used:used});
+    });
+    var n=sCur.qs.length;
+    $("sr_words").textContent=totalW+"語";
+    $("sr_avg").textContent=(n?Math.round(totalW/n):0)+"語";
+    $("sr_key").textContent=keyHit+" / "+n;
+    $("sr_link").textContent=Object.keys(linkSet).length+"種類";
+    var h='<table><thead><tr><th>#</th><th>質問</th><th>自分の答え</th><th>語数</th><th>質問の語</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      h+='<tr><td>'+(i+1)+'</td><td class="en">'+esc(r.q)+'</td><td class="en">'+esc(r.a||"（無回答）")+
+         '</td><td>'+r.w+'</td><td class="en">'+esc(r.used.join(", ")||"—")+'</td></tr>';
+    });
+    $("sr_detail").innerHTML=h+'</tbody></table>';
+    var rv=["わたしは英検"+$("s_grade").value+"の二次試験の練習をしました。下はわたしが実際に話した答えです。",
+      "点数はつけないでください。かわりに、次の3つだけ教えてください。",
+      "1) もっと自然になる言い方（1つずつ）  2) 文法のまちがい  3) 次に足すとよい一言",""];
+    rows.forEach(function(r,i){ rv.push("Q"+(i+1)+": "+r.q); rv.push("A"+(i+1)+": "+(r.a||"(no answer)")); });
+    $("sr_review").textContent=rv.join("\n");
+    $("sr_msg").className="msg"; $("sr_save").disabled=false;
+    show("sResult");
+  });
+  $("sr_copy").addEventListener("click",function(){ copyFrom("sr_review", this, "📋 コピーする"); });
+  $("sr_save").addEventListener("click",function(){
+    var s=store();
+    var totalW=sAns.reduce(function(a,x){ return a+norm(x||"").split(" ").filter(Boolean).length; },0);
+    s.sRuns.push({ts:Date.now(), title:sCur.title, n:sCur.qs.length, words:totalW});
+    save(s);
+    var m=$("sr_msg"); m.className="msg show ok"; m.textContent="記録しました（この端末に保存）。";
+    this.disabled=true;
+  });
+
+  /* ---------- ホーム ---------- */
+  function renderHome(){
+    var s=store();
+    $("st_l").textContent = s.lRuns.length ? (s.lRuns.length+"回・最新"+s.lRuns[s.lRuns.length-1].pct+"%") : "はじめてみよう";
+    $("st_s").textContent = s.sRuns.length ? (s.sRuns.length+"回・最新"+s.sRuns[s.sRuns.length-1].words+"語") : "はじめてみよう";
+    var box=$("hist"), all=[];
+    s.lRuns.forEach(function(r){ all.push({ts:r.ts,k:"🎧 リスニング",t:r.title,v:r.ok+"/"+r.total+"（"+r.pct+"%）",x:r.played+"回再生"}); });
+    s.sRuns.forEach(function(r){ all.push({ts:r.ts,k:"🎤 スピーキング",t:r.title,v:r.words+"語",x:r.n+"問"}); });
+    if(!all.length){ box.innerHTML='<p class="hint">まだ記録がありません。</p>'; return; }
+    all.sort(function(a,b){ return b.ts-a.ts; });
+    var h='<table><thead><tr><th>日付</th><th>種目</th><th>題</th><th>結果</th><th>メモ</th></tr></thead><tbody>';
+    all.slice(0,12).forEach(function(r){
+      h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td><td>'+r.k+'</td><td>'+esc(r.t||"—")+
+         '</td><td>'+esc(r.v)+'</td><td>'+esc(r.x)+'</td></tr>'; });
+    box.innerHTML=h+'</tbody></table>';
+  }
+  renderHome();
+})();
+</script>
+</body>
+</html>
