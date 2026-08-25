@@ -297,6 +297,205 @@ def build_answer(exam, path, title):
     doc.save(path)
     return total
 
+
+# ---------- ③ 解答用紙（A4 1枚・採点／スキャン読み取り前提） ----------
+COLS = 10  # 10列の格子。欄の位置が予測できるので、スキャンからの読み取りがしやすい
+
+def _cell_text(cell, text, size=9, bold=False, align=None, en=False):
+    cell.text = ""
+    p = cell.paragraphs[0]
+    p.paragraph_format.space_before = Pt(0); p.paragraph_format.space_after = Pt(0)
+    if align: p.alignment = align
+    r = p.add_run(text)
+    r.font.size = Pt(size); r.bold = bold
+    r.font.name = "Century" if en else "游明朝"
+    r.element.rPr.rFonts.set(qn("w:eastAsia"), "游明朝")
+
+def _anchors(doc, title=None):
+    """四隅の位置合わせ用マーク。スキャン画像の傾き・切れの判定に使う。"""
+    t = doc.add_table(rows=1, cols=3)
+    t.autofit = False
+    for i, wcm in enumerate((1.2, 15.2, 1.2)):
+        t.columns[i].width = Cm(wcm)
+    _cell_text(t.cell(0, 0), "■", 11, True)
+    _cell_text(t.cell(0, 1), title or "", 13, True, WD_ALIGN_PARAGRAPH.CENTER)
+    _cell_text(t.cell(0, 2), "■", 11, True, WD_ALIGN_PARAGRAPH.RIGHT)
+    return t
+
+def _shade(cell, color="D9D9D9"):
+    tcPr = cell._tc.get_or_add_tcPr()
+    sh = tcPr.makeelement(qn("w:shd"), {})
+    sh.set(qn("w:val"), "clear"); sh.set(qn("w:color"), "auto"); sh.set(qn("w:fill"), color)
+    tcPr.append(sh)
+
+
+def _grid(doc, nrows):
+    t = doc.add_table(rows=nrows, cols=COLS)
+    t.style = "Table Grid"; t.autofit = False
+    for c in t.columns:
+        c.width = Emu(int(USABLE_W / COLS))
+    return t
+
+def _span(t, r, c0, c1):
+    return t.cell(r, c0).merge(t.cell(r, c1))
+
+def answer_fields(exam):
+    """解答用紙に並べる記入欄。(大問, コース名, item, 種別) を返す。"""
+    out = []
+    for sec in exam["sections"]:
+        for cname, it, _ in items_of(sec):
+            ty = it.get("type")
+            if ty in ("mcq", "bankpick"):
+                kind = "sel"
+            elif ty == "wordorder":
+                kind = "long"
+            else:
+                first = strip((it.get("answers") or [""])[0])
+                kind = "long" if len(first.split(" ")) > 2 else "word"
+            out.append((sec, cname, it, kind))
+    return out
+
+def group_prefix(g):
+    """群の見出しから (1) などの小問番号を拾う。大問1の①が3回出るような重複を防ぐ。"""
+    m = re.match(r'^\((\d+)\)', strip(g.get("intro", "")))
+    return "({})".format(m.group(1)) if m else ""
+
+def kind_of(it):
+    ty = it.get("type")
+    if ty in ("mcq", "bankpick"):
+        return "sel"
+    if ty == "wordorder":
+        return "long"
+    first = strip((it.get("answers") or [""])[0])
+    return "long" if len(first.split(" ")) > 2 else "word"
+
+def label_of(g, it, pre):
+    lab = str(it.get("label", "") or "")
+    if lab.startswith("(") and pre and lab.startswith(pre):
+        return lab                      # 既に (1)① の形になっている
+    return (pre + lab) if lab else (pre or "並")
+
+
+def build_sheet(exam, path, title):
+    doc = Document(); setup(doc)
+    for s in doc.sections:
+        s.top_margin = s.bottom_margin = Cm(1.2)
+        s.left_margin = s.right_margin = Cm(1.7)
+    total = sum(section_points(s) for s in exam["sections"])
+
+    _anchors(doc, title + "　解答用紙")
+    para(doc, "", 4, after=2)
+
+    # 受験者情報と合計欄
+    t = _grid(doc, 1)
+    _cell_text(_span(t, 0, 0, 0), "学年", 9, True)
+    _cell_text(_span(t, 0, 1, 1), "", 9)
+    _cell_text(_span(t, 0, 2, 2), "組", 9, True)
+    _cell_text(_span(t, 0, 3, 3), "", 9)
+    _cell_text(_span(t, 0, 4, 4), "番号", 9, True)
+    _cell_text(_span(t, 0, 5, 5), "", 9)
+    _cell_text(_span(t, 0, 6, 6), "名前", 9, True)
+    _cell_text(_span(t, 0, 7, 8), "", 9)
+    _cell_text(_span(t, 0, 9, 9), "合計\n/{}".format(total), 9, True, WD_ALIGN_PARAGRAPH.CENTER)
+    t.rows[0].height = Cm(1.1)
+    para(doc, "※ 解答は下の枠の中に書くこと。枠からはみ出すと採点できません。", 8.5, after=3)
+
+    for sec in exam["sections"]:
+        # 記入欄を「出題順」に並べる。順を入れ替えると採点時に問と欄が対応しなくなる。
+        seq = []
+        if sec.get("courses"):
+            # X/Yは同じ問番号なので欄は1組でよい（生徒はどちらか一方だけ答える）
+            for it in sec["courses"][0]["items"]:
+                seq.append((label_of({}, it, ""), kind_of(it)))
+        else:
+            for g in sec.get("groups", []):
+                pre = group_prefix(g)
+                for it in g.get("items", []):
+                    seq.append((label_of(g, it, pre), kind_of(it)))
+
+        # 行を組み立てる：選択式は連続する分だけ5個ずつ詰め、他は1〜2個で1行
+        lines = []   # ("sel",[..]) / ("word",[..]) / ("long",[lab])
+        buf_s, buf_w = [], []
+        def flush():
+            while buf_s:
+                lines.append(("sel", buf_s[:5])); del buf_s[:5]
+            while buf_w:
+                lines.append(("word", buf_w[:2])); del buf_w[:2]
+        for lab, kind in seq:
+            if kind == "sel":
+                if buf_w: flush()
+                buf_s.append(lab)
+                if len(buf_s) == 5: lines.append(("sel", buf_s[:])); buf_s.clear()
+            elif kind == "word":
+                if buf_s: flush()
+                buf_w.append(lab)
+                if len(buf_w) == 2: lines.append(("word", buf_w[:])); buf_w.clear()
+            else:
+                flush(); lines.append(("long", [lab]))
+        flush()
+
+        rows = 1 + len(lines) + (1 if sec.get("courses") else 0)
+        t = _grid(doc, rows)
+        r = 0
+        _cell_text(_span(t, r, 0, 7), "大問{}　{}".format(sec["no"], strip(sec.get("title", ""))[:28]), 9.5, True)
+        _cell_text(_span(t, r, 8, 9), "小計 　/{}".format(section_points(sec)), 9, True,
+                   WD_ALIGN_PARAGRAPH.CENTER)
+        t.rows[r].height = Cm(0.52); r += 1
+
+        if sec.get("courses"):
+            _cell_text(_span(t, r, 0, 9),
+                       "選んだコースに○　（　　X コース　　・　　Y コース　　）　※どちらか一方だけ答える",
+                       9, True)
+            t.rows[r].height = Cm(0.55); r += 1
+
+        for kind, labs in lines:
+            if kind == "sel":
+                for j, lab in enumerate(labs):
+                    _cell_text(t.cell(r, j * 2), lab, 8, True, WD_ALIGN_PARAGRAPH.CENTER)
+                    _cell_text(t.cell(r, j * 2 + 1), "", 11, align=WD_ALIGN_PARAGRAPH.CENTER)
+                used = len(labs) * 2
+                if used < COLS:                      # 余った枠は記入欄と紛らわしいので潰す
+                    c = _span(t, r, used, COLS - 1)
+                    _cell_text(c, ""); _shade(c)
+                t.rows[r].height = Cm(0.8)
+            elif kind == "word":
+                for j, lab in enumerate(labs):
+                    base = j * 5
+                    _cell_text(t.cell(r, base), lab, 8, True, WD_ALIGN_PARAGRAPH.CENTER)
+                    _cell_text(_span(t, r, base + 1, base + 4), "", 11, en=True)
+                if len(labs) == 1:
+                    c = _span(t, r, 5, 9); _cell_text(c, ""); _shade(c)
+                t.rows[r].height = Cm(0.85)
+            else:
+                _cell_text(t.cell(r, 0), labs[0], 8, True, WD_ALIGN_PARAGRAPH.CENTER)
+                _cell_text(_span(t, r, 1, 9), "", 11, en=True)
+                t.rows[r].height = Cm(0.95)
+            r += 1
+        para(doc, "", 3, after=2)
+
+    _anchors(doc)
+    doc.save(path)
+    return total
+
+def build_key_csv(exam, path):
+    """採点用の対応表。スキャンした解答用紙と突き合わせて採点するときに使う。"""
+    import csv
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        wcsv = csv.writer(f)
+        wcsv.writerow(["大問", "コース", "問", "種別", "正解", "配点"])
+        for sec, cname, it, kind in answer_fields(exam):
+            ty = it.get("type")
+            if ty == "mcq":
+                ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("choices") or [""])[it.get("answer", 0)]))
+            elif ty == "bankpick":
+                ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("bank") or [""])[it.get("answer", 0)]))
+            elif ty == "wordorder":
+                ans = strip(it.get("display") or it.get("answer", ""))
+            else:
+                ans = " / ".join(strip(a) for a in (it.get("answers") or []))
+            wcsv.writerow([sec["no"], cname, it.get("label", ""),
+                           {"sel": "選択", "word": "記述(語)", "long": "記述(文)"}[kind], ans, it.get("pt", 0)])
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         sys.exit(__doc__)
@@ -306,7 +505,13 @@ if __name__ == "__main__":
     os.makedirs(outdir, exist_ok=True)
     qp = os.path.join(outdir, name + "_問題.docx")
     ap = os.path.join(outdir, name + "_解答.docx")
+    sp = os.path.join(outdir, name + "_解答用紙.docx")
+    kp = os.path.join(outdir, name + "_採点キー.csv")
     t1 = build_question(exam, qp, name)
     t2 = build_answer(exam, ap, name)
+    t3 = build_sheet(exam, sp, name)
+    build_key_csv(exam, kp)
     print("✓ {} （{}点満点）".format(qp, t1))
     print("✓ {} （{}点満点）".format(ap, t2))
+    print("✓ {} （{}点満点・A4 1枚）".format(sp, t3))
+    print("✓ {}".format(kp))
