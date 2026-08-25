@@ -16,9 +16,10 @@
 """
 import json, re, subprocess, sys, os
 from docx import Document
-from docx.shared import Pt, Cm, RGBColor
+from docx.shared import Pt, Cm, Emu, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.section import WD_ORIENT
 from docx.oxml.ns import qn
 
 KANA = "アイウエオカキク"
@@ -67,14 +68,24 @@ def html_wo_tables(html):
     return strip(re.sub(r'<table.*?</table>', "", str(html or ""), flags=re.S))
 
 # ---------- 書式 ----------
+# 使える本文幅（A4 21.0cm − 左右余白）。表がはみ出さないように使う。
+USABLE_W = Cm(21.0 - 1.7 * 2)
+
 def setup(doc):
     st = doc.styles["Normal"]
     st.font.name = "游明朝"
     st.font.size = Pt(10.5)
     st.element.rPr.rFonts.set(qn("w:eastAsia"), "游明朝")
     for s in doc.sections:
+        # ★A4を明示する。python-docx の既定テンプレートは米国レター(21.6×27.9cm)で、
+        #   指定を省くとA4プリンタで用紙不一致になり、縮小されて隅に印刷される。
+        s.orientation = WD_ORIENT.PORTRAIT
+        s.page_width = Cm(21.0)
+        s.page_height = Cm(29.7)
         s.top_margin = s.bottom_margin = Cm(1.6)
         s.left_margin = s.right_margin = Cm(1.7)
+        s.header_distance = Cm(1.0)
+        s.footer_distance = Cm(1.0)
 
 def para(doc, text="", size=10.5, bold=False, align=None, before=0, after=2,
          italic=False, color=None, en=False):
@@ -102,8 +113,12 @@ def rule(doc):
     bd.append(bt); pPr.append(bd)
 
 def add_table(doc, rows):
-    t = doc.add_table(rows=len(rows), cols=max(len(r) for r in rows))
+    cols = max(len(r) for r in rows)
+    t = doc.add_table(rows=len(rows), cols=cols)
     t.style = "Table Grid"; t.alignment = WD_TABLE_ALIGNMENT.LEFT
+    t.autofit = False                      # 本文幅を超えて右にはみ出すのを防ぐ
+    for c in t.columns:
+        c.width = Emu(int(USABLE_W / cols))
     for i, row in enumerate(rows):
         for j, cell in enumerate(row):
             c = t.cell(i, j); c.text = ""
