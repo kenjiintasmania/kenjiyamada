@@ -170,8 +170,9 @@
       <h3>できたプロンプト（AIに貼る）</h3>
       <pre class="prompt" id="l_ptext"></pre>
       <div class="row">
-        <button class="btn" id="l_copy">📋 コピーする</button>
-        <button class="btn ghost" id="l_toPaste">コピーした → ② 貼る</button>
+        <button class="btn" id="l_copy">📋 ① コピーする</button>
+        <button class="btn" id="l_openAI">🤖 ② AIモードに貼る</button>
+        <button class="btn ghost" id="l_toPaste">📥 ③ 素材を貼る画面へ</button>
       </div>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
@@ -261,8 +262,9 @@
       <h3>できたプロンプト（AIに貼る）</h3>
       <pre class="prompt" id="s_ptext"></pre>
       <div class="row">
-        <button class="btn" id="s_copy">📋 コピーする</button>
-        <button class="btn ghost" id="s_toPaste">コピーした → ② 貼る</button>
+        <button class="btn" id="s_copy">📋 ① コピーする</button>
+        <button class="btn" id="s_openAI">🤖 ② AIモードに貼る</button>
+        <button class="btn ghost" id="s_toPaste">📥 ③ 質問を貼る画面へ</button>
       </div>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
@@ -339,6 +341,9 @@
   "use strict";
   var $=function(i){return document.getElementById(i);};
   var SCREENS=["home","lBuild","lPaste","lPlay","lResult","sBuild","sPaste","sPlay","sResult"];
+  // 生徒が使うAIモード。別のサービスに変えるときはここだけ書きかえる。
+  var AI_URL="https://www.google.com/search?udm=50";
+  function openAImode(){ try{ window.open(AI_URL,"_blank","noopener"); }catch(e){ location.href=AI_URL; } }
   function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0);
     if(n==="home") renderHome(); }
   document.querySelectorAll("[data-go]").forEach(function(b){
@@ -446,6 +451,7 @@
       try{ document.execCommand("copy"); done(); }catch(e){} document.body.removeChild(ta); }
   }
   $("l_copy").addEventListener("click",function(){ copyFrom("l_ptext", this, "📋 コピーする"); });
+  $("l_openAI").addEventListener("click", openAImode);
   $("l_toPaste").addEventListener("click",function(){ show("lPaste"); });
 
   /* ---------- ② 解析 ---------- */
@@ -597,6 +603,7 @@
     $("s_ptext").textContent=t; $("s_pbox").classList.remove("hide");
   });
   $("s_copy").addEventListener("click",function(){ copyFrom("s_ptext", this, "📋 コピーする"); });
+  $("s_openAI").addEventListener("click", openAImode);
   $("s_toPaste").addEventListener("click",function(){ show("sPaste"); });
 
   function parseSpeaking(raw){
