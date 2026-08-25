@@ -38,6 +38,25 @@ function getSS(){
   return ss;
 }
 
+
+/* ===== (C) 自学ログ：自学マイページ（jigaku/）から1回ごとに追記 ===== */
+function handleJigaku(d){
+  var header = ["日時","学年","番号","名前","レーン","範囲","問題数","正解数","正答率(%)",
+                "プロンプト版","教科書外の語","まちがえた語"];
+  var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+  if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
+  var sh = getSheet(JIGAKU_SHEET, header);
+  sh.getRange(1,1,1,header.length).setValues([header]);
+  sh.appendRow([
+    new Date(), cls, num, d.name||"",
+    d.lane||"", d.unit||"",
+    numOrBlank(d.total), numOrBlank(d.ok), numOrBlank(d.pct),
+    d.promptV||"", numOrBlank(d.notDb),
+    String(d.weak||"").slice(0, 500)
+  ]);
+  return {result:"ok"};
+}
+
 /* ===== (B) 成績まとめ：列の定義 ===== *
  * key   … 送信ペイロードのキー
  * head  … スプレッドシートの見出し
@@ -106,6 +125,7 @@ var SUMMARY_COLS = [
 var TEACHER_PIN = "PIN";
 var UNIT_SHEET = "単元管理";        // ゲート状態（開/閉・セッション）。先生が見える化用も兼ねる
 var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
+var JIGAKU_SHEET = "自学ログ";      // 自学マイページ（jigaku/）から1回ごとに追記
 // 単元テスト扱いにする試験ID（exam.html?id=… と一致）→ 表示名。複数登録可。
 var UNIT_EXAMS = {
   "c2u1": "中2 単元テスト①",
@@ -114,7 +134,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "unit-gate-9";
+var GAS_VERSION = "jigaku-1";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -138,10 +158,14 @@ function doPost(e){
       return json({result:"ok", message:buildCorrelationTab(), ver:GAS_VERSION});
     }
     if (data.kind === "unittest") return json(handleUnitTest(data));
+    if (data.kind === "jigaku")   return json(handleJigaku(data));
     if (data.kind === "summary"){
       handleSummary(data);
       return json({result:"ok", policy:getPolicy()});   // マイページのコメント用に方針を返す
     }
+    // ★未知の kind を英検タブに落とさない。旧版では kind の綴り違いや新機能の先行送信が
+    //   「英検テスト履歴」に空行を作っていた。kind 無し＝英検、が従来からの約束。
+    if (data.kind) return json({result:"error", message:"未知の kind: "+data.kind, ver:GAS_VERSION});
     handleEiken(data);   // kind 無し＝英検の1回ごと（従来どおり）
     return json({result:"ok"});
   } catch(err){

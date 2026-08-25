@@ -211,8 +211,17 @@
     <div id="r_weak"></div>
     <h3>全問</h3>
     <div id="r_all"></div>
+    <h3>先生に送る</h3>
+    <div class="grid2">
+      <div><label for="f_cls">学年</label>
+        <select id="f_cls"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></div>
+      <div><label for="f_num">番号</label><input type="text" id="f_num" placeholder="例：5"></div>
+    </div>
+    <label for="f_name">名前（任意）</label>
+    <input type="text" id="f_name" placeholder="入れなくても送れます">
     <div class="row" style="margin-top:14px">
       <button class="btn" id="saveRun">記録する</button>
+      <button class="btn" id="sendRun">先生に送信</button>
       <button class="btn ghost sm" data-go="build">もう1回つくる</button>
       <button class="btn ghost sm" data-go="home">ホーム</button>
     </div>
@@ -422,6 +431,8 @@
       '<p class="hint">まちがいなし。次はむずかしめの条件を足してみよう。</p>';
     $("r_all").innerHTML = table(p.rows);
     $("saveMsg").className="msg";
+    $("sendRun").disabled=false; $("sendRun").textContent="先生に送信";
+    fillIdentity();
     show("result");
   });
 
@@ -447,6 +458,73 @@
     var m=$("saveMsg"); m.className="msg show ok";
     m.textContent="記録しました（この端末に保存）。これまで"+s.runs.length+"回。";
     this.disabled=true;
+  });
+
+  /* ---------- 先生に送信（既存スプシの「自学ログ」タブに追記） ---------- */
+  // 送信先はマイページと同じ score_gas のデプロイ。実証モードでは実証用GASに切り替わる。
+  var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
+  if(window.SITE) GAS_URL = SITE.gasFor("summary", GAS_URL);
+
+  function idGet(k){ try{ return localStorage.getItem("mado_"+k)||""; }catch(e){ return ""; } }
+  function idSet(k,v){ try{ localStorage.setItem("mado_"+k,v); }catch(e){} }
+  function han(s){ return String(s||"").replace(/[０-９]/g,function(d){
+    return String.fromCharCode(d.charCodeAt(0)-65248); }).replace(/[^0-9]/g,""); }
+  function fillIdentity(){
+    $("f_cls").value=idGet("year"); $("f_num").value=han(idGet("num")); $("f_name").value=idGet("name");
+  }
+  $("f_cls").addEventListener("change",function(){ idSet("year",this.value); });
+  $("f_num").addEventListener("input",function(){ this.value=han(this.value); idSet("num",this.value); });
+  $("f_name").addEventListener("input",function(){ idSet("name",this.value.trim()); });
+
+  function post(obj){
+    return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(obj)}).then(function(r){ return r.json(); });
+  }
+
+  $("sendRun").addEventListener("click",function(){
+    if(!graded) return;
+    var m=$("saveMsg"), btn=this;
+    var cls=$("f_cls").value.trim(), num=han($("f_num").value), name=$("f_name").value.trim();
+    if(!cls||!num){ m.className="msg show ng"; m.textContent="学年と番号を入れると送信できます。"; return; }
+    if(!GAS_URL){ m.className="msg show ng";
+      m.textContent=(window.SITE&&SITE.isTrial)?"実証用の送信先が未設定です。":"送信先(GAS)が未設定です。"; return; }
+    btn.disabled=true; btn.textContent="送信中…";
+    m.className="msg show"; m.textContent="送信しています…";
+    // ★先に版を確かめる。旧版のGASは未知の kind を英検タブに書いてしまうため、
+    //   「自学ログ」対応（版に jigaku を含む）と分かるまで本送信はしない。
+    post({action:"policy"})
+      .then(function(j){
+        var ver=(j&&j.ver)||"";
+        if(!/jigaku/.test(ver)){
+          throw new Error("__OLD__"+ver);
+        }
+        var weak=graded.rows.filter(function(r){return !r.ok;})
+          .map(function(r){return r.ans;}).join(", ");
+        var payload={kind:"jigaku", ver:"jigaku 0.1", cls:cls, num:num, name:name,
+          lane:"単語", unit:graded.unit||"", total:graded.total, ok:graded.ok, pct:graded.pct,
+          promptV:(graded.promptV?("v"+graded.promptV):""), notDb:(graded.notDb||[]).length, weak:weak};
+        if(window.SITE) SITE.tag(payload);
+        return post(payload);
+      })
+      .then(function(j){
+        if(j&&j.result==="ok"){ m.className="msg show ok";
+          m.textContent="先生に送りました ✓（"+new Date().toLocaleString("ja-JP")+"）";
+          btn.textContent="送信ずみ ✓"; }
+        else throw new Error((j&&j.message)||"server");
+      })
+      .catch(function(err){
+        var s=String(err.message||err);
+        m.className="msg show ng";
+        if(s.indexOf("__OLD__")>=0){
+          m.innerHTML="先生へ：スプレッドシート側がまだ自学ログに対応していません"+
+            "（いまの版 "+esc(s.replace(/^Error: /,"").replace("__OLD__",""))+"）。<br>"+
+            "<code>tools/score_gas.gs</code> を貼り直して「新バージョン」で再デプロイしてください。"+
+            "記録は端末には残っています。";
+        } else {
+          m.textContent="送信できませんでした。電波を確認してもう一度。（"+s.slice(0,40)+"）";
+        }
+        btn.disabled=false; btn.textContent="先生に送信";
+      });
   });
 
   /* ---------- ホーム：履歴 ---------- */
