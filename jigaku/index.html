@@ -170,7 +170,9 @@
     </div>
 
     <label for="f_listname">このリストの名前（記録に残ります）</label>
-    <input type="text" id="f_listname" placeholder="例：Unit 3 の単語 ／ 10/7 小テスト範囲 ／ 苦手な動詞">
+    <input type="text" id="f_listname" placeholder="例：Unit 3 の単語 ／ Lesson 5 前半 ／ 10/7 小テスト範囲">
+    <p class="hint">名前に <b>Unit 3</b> や <b>Lesson 5</b> と入れておくと、先生の表で
+      <b>そのユニットで通算いくつの語をクリアしたか</b>がまとまります（同じ語を何回やっても1語として数えます）。</p>
 
     <div id="typeBox">
       <label for="f_listraw">単語と意味（1行に1語）</label>
@@ -403,7 +405,14 @@
   }
 
   $("checkList").addEventListener("click",function(){ showList(parseList($("f_listraw").value)); });
-  $("f_listraw").addEventListener("blur",function(){ if(this.value.trim()) showList(parseList(this.value)); });
+  // 打っている途中に少し遅れて読み取り結果を出す。
+  // blur で出すと「進む」を押した瞬間に下の表が現れてボタンがずれ、1回目のタップが外れる。
+  var previewTimer=null;
+  $("f_listraw").addEventListener("input",function(){
+    var v=this.value;
+    clearTimeout(previewTimer);
+    previewTimer=setTimeout(function(){ if(v.trim()) showList(parseList(v)); }, 600);
+  });
 
   function prefillList(){
     var s=store();
@@ -752,12 +761,16 @@
         }
         var weak=graded.rows.filter(function(r){return !r.ok;})
           .map(function(r){return r.ans;}).join(", ");
+        // 正解した語も送る。先生側は「そのユニットで通算いくつの語をクリアしたか」を
+        // 語の実数で数えるので、同じリストを何回やっても水増しにならない。
+        var okw=graded.rows.filter(function(r){return r.ok;})
+          .map(function(r){return r.ans;}).join(", ");
         var payload={kind:"jigaku", ver:"jigaku 0.2", cls:cls, num:num, name:name,
           lane:"単語", unit:graded.name||"",
           src:(graded.src==="shot"?"スクショ":"打ち込み"), listN:graded.listN,
           total:graded.total, ok:graded.ok, pct:graded.pct,
           promptV:(graded.promptV?("v"+graded.promptV):""),
-          notDb:(graded.offList||[]).length, weak:weak};
+          notDb:(graded.offList||[]).length, weak:weak, okw:okw};
         if(window.SITE) SITE.tag(payload);
         return post(payload);
       })

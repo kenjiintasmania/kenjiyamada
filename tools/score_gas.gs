@@ -44,7 +44,7 @@ function handleJigaku(d){
   // 「範囲」ではなく「リスト」。出題の根拠は生徒が自分で作った単語リストであって、
   // 教科書の単元名ではない（教科書は学年・地域で変わるため単元名は根拠にならない）。
   var header = ["日時","学年","番号","名前","レーン","リスト名","作り方","リスト語数",
-                "問題数","正解数","正答率(%)","プロンプト版","リスト外の語","まちがえた語"];
+                "問題数","正解数","正答率(%)","プロンプト版","リスト外の語","まちがえた語","クリアした語"];
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
   var sh = getSheet(JIGAKU_SHEET, header);
@@ -54,9 +54,141 @@ function handleJigaku(d){
     d.lane||"", d.unit||"", d.src||"", numOrBlank(d.listN),
     numOrBlank(d.total), numOrBlank(d.ok), numOrBlank(d.pct),
     d.promptV||"", numOrBlank(d.notDb),
-    String(d.weak||"").slice(0, 500)
+    String(d.weak||"").slice(0, 500),
+    String(d.okw||"").slice(0, 1200)
   ]);
+  // 成績まとめ側のユニット別クリア語数を更新。ここで失敗しても記録は残す。
+  try{ rebuildJigakuUnits(); }catch(e){}
   return {result:"ok"};
+}
+
+/* ===== (A2) 自学ログ ▶ 成績まとめ「ユニット別クリア語数」 ===== *
+ * 各生徒について「そのユニットで、これまでに正解できた語が何語あるか」を出す。
+ *   ・同じリストを何回やっても、同じ語は1語として数える（延べではなく実数）。
+ *   ・1つのユニットをいくつかのリストに分けても合算される。
+ *   ・「クリアした語」が無い古い記録は、その単元の正解数の最大値で代用する。
+ * 列は 成績まとめ の固定列（＝単語_活用まで）の右に、ユニット順で自動生成する。
+ * 固定列は SUMMARY_COLS の幅までしか読み書きしないので、既存の集計とはぶつからない。 */
+
+// リスト名からユニットを取り出す。教科書によって Unit / Lesson が違うので両方拾う。
+function jigakuUnitKey(name){
+  var s = String(name||"").trim();
+  if (!s) return "その他";
+  var m = s.match(/(?:unit|ユニット)\s*[-.．_]?\s*(\d{1,2})/i)
+       || s.match(/(?:^|[^a-z])u\s*[-.．_]?\s*(\d{1,2})/i);
+  if (m) return "U" + Number(m[1]);
+  m = s.match(/(?:lesson|レッスン)\s*[-.．_]?\s*(\d{1,2})/i)
+   || s.match(/(?:^|[^a-z])l\s*[-.．_]?\s*(\d{1,2})/i);
+  if (m) return "L" + Number(m[1]);
+  return "その他";
+}
+function jigakuUnitOrder(k){
+  if (k === "その他") return 99999;
+  var n = Number(String(k).slice(1)) || 0;
+  return (k.charAt(0) === "U" ? 0 : 1000) + n;
+}
+// 「Picture Book」と「picture book.」を同じ語として数えるための正規化。
+function jigakuNormWord(w){
+  return String(w||"").toLowerCase().trim()
+    .replace(/[.,!?;:"'’“”（）()]/g, "").replace(/[-_\/]/g, " ")
+    .replace(/\s+/g, " ").trim();
+}
+
+function rebuildJigakuUnits(){
+  var ss = getSS();
+  var lg = ss.getSheetByName(JIGAKU_SHEET);
+  if (!lg || lg.getLastRow() < 2) return 0;
+
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(10000)) return 0;   // 取れなければ次の送信でやり直す
+  try{
+    var sm = getSheet(SUMMARY_SHEET, SUMMARY_COLS.map(function(c){return c.head;}));
+
+    var vals = lg.getRange(1,1,lg.getLastRow(), lg.getLastColumn()).getValues();
+    var C = {};
+    vals[0].forEach(function(h,i){ C[String(h).trim()] = i; });
+    var iCls=C["学年"], iNum=C["番号"], iName=C["名前"], iList=C["リスト名"],
+        iOk=C["正解数"], iWords=C["クリアした語"];
+    if (iCls == null || iNum == null) return 0;
+
+    var byStudent = {}, unitSet = {};
+    for (var r=1; r<vals.length; r++){
+      var row = vals[r];
+      var cls = String(row[iCls]).trim(), num = String(row[iNum]).trim();
+      if (!cls || !num) continue;
+      var key = cls + " / " + num;
+      var u = jigakuUnitKey(iList == null ? "" : row[iList]);
+      unitSet[u] = true;
+      var st = byStudent[key] || (byStudent[key] = {name:"", units:{}});
+      if (iName != null && String(row[iName]).trim()) st.name = String(row[iName]).trim();
+      var slot = st.units[u] || (st.units[u] = {seen:{}, n:0, fallback:0});
+      var words = (iWords == null) ? "" : String(row[iWords]||"");
+      if (words){
+        words.split(/[,、]/).forEach(function(w){
+          var k = jigakuNormWord(w);
+          if (k && !slot.seen[k]){ slot.seen[k]=1; slot.n++; }
+        });
+      } else {
+        var ok = toNum(iOk == null ? null : row[iOk]);
+        if (ok != null && ok > slot.fallback) slot.fallback = ok;
+      }
+    }
+
+    var units = Object.keys(unitSet).sort(function(a,b){
+      return jigakuUnitOrder(a) - jigakuUnitOrder(b); });
+    if (!units.length) return 0;
+
+    var base = SUMMARY_COLS.length;              // 固定列の右端＝単語_活用
+    var need = base + units.length;
+    if (sm.getMaxColumns() < need)
+      sm.insertColumnsAfter(sm.getMaxColumns(), need - sm.getMaxColumns());
+
+    // 自学の列だけ一度まっさらにする（ユニットが減ったときの消し忘れ防止）
+    var wipe = Math.max(sm.getLastColumn(), need) - base;
+    if (wipe > 0) sm.getRange(1, base+1, sm.getMaxRows(), wipe).clearContent();
+    sm.getRange(1, base+1, 1, units.length)
+      .setValues([units.map(function(u){ return "自学_" + u; })]);
+
+    // 成績まとめに行が無い生徒（自学だけやった子）は行を作る
+    var lastRow = sm.getLastRow();
+    var rowOf = {};
+    if (lastRow >= 2)
+      sm.getRange(2,2,lastRow-1,2).getValues().forEach(function(p,i){
+        rowOf[String(p[0]).trim() + " / " + String(p[1]).trim()] = i+2; });
+    Object.keys(byStudent).forEach(function(k){
+      if (rowOf[k]) return;
+      var p = k.split(" / ");
+      var blank = SUMMARY_COLS.map(function(){ return ""; });
+      blank[0] = new Date(); blank[1] = p[0]; blank[2] = p[1]; blank[3] = byStudent[k].name || "";
+      sm.appendRow(blank);
+      rowOf[k] = sm.getLastRow();
+    });
+
+    lastRow = sm.getLastRow();
+    if (lastRow < 2) return units.length;
+    var ids = sm.getRange(2,2,lastRow-1,2).getValues();
+    var out = ids.map(function(p){
+      var st = byStudent[String(p[0]).trim() + " / " + String(p[1]).trim()];
+      return units.map(function(u){
+        if (!st || !st.units[u]) return "";
+        var slot = st.units[u];
+        return Math.max(slot.n, slot.fallback) || "";
+      });
+    });
+    sm.getRange(2, base+1, out.length, units.length).setValues(out);
+    return units.length;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// メニューから手で回すとき用（件数をトーストで返す）
+function rebuildJigakuUnitsMenu(){
+  var n = 0;
+  try{ n = rebuildJigakuUnits(); }
+  catch(e){ toastMsg("集計に失敗しました：" + e.message); return; }
+  toastMsg(n ? ("ユニット別クリア語数を更新しました（" + n + "ユニット）。")
+             : "自学ログにまだ集計できる記録がありません。");
 }
 
 /* ===== (B) 成績まとめ：列の定義 ===== *
@@ -136,7 +268,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-2";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-3";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -413,6 +545,7 @@ function onOpen(){
     .addItem("🔵 3年 未投稿者（マイページ送信）", "missing3")
     .addSeparator()
     .addItem("🔗 AI×成績 相関タブを作成/更新", "buildCorrelationTab")
+    .addItem("🔤 自学ログ▶ユニット別クリア語数を更新", "rebuildJigakuUnitsMenu")
     .addSeparator()
     .addSubMenu(unitMenu)
     .addToUi();
