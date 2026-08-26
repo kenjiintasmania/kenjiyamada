@@ -4,21 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0f766e">
-<title>自学マイページ｜通常授業の自学を記録する</title>
+<title>自学マイページ｜自分のリストでテストする</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📔</text></svg>">
 <!--
   jigaku/ ─ 自学促進アプリ（通常授業用マイページ）・第1弾＝単語レーン
-   流れ：① プロンプトを自分で組み立てる → ② 外部AIに出題させて答える
-         → ③ 提出ブロックを貼る → ④ このページが「自分で」採点する → ⑤ 記録
+
+   流れ：① 自分の単語リストを用意する → ② プロンプトを組み立てる
+         → ③ 外部AIに出題させて答える → ④ 提出ブロックを貼る
+         → ⑤ このページが「自分で」採点する → 記録・送信
 
    設計の核（探究カルテと同じ思想）：
      ・AIが付けた○×は一切見ない。貼られた「わたしの答え」と「正解」だけから再採点する。
        ＝AIに「全問正解にして」と言っても点は動かない。
-     ・さらに「正解」を先生の単語データ（words.js 2000語）と突合し、
-       教科書外の語をAIが出していないかを検算する。
+     ・出題の根拠は「生徒が自分で作ったリスト」に限る。教科書名・単元名からAIに
+       推測させない（教科書は学年・地域で変わるため、単元名は根拠にならない）。
+       打ち込んだ場合は、AIが出した「正解」をそのリストと突合して検算する。
+   「調べる→意味を書く→まとめる」までが自学。その成果物を持ってくる場所がここ。
    プロンプトは生徒が自由にチューニングでき、固定するのは提出ブロックの書式だけ。
-   書式を守らせること自体をプロンプト運用スキルの訓練として扱う。
-   ※ 記録は端末のみ（localStorage: jigaku_v1）。スプシ送信はGAS側にタブ追加が要るため次段階。
+   ※ 記録は端末（localStorage: jigaku_v1）＋ スプシ「自学ログ」タブ。
 -->
 <style>
   :root{
@@ -57,8 +60,18 @@
   @media(max-width:620px){.grid2{grid-template-columns:1fr}}
   .opts{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
   .opt{font-size:12.5px;border:2px solid var(--line);border-radius:999px;padding:5px 12px;
-    cursor:pointer;background:#fff;user-select:none}
+    cursor:pointer;background:#fff;user-select:none;font:inherit;font-size:12.5px}
   .opt.on{border-color:var(--c1);background:#e7f4f2;color:var(--c1d);font-weight:bold}
+  /* 用意のしかた（2択） */
+  .ways{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  @media(max-width:620px){.ways{grid-template-columns:1fr}}
+  .way{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
+    border-radius:12px;padding:12px 13px}
+  .way:hover{border-color:var(--c1)}
+  .way.on{border-color:var(--c1);background:#e7f4f2}
+  .way .e{font-size:22px;line-height:1}
+  .way .t{font-size:14.5px;font-weight:bold;margin:4px 0 2px}
+  .way .d{font-size:12px;color:var(--gray)}
   pre.prompt{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:13px 15px;
     font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
   /* レーン */
@@ -74,8 +87,8 @@
   .lane[disabled]{opacity:.55;cursor:default}
   .lane[disabled]:hover{transform:none;border-color:var(--line)}
   /* ステップ */
-  .steps{display:flex;gap:6px;font-size:12px;margin-bottom:12px;flex-wrap:wrap}
-  .steps span{padding:4px 11px;border-radius:999px;background:#eef2f1;color:var(--gray)}
+  .steps{display:flex;gap:5px;font-size:11.5px;margin-bottom:12px;flex-wrap:wrap}
+  .steps span{padding:4px 10px;border-radius:999px;background:#eef2f1;color:var(--gray)}
   .steps span.now{background:var(--c1);color:#fff;font-weight:bold}
   /* 結果 */
   .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
@@ -94,6 +107,8 @@
   .kpi b{display:block;font-size:19px;color:var(--c1)}
   .kpi span{font-size:11.5px;color:var(--gray)}
   code{background:#eef2f1;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  .note{background:#fffbeb;border:2px solid #fde68a;border-radius:11px;padding:11px 13px;font-size:13px;margin:10px 0}
+  .note b{color:var(--c2)}
   footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
 </style>
 </head>
@@ -102,7 +117,7 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="../index.html">← トップ（英語学習アプリ）</a></div>
   <h1>自学マイページ <span class="en">Jigaku</span></h1>
-  <p>教科書の範囲を自分でAIに出題させて、自分で答えて、ここで採点する。AIの丸つけは使いません。</p>
+  <p>自分で作った単語リストからAIに出題させて、自分で答えて、ここで採点する。AIの丸つけは使いません。</p>
 </div></div>
 
 <div class="wrap">
@@ -114,7 +129,7 @@
     <div class="lanes">
       <button class="lane" id="goTango"><span class="emoji">🔤</span>
         <div class="t">単語</div>
-        <div class="d">教科書の範囲でAIに単語テストを作らせる。日本語→英語のつづりで勝負。</div>
+        <div class="d">自分でまとめた単語リストからAIに出題させる。日本語→英語のつづりで勝負。</div>
         <div class="st" id="st_tango"></div></button>
       <button class="lane" disabled><span class="emoji">📐</span>
         <div class="t">文法</div>
@@ -125,28 +140,79 @@
         <div class="d">キーワードの妥当性を診てもらう→速読・応用問題。</div>
         <div class="st">準備中</div></button>
     </div>
-    <p class="hint">記録はこの端末だけに保存されます。先生への送信は次の段階で追加します。</p>
+    <p class="hint">記録はこの端末に保存され、学年と番号を入れると先生にも送れます。</p>
   </div>
-
   <div class="card" id="histCard">
     <h2>これまでの自学</h2>
     <div id="hist"></div>
   </div>
 </div>
 
-<!-- ============ ① プロンプトを作る ============ -->
-<div id="build" class="hide">
-  <div class="steps"><span class="now">① プロンプトを作る</span><span>② AIに出題させる</span><span>③ 貼る</span><span>④ 採点</span></div>
+<!-- ============ ① 単語リストを用意する ============ -->
+<div id="list" class="hide">
+  <div class="steps"><span class="now">① リストを用意</span><span>② プロンプト</span><span>③ AIで解く</span><span>④ 貼る</span><span>⑤ 採点</span></div>
   <div class="card">
-    <h2>🔤 単語：自分でプロンプトを組み立てる</h2>
+    <h2>🔤 まず、テストしたい単語リストを用意する</h2>
+    <div class="note">
+      <b>ここが自学の本体です。</b> 出てくる単語を自分で選び、辞書やノートで意味を調べ、
+      おぼえる。<b>そこまでを自分でやってから</b>、その成果をここに持ってきてください。
+      まとめ方は自由です（教科書に書き込む・ノートにまとめる・単語カードを作る、どれでもOK）。
+    </div>
+
+    <label>用意のしかたをえらぶ</label>
+    <div class="ways">
+      <button class="way on" id="wayType"><span class="e">⌨️</span>
+        <div class="t">打ち込む</div>
+        <div class="d">英語と日本語の意味をここに入力する。<b>アプリが正解を検算できる</b>ので、こちらが強い。</div></button>
+      <button class="way" id="wayShot"><span class="e">📷</span>
+        <div class="t">スクショを使う</div>
+        <div class="d">自分でまとめた単語リスト（ノート・単語カード・自作の表）の画像を、あとでAIに渡す。</div></button>
+    </div>
+
+    <label for="f_listname">このリストの名前（記録に残ります）</label>
+    <input type="text" id="f_listname" placeholder="例：Unit 3 の単語 ／ 10/7 小テスト範囲 ／ 苦手な動詞">
+
+    <div id="typeBox">
+      <label for="f_listraw">単語と意味（1行に1語）</label>
+      <textarea id="f_listraw" rows="10" placeholder="英語, 日本語　の形で1行ずつ。区切りは , 、 ： = タブ どれでもOK。&#10;&#10;career, 職業&#10;international　国際的な&#10;nursery school＝保育園&#10;chopstick : はし"></textarea>
+      <div class="row">
+        <button class="btn ghost sm" id="checkList">読み取りを確かめる</button>
+        <button class="btn ghost sm" id="loadList">前回のリストを読み込む</button>
+        <span class="hint" id="listNote"></span>
+      </div>
+      <div class="msg" id="listMsg"></div>
+      <div id="listPrev"></div>
+    </div>
+
+    <div id="shotBox" class="hide">
+      <div class="note" style="background:#eef2ff;border-color:#c7d2fe">
+        スクショは<b>このページには入れません</b>。次の画面で作るプロンプトをAIに貼ったあと、
+        <b>同じチャットに画像を貼り付け</b>てください。AIがその画像から出題します。<br>
+        この場合アプリはリストを持たないので、<b>正解の検算はできません</b>（点数の計算はいつもどおり自分の答えから行います）。
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="toBuild">プロンプト作りへ進む →</button>
+      <button class="btn ghost sm" data-go="home">← もどる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ② プロンプトを作る ============ -->
+<div id="build" class="hide">
+  <div class="steps"><span>① リストを用意</span><span class="now">② プロンプト</span><span>③ AIで解く</span><span>④ 貼る</span><span>⑤ 採点</span></div>
+  <div class="card">
+    <h2>自分でプロンプトを組み立てる</h2>
+    <p class="hint" style="margin-top:0" id="srcNote"></p>
     <div class="grid2">
       <div>
-        <label for="f_unit">範囲（単元名・ページ・キーワードなど）</label>
-        <input type="text" id="f_unit" placeholder="例：Unit 3 / p.42〜45 / 職場体験の話">
+        <label for="f_n">問題数</label>
+        <select id="f_n"><option>10</option><option selected>15</option><option>20</option><option>30</option><option value="all">リスト全部</option></select>
       </div>
       <div>
-        <label for="f_n">問題数</label>
-        <select id="f_n"><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
+        <label>リスト</label>
+        <div style="padding:8px 0;font-size:14px" id="listSummary">—</div>
       </div>
     </div>
 
@@ -171,20 +237,20 @@
         <button class="btn" id="openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="toPaste">📥 ③ まとめを貼る画面へ</button>
       </div>
-      <p class="hint">①でコピー → ②でAIモードがひらくので貼り付け → 出題されたら<b>自分で答える</b>
-        → 最後に出てくる提出ブロックをコピー → ③でこのページに戻って貼る。</p>
+      <p class="hint" id="flowNote"></p>
     </div>
-    <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
+    <div class="row"><button class="btn ghost sm" data-go="list">← リストに戻る</button>
+      <button class="btn ghost sm" data-go="home">ホーム</button></div>
   </div>
 </div>
 
-<!-- ============ ③ 貼る ============ -->
+<!-- ============ ④ 貼る ============ -->
 <div id="paste" class="hide">
-  <div class="steps"><span>① 作る</span><span>② AIに出題させる</span><span class="now">③ 貼る</span><span>④ 採点</span></div>
+  <div class="steps"><span>① リストを用意</span><span>② プロンプト</span><span>③ AIで解く</span><span class="now">④ 貼る</span><span>⑤ 採点</span></div>
   <div class="card">
     <h2>提出ブロックを貼る</h2>
     <p class="hint" style="margin-top:0">AIが最後に出した <code>=== TANGO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。前後に余計な文が入っていても大丈夫です。</p>
-    <textarea id="f_paste" rows="12" placeholder="=== TANGO ===&#10;単元: Unit 3&#10;no | 日本語 | わたしの答え | 正解&#10;1 | 明るい | cheerful | cheerful&#10;..."></textarea>
+    <textarea id="f_paste" rows="12" placeholder="=== TANGO ===&#10;リスト: Unit 3 の単語&#10;no | 日本語 | わたしの答え | 正解&#10;1 | 職業 | carrer | career&#10;..."></textarea>
     <div class="msg" id="pasteMsg"></div>
     <div class="row">
       <button class="btn" id="doGrade">自分で採点する</button>
@@ -194,16 +260,16 @@
   </div>
 </div>
 
-<!-- ============ ④ 結果 ============ -->
+<!-- ============ ⑤ 結果 ============ -->
 <div id="result" class="hide">
-  <div class="steps"><span>① 作る</span><span>② AIに出題させる</span><span>③ 貼る</span><span class="now">④ 採点</span></div>
+  <div class="steps"><span>① リストを用意</span><span>② プロンプト</span><span>③ AIで解く</span><span>④ 貼る</span><span class="now">⑤ 採点</span></div>
   <div class="card">
     <h2>採点結果（このページが自分で計算しました）</h2>
     <div class="score" id="r_score">– / –</div>
     <div class="kpi">
       <div><b id="k_pct">–</b><span>正答率</span></div>
       <div><b id="k_weak">–</b><span>まちがえた語</span></div>
-      <div><b id="k_indb">–</b><span>教科書2000語にある語</span></div>
+      <div><b id="k_indb">–</b><span id="k_indb_l">リストと一致</span></div>
       <div><b id="k_ver">–</b><span>プロンプトの版</span></div>
     </div>
     <div class="msg" id="r_note"></div>
@@ -222,7 +288,7 @@
     <div class="row" style="margin-top:14px">
       <button class="btn" id="saveRun">記録する</button>
       <button class="btn" id="sendRun">先生に送信</button>
-      <button class="btn ghost sm" data-go="build">もう1回つくる</button>
+      <button class="btn ghost sm" data-go="list">もう1回つくる</button>
       <button class="btn ghost sm" data-go="home">ホーム</button>
     </div>
     <div class="msg" id="saveMsg"></div>
@@ -233,31 +299,26 @@
 </div>
 
 <script src="../assets/site.js"></script>
-<script src="../words/data/words.js"></script>
 <script>
 (function(){
   "use strict";
   var $=function(i){return document.getElementById(i);};
-  var SCREENS=["home","build","paste","result"];
+  var SCREENS=["home","list","build","paste","result"];
   // 生徒が使うAIモード。別のサービスに変えるときはここだけ書きかえる。
   var AI_URL="https://www.google.com/search?udm=50";
   function openAImode(){ try{ window.open(AI_URL,"_blank","noopener"); }catch(e){ location.href=AI_URL; } }
   function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0);
-    if(n==="home") renderHome(); }
+    if(n==="home") renderHome();
+    if(n==="build") syncBuild(); }
   document.querySelectorAll("[data-go]").forEach(function(b){
     b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
-  $("goTango").addEventListener("click",function(){ show("build"); prefill(); });
+  $("goTango").addEventListener("click",function(){ show("list"); prefillList(); });
 
-  /* ---------- 記録（端末のみ） ---------- */
+  /* ---------- 記録（端末） ---------- */
   var KEY="jigaku_v1";
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
   function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
   function store(){ var s=load(); s.prompts=s.prompts||[]; s.runs=s.runs||[]; return s; }
-
-  /* ---------- 教科書2000語の索引（正解の検算に使う） ---------- */
-  var IDX={};
-  (function(){ if(!window.WORDS) return;
-    WORDS.forEach(function(x){ IDX[norm(x.w)]=x; }); })();
 
   function norm(s){
     return String(s==null?"":s).toLowerCase().trim()
@@ -265,15 +326,123 @@
   }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  var JA=/[぀-ゟ゠-ヿ㐀-鿿ｦ-ﾟ]/;   // かな・漢字・半角カナ
 
-  /* ---------- ① プロンプトビルダー ---------- */
+  /* ================= ① 単語リスト ================= *
+   * 出題の根拠は、生徒が自分で作ったこのリストだけ。
+   * 教科書名や単元名からAIに推測させない（教科書は学年・地域で変わる）。   */
+  var SRC="type";          // "type"（打ち込み）/ "shot"（スクショ）
+  var myList=[];           // [{en, ja}]
+
+  function setSrc(k){
+    SRC=k;
+    $("wayType").classList.toggle("on", k==="type");
+    $("wayShot").classList.toggle("on", k==="shot");
+    $("typeBox").classList.toggle("hide", k!=="type");
+    $("shotBox").classList.toggle("hide", k!=="shot");
+  }
+  $("wayType").addEventListener("click",function(){ setSrc("type"); });
+  $("wayShot").addEventListener("click",function(){ setSrc("shot"); });
+
+  // 1行を「英語」と「日本語」に割る。区切りは , 、 ， ： : = タブ 全角スペース 2つ以上の半角スペース。
+  // どちらが英語かは中身で見分けるので、順番はどちらでもよい。
+  function splitLine(line){
+    var s=String(line||"").replace(/^\s*\d+\s*[.)、．]\s*/,"").trim();   // 行頭の番号を落とす
+    if(!s) return null;
+    var parts=null;
+    if(s.indexOf("\t")>=0) parts=s.split("\t");
+    else {
+      var m=s.split(/\s*[,、，＝=：:｜|]\s*/);
+      if(m.length>=2) parts=m;
+      else parts=s.split(/[　]+|\s{2,}/);          // 全角スペース／半角2つ以上
+    }
+    if(!parts) return null;
+    parts=parts.map(function(x){return x.trim();}).filter(function(x){return x;});
+    if(parts.length<2){
+      // 「career 職業」のように半角1つで切れているとき、英語と日本語の境目で割る
+      var b=s.match(/^([A-Za-z][A-Za-z' .\-]*?)\s+([^\sA-Za-z].*)$/);
+      if(b) parts=[b[1].trim(), b[2].trim()]; else return null;
+    }
+    var a=parts[0], c=parts.slice(1).join(" ").trim();
+    if(JA.test(a) && !JA.test(c)) { var t=a; a=c; c=t; }   // 日本語が先に来ていたら入れかえ
+    if(!a || !c) return null;
+    return {en:a, ja:c};
+  }
+
+  function parseList(raw){
+    var out=[], seen={}, bad=0;
+    String(raw||"").replace(/\r/g,"").split("\n").forEach(function(line){
+      if(!line.trim()) return;
+      var p=splitLine(line);
+      if(!p){ bad++; return; }
+      var k=norm(p.en);
+      if(!k){ bad++; return; }
+      if(seen[k]) return;                 // 重複はまとめる
+      seen[k]=1; out.push(p);
+    });
+    return {items:out, bad:bad};
+  }
+
+  function showList(r){
+    var m=$("listMsg");
+    myList=r.items;
+    if(!r.items.length){
+      m.className="msg show ng";
+      m.innerHTML="1語も読み取れませんでした。<code>career, 職業</code> のように、"+
+        "1行に「英語」と「日本語」を区切って書いてください。";
+      $("listPrev").innerHTML=""; return;
+    }
+    m.className="msg show "+(r.bad?"ng":"ok");
+    m.textContent=r.items.length+"語を読み取りました。"+(r.bad?("読み取れなかった行が"+r.bad+"行あります。"):"");
+    var h='<table><thead><tr><th>#</th><th>英語</th><th>日本語</th></tr></thead><tbody>';
+    r.items.slice(0,8).forEach(function(x,i){
+      h+='<tr><td>'+(i+1)+'</td><td class="en">'+esc(x.en)+'</td><td>'+esc(x.ja)+'</td></tr>'; });
+    h+='</tbody></table>';
+    if(r.items.length>8) h+='<p class="hint">…ほか'+(r.items.length-8)+'語</p>';
+    $("listPrev").innerHTML=h;
+  }
+
+  $("checkList").addEventListener("click",function(){ showList(parseList($("f_listraw").value)); });
+  $("f_listraw").addEventListener("blur",function(){ if(this.value.trim()) showList(parseList(this.value)); });
+
+  function prefillList(){
+    var s=store();
+    $("listNote").textContent = s.list ? ("前回："+(s.list.name||"名前なし")+"・"+(s.list.items||[]).length+"語") : "";
+  }
+  $("loadList").addEventListener("click",function(){
+    var s=store();
+    if(!s.list){ $("listNote").textContent="前回のリストがまだありません"; return; }
+    setSrc(s.list.src||"type");
+    $("f_listname").value=s.list.name||"";
+    if(s.list.raw) $("f_listraw").value=s.list.raw;
+    if(s.list.items&&s.list.items.length) showList({items:s.list.items, bad:0});
+  });
+
+  $("toBuild").addEventListener("click",function(){
+    var name=$("f_listname").value.trim();
+    var m=$("listMsg");
+    if(SRC==="type"){
+      var r=parseList($("f_listraw").value); showList(r);
+      if(!r.items.length) return;
+      myList=r.items;
+    } else {
+      myList=[];
+      if(!name){ m.className="msg show ng"; m.textContent="スクショで進むときは、リストの名前だけ入れてください（記録に残ります）。"; return; }
+    }
+    var s=store();
+    s.list={src:SRC, name:name, raw:(SRC==="type"?$("f_listraw").value:""), items:myList, ts:Date.now()};
+    save(s);
+    show("build");
+  });
+
+  /* ================= ② プロンプトビルダー ================= */
   var OPTIONS=[
-    {k:"spell",  t:"つづりミスを狙う",     line:"- つづりをまちがえやすい語を多めに入れてください。"},
-    {k:"phrase", t:"連語・熟語も入れる",   line:"- 単語だけでなく、連語や熟語（2〜3語のかたまり）も入れてください。"},
-    {k:"ex",     t:"例文をつける",         line:"- それぞれの語に、教科書レベルの短い例文を1つ添えてください。"},
-    {k:"hard",   t:"むずかしめ",           line:"- 少しむずかしめ（応用・言いかえ）にしてください。"},
-    {k:"easy",   t:"やさしめ",             line:"- 基本語中心の、やさしめにしてください。"},
-    {k:"nohint", t:"ヒントなし",           line:"- ヒントは出さないでください。"},
+    {k:"spell",  t:"つづりミスを狙う",     line:"- つづりをまちがえやすい語を多めに選んでください。"},
+    {k:"phrase", t:"連語・熟語も入れる",   line:"- 2〜3語のかたまり（連語・熟語）もリストにあれば入れてください。"},
+    {k:"ex",     t:"例文をつける",         line:"- それぞれの語に、中学生レベルの短い例文を1つ添えてください。"},
+    {k:"hard",   t:"むずかしめ",           line:"- 日本語の見せ方を少しむずかしく（言いかえ・文脈つき）してください。"},
+    {k:"easy",   t:"やさしめ",             line:"- 日本語はリストのままの、やさしい見せ方にしてください。"},
+    {k:"nohint", t:"ヒントなし",           line:"- 頭文字などのヒントは出さないでください。"},
     {k:"why",    t:"まちがえたら理由も",   line:"- わたしがまちがえた語は、なぜまちがえやすいかを一言そえてください。"}
   ];
   var chosen={};
@@ -284,46 +453,71 @@
       box.appendChild(b);
     }); })();
 
-  function prefill(){
-    var s=store(), last=s.prompts[s.prompts.length-1];
+  function listName(){ var s=store(); return (s.list&&s.list.name)||""; }
+
+  function syncBuild(){
+    var s=store(), L=s.list||{};
+    myList=L.items||[];
+    SRC=L.src||"type";
+    $("listSummary").innerHTML = SRC==="type"
+      ? ("<b>"+myList.length+"語</b>　"+esc(L.name||"（名前なし）"))
+      : ("📷 スクショ　"+esc(L.name||"（名前なし）"));
+    $("srcNote").innerHTML = SRC==="type"
+      ? "打ち込んだ<b>"+myList.length+"語がそのままプロンプトに入ります</b>。AIはこの中からしか出題できません。"
+      : "プロンプトをAIに貼ったあと、<b>同じチャットにリストの画像を貼り付けて</b>ください。";
+    $("flowNote").innerHTML = SRC==="type"
+      ? "①でコピー → ②でAIモードがひらくので貼り付け → 出題されたら<b>自分で答える</b> → 最後に出てくる提出ブロックをコピー → ③でこのページに戻って貼る。"
+      : "①でコピー → ②でAIモードがひらくので貼り付け、<b>つづけてリストの画像を貼る</b> → 出題されたら自分で答える → 提出ブロックをコピー → ③で戻って貼る。";
+    var last=s.prompts[s.prompts.length-1];
     $("verNote").textContent = last ? ("いまの最新は v"+last.v+"（"+new Date(last.ts).toLocaleDateString("ja-JP")+"）") : "まだ作ったことがありません";
   }
   $("loadLast").addEventListener("click",function(){
     var s=store(), last=s.prompts[s.prompts.length-1];
     if(!last){ $("verNote").textContent="前回の版がまだありません"; return; }
-    $("f_unit").value=last.unit||""; $("f_n").value=String(last.n||15); $("f_mine").value=last.mine||"";
+    $("f_n").value=String(last.n||15); $("f_mine").value=last.mine||"";
     chosen={}; (last.opts||[]).forEach(function(k){ chosen[k]=true; });
     [].forEach.call($("opts").children,function(b,i){ b.classList.toggle("on", !!chosen[OPTIONS[i].k]); });
     $("verNote").textContent="v"+last.v+" を読み込みました。書き足して v"+(last.v+1)+" にしよう。";
   });
 
-  function buildPrompt(unit,n,opts,mine){
+  function buildPrompt(name,n,opts,mine){
     var lines=OPTIONS.filter(function(o){return opts.indexOf(o.k)>=0;}).map(function(o){return o.line;});
     var p=[];
     p.push("あなたは中学英語の先生です。わたしのために単語テストを作ってください。");
     p.push("");
-    p.push("【範囲】"+(unit||"（教科書の今の単元）"));
-    p.push("【問題数】"+n+"問");
+    if(SRC==="type"){
+      p.push("【出題の範囲】下の単語リストだけです。ここに無い語は絶対に出さないでください。");
+      p.push("【単語リスト】"+(name?("（"+name+"）"):""));
+      myList.forEach(function(x,i){ p.push((i+1)+". "+x.en+" ＝ "+x.ja); });
+    } else {
+      p.push("【出題の範囲】このあとわたしが貼る画像に写っている単語だけです。ここに無い語は絶対に出さないでください。");
+      p.push("【単語リスト】画像で渡します。");
+      p.push("まず、画像から読み取った「英語 ＝ 日本語」の一覧を見せてください。");
+      p.push("読み取りまちがいがあればわたしが直します。わたしが「OK」と言ってから出題を始めてください。");
+    }
+    p.push("");
+    p.push("【問題数】"+(n==="all"?"リストの全部":(n+"問")));
     p.push("【出し方】日本語を見せて、わたしが英語のつづりを書く形式にしてください。");
     p.push("【条件】");
-    p.push("- 上の範囲から出してください。");
+    p.push("- リストの外から語を足さないでください。足りなければ問題数を減らして構いません。");
     if(lines.length) p.push(lines.join("\n"));
     if(mine && mine.trim()) p.push("- "+mine.trim().replace(/\n/g,"\n- "));
     p.push("");
     p.push("【進め方】");
-    p.push("1. まず日本語だけを"+n+"問ならべて出題してください。答えはまだ書かないでください。");
+    p.push("1. まず日本語だけをならべて出題してください。答えはまだ書かないでください。");
     p.push("2. わたしが答えを書きます。");
     p.push("3. わたしが答えたら、最後に下の【提出ブロック】を出してください。");
     p.push("");
     p.push("【提出ブロック】※この書式は1文字も変えないでください");
     p.push("=== TANGO ===");
-    p.push("単元: "+(unit||"（単元名）"));
+    p.push("リスト: "+(name||"（リスト名）"));
     p.push("no | 日本語 | わたしの答え | 正解");
-    p.push("1 | （日本語の意味） | （わたしが書いた答えをそのまま） | （正しい英語）");
+    p.push("1 | （日本語の意味） | （わたしが書いた答えをそのまま） | （リストにある正しい英語）");
     p.push("2 | ... ");
     p.push("=== END ===");
     p.push("");
     p.push("・「わたしの答え」には、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
+    p.push("・「正解」は、リストに書いてあるつづりのまま書いてください。");
     p.push("・○×や点数は書かないでください。採点はわたしのアプリがやります。");
     p.push("・区切りは半角の縦棒 | を使ってください。");
     return p.join("\n");
@@ -331,12 +525,13 @@
 
   var current=null;
   $("mkPrompt").addEventListener("click",function(){
-    var unit=$("f_unit").value.trim(), n=parseInt($("f_n").value,10)||15;
+    var name=listName(), n=$("f_n").value;
+    if(n!=="all") n=parseInt(n,10)||15;
     var opts=OPTIONS.filter(function(o){return chosen[o.k];}).map(function(o){return o.k;});
     var mine=$("f_mine").value;
     var s=store(), v=(s.prompts.length? s.prompts[s.prompts.length-1].v : 0)+1;
-    var text=buildPrompt(unit,n,opts,mine);
-    current={v:v, ts:Date.now(), unit:unit, n:n, opts:opts, mine:mine, text:text};
+    var text=buildPrompt(name,n,opts,mine);
+    current={v:v, ts:Date.now(), name:name, src:SRC, listN:myList.length, n:n, opts:opts, mine:mine, text:text};
     s.prompts.push(current); save(s);
     $("promptText").textContent=text;
     $("promptBox").classList.remove("hide");
@@ -344,7 +539,7 @@
   });
   $("copyPrompt").addEventListener("click",function(){
     var t=$("promptText").textContent, b=this;
-    function done(){ b.textContent="コピーしました ✓"; setTimeout(function(){ b.textContent="📋 コピーする"; },1600); }
+    function done(){ b.textContent="コピーしました ✓"; setTimeout(function(){ b.textContent="📋 ① コピーする"; },1600); }
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,fallback); }
     else fallback();
     function fallback(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta);
@@ -353,7 +548,7 @@
   $("openAI").addEventListener("click", openAImode);
   $("toPaste").addEventListener("click",function(){ show("paste"); });
 
-  /* ---------- ③ 提出ブロックの解析 ---------- */
+  /* ================= ④ 提出ブロックの解析 ================= */
   /* 改行が失われて1行になった貼り付けを復元する。
      AIの出力をコピーすると改行が落ちることがあり、そのとき
      「… | science2 | 地球 | …」のように次の問題番号が前の欄の末尾にくっつく。
@@ -362,33 +557,77 @@
     return t.replace(/([^\d\s|])(\d{1,3})\s*\|/g, "$1\n$2 |");
   }
 
+  /* 縦棒だけを頼りに4列を組み直す最後の砦。
+     改行が全部落ちると「… | career career2 | はし | …」のように
+     前の行の「正解」と次の行の番号がひとつの欄に同居する。
+     見出しの「正解」を起点に、以後は3つずつ（日本語・わたしの答え・正解＋次の番号）
+     取り出していけば、番号の付き方に関係なく元の行に戻せる。 */
+  function readByPipes(body){
+    var t=String(body||"").replace(/｜/g,"|").replace(/\n/g," ");
+    if(t.indexOf("|")<0) return {name:"", rows:[], bad:0};
+    var name="";
+    var mn=t.match(/(?:リスト|単元)\s*[:：]\s*([^|]*)/);
+    if(mn) name=mn[1].replace(/\s*no\s*$/i,"").trim();
+    var tok=t.split("|");
+    var h=-1;
+    for(var i=0;i<tok.length;i++){ if(/正解/.test(tok[i])){ h=i; break; } }
+    if(h<0) return {name:name, rows:[], bad:0};
+    var m=tok[h].match(/(\d{1,3})\s*$/);
+    if(!m) return {name:name, rows:[], bad:0};
+    var no=parseInt(m[1],10), rows=[], bad=0, k=h+1;
+    while(k+2 < tok.length){
+      var ja=tok[k].trim(), mine=tok[k+1].trim();
+      var rest=tok[k+2].replace(/===\s*(?:TANGO|END)\s*===/g,"").trim();
+      var mm=rest.match(/^(.*?)\s*(\d{1,3})\s*$/);       // 末尾の数字＝次の行の番号
+      var ans = mm ? mm[1].trim() : rest;
+      if(!ja && !ans) bad++; else rows.push({no:no, ja:ja, mine:mine, ans:ans});
+      if(!mm) break;                                       // 数字が付いていない＝最後の行
+      no=parseInt(mm[2],10); k+=3;
+    }
+    return {name:name, rows:rows, bad:bad};
+  }
+
   function parseBlock(raw){
     var txt=String(raw||"").replace(/\r/g,"");
     var i=txt.indexOf("=== TANGO ==="), j=txt.indexOf("=== END ===");
     var body = (i>=0) ? txt.slice(i+13, j>i? j : txt.length) : txt;   // マーカーが無くても表だけで通す
-    var r0 = readRows(body);
-    if(!r0.rows.length && body.indexOf("|")>=0) r0 = readRows(repairOneLine(body));  // 1行貼りの救済
-    return r0;
+    var best = readRows(body);
+    // 1行も取れなかったか、つながった行が混じっていたら救済を試し、いちばん多く取れた結果を採る
+    if((!best.rows.length || best.joined) && body.indexOf("|")>=0){
+      [readRows(repairOneLine(body)), readByPipes(body)].forEach(function(r){
+        if(r.rows.length > best.rows.length) best = r;
+      });
+    }
+    return best;
   }
 
   function readRows(body){
-    var unit="";
-    var rows=[], bad=0;
+    var name="";
+    var rows=[], bad=0, joined=0;
+    // 「リスト: ○○」は先に抜いておく。改行が落ちて見出し行と同じ行に来ても、
+    // 残り（＝表の本体）を取りこぼさないため。
+    body = String(body||"").replace(/^[ \t]*(?:リスト|単元)[ \t]*[:：][ \t]*([^\n|]*)/m,
+      function(_,v){ name=String(v).replace(/\s*no\s*$/i,"").trim(); return ""; });
     body.split("\n").forEach(function(line){
       var s=line.replace(/｜/g,"|").trim();
       if(!s) return;
-      var mu=s.match(/^単元\s*[:：]\s*(.+)$/);
-      if(mu){ unit=mu[1].split("|")[0].replace(/no\s*$/i,"").trim(); return; }
       if(s.indexOf("|")<0) return;
       var c=s.split("|").map(function(x){return x.trim();});
-      if(c.length<4) { bad++; return; }
+      while(c.length && c[0]==="") c.shift();                          // markdown の | 始まり
+      while(c.length && c[c.length-1]==="") c.pop();                   // markdown の | 終わり
+      if(!c.length) return;
+      if(/^[-:\s]+$/.test(c.join(""))) return;                         // |---|---| の区切り行
       if(/^no$/i.test(c[0])||/日本語/.test(c[1])) return;              // 見出し行
+      if(c.length<4) { bad++; return; }
       if(!/^\d+$/.test(c[0].replace(/[^0-9]/g,""))) { bad++; return; }
+      // 5欄以上＝改行が落ちて2行がつながっている。ここで4欄だけ拾うと
+      // 「正解」に次の行の番号が混じるので、拾わずに後段の救済へ回す。
+      if(c.length>4) { joined++; return; }
       var ja=c[1], mine=c[2], ans=c[3];
       if(!ja&&!ans) { bad++; return; }
       rows.push({no:parseInt(c[0].replace(/[^0-9]/g,""),10), ja:ja, mine:mine, ans:ans});
     });
-    return {unit:unit, rows:rows, bad:bad};
+    return {name:name, rows:rows, bad:bad, joined:joined};
   }
 
   var graded=null;
@@ -402,56 +641,69 @@
       return;
     }
     // ── 採点：AIの○×は使わず、わたしの答えと正解の一致だけで判定する
-    var ok=0, weak=[], inDb=0, notDb=[];
+    var s=store(), L=s.list||{};
+    var IDX={};
+    (L.items||[]).forEach(function(x){ IDX[norm(x.en)]=x; });
+    var hasList=(L.src==="type") && (L.items||[]).length>0;
+
+    var ok=0, weak=[], inList=0, offList=[];
     p.rows.forEach(function(r){
       r.ok = !!(norm(r.mine) && norm(r.mine)===norm(r.ans));
       if(r.ok) ok++; else weak.push(r);
-      var hit=IDX[norm(r.ans)];
-      r.db=hit||null;
-      if(hit) inDb++; else notDb.push(r.ans);
+      if(hasList){
+        var hit=IDX[norm(r.ans)];
+        r.hit=hit||null;
+        if(hit) inList++; else offList.push(r.ans);
+      } else r.hit=null;
     });
     var total=p.rows.length, pct=total?Math.round(ok/total*100):0;
-    graded={ts:Date.now(), unit:p.unit||($("f_unit").value.trim()), total:total, ok:ok, pct:pct,
-            rows:p.rows, promptV:(current?current.v:null), notDb:notDb};
+    graded={ts:Date.now(), name:(p.name||L.name||""), src:(L.src||"type"), listN:(L.items||[]).length,
+            total:total, ok:ok, pct:pct, rows:p.rows, promptV:(current?current.v:null),
+            hasList:hasList, offList:offList};
 
     $("r_score").textContent=ok+" / "+total;
     $("k_pct").textContent=pct+"%";
     $("k_weak").textContent=weak.length+"語";
-    $("k_indb").textContent=inDb+" / "+total;
+    $("k_indb").textContent = hasList ? (inList+" / "+total) : "—";
+    $("k_indb_l").textContent = hasList ? "リストと一致" : "スクショなので検算なし";
     $("k_ver").textContent=current?("v"+current.v):"—";
 
     var note=$("r_note"); note.className="msg show ok";
     var extra="";
     if(p.bad) extra+=" 読み取れなかった行が"+p.bad+"行ありました。";
-    if(notDb.length) extra+=" 教科書2000語に無い語が"+notDb.length+"語（"+esc(notDb.slice(0,3).join("、"))+"…）。範囲外かもしれません。";
+    if(hasList && offList.length)
+      extra+=" 自分のリストに無い語が"+offList.length+"語（"+offList.slice(0,3).join("、")+"…）。AIが勝手に足したかもしれません。";
     note.innerHTML="AIの丸つけは使わず、貼られた「わたしの答え」と「正解」だけで採点しました。"+esc(extra);
-    if(p.bad||notDb.length) note.className="msg show ng";
+    if(p.bad||offList.length) note.className="msg show ng";
 
-    $("r_weak").innerHTML = weak.length ? table(weak) :
+    $("r_weak").innerHTML = weak.length ? table(weak,hasList) :
       '<p class="hint">まちがいなし。次はむずかしめの条件を足してみよう。</p>';
-    $("r_all").innerHTML = table(p.rows);
+    $("r_all").innerHTML = table(p.rows,hasList);
     $("saveMsg").className="msg";
     $("sendRun").disabled=false; $("sendRun").textContent="先生に送信";
+    $("saveRun").disabled=false;
     fillIdentity();
     show("result");
   });
 
-  function table(rows){
-    var h='<table><thead><tr><th>#</th><th>日本語</th><th>わたしの答え</th><th>正解</th><th>判定</th><th>教科書</th></tr></thead><tbody>';
+  function table(rows,hasList){
+    var h='<table><thead><tr><th>#</th><th>日本語</th><th>わたしの答え</th><th>正解</th><th>判定</th>'+
+          (hasList?'<th>リスト</th>':'')+'</tr></thead><tbody>';
     rows.forEach(function(r){
       h+='<tr class="'+(r.ok?"":"ng")+'"><td>'+r.no+'</td><td>'+esc(r.ja)+'</td>'+
          '<td class="en">'+esc(r.mine||"（空）")+'</td><td class="en">'+esc(r.ans)+'</td>'+
          '<td>'+(r.ok?"○":"×")+'</td>'+
-         '<td>'+(r.db?(esc(r.db.p)+"・"+r.db.g+"年"):"—")+'</td></tr>';
+         (hasList?('<td>'+(r.hit?"✓":"リスト外")+'</td>'):'')+'</tr>';
     });
     return h+'</tbody></table>';
   }
 
-  /* ---------- ⑤ 記録 ---------- */
+  /* ================= 記録 ================= */
   $("saveRun").addEventListener("click",function(){
     if(!graded) return;
     var s=store();
-    s.runs.push({ts:graded.ts, unit:graded.unit, total:graded.total, ok:graded.ok, pct:graded.pct,
+    s.runs.push({ts:graded.ts, name:graded.name, src:graded.src, listN:graded.listN,
+      total:graded.total, ok:graded.ok, pct:graded.pct,
       promptV:graded.promptV, weak:graded.rows.filter(function(r){return !r.ok;})
         .map(function(r){return {ja:r.ja, ans:r.ans, mine:r.mine};})});
     save(s);
@@ -500,9 +752,12 @@
         }
         var weak=graded.rows.filter(function(r){return !r.ok;})
           .map(function(r){return r.ans;}).join(", ");
-        var payload={kind:"jigaku", ver:"jigaku 0.1", cls:cls, num:num, name:name,
-          lane:"単語", unit:graded.unit||"", total:graded.total, ok:graded.ok, pct:graded.pct,
-          promptV:(graded.promptV?("v"+graded.promptV):""), notDb:(graded.notDb||[]).length, weak:weak};
+        var payload={kind:"jigaku", ver:"jigaku 0.2", cls:cls, num:num, name:name,
+          lane:"単語", unit:graded.name||"",
+          src:(graded.src==="shot"?"スクショ":"打ち込み"), listN:graded.listN,
+          total:graded.total, ok:graded.ok, pct:graded.pct,
+          promptV:(graded.promptV?("v"+graded.promptV):""),
+          notDb:(graded.offList||[]).length, weak:weak};
         if(window.SITE) SITE.tag(payload);
         return post(payload);
       })
@@ -533,9 +788,11 @@
     $("st_tango").textContent = s.runs.length ? (s.runs.length+"回・最新"+s.runs[s.runs.length-1].pct+"%") : "はじめてみよう";
     var box=$("hist");
     if(!s.runs.length){ box.innerHTML='<p class="hint">まだ記録がありません。単語レーンから始めてみよう。</p>'; return; }
-    var h='<table><thead><tr><th>日付</th><th>範囲</th><th>点</th><th>正答率</th><th>版</th></tr></thead><tbody>';
+    var h='<table><thead><tr><th>日付</th><th>リスト</th><th>作り方</th><th>点</th><th>正答率</th><th>版</th></tr></thead><tbody>';
     s.runs.slice().reverse().slice(0,12).forEach(function(r){
-      h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td><td>'+esc(r.unit||"—")+'</td>'+
+      h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td>'+
+         '<td>'+esc(r.name||r.unit||"—")+'</td>'+
+         '<td>'+(r.src==="shot"?"📷":"⌨️")+'</td>'+
          '<td>'+r.ok+' / '+r.total+'</td><td>'+r.pct+'%</td><td>'+(r.promptV?("v"+r.promptV):"—")+'</td></tr>';
     });
     box.innerHTML=h+'</tbody></table>';

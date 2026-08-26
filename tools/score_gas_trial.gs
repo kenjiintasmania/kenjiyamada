@@ -53,15 +53,17 @@ function getSS(){
 
 /* ===== (C) 自学ログ：自学マイページ（jigaku/）から1回ごとに追記 ===== */
 function handleJigaku(d){
-  var header = ["日時","学年","番号","名前","レーン","範囲","問題数","正解数","正答率(%)",
-                "プロンプト版","教科書外の語","まちがえた語"];
+  // 「範囲」ではなく「リスト」。出題の根拠は生徒が自分で作った単語リストであって、
+  // 教科書の単元名ではない（教科書は学年・地域で変わるため単元名は根拠にならない）。
+  var header = ["日時","学年","番号","名前","レーン","リスト名","作り方","リスト語数",
+                "問題数","正解数","正答率(%)","プロンプト版","リスト外の語","まちがえた語"];
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
   var sh = getSheet(JIGAKU_SHEET, header);
   sh.getRange(1,1,1,header.length).setValues([header]);
   sh.appendRow([
     new Date(), cls, num, d.name||"",
-    d.lane||"", d.unit||"",
+    d.lane||"", d.unit||"", d.src||"", numOrBlank(d.listN),
     numOrBlank(d.total), numOrBlank(d.ok), numOrBlank(d.pct),
     d.promptV||"", numOrBlank(d.notDb),
     String(d.weak||"").slice(0, 500)
@@ -146,7 +148,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-1";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-2";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
