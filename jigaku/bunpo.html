@@ -9,22 +9,17 @@
 <!--
   jigaku/bunpo.html ─ 自学マイページ・文法レーン（第1弾＝現在完了形）
 
-   流れ：① AIに教材を1回で作らせて貼る
-         → ② 基本文と訳・解説を読む
-         → ③ 基本文を見ながら打つ（写す）
-         → ④ 日本語訳を見て打つ（思い出す）
-         → ⑤ 選択5問（見分ける）
-         → ⑥ 並べかえ5問（組み立てる）
+   流れ：① 覚える一覧を読む（基本文・訳・解説）      … アプリが持っている固定教材
+         → ② 基本文を見ながら打つ（写す）           … アプリの中だけ
+         → ③ 日本語訳だけを見て打つ（思い出す）      … アプリの中だけ
+         → ④ AIモードで10問（選択5＋並べかえ5）      … ここだけ外のAI
+         → ⑤ まとめを貼る → アプリが再採点
 
-   単語レーンとの決定的なちがい：
-     ・AIには**問題だけ**作らせる。答えはすべてこのページの中で受け取る。
-       ＝「わたしの答え」がAIを一度も通らない。改ざんの余地が原理的に無い。
-     ・英作文は入れない。正解が一意でないものは機械採点できないため。
-       ③は基本文を先に見せているので「作文」ではなく「再生」＝正解は一つ。
-   語彙は中1に固定する。完了形を習う学年が教科書ごとに違うので、
-   先取りの生徒が単語で止まらないようにするため。ただし
-   already / yet / ever / since は中3語なので、項目ごとの必須語として例外にする。
-   チェックは**警告のみ**で、進行は止めない。
+   基本文はAIに作らせない。学年・教科書によらず同じものを教えたいので、
+   jigaku/data/bunpo_kanryo.js に固定で持つ。語は中1のものだけで書いてある。
+   AIに任せるのは④の**問題のランダマイズだけ**。しかも1問ずつ出させる。
+   10問まとめて出すと、並べかえは書く量が多すぎて手が止まるため。
+   採点はAIの丸つけを使わず、貼られた「わたしの答え」と「正解」だけで再計算する。
 -->
 <style>
   :root{
@@ -127,49 +122,44 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="index.html">← 自学マイページ</a></div>
   <h1>文法レーン <span class="en">Grammar</span></h1>
-  <p>AIには問題だけ作らせる。答えはこのページの中だけで受け取ります。</p>
+  <p>基本文はこのアプリが持っています。AIに任せるのは、最後の10問のランダマイズだけ。</p>
 </div></div>
 
 <div class="wrap">
 
-<!-- ============ ① はじめに ============ -->
+<!-- ============ ① 覚える一覧 ============ -->
 <div id="intro">
   <div class="card">
-    <h2>📐 今回の文法：<span id="itemName">現在完了形</span></h2>
+    <h2 id="gTitle"></h2>
+    <p id="gLead" style="font-size:14px;margin:0 0 10px"></p>
+    <div id="gCore"></div>
     <div class="note">
-      <b>使う単語は中1のものだけ</b>にします。完了形を習う学年は教科書によってちがうので、
+      <b>使う単語は中1のものだけ</b>にしてあります。完了形を習う学年は教科書によってちがうので、
       先に進んでいる人が<b>単語でつまずかない</b>ようにするためです。
-      <span id="mustWords"></span>
+      already / yet / ever / since など、完了形に必要な語だけは例外です。
     </div>
-    <h3>やること</h3>
-    <table>
-      <tr><th>①</th><td>基本文と、その訳・解説を読む</td></tr>
-      <tr><th>②</th><td>基本文を<b>見ながら</b>打つ（写す）</td></tr>
-      <tr><th>③</th><td>日本語訳だけを見て打つ（思い出す）</td></tr>
-      <tr><th>④</th><td>選択問題 5問（見分ける）</td></tr>
-      <tr><th>⑤</th><td>並べかえ 5問（組み立てる）</td></tr>
-    </table>
-    <p class="hint">②から⑤まではこのページの中で答えます。AIには一度も答えを見せません。</p>
+    <h3>基本文（これをおぼえる）</h3>
+    <div id="gList"></div>
     <div class="row" style="margin-top:14px">
-      <button class="btn" id="toBuild">教材を作るプロンプトへ →</button>
-      <button class="btn ghost sm" id="toPasteDirect">もう教材がある（貼る画面へ）</button>
+      <button class="btn" id="startPractice">おぼえたら練習へ →</button>
+      <a class="btn ghost sm" href="index.html" style="text-decoration:none;line-height:1.9">← 自学マイページ</a>
     </div>
   </div>
   <div class="card"><h2>これまでの文法</h2><div id="hist"></div></div>
 </div>
 
-<!-- ============ プロンプト ============ -->
+<!-- ============ ④ AIモードで10問 ============ -->
 <div id="build" class="hide">
-  <div class="steps"><span class="now">教材を作る</span><span>貼る</span><span>読む</span><span>写す</span><span>思い出す</span><span>選ぶ</span><span>組む</span></div>
+  <div class="steps" id="aiSteps"></div>
   <div class="card">
-    <h2>AIに教材を作らせる</h2>
-    <div class="grid2">
-      <div><label for="f_kihon">基本文の数</label>
-        <select id="f_kihon"><option>3</option><option selected>4</option><option>5</option></select></div>
-      <div><label>問題数</label><div style="padding:8px 0;font-size:14px">選択 5問 ／ 並べかえ 5問</div></div>
+    <h2>④ AIモードで10問といてくる</h2>
+    <div class="note">
+      AIには<b>問題を出す役だけ</b>をやってもらいます。<b>1問ずつ出させて、1問ずつ答える</b>形です。
+      10問まとめて出されると、並べかえは書く量が多すぎて途中でいやになるからです。
+      10問終わると最後にまとめが出るので、それをコピーしてここに戻ってきてください。
     </div>
     <label for="f_mine">自分の工夫（自由に書き足す）</label>
-    <textarea id="f_mine" rows="3" placeholder="例：スポーツの話でそろえて。ぼくがまちがえやすい have と has を必ず両方入れて。"></textarea>
+    <textarea id="f_mine" rows="3" placeholder="例：スポーツの話でそろえて。has と have を必ず両方出して。"></textarea>
     <p class="hint">ここが自分の腕の見せどころ。うまくいった書き方は次の版に引き継がれます。</p>
     <div class="row">
       <button class="btn" id="mkPrompt">プロンプトを作る</button>
@@ -182,33 +172,33 @@
       <div class="row">
         <button class="btn" id="copyPrompt">📋 ① コピーする</button>
         <button class="btn" id="openAI">🤖 ② AIモードに貼る</button>
-        <button class="btn ghost" id="goPaste">📥 ③ 教材を貼る画面へ</button>
+        <button class="btn ghost" id="goPaste">📥 ③ まとめを貼る画面へ</button>
       </div>
-      <p class="hint">①でコピー → ②でAIモードに貼る → 出てきた
-        <code>=== BUNPO ===</code> から <code>=== END ===</code> までをコピー → ③で貼る。</p>
+      <p class="hint">①でコピー → ②でAIモードに貼る → <b>1問ずつ出てくるので1問ずつ答える</b>
+        → 10問終わると出る <code>=== BUNPO ===</code> から <code>=== END ===</code> までをコピー → ③で貼る。</p>
     </div>
-    <div class="row"><button class="btn ghost sm" data-go="intro">← もどる</button></div>
+    <div class="row"><button class="btn ghost sm" data-go="intro">← 覚える一覧にもどる</button></div>
   </div>
 </div>
 
-<!-- ============ 貼る ============ -->
+<!-- ============ ⑤ まとめを貼る ============ -->
 <div id="paste" class="hide">
-  <div class="steps"><span class="done">教材を作る</span><span class="now">貼る</span><span>読む</span><span>写す</span><span>思い出す</span><span>選ぶ</span><span>組む</span></div>
+  <div class="steps" id="pasteSteps"></div>
   <div class="card">
-    <h2>教材を貼る</h2>
-    <p class="hint" style="margin-top:0">AIが出した <code>=== BUNPO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。</p>
-    <textarea id="f_paste" rows="12" placeholder="=== BUNPO ===&#10;項目: 現在完了形&#10;[基本文]&#10;1 | I have just eaten lunch. | わたしはちょうど昼食を食べたところです。 | have + 過去分詞で「〜したところだ」。&#10;[選択]&#10;1 | I have ( ) to Osaka twice. | go / went / been / going | been | 「行ったことがある」は have been to。&#10;[並べかえ]&#10;1 | わたしは3年間ここに住んでいます。 | have / I / lived / here / for / three / years | I have lived here for three years.&#10;=== END ==="></textarea>
+    <h2>⑤ まとめを貼る</h2>
+    <p class="hint" style="margin-top:0">AIが最後に出した <code>=== BUNPO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。</p>
+    <textarea id="f_paste" rows="12" placeholder="=== BUNPO ===&#10;項目: 現在完了形&#10;no | 種別 | 問題 | わたしの答え | 正解&#10;1 | 選択 | I have ( ) to Osaka twice. | went | been&#10;6 | 並べかえ | 彼はもう昼食を食べました。 | He has eaten already lunch. | He has already eaten lunch.&#10;=== END ==="></textarea>
     <div class="msg" id="pasteMsg"></div>
     <div class="msg" id="vocabMsg"></div>
     <div class="row">
-      <button class="btn" id="doLoad">この教材で始める</button>
+      <button class="btn" id="doLoad">自分で採点する</button>
       <button class="btn ghost sm" data-go="build">← プロンプトに戻る</button>
       <button class="btn ghost sm" data-go="intro">ホーム</button>
     </div>
   </div>
 </div>
 
-<!-- ============ 学習（②〜⑥） ============ -->
+<!-- ============ ②③ アプリの中で打つ ============ -->
 <div id="learn" class="hide">
   <div class="steps" id="learnSteps"></div>
   <div class="card">
@@ -261,6 +251,7 @@
 <script src="../assets/site.js"></script>
 <script src="../words/data/words.js"></script>
 <script src="../words/data/katsuyo.js"></script>
+<script src="data/bunpo_kanryo.js"></script>
 <script src="bunpo.js"></script>
 </body>
 </html>
