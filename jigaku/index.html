@@ -67,9 +67,10 @@
     padding:2px 9px;margin-left:8px;font-weight:bold;vertical-align:middle}
   .unitrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
   .unitrow select{width:auto;min-width:110px}
-  .unitrow input[type=number]{width:110px}
-  .unitrow .echo{font-size:13px;color:var(--gray)}
-  .unitrow .echo b{color:var(--c1d);font-size:15px}
+  .unitrow select#f_unum,.unitrow select#f_lnum{width:auto;min-width:80px}
+  .unitrow .sep{font-size:14px;color:var(--gray)}
+  .echo{font-size:13px;color:var(--gray);margin-top:6px}
+  .echo b{color:var(--c1d);font-size:15px}
   .bad{border-color:var(--ng)!important;background:#fff6f4}
   .ways{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
   @media(max-width:620px){.ways{grid-template-columns:1fr}}
@@ -177,17 +178,19 @@
         <div class="d">自分でまとめた単語リスト（ノート・単語カード・自作の表）の画像を、あとでAIに渡す。</div></button>
     </div>
 
-    <label>教科書のどこ？<span class="req">かならず入れる</span></label>
+    <label>教科書のどこ？<span class="req">かならず選ぶ</span></label>
     <div class="unitrow">
       <select id="f_kind"><option>Unit</option><option>Lesson</option></select>
-      <input type="number" id="f_unum" min="1" max="40" step="1" inputmode="numeric" placeholder="番号">
-      <span class="echo" id="unitEcho">番号を入れると、ここに記録される名前が出ます</span>
+      <select id="f_unum"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select>
+      <span class="sep">の</span>
+      <select id="f_lnum"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select>
+      <span class="sep">つめのリスト</span>
     </div>
+    <div class="echo" id="unitEcho">2つとも選ぶと、ここに記録される名前が出ます</div>
     <p class="hint">手元の教科書に <b>Unit</b> と書いてあるか <b>Lesson</b> と書いてあるかを見て選ぶ。
-      ここがそろっていないと、先生の表で<b>ユニットごとのクリア語数がまとまりません</b>。</p>
-
-    <label for="f_listname">メモ（任意）</label>
-    <input type="text" id="f_listname" placeholder="例：前半 ／ 小テスト範囲 ／ 苦手なやつ">
+      「何つめのリスト」は<b>自分で決めていい</b>。1つのユニットを何回かに分けてやるなら、
+      1つめ・2つめ…と増やしていく。<br>
+      先生の表では<b>ユニットごとにまとめて</b>数えます。1つめと2つめに同じ語があっても1語です。</p>
 
     <div id="typeBox">
       <label for="f_listraw">単語と意味（1行に1語）</label>
@@ -431,20 +434,21 @@
 
   /* 単元は必ず入れさせる。自由記入だと「1」「小テスト」のような名前になり、
      先生の表で「その他」に落ちてユニットごとの集計にならないため、ここはシステムで縛る。 */
-  function unitNum(){ return String($("f_unum").value||"").replace(/[^0-9]/g,""); }
+  function unitNum(){ return $("f_unum").value; }      // "0" もありうるので空文字だけを未選択とみなす
+  function listNum(){ return $("f_lnum").value; }
   function fullName(){
-    var n=unitNum(); if(!n) return "";
-    var memo=$("f_listname").value.trim();
-    return $("f_kind").value+" "+parseInt(n,10)+(memo?(" "+memo):"");
+    if(unitNum()===""||listNum()==="") return "";
+    return $("f_kind").value+" "+unitNum()+"-"+listNum();
   }
   function echoUnit(){
     var nm=fullName();
-    $("unitEcho").innerHTML = nm ? ("記録される名前 → <b>"+esc(nm)+"</b>")
-                                 : "番号を入れると、ここに記録される名前が出ます";
-    $("f_unum").classList.toggle("bad", !unitNum());
+    $("unitEcho").innerHTML = nm
+      ? ("記録される名前 → <b>"+esc(nm)+"</b>　（先生の表では <b>"+$("f_kind").value.charAt(0)+unitNum()+"</b> にまとまります）")
+      : "2つとも選ぶと、ここに記録される名前が出ます";
+    $("f_unum").classList.toggle("bad", unitNum()==="");
+    $("f_lnum").classList.toggle("bad", listNum()==="");
   }
-  ["f_kind","f_unum","f_listname"].forEach(function(id){
-    $(id).addEventListener("input", echoUnit); $(id).addEventListener("change", echoUnit); });
+  ["f_kind","f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
 
   function prefillList(){
     var s=store();
@@ -456,8 +460,8 @@
     if(!s.list){ $("listNote").textContent="前回のリストがまだありません"; return; }
     setSrc(s.list.src||"type");
     $("f_kind").value=s.list.kind||"Unit";
-    $("f_unum").value=s.list.unum||"";
-    $("f_listname").value=s.list.memo||"";
+    $("f_unum").value=(s.list.unum!=null?String(s.list.unum):"");
+    $("f_lnum").value=(s.list.lnum!=null?String(s.list.lnum):"");
     echoUnit();
     if(s.list.raw) $("f_listraw").value=s.list.raw;
     if(s.list.items&&s.list.items.length) showList({items:s.list.items, bad:0});
@@ -466,12 +470,13 @@
   $("toBuild").addEventListener("click",function(){
     var m=$("listMsg");
     // ★単元が無いまま先へ進ませない
-    if(!unitNum()){
+    if(unitNum()===""||listNum()===""){
       m.className="msg show ng";
-      m.innerHTML="先に<b>教科書のどこか</b>を入れてください。"+
-        "<code>Unit</code> か <code>Lesson</code> を選んで、<b>番号</b>を入れる。<br>"+
+      m.innerHTML="先に<b>教科書のどこか</b>を選んでください。"+
+        "<code>Unit</code>／<code>Lesson</code> と<b>番号</b>、そして<b>何つめのリストか</b>の2つ。<br>"+
         "ここが無いと、先生の表でユニットごとにまとまりません。";
-      $("f_unum").classList.add("bad"); $("f_unum").focus();
+      echoUnit();
+      $(unitNum()===""?"f_unum":"f_lnum").focus();
       return;
     }
     var name=fullName();
@@ -483,8 +488,7 @@
       myList=[];
     }
     var s=store();
-    s.list={src:SRC, name:name, kind:$("f_kind").value, unum:unitNum(),
-            memo:$("f_listname").value.trim(),
+    s.list={src:SRC, name:name, kind:$("f_kind").value, unum:unitNum(), lnum:listNum(),
             raw:(SRC==="type"?$("f_listraw").value:""), items:myList, ts:Date.now()};
     save(s);
     show("build");
@@ -793,9 +797,9 @@
     var m=$("saveMsg"), btn=this;
     var cls=$("f_cls").value.trim(), num=han($("f_num").value), name=$("f_name").value.trim();
     if(!cls||!num){ m.className="msg show ng"; m.textContent="学年と番号を入れると送信できます。"; return; }
-    if(!/^(Unit|Lesson)\s*\d+/i.test(String(graded.name||""))){
+    if(!/^(Unit|Lesson)\s+\d{1,2}-\d{1,2}$/i.test(String(graded.name||""))){
       m.className="msg show ng";
-      m.textContent="単元が入っていません。ホームからやり直して、Unit か Lesson と番号を入れてください。"; return; }
+      m.textContent="単元が入っていません。ホームからやり直して、Unit／Lesson と番号、何つめのリストかを選んでください。"; return; }
     if(!GAS_URL){ m.className="msg show ng";
       m.textContent=(window.SITE&&SITE.isTrial)?"実証用の送信先が未設定です。":"送信先(GAS)が未設定です。"; return; }
     btn.disabled=true; btn.textContent="送信中…";
