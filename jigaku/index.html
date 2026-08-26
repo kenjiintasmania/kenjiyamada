@@ -140,10 +140,10 @@
         <div class="t">単語</div>
         <div class="d">自分でまとめた単語リストからAIに出題させる。日本語→英語のつづりで勝負。</div>
         <div class="st" id="st_tango"></div></button>
-      <button class="lane" disabled><span class="emoji">📐</span>
+      <button class="lane" id="goBunpo"><span class="emoji">📐</span>
         <div class="t">文法</div>
-        <div class="d">文法名を打つ→解説→選択・並び替え・作文で確認。</div>
-        <div class="st">準備中</div></button>
+        <div class="d">AIに教材を作らせ、読む→写す→思い出す→選ぶ→組む の順で身につける。</div>
+        <div class="st" id="st_bunpo"></div></button>
       <button class="lane" disabled><span class="emoji">📖</span>
         <div class="t">本文</div>
         <div class="d">キーワードの妥当性を診てもらう→速読・応用問題。</div>
@@ -333,6 +333,7 @@
   document.querySelectorAll("[data-go]").forEach(function(b){
     b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
   $("goTango").addEventListener("click",function(){ show("list"); prefillList(); });
+  $("goBunpo").addEventListener("click",function(){ location.href="bunpo.html"; });
 
   /* ---------- 記録（端末） ---------- */
   var KEY="jigaku_v1";
@@ -716,7 +717,9 @@
       } else r.hit=null;
     });
     var total=p.rows.length, pct=total?Math.round(ok/total*100):0;
-    graded={ts:Date.now(), name:(p.name||L.name||""), src:(L.src||"type"), listN:(L.items||[]).length,
+    // 単元名はアプリが自分で組み立てた値を正とする。AIが書き返した「リスト:」の行は
+    // 書式を崩すことがあり、それを信じると正しい提出まで送信ゲートで弾かれる。
+    graded={ts:Date.now(), name:(L.name||p.name||""), src:(L.src||"type"), listN:(L.items||[]).length,
             total:total, ok:ok, pct:pct, rows:p.rows, promptV:(current?current.v:null),
             hasList:hasList, offList:offList};
 
@@ -852,6 +855,8 @@
   function renderHome(){
     var s=store();
     $("st_tango").textContent = s.runs.length ? (s.runs.length+"回・最新"+s.runs[s.runs.length-1].pct+"%") : "はじめてみよう";
+    var bs=(s.bunpo&&s.bunpo.runs)||[];
+    $("st_bunpo").textContent = bs.length ? (bs.length+"回・最新"+bs[bs.length-1].pct+"%") : "現在完了形から";
     var box=$("hist");
     if(!s.runs.length){ box.innerHTML='<p class="hint">まだ記録がありません。単語レーンから始めてみよう。</p>'; return; }
     var h='<table><thead><tr><th>日付</th><th>リスト</th><th>作り方</th><th>点</th><th>正答率</th><th>版</th></tr></thead><tbody>';

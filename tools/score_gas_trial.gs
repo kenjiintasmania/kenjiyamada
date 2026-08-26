@@ -120,19 +120,31 @@ function rebuildJigakuUnits(){
     var C = {};
     vals[0].forEach(function(h,i){ C[String(h).trim()] = i; });
     var iCls=C["学年"], iNum=C["番号"], iName=C["名前"], iList=C["リスト名"],
-        iOk=C["正解数"], iWords=C["クリアした語"];
+        iOk=C["正解数"], iWords=C["クリアした語"], iLane=C["レーン"], iPct=C["正答率(%)"];
     if (iCls == null || iNum == null) return 0;
 
-    var byStudent = {}, unitSet = {};
+    var byStudent = {}, unitSet = {}, gramSet = {};
     for (var r=1; r<vals.length; r++){
       var row = vals[r];
       var cls = String(row[iCls]).trim(), num = String(row[iNum]).trim();
       if (!cls || !num) continue;
       var key = cls + " / " + num;
+      var st = byStudent[key] || (byStudent[key] = {name:"", units:{}, gram:{}});
+      if (iName != null && String(row[iName]).trim()) st.name = String(row[iName]).trim();
+
+      // 文法レーンは「語の実数」ではなく「その項目の最高正答率」で見る。
+      // 単語レーンの語数集計に混ぜると、項目名が「その他」に落ちて数字が汚れる。
+      var lane = (iLane == null) ? "" : String(row[iLane]).trim();
+      if (lane === "文法"){
+        var g = String(iList == null ? "" : row[iList]).trim() || "（項目なし）";
+        gramSet[g] = true;
+        var pct = toNum(iPct == null ? null : row[iPct]);
+        if (pct != null && pct > (st.gram[g] || 0)) st.gram[g] = pct;
+        continue;
+      }
+
       var u = jigakuUnitKey(iList == null ? "" : row[iList]);
       unitSet[u] = true;
-      var st = byStudent[key] || (byStudent[key] = {name:"", units:{}});
-      if (iName != null && String(row[iName]).trim()) st.name = String(row[iName]).trim();
       var slot = st.units[u] || (st.units[u] = {seen:{}, n:0, fallback:0});
       var words = (iWords == null) ? "" : String(row[iWords]||"");
       if (words){
@@ -148,18 +160,20 @@ function rebuildJigakuUnits(){
 
     var units = Object.keys(unitSet).sort(function(a,b){
       return jigakuUnitOrder(a) - jigakuUnitOrder(b); });
-    if (!units.length) return 0;
+    var grams = Object.keys(gramSet).sort();
+    var heads = units.map(function(u){ return "自学_" + u; })
+          .concat(grams.map(function(g){ return "文法_" + g; }));
+    if (!heads.length) return 0;
 
     var base = SUMMARY_COLS.length;              // 固定列の右端＝単語_活用
-    var need = base + units.length;
+    var need = base + heads.length;
     if (sm.getMaxColumns() < need)
       sm.insertColumnsAfter(sm.getMaxColumns(), need - sm.getMaxColumns());
 
     // 自学の列だけ一度まっさらにする（ユニットが減ったときの消し忘れ防止）
     var wipe = Math.max(sm.getLastColumn(), need) - base;
     if (wipe > 0) sm.getRange(1, base+1, sm.getMaxRows(), wipe).clearContent();
-    sm.getRange(1, base+1, 1, units.length)
-      .setValues([units.map(function(u){ return "自学_" + u; })]);
+    sm.getRange(1, base+1, 1, heads.length).setValues([heads]);
 
     // 成績まとめに行が無い生徒（自学だけやった子）は行を作る
     var lastRow = sm.getLastRow();
@@ -177,7 +191,7 @@ function rebuildJigakuUnits(){
     });
 
     lastRow = sm.getLastRow();
-    if (lastRow < 2) return units.length;
+    if (lastRow < 2) return heads.length;
     var ids = sm.getRange(2,2,lastRow-1,2).getValues();
     var out = ids.map(function(p){
       var st = byStudent[String(p[0]).trim() + " / " + String(p[1]).trim()];
@@ -185,10 +199,12 @@ function rebuildJigakuUnits(){
         if (!st || !st.units[u]) return "";
         var slot = st.units[u];
         return Math.max(slot.n, slot.fallback) || "";
-      });
+      }).concat(grams.map(function(g){
+        return (st && st.gram[g] != null) ? st.gram[g] : "";
+      }));
     });
-    sm.getRange(2, base+1, out.length, units.length).setValues(out);
-    return units.length;
+    sm.getRange(2, base+1, out.length, heads.length).setValues(out);
+    return heads.length;
   } finally {
     lock.releaseLock();
   }
@@ -280,7 +296,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-3";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-4";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

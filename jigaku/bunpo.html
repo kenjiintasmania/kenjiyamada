@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<title>文法レーン｜自学マイページ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📐</text></svg>">
+<!--
+  jigaku/bunpo.html ─ 自学マイページ・文法レーン（第1弾＝現在完了形）
+
+   流れ：① AIに教材を1回で作らせて貼る
+         → ② 基本文と訳・解説を読む
+         → ③ 基本文を見ながら打つ（写す）
+         → ④ 日本語訳を見て打つ（思い出す）
+         → ⑤ 選択5問（見分ける）
+         → ⑥ 並べかえ5問（組み立てる）
+
+   単語レーンとの決定的なちがい：
+     ・AIには**問題だけ**作らせる。答えはすべてこのページの中で受け取る。
+       ＝「わたしの答え」がAIを一度も通らない。改ざんの余地が原理的に無い。
+     ・英作文は入れない。正解が一意でないものは機械採点できないため。
+       ③は基本文を先に見せているので「作文」ではなく「再生」＝正解は一つ。
+   語彙は中1に固定する。完了形を習う学年が教科書ごとに違うので、
+   先取りの生徒が単語で止まらないようにするため。ただし
+   already / yet / ever / since は中3語なので、項目ごとの必須語として例外にする。
+   チェックは**警告のみ**で、進行は止めない。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#f7faf9; --line:#dde5e2;
+    --c1:#0f766e; --c1d:#0b5a54; --c2:#b45309; --c3:#5b7cff;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9; --mid:#b45309; --midbg:#fff6e5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+    font-family:var(--jp);line-height:1.65;padding:0 0 70px}
+  .wrap{max-width:820px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:20px 0 16px;margin-bottom:14px}
+  .hero h1{margin:0;font-size:22px}
+  .hero p{margin:5px 0 0;font-size:13px;color:#c9e6e1}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#a7e0d8;text-decoration:none;font-weight:bold}
+  .hide{display:none!important}
+  .card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0}
+  h2{font-size:16.5px;margin:0 0 10px}
+  h3{font-size:14px;margin:14px 0 6px;color:var(--gray)}
+  .btn{font:inherit;font-size:15px;font-weight:bold;border:none;border-radius:11px;
+    padding:10px 20px;cursor:pointer;color:#fff;background:var(--c1)}
+  .btn:hover{background:var(--c1d)}
+  .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
+  .btn.sm{font-size:13px;padding:7px 14px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  label{font-size:13px;font-weight:bold;display:block;margin:10px 0 4px}
+  input[type=text],select,textarea{font:inherit;font-size:14px;width:100%;
+    border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  pre.prompt{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:13px 15px;
+    font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto}
+  .steps{display:flex;gap:5px;font-size:11.5px;margin-bottom:12px;flex-wrap:wrap}
+  .steps span{padding:4px 10px;border-radius:999px;background:#eef2f1;color:var(--gray)}
+  .steps span.now{background:var(--c1);color:#fff;font-weight:bold}
+  .steps span.done{background:#cfe6e2;color:var(--c1d)}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin:10px 0;display:none}
+  .msg.show{display:block}
+  .msg.ok{background:var(--okbg);color:var(--ok)}
+  .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .msg.warn{background:var(--midbg);color:var(--mid)}
+  .en{font-family:var(--en)}
+  code{background:#eef2f1;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  .note{background:#fffbeb;border:2px solid #fde68a;border-radius:11px;padding:11px 13px;font-size:13px;margin:10px 0}
+  .note b{color:var(--c2)}
+  /* 基本文カード */
+  .kihon{border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fff}
+  .kihon .e{font-family:var(--en);font-size:18px;line-height:1.5}
+  .kihon .j{font-size:14px;margin-top:4px}
+  .kihon .k{font-size:13px;color:var(--gray);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+  /* 問題 */
+  .q{border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fff}
+  .q .qh{font-size:12px;color:var(--gray);margin-bottom:5px}
+  .q .qs{font-family:var(--en);font-size:16px;line-height:1.55}
+  .q .qj{font-size:14px}
+  .q.ok{border-color:#a7d9bf;background:var(--okbg)}
+  .q.mid{border-color:#f0cf94;background:var(--midbg)}
+  .q.ng{border-color:#f0b8a8;background:var(--ngbg)}
+  .q .verdict{font-size:13px;margin-top:7px;font-weight:bold}
+  .q .verdict small{font-weight:normal;color:var(--gray)}
+  .ans{font-family:var(--en);font-size:16px}
+  /* 選択肢 */
+  .ch{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .ch button{font:inherit;font-family:var(--en);font-size:15px;border:2px solid var(--line);
+    background:#fff;border-radius:10px;padding:7px 15px;cursor:pointer}
+  .ch button.on{border-color:var(--c1);background:#e7f4f2;font-weight:bold}
+  .ch button[disabled]{cursor:default;opacity:.85}
+  .ch button.right{border-color:var(--ok);background:var(--okbg)}
+  .ch button.wrong{border-color:var(--ng);background:var(--ngbg)}
+  /* 並べかえ */
+  .wo-build{min-height:46px;border:2px dashed var(--line);border-radius:10px;padding:7px;
+    display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;background:#fafdfc}
+  .wo-bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+  .chip{font:inherit;font-family:var(--en);font-size:15px;border:2px solid var(--line);
+    background:#fff;border-radius:9px;padding:5px 12px;cursor:pointer}
+  .chip.in{border-color:var(--c1);background:#e7f4f2}
+  .chip[disabled]{cursor:default;opacity:.6}
+  .wo-empty{color:var(--muted);font-size:12.5px}
+  /* 結果 */
+  .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+  @media(max-width:620px){.kpi{grid-template-columns:1fr 1fr}}
+  .kpi div{background:#f2f7f6;border-radius:10px;padding:9px 11px}
+  .kpi b{display:block;font-size:19px;color:var(--c1)}
+  .kpi span{font-size:11.5px;color:var(--gray)}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+  th{background:#eef2f1;font-size:12px;white-space:nowrap}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="index.html">← 自学マイページ</a></div>
+  <h1>文法レーン <span class="en">Grammar</span></h1>
+  <p>AIには問題だけ作らせる。答えはこのページの中だけで受け取ります。</p>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ ① はじめに ============ -->
+<div id="intro">
+  <div class="card">
+    <h2>📐 今回の文法：<span id="itemName">現在完了形</span></h2>
+    <div class="note">
+      <b>使う単語は中1のものだけ</b>にします。完了形を習う学年は教科書によってちがうので、
+      先に進んでいる人が<b>単語でつまずかない</b>ようにするためです。
+      <span id="mustWords"></span>
+    </div>
+    <h3>やること</h3>
+    <table>
+      <tr><th>①</th><td>基本文と、その訳・解説を読む</td></tr>
+      <tr><th>②</th><td>基本文を<b>見ながら</b>打つ（写す）</td></tr>
+      <tr><th>③</th><td>日本語訳だけを見て打つ（思い出す）</td></tr>
+      <tr><th>④</th><td>選択問題 5問（見分ける）</td></tr>
+      <tr><th>⑤</th><td>並べかえ 5問（組み立てる）</td></tr>
+    </table>
+    <p class="hint">②から⑤まではこのページの中で答えます。AIには一度も答えを見せません。</p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="toBuild">教材を作るプロンプトへ →</button>
+      <button class="btn ghost sm" id="toPasteDirect">もう教材がある（貼る画面へ）</button>
+    </div>
+  </div>
+  <div class="card"><h2>これまでの文法</h2><div id="hist"></div></div>
+</div>
+
+<!-- ============ プロンプト ============ -->
+<div id="build" class="hide">
+  <div class="steps"><span class="now">教材を作る</span><span>貼る</span><span>読む</span><span>写す</span><span>思い出す</span><span>選ぶ</span><span>組む</span></div>
+  <div class="card">
+    <h2>AIに教材を作らせる</h2>
+    <div class="grid2">
+      <div><label for="f_kihon">基本文の数</label>
+        <select id="f_kihon"><option>3</option><option selected>4</option><option>5</option></select></div>
+      <div><label>問題数</label><div style="padding:8px 0;font-size:14px">選択 5問 ／ 並べかえ 5問</div></div>
+    </div>
+    <label for="f_mine">自分の工夫（自由に書き足す）</label>
+    <textarea id="f_mine" rows="3" placeholder="例：スポーツの話でそろえて。ぼくがまちがえやすい have と has を必ず両方入れて。"></textarea>
+    <p class="hint">ここが自分の腕の見せどころ。うまくいった書き方は次の版に引き継がれます。</p>
+    <div class="row">
+      <button class="btn" id="mkPrompt">プロンプトを作る</button>
+      <button class="btn ghost sm" id="loadLast">前回の版を読み込む</button>
+      <span class="hint" id="verNote"></span>
+    </div>
+    <div id="promptBox" class="hide">
+      <h3>できたプロンプト</h3>
+      <pre class="prompt" id="promptText"></pre>
+      <div class="row">
+        <button class="btn" id="copyPrompt">📋 ① コピーする</button>
+        <button class="btn" id="openAI">🤖 ② AIモードに貼る</button>
+        <button class="btn ghost" id="goPaste">📥 ③ 教材を貼る画面へ</button>
+      </div>
+      <p class="hint">①でコピー → ②でAIモードに貼る → 出てきた
+        <code>=== BUNPO ===</code> から <code>=== END ===</code> までをコピー → ③で貼る。</p>
+    </div>
+    <div class="row"><button class="btn ghost sm" data-go="intro">← もどる</button></div>
+  </div>
+</div>
+
+<!-- ============ 貼る ============ -->
+<div id="paste" class="hide">
+  <div class="steps"><span class="done">教材を作る</span><span class="now">貼る</span><span>読む</span><span>写す</span><span>思い出す</span><span>選ぶ</span><span>組む</span></div>
+  <div class="card">
+    <h2>教材を貼る</h2>
+    <p class="hint" style="margin-top:0">AIが出した <code>=== BUNPO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。</p>
+    <textarea id="f_paste" rows="12" placeholder="=== BUNPO ===&#10;項目: 現在完了形&#10;[基本文]&#10;1 | I have just eaten lunch. | わたしはちょうど昼食を食べたところです。 | have + 過去分詞で「〜したところだ」。&#10;[選択]&#10;1 | I have ( ) to Osaka twice. | go / went / been / going | been | 「行ったことがある」は have been to。&#10;[並べかえ]&#10;1 | わたしは3年間ここに住んでいます。 | have / I / lived / here / for / three / years | I have lived here for three years.&#10;=== END ==="></textarea>
+    <div class="msg" id="pasteMsg"></div>
+    <div class="msg" id="vocabMsg"></div>
+    <div class="row">
+      <button class="btn" id="doLoad">この教材で始める</button>
+      <button class="btn ghost sm" data-go="build">← プロンプトに戻る</button>
+      <button class="btn ghost sm" data-go="intro">ホーム</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 学習（②〜⑥） ============ -->
+<div id="learn" class="hide">
+  <div class="steps" id="learnSteps"></div>
+  <div class="card">
+    <h2 id="stepTitle"></h2>
+    <p class="hint" id="stepLead" style="margin-top:0"></p>
+    <div id="stepBody"></div>
+    <div class="msg" id="stepMsg"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="stepCheck">答え合わせ</button>
+      <button class="btn hide" id="stepNext">次へ →</button>
+      <button class="btn ghost sm" data-go="intro">やめる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 結果 ============ -->
+<div id="result" class="hide">
+  <div class="card">
+    <h2>結果（このページが自分で計算しました）</h2>
+    <div class="score" id="r_score">– / –</div>
+    <div class="kpi">
+      <div><b id="k_pct">–</b><span>正答率</span></div>
+      <div><b id="k_copy">–</b><span>写しまちがい</span></div>
+      <div><b id="k_sel">–</b><span>選択</span></div>
+      <div><b id="k_wo">–</b><span>並べかえ</span></div>
+    </div>
+    <div class="msg" id="r_note"></div>
+    <div id="r_detail"></div>
+    <h3>先生に送る</h3>
+    <div class="grid2">
+      <div><label for="f_cls">学年</label>
+        <select id="f_cls"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></div>
+      <div><label for="f_num">番号</label><input type="text" id="f_num" placeholder="例：5"></div>
+    </div>
+    <label for="f_name">名前（任意）</label>
+    <input type="text" id="f_name" placeholder="入れなくても送れます">
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="saveRun">記録する</button>
+      <button class="btn" id="sendRun">先生に送信</button>
+      <button class="btn ghost sm" data-go="build">もう1回つくる</button>
+      <button class="btn ghost sm" data-go="intro">ホーム</button>
+    </div>
+    <div class="msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<footer>自学マイページ ／ 文法レーン</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../words/data/words.js"></script>
+<script src="../words/data/katsuyo.js"></script>
+<script src="bunpo.js"></script>
+</body>
+</html>
