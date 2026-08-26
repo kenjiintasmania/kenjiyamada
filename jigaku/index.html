@@ -791,8 +791,19 @@
   $("f_name").addEventListener("input",function(){ idSet("name",this.value.trim()); });
 
   function post(obj){
+    // ★HTMLが返ってきたとき r.json() は「Unexpected token '<'」で落ちる。それだと原因に
+    //   たどり着けないので、本文を先に文字列で受けて、何が返ってきたのかを言えるようにする。
     return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(obj)}).then(function(r){ return r.json(); });
+      body:JSON.stringify(obj)}).then(function(r){
+        return r.text().then(function(t){
+          try{ return JSON.parse(t); }
+          catch(e){
+            var head=String(t||"").slice(0,300);
+            throw new Error((/accounts\.google\.com|Sign in|ログイン/i.test(head) ? "__AUTH__" :
+                             /<!DOCTYPE|<html/i.test(head) ? "__HTML__" : "__EMPTY__")+" status="+r.status);
+          }
+        });
+      });
   }
 
   $("sendRun").addEventListener("click",function(){
@@ -839,7 +850,17 @@
       .catch(function(err){
         var s=String(err.message||err);
         m.className="msg show ng";
-        if(s.indexOf("__OLD__")>=0){
+        if(s.indexOf("__AUTH__")>=0||s.indexOf("__HTML__")>=0||s.indexOf("__EMPTY__")>=0){
+          var tail=String(GAS_URL).replace(/^.*\/macros\/s\//,"").slice(0,14);
+          m.innerHTML="先生へ：送信先が<b>スクリプトではなくページを返しています</b>。"+
+            "デプロイのURLか公開設定を確認してください。<br>"+
+            "いま送った先：<code>…"+esc(tail)+"…</code>"+
+            ((window.SITE&&SITE.isTrial)?"（<b>実証モード</b>で送信中）":"（通常モード）")+"<br>"+
+            "・［デプロイを管理］で<b>アクセスできるユーザー＝全員</b>か<br>"+
+            "・URLの末尾が <code>/exec</code> か（<code>/dev</code> は本人専用）<br>"+
+            "・そのデプロイを消したり差しかえたりしていないか<br>"+
+            "記録は端末には残っています。";
+        } else if(s.indexOf("__OLD__")>=0){
           m.innerHTML="先生へ：スプレッドシート側がまだ自学ログに対応していません"+
             "（いまの版 "+esc(s.replace(/^Error: /,"").replace("__OLD__",""))+"）。<br>"+
             "<code>tools/score_gas.gs</code> を貼り直して「新バージョン」で再デプロイしてください。"+
