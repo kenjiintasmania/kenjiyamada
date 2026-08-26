@@ -222,10 +222,20 @@ def build_question(exam, path, title):
     doc.save(path)
     return total
 
+def words_shown(stem, words):
+    """並べかえの語が、設問文の中に［ a / b / c ］の形で既に出ているか。"""
+    s = strip(stem).lower()
+    return all(re.search(r"(?<![a-z])" + re.escape(str(w).lower()) + r"(?![a-z])", s)
+               for w in words)
+
 def render_item(doc, it, group, printable=True):
     lab = it.get("label", "")
     head = "{}　（{}点）".format(lab, it.get("pt", 0)) if lab else "（{}点）".format(it.get("pt", 0))
     stem = strip(it.get("stem", ""))
+    # 設問文がグループ見出しと同じなら二重に刷らない（「次の語を正しく…」が2行続く）
+    gi = re.sub(r"^\(\d+\)\s*", "", strip((group or {}).get("intro", "")))
+    if stem and gi and stem == gi:
+        stem = ""
     para(doc, head + ("　" + stem if stem else ""), 10.5, before=3, after=2)
     ty = it.get("type")
     if ty in ("mcq", "bankpick"):
@@ -239,6 +249,12 @@ def render_item(doc, it, group, printable=True):
     elif ty == "fill":
         para(doc, blanks(1), 10.5, after=2)
     elif ty == "wordorder":
+        # ★並べかえる語群を必ず刷る。stem に［ … ］の形で埋め込み済みの問題（大問6など）は
+        #   そのまま、語が words にしか無い問題（大問4(2)など）はここで出す。
+        #   これを落とすと「並べかえる語が印刷されていない問題」ができる。
+        ws = [str(w) for w in (it.get("words") or [])]
+        if ws and not words_shown(stem, ws):
+            para(doc, "　［ " + " / ".join(ws) + " ］", 10.5, after=2, en=True)
         para(doc, blanks(1), 10.5, after=2)
 
 # ---------- ② 解答・配点（先生用） ----------
@@ -496,6 +512,31 @@ def build_key_csv(exam, path):
             wcsv.writerow([sec["no"], cname, it.get("label", ""),
                            {"sel": "選択", "word": "記述(語)", "long": "記述(文)"}[kind], ans, it.get("pt", 0)])
 
+def verify_question(exam, path):
+    """出来上がった問題用紙を読み直し、解くのに要る材料が刷られているか確かめる。
+    ★並べかえの語群を落としたまま印刷して配ってしまった事故があるため、
+      「生成できた」ではなく「紙の上に在る」ことを毎回確認する。"""
+    import zipfile
+    xml = zipfile.ZipFile(path).read("word/document.xml").decode("utf-8")
+    text = re.sub(r"<[^>]+>", "", xml).lower()
+    miss = []
+    for sec in exam["sections"]:
+        gs = sec.get("groups") or [{"intro": c.get("name",""), "items": c.get("items",[])}
+                                   for c in sec.get("courses", [])]
+        for g in gs:
+            for it in g.get("items", []):
+                if it.get("type") != "wordorder":
+                    continue
+                for w in (it.get("words") or []):
+                    if str(w).lower() not in text:
+                        miss.append("大問{} {} 「{}」".format(sec["no"], it.get("label",""), w))
+    if miss:
+        print("✗ 問題用紙に刷られていない語があります：")
+        for m in miss[:20]:
+            print("   " + m)
+        sys.exit(1)
+    return True
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         sys.exit(__doc__)
@@ -508,6 +549,7 @@ if __name__ == "__main__":
     sp = os.path.join(outdir, name + "_解答用紙.docx")
     kp = os.path.join(outdir, name + "_採点キー.csv")
     t1 = build_question(exam, qp, name)
+    verify_question(exam, qp)
     t2 = build_answer(exam, ap, name)
     t3 = build_sheet(exam, sp, name)
     build_key_csv(exam, kp)
