@@ -69,6 +69,8 @@
   .unitrow select{width:auto;min-width:110px}
   .unitrow select#f_unum,.unitrow select#f_lnum{width:auto;min-width:80px}
   .unitrow .sep{font-size:14px;color:var(--gray)}
+  .kindfix{font-size:14px;font-weight:bold;color:var(--c1d);background:#e7f4f2;
+    border:2px solid #cfe6e2;border-radius:10px;padding:7px 12px;white-space:nowrap}
   .echo{font-size:13px;color:var(--gray);margin-top:6px}
   .echo b{color:var(--c1d);font-size:15px}
   .bad{border-color:var(--ng)!important;background:#fff6f4}
@@ -180,14 +182,14 @@
 
     <label>教科書のどこ？<span class="req">かならず選ぶ</span></label>
     <div class="unitrow">
-      <select id="f_kind"><option>Unit</option><option>Lesson</option></select>
+      <span class="kindfix">Unit / Lesson</span><input type="hidden" id="f_kind" value="Unit">
       <select id="f_unum"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select>
       <span class="sep">の</span>
       <select id="f_lnum"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select>
       <span class="sep">つめのリスト</span>
     </div>
     <div class="echo" id="unitEcho">2つとも選ぶと、ここに記録される名前が出ます</div>
-    <p class="hint">手元の教科書に <b>Unit</b> と書いてあるか <b>Lesson</b> と書いてあるかを見て選ぶ。
+    <p class="hint">教科書に <b>Unit</b> と書いてあっても <b>Lesson</b> と書いてあっても、<b>数字だけ</b>そろえれば大丈夫です。
       「何つめのリスト」は<b>自分で決めていい</b>。1つのユニットを何回かに分けてやるなら、
       1つめ・2つめ…と増やしていく。<br>
       先生の表では<b>ユニットごとにまとめて</b>数えます。1つめと2つめに同じ語があっても1語です。</p>
@@ -346,6 +348,20 @@
     return String(s==null?"":s).toLowerCase().trim()
       .replace(/[.,!?;:"'’“”（）()]/g,"").replace(/[-_/]/g," ").replace(/\s+/g," ").trim();
   }
+  /* ★リストに play(s) / visit(ed) / child(ren) と書いてある語は、（ ）の中を
+     つけてもつけなくても正解にする。教科書の単語欄がこの書き方をするので、
+     「つけたら×」でも「つけなかったら×」でも生徒の落ち度ではない。 */
+  function variants(s){
+    var t=String(s==null?"":s), out={}, a=norm(t), b=norm(t.replace(/[（(][^）)]*[）)]/g,""));
+    if(a) out[a]=1;
+    if(b) out[b]=1;
+    return Object.keys(out);
+  }
+  function sameWord(mine,ans){
+    var A=variants(mine), B=variants(ans);
+    for(var i=0;i<A.length;i++) if(B.indexOf(A[i])>=0) return true;
+    return false;
+  }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   var JA=/[぀-ゟ゠-ヿ㐀-鿿ｦ-ﾟ]/;   // かな・漢字・半角カナ
@@ -440,17 +456,19 @@
   function listNum(){ return $("f_lnum").value; }
   function fullName(){
     if(unitNum()===""||listNum()==="") return "";
-    return $("f_kind").value+" "+unitNum()+"-"+listNum();
+    // 教科書が Lesson と書いていても "Unit" で記録する。ここを選ばせると、
+    // 同じ単元が先生の表で U3 と L3 の2列に割れる。数字だけそろえばよい。
+    return "Unit "+unitNum()+"-"+listNum();
   }
   function echoUnit(){
     var nm=fullName();
     $("unitEcho").innerHTML = nm
-      ? ("記録される名前 → <b>"+esc(nm)+"</b>　（先生の表では <b>"+$("f_kind").value.charAt(0)+unitNum()+"</b> にまとまります）")
+      ? ("記録される名前 → <b>"+esc(nm)+"</b>　（先生の表では <b>U"+unitNum()+"</b> の列にまとまります）")
       : "2つとも選ぶと、ここに記録される名前が出ます";
     $("f_unum").classList.toggle("bad", unitNum()==="");
     $("f_lnum").classList.toggle("bad", listNum()==="");
   }
-  ["f_kind","f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
+  ["f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
 
   function prefillList(){
     var s=store();
@@ -561,6 +579,9 @@
     p.push("【出し方】日本語を見せて、わたしが英語のつづりを書く形式にしてください。");
     p.push("【条件】");
     p.push("- リストの外から語を足さないでください。足りなければ問題数を減らして構いません。");
+    p.push("- リストに play(s) / visit(ed) / child(ren) のように（ ）で書いてある語は、");
+    p.push("　（ ）の中を**つけてもつけなくても正解**にしてください。play でも plays でも○です。");
+    p.push("　どちらで書いても×にしないでください。");
     if(lines.length) p.push(lines.join("\n"));
     if(mine && mine.trim()) p.push("- "+mine.trim().replace(/\n/g,"\n- "));
     p.push("");
@@ -578,7 +599,7 @@
     p.push("=== END ===");
     p.push("");
     p.push("・「わたしの答え」には、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
-    p.push("・「正解」は、リストに書いてあるつづりのまま書いてください。");
+    p.push("・「正解」は、リストに書いてあるつづりのまま書いてください（（ ）もそのまま残す）。");
     p.push("・○×や点数は書かないでください。採点はわたしのアプリがやります。");
     p.push("・区切りは半角の縦棒 | を使ってください。");
     return p.join("\n");
@@ -704,18 +725,23 @@
     // ── 採点：AIの○×は使わず、わたしの答えと正解の一致だけで判定する
     var s=store(), L=s.list||{};
     var IDX={};
-    (L.items||[]).forEach(function(x){ IDX[norm(x.en)]=x; });
+    (L.items||[]).forEach(function(x){ variants(x.en).forEach(function(k){ IDX[k]=x; }); });
     var hasList=(L.src==="type") && (L.items||[]).length>0;
 
     var ok=0, weak=[], inList=0, offList=[];
     p.rows.forEach(function(r){
-      r.ok = !!(norm(r.mine) && norm(r.mine)===norm(r.ans));
-      if(r.ok) ok++; else weak.push(r);
+      var hit=null;
       if(hasList){
-        var hit=IDX[norm(r.ans)];
-        r.hit=hit||null;
+        var vs=variants(r.ans);
+        for(var vi=0; vi<vs.length && !hit; vi++) hit=IDX[vs[vi]]||null;
         if(hit) inList++; else offList.push(r.ans);
-      } else r.hit=null;
+      }
+      r.hit=hit;
+      // ★つづりはリストにある形を正とする。AIが play(s) を plays と書き直して返しても、
+      //   生徒が play と書いたぶんを×にしないため。リストが根拠、AIは根拠ではない。
+      r.ans = hit ? hit.en : r.ans;
+      r.ok = !!(norm(r.mine) && sameWord(r.mine, r.ans));
+      if(r.ok) ok++; else weak.push(r);
     });
     var total=p.rows.length, pct=total?Math.round(ok/total*100):0;
     // 単元名はアプリが自分で組み立てた値を正とする。AIが書き返した「リスト:」の行は

@@ -81,6 +81,8 @@
   .unitrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
   .unitrow select{width:auto;min-width:80px}
   .unitrow .sep{font-size:14px;color:var(--gray)}
+  .kindfix{font-size:14px;font-weight:bold;color:var(--c1d);background:#e7f4f2;
+    border:2px solid #cfe6e2;border-radius:10px;padding:7px 12px;white-space:nowrap}
   .echo{font-size:13px;color:var(--gray);margin-top:6px}
   .echo b{color:var(--c1d);font-size:15px}
   .bad{border-color:var(--ng)!important;background:#fff6f4}
@@ -146,7 +148,7 @@
 
     <label>教科書のどこ？<span class="req">かならず選ぶ</span></label>
     <div class="unitrow">
-      <select id="f_kind"><option>Unit</option><option>Lesson</option></select>
+      <span class="kindfix">Unit / Lesson</span><input type="hidden" id="f_kind" value="Unit">
       <select id="f_unum"><option value="">—</option></select>
       <span class="sep">の</span>
       <select id="f_lnum"><option value="">—</option></select>

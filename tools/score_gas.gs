@@ -76,12 +76,13 @@ function handleJigaku(d){
 function jigakuUnitKey(name){
   var s = String(name||"").trim();
   if (!s) return "その他";
-  var m = s.match(/(?:unit|ユニット)\s*[-.．_]?\s*(\d{1,2})/i)
-       || s.match(/(?:^|[^a-z])u\s*[-.．_]?\s*(\d{1,2})/i);
+  // ★Unit と Lesson は同じ列にまとめる。教科書によって呼び名がちがうだけで、
+  //   生徒にとっては同じ単元だから。呼び名を選ばせていた頃は、同じ単元が
+  //   U3 と L3 の2列に割れて表が増えた。アプリは "Unit N-M" で統一して送るように
+  //   なったが、それ以前の "Lesson N-M" の記録も、ここで同じ列に寄せる。
+  var m = s.match(/(?:unit|lesson|ユニット|レッスン)\s*[-.．_]?\s*(\d{1,2})/i)
+       || s.match(/(?:^|[^a-z])[ul]\s*[-.．_]?\s*(\d{1,2})/i);
   if (m) return "U" + Number(m[1]);
-  m = s.match(/(?:lesson|レッスン)\s*[-.．_]?\s*(\d{1,2})/i)
-   || s.match(/(?:^|[^a-z])l\s*[-.．_]?\s*(\d{1,2})/i);
-  if (m) return "L" + Number(m[1]);
   return "その他";
 }
 function jigakuUnitOrder(k){
@@ -286,7 +287,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-5";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-6";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

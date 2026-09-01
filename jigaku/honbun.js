@@ -83,7 +83,9 @@ function unitNum(){ return $("f_unum").value; }
 function listNum(){ return $("f_lnum").value; }
 function fullName(){
   if(unitNum()===""||listNum()==="") return "";
-  return $("f_kind").value+" "+unitNum()+"-"+listNum();
+    // 教科書が Lesson と書いていても "Unit" で記録する。ここを選ばせると、
+  // 同じ単元が先生の表で U3 と L3 の2列に割れる。数字だけそろえばよい。
+  return "Unit "+unitNum()+"-"+listNum();
 }
 function echoUnit(){
   var nm=fullName();
@@ -93,7 +95,7 @@ function echoUnit(){
   $("f_unum").classList.toggle("bad", unitNum()==="");
   $("f_lnum").classList.toggle("bad", listNum()==="");
 }
-["f_kind","f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
+["f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
 
 var SRC="type";
 function setSrc(k){

@@ -29,17 +29,19 @@ function unitNum(){ return $("f_unum").value; }   // "0" もありうるので�
 function listNum(){ return $("f_lnum").value; }
 function fullName(){
   if(unitNum()===""||listNum()==="") return "";
-  return $("f_kind").value+" "+unitNum()+"-"+listNum();
+    // 教科書が Lesson と書いていても "Unit" で記録する。ここを選ばせると、
+  // 同じ単元が先生の表で U3 と L3 の2列に割れる。数字だけそろえばよい。
+  return "Unit "+unitNum()+"-"+listNum();
 }
 function echoUnit(){
   var nm=fullName();
   $("unitEcho").innerHTML = nm
-    ? ("記録される名前 → <b>"+esc(nm)+"</b>")
+    ? ("記録される名前 → <b>"+esc(nm)+"</b>　（先生の表では <b>文法_"+esc(nm)+"</b> に出ます）")
     : "2つとも選ぶと、ここに記録される名前が出ます";
   $("f_unum").classList.toggle("bad", unitNum()==="");
   $("f_lnum").classList.toggle("bad", listNum()==="");
 }
-["f_kind","f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
+["f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
 
 /* ================= キーセンテンスの読み取り =================
    教科書のキーセンテンス欄は、並びかたが本によってちがう。
