@@ -44,7 +44,8 @@ function handleJigaku(d){
   // 「範囲」ではなく「リスト」。出題の根拠は生徒が自分で作った単語リストであって、
   // 教科書の単元名ではない（教科書は学年・地域で変わるため単元名は根拠にならない）。
   var header = ["日時","学年","番号","名前","レーン","リスト名","作り方","リスト語数",
-                "問題数","正解数","正答率(%)","プロンプト版","リスト外の語","まちがえた語","クリアした語"];
+                "問題数","正解数","正答率(%)","プロンプト版","リスト外の語","まちがえた語","クリアした語",
+                "強調数","的中数"];
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
   var sh = getSheet(JIGAKU_SHEET, header);
@@ -55,7 +56,8 @@ function handleJigaku(d){
     numOrBlank(d.total), numOrBlank(d.ok), numOrBlank(d.pct),
     d.promptV||"", numOrBlank(d.notDb),
     String(d.weak||"").slice(0, 500),
-    String(d.okw||"").slice(0, 1200)
+    String(d.okw||"").slice(0, 1200),
+    numOrBlank(d.mark), numOrBlank(d.hit)
   ]);
   // 成績まとめ側のユニット別クリア語数を更新。ここで失敗しても記録は残す。
   try{ rebuildJigakuUnits(); }catch(e){}
@@ -120,11 +122,11 @@ function rebuildJigakuUnits(){
       var st = byStudent[key] || (byStudent[key] = {name:"", units:{}, gram:{}});
       if (iName != null && String(row[iName]).trim()) st.name = String(row[iName]).trim();
 
-      // 文法レーンは「語の実数」ではなく「その項目の最高正答率」で見る。
-      // 単語レーンの語数集計に混ぜると、項目名が「その他」に落ちて数字が汚れる。
+      // 単語レーン以外（文法・本文…）は「語の実数」ではなく「その項目の最高正答率」で見る。
+      // 単語の語数集計に混ぜると、項目名が「その他」に落ちて数字が汚れる。
       var lane = (iLane == null) ? "" : String(row[iLane]).trim();
-      if (lane === "文法"){
-        var g = String(iList == null ? "" : row[iList]).trim() || "（項目なし）";
+      if (lane && lane !== "単語"){
+        var g = lane + "_" + (String(iList == null ? "" : row[iList]).trim() || "（項目なし）");
         gramSet[g] = true;
         var pct = toNum(iPct == null ? null : row[iPct]);
         if (pct != null && pct > (st.gram[g] || 0)) st.gram[g] = pct;
@@ -150,7 +152,7 @@ function rebuildJigakuUnits(){
       return jigakuUnitOrder(a) - jigakuUnitOrder(b); });
     var grams = Object.keys(gramSet).sort();
     var heads = units.map(function(u){ return "自学_" + u; })
-          .concat(grams.map(function(g){ return "文法_" + g; }));
+          .concat(grams);
     if (!heads.length) return 0;
 
     var base = SUMMARY_COLS.length;              // 固定列の右端＝単語_活用
@@ -284,7 +286,7 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-4";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-5";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

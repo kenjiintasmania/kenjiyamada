@@ -144,10 +144,10 @@
         <div class="t">文法</div>
         <div class="d">AIに教材を作らせ、読む→写す→思い出す→選ぶ→組む の順で身につける。</div>
         <div class="st" id="st_bunpo"></div></button>
-      <button class="lane" disabled><span class="emoji">📖</span>
+      <button class="lane" id="goHonbun"><span class="emoji">📖</span>
         <div class="t">本文</div>
-        <div class="d">キーワードの妥当性を診てもらう→速読・応用問題。</div>
-        <div class="st">準備中</div></button>
+        <div class="d">読んだ本文を持ってきて、AIに5問出させる。大事なところに印をつけて持ってこよう。</div>
+        <div class="st" id="st_honbun"></div></button>
     </div>
     <p class="hint">記録はこの端末に保存され、学年と番号を入れると先生にも送れます。</p>
   </div>
@@ -334,6 +334,7 @@
     b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
   $("goTango").addEventListener("click",function(){ show("list"); prefillList(); });
   $("goBunpo").addEventListener("click",function(){ location.href="bunpo.html"; });
+  $("goHonbun").addEventListener("click",function(){ location.href="honbun.html"; });
 
   /* ---------- 記録（端末） ---------- */
   var KEY="jigaku_v1";
@@ -878,6 +879,8 @@
     $("st_tango").textContent = s.runs.length ? (s.runs.length+"回・最新"+s.runs[s.runs.length-1].pct+"%") : "はじめてみよう";
     var bs=(s.bunpo&&s.bunpo.runs)||[];
     $("st_bunpo").textContent = bs.length ? (bs.length+"回・最新"+bs[bs.length-1].pct+"%") : "現在完了形から";
+    var hs=(s.honbun&&s.honbun.runs)||[];
+    $("st_honbun").textContent = hs.length ? (hs.length+"回・最新"+hs[hs.length-1].pct+"%") : "はじめてみよう";
     var box=$("hist");
     if(!s.runs.length){ box.innerHTML='<p class="hint">まだ記録がありません。単語レーンから始めてみよう。</p>'; return; }
     var h='<table><thead><tr><th>日付</th><th>リスト</th><th>作り方</th><th>点</th><th>正答率</th><th>版</th></tr></thead><tbody>';
