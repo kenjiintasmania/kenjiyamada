@@ -142,7 +142,7 @@
         <div class="st" id="st_tango"></div></button>
       <button class="lane" id="goBunpo"><span class="emoji">📐</span>
         <div class="t">文法</div>
-        <div class="d">AIに教材を作らせ、読む→写す→思い出す→選ぶ→組む の順で身につける。</div>
+        <div class="d">いま習っているページのキーセンテンスを貼る。1文につき5問、アプリが作って採点する。</div>
         <div class="st" id="st_bunpo"></div></button>
       <button class="lane" id="goHonbun"><span class="emoji">📖</span>
         <div class="t">本文</div>
@@ -878,7 +878,7 @@
     var s=store();
     $("st_tango").textContent = s.runs.length ? (s.runs.length+"回・最新"+s.runs[s.runs.length-1].pct+"%") : "はじめてみよう";
     var bs=(s.bunpo&&s.bunpo.runs)||[];
-    $("st_bunpo").textContent = bs.length ? (bs.length+"回・最新"+bs[bs.length-1].pct+"%") : "現在完了形から";
+    $("st_bunpo").textContent = bs.length ? (bs.length+"回・最新"+bs[bs.length-1].pct+"%") : "1文＝5点";
     var hs=(s.honbun&&s.honbun.runs)||[];
     $("st_honbun").textContent = hs.length ? (hs.length+"回・最新"+hs[hs.length-1].pct+"%") : "はじめてみよう";
     var box=$("hist");

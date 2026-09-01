@@ -7,19 +7,19 @@
 <title>文法レーン｜自学マイページ</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📐</text></svg>">
 <!--
-  jigaku/bunpo.html ─ 自学マイページ・文法レーン（第1弾＝現在完了形）
+  jigaku/bunpo.html ─ 自学マイページ・文法レーン
 
-   流れ：① 覚える一覧を読む（基本文・訳・解説）      … アプリが持っている固定教材
-         → ② 基本文を見ながら打つ（写す）           … アプリの中だけ
-         → ③ 日本語訳だけを見て打つ（思い出す）      … アプリの中だけ
-         → ④ AIモードで10問（選択5＋並べかえ5）      … ここだけ外のAI
-         → ⑤ まとめを貼る → アプリが再採点
+   ★ 教科書によらない。生徒が「いま習っているページのキーセンテンス」を持ってくる。
+     単語レーン・本文レーンと同じ考えかた（出題の根拠は、生徒が持ってきたデータに限る）。
 
-   基本文はAIに作らせない。学年・教科書によらず同じものを教えたいので、
-   jigaku/data/bunpo_kanryo.js に固定で持つ。語は中1のものだけで書いてある。
-   AIに任せるのは④の**問題のランダマイズだけ**。しかも1問ずつ出させる。
-   10問まとめて出すと、並べかえは書く量が多すぎて手が止まるため。
-   採点はAIの丸つけを使わず、貼られた「わたしの答え」と「正解」だけで再計算する。
+   流れ：① キーセンテンスをコピペ（英語＋日本語）＋ 教科書のどこかを選ぶ
+         → ② 1文につき5問を、アプリが自分で作って出す
+              写しがき1 ▶ 英訳1 ▶ 一部空欄2 ▶ 並びかえ1
+         → ③ 採点 → 記録 → 先生に送信
+
+   ★ 1文＝ちょうど5点。1問1点なので、何文やっても「文数×5点」で必ず割り切れる。
+   ★ AIモードは使わない。5種類とも、貼られた英文から機械的に作れる。
+     作れるものを外に出しに行くと、出題の根拠が生徒の手元から離れてしまう。
 -->
 <style>
   :root{
@@ -56,8 +56,16 @@
   textarea{resize:vertical;line-height:1.6}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   @media(max-width:620px){.grid2{grid-template-columns:1fr}}
-  pre.prompt{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:13px 15px;
-    font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto}
+  /* 単元えらび（単語レーンとそろえる） */
+  .req{font-size:11.5px;background:#fdeee9;color:var(--ng);border-radius:999px;
+    padding:2px 9px;margin-left:8px;font-weight:bold;vertical-align:middle}
+  .unitrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .unitrow select{width:auto;min-width:110px}
+  .unitrow select#f_unum,.unitrow select#f_lnum{width:auto;min-width:80px}
+  .unitrow .sep{font-size:14px;color:var(--gray)}
+  .echo{font-size:13px;color:var(--gray);margin-top:6px}
+  .echo b{color:var(--c1d);font-size:15px}
+  .bad{border-color:var(--ng)!important;background:#fff6f4}
   .steps{display:flex;gap:5px;font-size:11.5px;margin-bottom:12px;flex-wrap:wrap}
   .steps span{padding:4px 10px;border-radius:999px;background:#eef2f1;color:var(--gray)}
   .steps span.now{background:var(--c1);color:#fff;font-weight:bold}
@@ -71,38 +79,34 @@
   code{background:#eef2f1;border-radius:4px;padding:1px 6px;font-size:12.5px}
   .note{background:#fffbeb;border:2px solid #fde68a;border-radius:11px;padding:11px 13px;font-size:13px;margin:10px 0}
   .note b{color:var(--c2)}
-  /* 基本文カード */
-  .kihon{border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fff}
-  .kihon .e{font-family:var(--en);font-size:18px;line-height:1.5}
-  .kihon .j{font-size:14px;margin-top:4px}
-  .kihon .k{font-size:13px;color:var(--gray);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
-  /* 問題 */
-  .q{border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fff}
-  .q .qh{font-size:12px;color:var(--gray);margin-bottom:5px}
-  .q .qs{font-family:var(--en);font-size:16px;line-height:1.55}
-  .q .qj{font-size:14px}
-  .q.ok{border-color:#a7d9bf;background:var(--okbg)}
-  .q.mid{border-color:#f0cf94;background:var(--midbg)}
-  .q.ng{border-color:#f0b8a8;background:var(--ngbg)}
-  .q .verdict{font-size:13px;margin-top:7px;font-weight:bold}
-  .q .verdict small{font-weight:normal;color:var(--gray)}
-  .ans{font-family:var(--en);font-size:16px}
-  /* 選択肢 */
-  .ch{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-  .ch button{font:inherit;font-family:var(--en);font-size:15px;border:2px solid var(--line);
-    background:#fff;border-radius:10px;padding:7px 15px;cursor:pointer}
-  .ch button.on{border-color:var(--c1);background:#e7f4f2;font-weight:bold}
-  .ch button[disabled]{cursor:default;opacity:.85}
-  .ch button.right{border-color:var(--ok);background:var(--okbg)}
-  .ch button.wrong{border-color:var(--ng);background:var(--ngbg)}
+  /* 読み取ったキーセンテンス */
+  .kihon{border:2px solid var(--line);border-radius:12px;padding:10px 13px;margin:8px 0;background:#fff}
+  .kihon .e{font-family:var(--en);font-size:17px;line-height:1.5}
+  .kihon .j{font-size:13.5px;margin-top:3px;color:var(--gray)}
+  .kihon.bad{border-color:var(--ng);background:#fff6f4}
+  .kihon .warn{font-size:12.5px;color:var(--ng);margin-top:4px}
+  /* 出題 */
+  .qwrap{border:2px solid var(--c1);border-radius:13px;padding:14px 16px;background:#fff}
+  .qtag{display:inline-block;font-size:11.5px;font-weight:bold;background:#e7f4f2;color:var(--c1d);
+    border-radius:999px;padding:3px 11px;margin-bottom:8px}
+  .qja{font-size:15px;margin:4px 0}
+  .qen{font-family:var(--en);font-size:19px;line-height:1.5;margin:4px 0}
+  .qen .bl{border-bottom:2px solid var(--c1);padding:0 22px;color:var(--c1)}
+  .qcount{float:right;font-size:12px;color:var(--muted)}
+  .verdict{font-size:14px;margin-top:10px;font-weight:bold;padding:9px 11px;border-radius:10px}
+  .verdict.ok{background:var(--okbg);color:var(--ok)}
+  .verdict.mid{background:var(--midbg);color:var(--mid)}
+  .verdict.ng{background:var(--ngbg);color:var(--ng)}
+  .verdict small{font-weight:normal;color:var(--gray);display:block;margin-top:3px}
+  .ans{font-family:var(--en);font-size:16px;color:var(--ink)}
   /* 並べかえ */
-  .wo-build{min-height:46px;border:2px dashed var(--line);border-radius:10px;padding:7px;
+  .wo-build{min-height:48px;border:2px dashed var(--line);border-radius:10px;padding:7px;
     display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;background:#fafdfc}
-  .wo-bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+  .wo-bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
   .chip{font:inherit;font-family:var(--en);font-size:15px;border:2px solid var(--line);
-    background:#fff;border-radius:9px;padding:5px 12px;cursor:pointer}
+    background:#fff;border-radius:9px;padding:6px 13px;cursor:pointer}
   .chip.in{border-color:var(--c1);background:#e7f4f2}
-  .chip[disabled]{cursor:default;opacity:.6}
+  .chip[disabled]{cursor:default;opacity:.45}
   .wo-empty{color:var(--muted);font-size:12.5px}
   /* 結果 */
   .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
@@ -122,108 +126,81 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="index.html">← 自学マイページ</a></div>
   <h1>文法レーン <span class="en">Grammar</span></h1>
-  <p>基本文はこのアプリが持っています。AIに任せるのは、最後の10問のランダマイズだけ。</p>
+  <p>いま習っているページのキーセンテンスを貼る。1文につき5問、このアプリが作って採点します。</p>
 </div></div>
 
 <div class="wrap">
 
-<!-- ============ ① 覚える一覧 ============ -->
+<!-- ============ ① キーセンテンスを入れる ============ -->
 <div id="intro">
   <div class="card">
-    <h2 id="gTitle"></h2>
-    <p id="gLead" style="font-size:14px;margin:0 0 10px"></p>
-    <div id="gCore"></div>
-    <div class="note">
-      <b>使う単語は中1のものだけ</b>にしてあります。完了形を習う学年は教科書によってちがうので、
-      先に進んでいる人が<b>単語でつまずかない</b>ようにするためです。
-      already / yet / ever / since など、完了形に必要な語だけは例外です。
+    <h2>① 教科書のキーセンテンスを貼る</h2>
+
+    <label>教科書のどこ？<span class="req">かならず選ぶ</span></label>
+    <div class="unitrow">
+      <select id="f_kind"><option>Unit</option><option>Lesson</option></select>
+      <select id="f_unum"><option value="">—</option></select>
+      <span class="sep">の</span>
+      <select id="f_lnum"><option value="">—</option></select>
+      <span class="sep">つめ</span>
     </div>
-    <h3>基本文（これをおぼえる）</h3>
-    <div id="gList"></div>
+    <div class="echo" id="unitEcho">2つとも選ぶと、ここに記録される名前が出ます</div>
+
+    <label for="f_raw">キーセンテンス（英語と日本語訳）</label>
+    <textarea id="f_raw" rows="9" placeholder="英語と日本語訳を、1文ずつ。並べかたは自由です。&#10;&#10;I have lived here for ten years.&#10;私は10年間ここに住んでいます。&#10;&#10;Have you ever seen this movie? あなたはこの映画を見たことがありますか。&#10;She has just finished her homework.｜彼女はちょうど宿題を終えたところです。"></textarea>
+    <div class="row">
+      <button class="btn ghost sm" id="checkRaw">読み取りを確かめる</button>
+      <button class="btn ghost sm" id="loadLast">前回の文を読み込む</button>
+      <button class="btn ghost sm" id="loadSample">見本を入れる（現在完了形）</button>
+    </div>
+    <div class="msg" id="rawMsg"></div>
+    <div id="preview"></div>
+
+    <div class="note">
+      <b>1文につき、ちょうど5点。</b>
+      写しがき1問・英訳1問・一部空欄2問・並びかえ1問の<b>5問すべて1点</b>です。
+      3文入れれば15点満点、5文入れれば25点満点。<br>
+      日本語訳がない文は出題できません（英訳の問題が作れないため）。
+      教科書の訳をそのまま入れて大丈夫です。
+    </div>
+
     <div class="row" style="margin-top:14px">
-      <button class="btn" id="startPractice">おぼえたら練習へ →</button>
+      <button class="btn" id="start">練習をはじめる →</button>
       <a class="btn ghost sm" href="index.html" style="text-decoration:none;line-height:1.9">← 自学マイページ</a>
     </div>
+    <div class="msg" id="startMsg"></div>
   </div>
   <div class="card"><h2>これまでの文法</h2><div id="hist"></div></div>
 </div>
 
-<!-- ============ ④ AIモードで10問 ============ -->
-<div id="build" class="hide">
-  <div class="steps" id="aiSteps"></div>
-  <div class="card">
-    <h2>④ AIモードで10問といてくる</h2>
-    <div class="note">
-      AIには<b>問題を出す役だけ</b>をやってもらいます。<b>1問ずつ出させて、1問ずつ答える</b>形です。
-      10問まとめて出されると、並べかえは書く量が多すぎて途中でいやになるからです。
-      10問終わると最後にまとめが出るので、それをコピーしてここに戻ってきてください。
-    </div>
-    <label for="f_mine">自分の工夫（自由に書き足す）</label>
-    <textarea id="f_mine" rows="3" placeholder="例：スポーツの話でそろえて。has と have を必ず両方出して。"></textarea>
-    <p class="hint">ここが自分の腕の見せどころ。うまくいった書き方は次の版に引き継がれます。</p>
-    <div class="row">
-      <button class="btn" id="mkPrompt">プロンプトを作る</button>
-      <button class="btn ghost sm" id="loadLast">前回の版を読み込む</button>
-      <span class="hint" id="verNote"></span>
-    </div>
-    <div id="promptBox" class="hide">
-      <h3>できたプロンプト</h3>
-      <pre class="prompt" id="promptText"></pre>
-      <div class="row">
-        <button class="btn" id="copyPrompt">📋 ① コピーする</button>
-        <button class="btn" id="openAI">🤖 ② AIモードに貼る</button>
-        <button class="btn ghost" id="goPaste">📥 ③ まとめを貼る画面へ</button>
-      </div>
-      <p class="hint">①でコピー → ②でAIモードに貼る → <b>1問ずつ出てくるので1問ずつ答える</b>
-        → 10問終わると出る <code>=== BUNPO ===</code> から <code>=== END ===</code> までをコピー → ③で貼る。</p>
-    </div>
-    <div class="row"><button class="btn ghost sm" data-go="intro">← 覚える一覧にもどる</button></div>
-  </div>
-</div>
-
-<!-- ============ ⑤ まとめを貼る ============ -->
-<div id="paste" class="hide">
-  <div class="steps" id="pasteSteps"></div>
-  <div class="card">
-    <h2>⑤ まとめを貼る</h2>
-    <p class="hint" style="margin-top:0">AIが最後に出した <code>=== BUNPO ===</code> から <code>=== END ===</code> までを、まるごと貼り付けてください。</p>
-    <textarea id="f_paste" rows="12" placeholder="=== BUNPO ===&#10;項目: 現在完了形&#10;no | 種別 | 問題 | わたしの答え | 正解&#10;1 | 選択 | I have ( ) to Osaka twice. | went | been&#10;6 | 並べかえ | 彼はもう昼食を食べました。 | He has eaten already lunch. | He has already eaten lunch.&#10;=== END ==="></textarea>
-    <div class="msg" id="pasteMsg"></div>
-    <div class="msg" id="vocabMsg"></div>
-    <div class="row">
-      <button class="btn" id="doLoad">自分で採点する</button>
-      <button class="btn ghost sm" data-go="build">← プロンプトに戻る</button>
-      <button class="btn ghost sm" data-go="intro">ホーム</button>
-    </div>
-  </div>
-</div>
-
-<!-- ============ ②③ アプリの中で打つ ============ -->
+<!-- ============ ② 出題（1問ずつ） ============ -->
 <div id="learn" class="hide">
-  <div class="steps" id="learnSteps"></div>
+  <div class="steps" id="qSteps"></div>
   <div class="card">
-    <h2 id="stepTitle"></h2>
-    <p class="hint" id="stepLead" style="margin-top:0"></p>
-    <div id="stepBody"></div>
-    <div class="msg" id="stepMsg"></div>
+    <div class="qwrap">
+      <div class="qcount" id="q_count"></div>
+      <div class="qtag" id="q_tag"></div>
+      <div id="q_body"></div>
+      <div id="q_verdict"></div>
+    </div>
     <div class="row" style="margin-top:14px">
-      <button class="btn" id="stepCheck">答え合わせ</button>
-      <button class="btn hide" id="stepNext">次へ →</button>
-      <button class="btn ghost sm" data-go="intro">やめる</button>
+      <button class="btn" id="q_check">答え合わせ</button>
+      <button class="btn hide" id="q_next">次へ →</button>
+      <button class="btn ghost sm" id="q_quit">やめる</button>
     </div>
   </div>
 </div>
 
-<!-- ============ 結果 ============ -->
+<!-- ============ ③ 結果 ============ -->
 <div id="result" class="hide">
   <div class="card">
     <h2>結果（このページが自分で計算しました）</h2>
     <div class="score" id="r_score">– / –</div>
     <div class="kpi">
       <div><b id="k_pct">–</b><span>正答率</span></div>
-      <div><b id="k_copy">–</b><span>写しまちがい</span></div>
-      <div><b id="k_sel">–</b><span>選択</span></div>
-      <div><b id="k_wo">–</b><span>並べかえ</span></div>
+      <div><b id="k_copy">–</b><span>写しがき</span></div>
+      <div><b id="k_trans">–</b><span>英訳</span></div>
+      <div><b id="k_blank">–</b><span>空欄</span></div>
     </div>
     <div class="msg" id="r_note"></div>
     <div id="r_detail"></div>
@@ -238,8 +215,8 @@
     <div class="row" style="margin-top:14px">
       <button class="btn" id="saveRun">記録する</button>
       <button class="btn" id="sendRun">先生に送信</button>
-      <button class="btn ghost sm" data-go="build">もう1回つくる</button>
-      <button class="btn ghost sm" data-go="intro">ホーム</button>
+      <button class="btn ghost sm" id="again">もう1回やる</button>
+      <button class="btn ghost sm" id="home">ホーム</button>
     </div>
     <div class="msg" id="saveMsg"></div>
   </div>
@@ -249,8 +226,6 @@
 </div>
 
 <script src="../assets/site.js"></script>
-<script src="../words/data/words.js"></script>
-<script src="../words/data/katsuyo.js"></script>
 <script src="data/bunpo_kanryo.js"></script>
 <script src="bunpo.js"></script>
 </body>

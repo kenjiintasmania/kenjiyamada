@@ -1,65 +1,158 @@
-/* jigaku/bunpo.js ─ 文法レーンの中身（第1弾＝現在完了形）
-   ・基本文・訳・解説はアプリが持つ固定教材（data/bunpo_kanryo.js）。AIには作らせない。
-   ・写経と「訳→英文」はアプリの中だけで完結する。
-   ・AIに任せるのは選択5＋並べかえ5のランダマイズだけ。しかも1問ずつ出させる
-     （10問まとめて出すと、並べかえは書く量が多すぎて手が止まるため）。
-   ・採点はAIの丸つけを使わず、貼られた「わたしの答え」と「正解」だけで再計算する。 */
+/* jigaku/bunpo.js ─ 文法レーンの中身
+   ★ 出題の根拠は、生徒が持ってきたキーセンテンスだけ。教科書名から推測しない。
+     （教科書は学年・地域で変わる。単元名は根拠にならない）
+   ★ 1文につき、ちょうど5問＝5点。
+        写しがき1 ▶ 英訳1 ▶ 一部空欄2 ▶ 並びかえ1　すべて1点。
+     5種類とも貼られた英文から機械的に作れるので、AIモードは使わない。
+   ★ 採点はこのページがやる。生成AIの丸つけは1文字も点に変えない。 */
 (function(){
 "use strict";
 var $=function(i){return document.getElementById(i);};
-var SCREENS=["intro","learn","build","paste","result"];
-var AI_URL="https://www.google.com/search?udm=50";
-var G=window.BUNPO_KANRYO;
-function openAImode(){ try{ window.open(AI_URL,"_blank","noopener"); }catch(e){ location.href=AI_URL; } }
-function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0);
-  if(n==="intro") renderHome(); }
-document.querySelectorAll("[data-go]").forEach(function(b){
-  b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
+var SCREENS=["intro","learn","result"];
+function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
-
-/* ================= 中1語彙の判定（警告に使う） ================= */
-var MUST=["already","yet","ever","never","since","for","just","twice","once","times","time","been","gone"];
-var G1={}, BASE={};
-(function(){
-  if(window.WORDS) WORDS.forEach(function(x){ if(x.g<=1) G1[nw(x.w)]=1; });
-  if(window.KATSUYO_WORDS){
-    var byKid={};
-    KATSUYO_WORDS.forEach(function(x){ (byKid[x.kid]=byKid[x.kid]||[])[x.slot]=x.w; });
-    Object.keys(byKid).forEach(function(k){
-      var a=byKid[k], b=nw(a[0]);
-      a.forEach(function(f){ if(f) BASE[nw(f)]=b; });
-    });
-  }
-  MUST.forEach(function(w){ G1[nw(w)]=1; });
-})();
-function nw(s){ return String(s==null?"":s).toLowerCase().replace(/[^a-z']/g,""); }
-function inG1(word){
-  var t=nw(word); if(!t) return true;
-  if(G1[t]||(BASE[t]&&G1[BASE[t]])) return true;
-  var c=[t.replace(/ies$/,"y"), t.replace(/(es|s)$/,""), t.replace(/ed$/,""), t.replace(/ed$/,"e"),
-         t.replace(/ing$/,""), t.replace(/ing$/,"e"), t.replace(/([a-z])\1(ed|ing)$/,"$1")];
-  for(var i=0;i<c.length;i++){ if(G1[c[i]]||(BASE[c[i]]&&G1[BASE[c[i]]])) return true; }
-  return false;
-}
-function outOfG1(text){
-  var out=[];
-  String(text||"").split(/(?:[.!?]\s+)|\n/).forEach(function(sent){
-    sent.trim().split(/\s+/).forEach(function(raw,i){
-      var w=raw.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g,"");
-      if(!w) return;
-      if(i>0 && /^[A-Z]/.test(w)) return;      // 文頭以外の大文字始まり＝固有名詞とみなす
-      if(!inG1(w)) out.push(w.toLowerCase());
-    });
-  });
-  return out;
-}
 
 /* ================= 記録 ================= */
 var KEY="jigaku_v1";
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
 function saveS(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
-function store(){ var s=load(); s.bunpo=s.bunpo||{prompts:[],runs:[]}; return s; }
+function store(){ var s=load(); s.bunpo=s.bunpo||{}; s.bunpo.runs=s.bunpo.runs||[]; return s; }
+
+/* ================= 単元えらび（単語レーンとそろえる） ================= */
+(function fillUnits(){
+  var u=$("f_unum"), l=$("f_lnum"), i;
+  for(i=0;i<=15;i++) u.insertAdjacentHTML("beforeend",'<option value="'+i+'">'+i+'</option>');
+  for(i=1;i<=15;i++) l.insertAdjacentHTML("beforeend",'<option value="'+i+'">'+i+'</option>');
+})();
+function unitNum(){ return $("f_unum").value; }   // "0" もありうるので、空文字だけを未選択とみなす
+function listNum(){ return $("f_lnum").value; }
+function fullName(){
+  if(unitNum()===""||listNum()==="") return "";
+  return $("f_kind").value+" "+unitNum()+"-"+listNum();
+}
+function echoUnit(){
+  var nm=fullName();
+  $("unitEcho").innerHTML = nm
+    ? ("記録される名前 → <b>"+esc(nm)+"</b>")
+    : "2つとも選ぶと、ここに記録される名前が出ます";
+  $("f_unum").classList.toggle("bad", unitNum()==="");
+  $("f_lnum").classList.toggle("bad", listNum()==="");
+}
+["f_kind","f_unum","f_lnum"].forEach(function(id){ $(id).addEventListener("change", echoUnit); });
+
+/* ================= キーセンテンスの読み取り =================
+   教科書のキーセンテンス欄は、並びかたが本によってちがう。
+   ・英文の行と訳の行が交互
+   ・1行に英文と訳が両方
+   ・番号（1. / (1) / ・）つき
+   どれでも読めるようにする。読めなかった行は捨てずに、画面に出して直させる。 */
+var JA_RE=/[ぁ-んァ-ヶ一-龥々ー〜、。「」『』（）：＝]/;
+var EN_RE=/[A-Za-z]/;
+function stripNum(s){ return s.replace(/^\s*(?:[（(]?\d+[.)．）、:：]?|[・•▶▷>*\-–—])\s*/,""); }
+function tidyEn(s){ return String(s||"").replace(/\s+/g," ").trim(); }
+function tidyJa(s){
+  return String(s||"").replace(/^[\s（("「『:：=＝|｜]+/,"").replace(/[）)"」』|｜]+\s*$/,"").replace(/\s+/g," ").trim();
+}
+function parseSentences(raw){
+  var out=[], pendEN=null, pendJA=null;
+  function push(en,ja){ out.push({en:tidyEn(en), ja:tidyJa(ja)}); }
+  String(raw||"").replace(/\r/g,"").split("\n").forEach(function(line){
+    var s=stripNum(line.trim());
+    if(!s) return;
+    var hasJa=JA_RE.test(s), hasEn=EN_RE.test(s);
+    if(hasEn&&hasJa){
+      var i=s.search(JA_RE);
+      var en=s.slice(0,i).replace(/[\s|｜\t=＝:：\/,]+$/,"");
+      if(EN_RE.test(en)){                    // 区切りの左に英字がある＝1行に両方入っている
+        if(pendEN!=null){ push(pendEN,""); pendEN=null; }
+        push(en, s.slice(i)); pendJA=null; return;
+      }
+      hasEn=false;                           // 日本語の行に英字記号がまじっただけ
+    }
+    if(hasEn){
+      if(pendJA!=null){ push(s,pendJA); pendJA=null; return; }
+      if(pendEN!=null) push(pendEN,"");      // 英文が2行つづいた＝前の文に訳がない
+      pendEN=s; return;
+    }
+    if(hasJa){
+      if(pendEN!=null){ push(pendEN,s); pendEN=null; return; }
+      pendJA=s;
+    }
+  });
+  if(pendEN!=null) push(pendEN,"");
+  out.forEach(function(x){
+    x.toks=tokens(x.en);
+    x.ng = !x.ja ? "日本語訳がありません" : (x.toks.length<3 ? "英文が短すぎます（3語以上）" : "");
+  });
+  return out;
+}
+function tokens(en){
+  return String(en||"").trim().split(/\s+/).filter(function(t){ return /[A-Za-z0-9]/.test(t); });
+}
+
+/* ================= 空欄にする語をえらぶ =================
+   文法の自学なので、内容語ではなく「文法をになう語」を抜く。
+   a / the は抜いても文法の勉強にならないので、最後まで選ばない。 */
+var RANK=[
+  /* 100点：文の骨組み（be・助動詞・完了・否定） */
+  ["am","is","are","was","were","be","been","being","have","has","had",
+   "will","would","shall","should","can","could","may","might","must",
+   "do","does","did","not","never","dont","doesnt","didnt","cant","wont",
+   "isnt","arent","wasnt","werent","havent","hasnt","hadnt","couldnt","shouldnt","mustnt"],
+  /* 90点：単元のねらいになりやすい語（完了・比較・関係詞・接続詞） */
+  ["already","yet","ever","just","since","ago","still","before","after","twice","once",
+   "than","more","most","much","many","as","who","which","that","whose","whom",
+   "what","where","when","why","how","if","because","but","so","while","though","when"],
+  /* 80点：前置詞・to不定詞 */
+  ["to","in","on","at","by","with","from","of","about","into","over","under",
+   "between","during","without","through","for","and","or"]
+];
+function bare(t){ return String(t||"").toLowerCase().replace(/[^a-z0-9']/g,"").replace(/'/g,""); }
+function blankScore(tok){
+  var t=bare(tok);
+  if(!t) return 0;
+  for(var r=0;r<RANK.length;r++) if(RANK[r].indexOf(t)>=0) return 100-r*10;
+  if(/(ing|ed)$/.test(t)&&t.length>4) return 70;      // 動詞の形が変わっている＝そこも文法
+  if(t==="a"||t==="an"||t==="the") return 1;          // 冠詞は最後の最後
+  return 30+Math.min(t.length,9);                     // 残りは長い語ほど手ごたえがある
+}
+function pickBlanks(toks){
+  var bag=toks.map(bare);
+  /* 比較級・最上級は -er / -est の語そのものがねらい。ただし father・water まで
+     抜いてしまうので、than / most / the ○○est がある文のときだけ持ち上げる。 */
+  var cmp = bag.indexOf("than")>=0;
+  var sup = bag.indexOf("most")>=0 || bag.some(function(w,i){
+              return /est$/.test(w) && w.length>4 && bag[i-1]==="the"; });
+  var sc=[];
+  toks.forEach(function(t,i){
+    var s=blankScore(t), w=bag[i];
+    if(cmp && /er$/.test(w)  && w.length>3) s=Math.max(s,95);
+    if(sup && /est$/.test(w) && w.length>3) s=Math.max(s,95);
+    if(s>0) sc.push({i:i, s:s, w:w});
+  });
+  sc.sort(function(a,b){ return b.s-a.s || a.i-b.i; });
+  if(sc.length<2) return sc.map(function(x){ return x.i; });
+  /* 2問とも同じ語だと練習にならないので、2つめは別の語から取る。
+     となり合わせは避けない。1問に1つしか穴を見せないので、読みにくくならない。 */
+  var first=sc[0], second=null, k;
+  for(k=1;k<sc.length;k++){ if(sc[k].w!==first.w){ second=sc[k]; break; } }
+  if(!second) second=sc[1];
+  return [first.i, second.i].sort(function(a,b){ return a-b; });
+}
+/* 並べかえの札。文末の . や , は落とす。残すと「どれが最後か」がタダで分かってしまう */
+function chipList(toks){
+  return toks.map(function(t){ return t.replace(/[.,!?;:]+$/,""); }).filter(Boolean);
+}
+function shuffled(a){
+  if(a.length<2) return a.slice();
+  var b,t=0;
+  do{ b=a.slice();
+      for(var i=b.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),x=b[i]; b[i]=b[j]; b[j]=x; }
+      t++;
+  } while(t<25 && b.join(" ")===a.join(" "));
+  return b;
+}
 
 /* ================= 判定のものさし（単語レーンと同じ） ================= */
 function norm(s){
@@ -67,7 +160,7 @@ function norm(s){
     .replace(/[.,!?;:"“”]/g," ").replace(/\s+/g," ").trim();
 }
 function words(s){ return norm(s).split(" ").filter(Boolean); }
-function edist(a,b){
+function edist(a,b){                                   // Damerau-Levenshtein（入れかえも1回とみなす）
   var m=a.length,n=b.length,d=[],i,j;
   for(i=0;i<=m;i++) d[i]=[i];
   for(j=0;j<=n;j++) d[0][j]=j;
@@ -90,278 +183,237 @@ function spellOnly(mine,ans){
   }
   return diff>0;
 }
-/* 用途で見かたを変える。
-   "exact"  … 選択問題。選択肢はどれも別の語なので、一致か不一致だけ。
-              ever と never を「1文字ちがい＝つづりミス」と見なしてはいけない。
-   "order"  … 並べかえ。完答のみ。ちがう理由（順番／つづり）は出すが点は0。
-   "recall" … 訳から思い出して書く。つづりミスは −1。 */
-function judge(mine,ans,pt,mode){
+/* 1問1点。だから「おしい」でも点は動かない。かわりに、なぜ×なのかは必ず出す。
+   ・写しがき … 見ながら写すだけなので、ちがえば写しまちがい
+   ・並びかえ … 完答のみ（業者テストもそう）
+   ・英訳／空欄 … つづりミスは0点。ただし △ と出して「おしい」と分かるようにする */
+function judge(mine,ans,mode){
   if(!String(mine||"").trim()) return {tag:"—", pt:0, why:"書けなかった"};
-  if(norm(mine)===norm(ans)) return {tag:"○", pt:pt, why:""};
-  if(mode==="exact") return {tag:"×", pt:0, why:""};
-  if(sameBag(mine,ans)) return {tag:"×", pt:0, why:"語はそろっているが順番がちがう"};
-  if(spellOnly(mine,ans)){
-    return (mode==="recall") ? {tag:"△", pt:Math.max(0,pt-1), why:"つづりミス −1"}
-                             : {tag:"×", pt:0, why:"つづりミス（並べかえは完答のみ）"};
-  }
+  if(norm(mine)===norm(ans))   return {tag:"○", pt:1, why:""};
+  if(sameBag(mine,ans))        return {tag:"×", pt:0, why:"語はそろっているが、順番がちがう"};
+  if(spellOnly(mine,ans))      return {tag:"△", pt:0,
+    why:(mode==="copy")?"写しまちがい（つづり）":"つづりが1文字ちがう"};
   return {tag:"×", pt:0, why:""};
 }
 
-/* ================= ① 覚える一覧 ================= */
-(function renderGuide(){
-  $("gTitle").textContent=G.title;
-  $("gLead").innerHTML=G.lead;
-  $("gCore").innerHTML='<table>'+G.core.map(function(c){
-    return '<tr><th>'+esc(c.h)+'</th><td>'+c.t+'</td></tr>'; }).join('')+'</table>';
-  var byUse={};
-  G.sentences.forEach(function(s){ (byUse[s.use]=byUse[s.use]||[]).push(s); });
-  $("gList").innerHTML=G.uses.map(function(u){
-    return '<h3>'+esc(u.k)+'　<span style="font-weight:normal;color:#5a6473">'+esc(u.label)+'</span></h3>'+
-      '<p class="hint" style="margin:0 0 6px">'+u.t+'</p>'+
-      (byUse[u.k]||[]).map(function(s){
-        return '<div class="kihon"><div class="e">'+esc(s.en)+'</div>'+
-          '<div class="j">'+esc(s.ja)+'</div><div class="k">'+esc(s.tip)+'</div></div>';
-      }).join('');
-  }).join('');
-})();
-$("startPractice").addEventListener("click",function(){ startLearn(); });
-
-/* ================= ②③ アプリの中で打つ ================= */
-var STEPS=[
-  {k:"copy",  t:"② 見ながら打つ", lead:"上の英文を見ながら、そのまま打つ。つづりに気をつけて。"},
-  {k:"recall",t:"③ 訳を見て打つ", lead:"日本語だけを見て、さっきの英文を思い出して打つ。"}
-];
-var ALL=["① 覚える","② 写す","③ 思い出す","④ AIで10問","⑤ 貼って採点"];
-function chips(now){
-  return ALL.map(function(t,i){ return '<span class="'+(i===now?"now":(i<now?"done":""))+'">'+t+'</span>'; }).join("");
-}
-var si=0, R=null;
-function startLearn(){
-  si=0;
-  R={ts:Date.now(), item:G.key, copy:[], recall:[], sel:[], wo:[], promptV:null};
-  show("learn"); renderStep();
-}
-function renderStep(){
-  var st=STEPS[si];
-  $("learnSteps").innerHTML=chips(si+1);
-  $("stepTitle").textContent=st.t;
-  $("stepLead").textContent=st.lead;
-  $("stepMsg").className="msg";
-  $("stepNext").classList.add("hide");
-  $("stepCheck").classList.remove("hide");
-  var b=$("stepBody");
-  b.innerHTML=G.sentences.map(function(s,i){
-    return '<div class="q" id="q'+i+'"><div class="qh">'+s.use+' '+(i+1)+'</div>'+
-      (st.k==="copy" ? '<div class="qs">'+esc(s.en)+'</div>' : '<div class="qj">'+esc(s.ja)+'</div>')+
-      '<input type="text" class="en" id="in'+i+'" placeholder="'+(st.k==="copy"?"そのまま打つ":"英語で打つ")+
-      '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></div>';
+/* ================= ① 画面 ================= */
+var TYPES={
+  copy :{tag:"写しがき", lead:"下の英文を見ながら、そのまま打つ。"},
+  trans:{tag:"英訳",     lead:"日本語だけを見て、英文を思い出して打つ。"},
+  blank:{tag:"一部空欄", lead:"( ) に入る語を1つだけ書く。"},
+  order:{tag:"並びかえ", lead:"札を順にタップして英文を作る。"}
+};
+var parsed=[];
+function renderPreview(){
+  var box=$("preview"), msg=$("rawMsg");
+  parsed=parseSentences($("f_raw").value);
+  if(!parsed.length){ box.innerHTML=""; msg.className="msg"; return; }
+  var okN=parsed.filter(function(x){ return !x.ng; }).length;
+  box.innerHTML='<h3>読み取り（'+parsed.length+'文）</h3>'+parsed.map(function(x,i){
+    return '<div class="kihon'+(x.ng?" bad":"")+'"><div class="e">'+esc(x.en)+'</div>'+
+      (x.ja?'<div class="j">'+esc(x.ja)+'</div>':"")+
+      (x.ng?'<div class="warn">⚠ '+esc(x.ng)+'</div>':"")+'</div>';
   }).join("");
+  msg.className="msg show "+(okN===parsed.length?"ok":(okN?"warn":"ng"));
+  msg.innerHTML = okN
+    ? ("使える文 <b>"+okN+"文</b> → <b>"+(okN*5)+"点満点</b>（1文5問）"+
+       (okN<parsed.length?("　※ "+(parsed.length-okN)+"文は使えません。上の⚠を直してください。"):""))
+    : "使える文がありません。英文とその日本語訳を、両方入れてください。";
 }
-$("stepCheck").addEventListener("click",function(){
-  var st=STEPS[si], msg=$("stepMsg");
-  var rows=G.sentences.map(function(s,i){
-    var mine=$("in"+i).value;
-    var v=judge(mine, s.en, st.k==="copy"?1:4, "recall");
-    var q=$("q"+i); q.className="q "+(v.tag==="○"?"ok":(v.tag==="△"?"mid":"ng"));
-    $("in"+i).disabled=true;
-    q.insertAdjacentHTML("beforeend",'<div class="verdict">'+v.tag+
-      (st.k==="copy"?"":" "+v.pt+"点")+
-      (v.tag==="○" ? (st.k==="copy"?" そのとおり":"") :
-        ' <small>'+(v.why?esc(v.why)+"／":"")+'正しくは <span class="ans">'+esc(s.en)+'</span></small>')+'</div>');
-    return {en:s.en, ja:s.ja, mine:mine, tag:v.tag, pt:v.pt, why:v.why};
-  });
-  if(st.k==="copy"){
-    R.copy=rows;
-    var miss=rows.filter(function(x){return x.tag!=="○";}).length;
-    msg.className="msg show "+(miss?"warn":"ok");
-    msg.textContent= miss ? ("見ながらでも "+miss+"文まちがえました。つづりを1文字ずつ見直そう。")
-                          : "全部そのとおりに打てました。";
-  } else {
-    R.recall=rows;
-    var got=rows.reduce(function(a,x){return a+x.pt;},0);
-    msg.className="msg show ok";
-    msg.textContent="思い出せたぶん "+got+" / "+(G.sentences.length*4)+" 点。";
-  }
-  this.classList.add("hide");
-  $("stepNext").classList.remove("hide");
-  $("stepNext").textContent=(si>=STEPS.length-1)?"④ AIモードへ →":"次へ →";
-});
-$("stepNext").addEventListener("click",function(){
-  si++;
-  if(si>=STEPS.length){ show("build"); prefill(); $("aiSteps").innerHTML=chips(3); return; }
-  renderStep();
-});
-
-/* ================= ④ AIモードのプロンプト ================= */
-function buildPrompt(mine){
-  var p=[];
-  p.push("あなたは中学英語の先生です。わたしに「"+G.key+"」の問題を出してください。");
-  p.push("");
-  p.push("【出す問題】ぜんぶで10問。");
-  p.push("　・1〜5問目：選択問題（かっこに入る語を、4つの中から選ぶ形）");
-  p.push("　・6〜10問目：並べかえ問題（日本語を見て、あなたが示した語を正しい順にならべる形）");
-  p.push("");
-  p.push("【いちばん大事な決まり】");
-  p.push("　・**1問ずつ**出してください。わたしが答えるまで、次の問題を出さないでください。");
-  p.push("　・わたしが答えたら、○×も解説もまだ書かないでください。「次の問題です」とだけ言って進んでください。");
-  p.push("　・10問終わってから、最後に下の【まとめ】を1回だけ出してください。");
-  p.push("");
-  p.push("【使う単語】中学1年で習う英単語だけを使ってください。");
-  p.push("　ただし already / yet / ever / never / since / for / just / twice / once と、動詞の過去分詞形は");
-  p.push("　使ってよいです。人名・地名は自由です。");
-  p.push("");
-  p.push("【もとにする文】下の9文の形をもとに、語や場面を入れかえて作ってください。");
-  G.sentences.forEach(function(s,i){ p.push("　"+(i+1)+". "+s.en); });
-  if(mine && mine.trim()) p.push("");
-  if(mine && mine.trim()) p.push("【わたしからの注文】"+mine.trim().replace(/\n/g,"／"));
-  p.push("");
-  p.push("【まとめ】※この書式は1文字も変えないでください");
-  p.push("=== BUNPO ===");
-  p.push("項目: "+G.key);
-  p.push("no | 種別 | 問題 | わたしの答え | 正解");
-  p.push("1 | 選択 | （出した英文。かっこはそのまま） | （わたしが選んだ語） | （正しい語）");
-  p.push("6 | 並べかえ | （日本語） | （わたしが書いた英文をそのまま） | （正しい英文）");
-  p.push("=== END ===");
-  p.push("");
-  p.push("・区切りは半角の縦棒 | を使ってください。1問を1行に書いてください。");
-  p.push("・「わたしの答え」には、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
-  p.push("・○×や点数は書かないでください。採点はわたしのアプリがやります。");
-  return p.join("\n");
-}
-var current=null;
-function prefill(){
-  var s=store(), last=s.bunpo.prompts[s.bunpo.prompts.length-1];
-  $("verNote").textContent = last ? ("いまの最新は v"+last.v+"（"+new Date(last.ts).toLocaleDateString("ja-JP")+"）")
-                                  : "まだ作ったことがありません";
-}
-$("mkPrompt").addEventListener("click",function(){
-  var mine=$("f_mine").value;
-  var s=store(), v=(s.bunpo.prompts.length? s.bunpo.prompts[s.bunpo.prompts.length-1].v:0)+1;
-  var text=buildPrompt(mine);
-  current={v:v, ts:Date.now(), item:G.key, mine:mine, text:text};
-  s.bunpo.prompts.push(current); saveS(s);
-  if(R) R.promptV=v;
-  $("promptText").textContent=text;
-  $("promptBox").classList.remove("hide");
-  $("verNote").textContent="v"+v+" として保存しました";
-});
+var tmr=null;
+$("f_raw").addEventListener("input",function(){ clearTimeout(tmr); tmr=setTimeout(renderPreview,400); });
+$("checkRaw").addEventListener("click", renderPreview);
 $("loadLast").addEventListener("click",function(){
-  var s=store(), last=s.bunpo.prompts[s.bunpo.prompts.length-1];
-  if(!last){ $("verNote").textContent="前回の版がまだありません"; return; }
-  $("f_mine").value=last.mine||"";
-  $("verNote").textContent="v"+last.v+" を読み込みました。書き足して v"+(last.v+1)+" にしよう。";
+  var s=store();
+  if(!s.bunpo.raw){ $("rawMsg").className="msg show warn"; $("rawMsg").textContent="前に入れた文がありません。"; return; }
+  $("f_raw").value=s.bunpo.raw;
+  if(s.bunpo.kind) $("f_kind").value=s.bunpo.kind;
+  if(s.bunpo.unum!=null) $("f_unum").value=String(s.bunpo.unum);
+  if(s.bunpo.lnum!=null) $("f_lnum").value=String(s.bunpo.lnum);
+  echoUnit(); renderPreview();
 });
-$("copyPrompt").addEventListener("click",function(){
-  var t=$("promptText").textContent, b=this;
-  function done(){ b.textContent="コピーしました ✓"; setTimeout(function(){ b.textContent="📋 ① コピーする"; },1600); }
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,fb); } else fb();
-  function fb(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta);
-    ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} document.body.removeChild(ta); }
+$("loadSample").addEventListener("click",function(){
+  var G=window.BUNPO_KANRYO;
+  if(!G||!G.sentences){ return; }
+  $("f_raw").value=G.sentences.map(function(s){ return s.en+"\n"+s.ja; }).join("\n");
+  renderPreview();
 });
-$("openAI").addEventListener("click", openAImode);
-$("goPaste").addEventListener("click",function(){ show("paste"); $("pasteSteps").innerHTML=chips(4); });
 
-/* ================= ⑤ まとめの読み取り ================= */
-function cells(line){
-  var c=String(line).replace(/｜/g,"|").split("|").map(function(x){return x.trim();});
-  while(c.length&&c[0]==="") c.shift();
-  while(c.length&&c[c.length-1]==="") c.pop();
-  return c;
-}
-function parseSummary(raw){
-  var txt=String(raw||"").replace(/\r/g,"");
-  var i=txt.indexOf("=== BUNPO ==="), j=txt.indexOf("=== END ===");
-  var body=(i>=0)? txt.slice(i+13, j>i? j: txt.length) : txt;
-  var rows=[], bad=0, item="";
-  body.split("\n").forEach(function(line){
-    var s=line.trim(); if(!s) return;
-    var mi=s.match(/^項目\s*[:：]\s*(.+)$/); if(mi){ item=mi[1].split("|")[0].trim(); return; }
-    if(s.indexOf("|")<0) return;
-    var c=cells(s);
-    if(!c.length) return;
-    if(/^[-:\s]+$/.test(c.join(""))) return;                      // |---|---|
-    if(/^no$/i.test(c[0])||/種別/.test(c[1]||"")) return;          // 見出し行
-    if(!/^\d+$/.test(c[0].replace(/[^0-9]/g,""))) { bad++; return; }
-    if(c.length<5){ bad++; return; }
-    var no=parseInt(c[0].replace(/[^0-9]/g,""),10);
-    var kind=/並べ?かえ|並替|順/.test(c[1]) ? "wo" : (/選/.test(c[1]) ? "sel" : (no<=5?"sel":"wo"));
-    rows.push({no:no, kind:kind, q:c[2], mine:c[3], ans:c[4]});
+/* ================= ② 出題 ================= */
+var Q=[], qi=0, SENTS=[], RUN=null;
+function buildQs(sents){
+  var qs=[];
+  sents.forEach(function(s,si){
+    var bl=pickBlanks(s.toks);
+    qs.push({si:si, type:"copy",  ans:s.en});
+    qs.push({si:si, type:"trans", ans:s.en});
+    qs.push({si:si, type:"blank", at:bl[0], ans:s.toks[bl[0]].replace(/[.,!?;:]+$/,"")});
+    qs.push({si:si, type:"blank", at:bl[1], ans:s.toks[bl[1]].replace(/[.,!?;:]+$/,"")});
+    qs.push({si:si, type:"order", ans:s.en, chips:shuffled(chipList(s.toks))});
   });
-  return {item:item, rows:rows, bad:bad};
+  return qs;
 }
-
-var graded=null;
-$("doLoad").addEventListener("click",function(){
-  var msg=$("pasteMsg"), vm=$("vocabMsg");
-  msg.className="msg"; vm.className="msg";
-  var p=parseSummary($("f_paste").value);
-  if(!p.rows.length){
-    msg.className="msg show ng";
-    msg.innerHTML="✗ まとめを読み取れませんでした。<br>AIにこう言い直してみよう：<br>"+
-      "<code>さっきの10問を、no | 種別 | 問題 | わたしの答え | 正解 の5列で、"+
-      "=== BUNPO === と === END === ではさんで出し直して</code>";
+$("start").addEventListener("click",function(){
+  var m=$("startMsg"); m.className="msg";
+  renderPreview();
+  if(unitNum()===""||listNum()===""){
+    m.className="msg show ng";
+    m.innerHTML="<b>教科書のどこか</b>を選んでください。あとで自分の記録を見返すときに、ここが無いと何をやったのか分かりません。";
+    echoUnit(); $(unitNum()===""?"f_unum":"f_lnum").focus(); return;
+  }
+  SENTS=parsed.filter(function(x){ return !x.ng; });
+  if(!SENTS.length){
+    m.className="msg show ng";
+    m.textContent="使える文がありません。英文とその日本語訳を入れて、「読み取りを確かめる」で確認してください。";
     return;
   }
-  // 中1範囲外の語を知らせる（止めはしない）
-  var bad={}, list=[];
-  p.rows.forEach(function(r){ outOfG1(r.ans+" "+(r.kind==="sel"?r.q.replace(/\(.*?\)/g," "):""))
-    .forEach(function(w){ if(!bad[w]){ bad[w]=1; list.push(w); } }); });
-  if(list.length){
-    vm.className="msg show warn";
-    vm.innerHTML="⚠ 中1で習わない語が"+list.length+"語ありました：<b class='en'>"+
-      esc(list.slice(0,12).join(", "))+(list.length>12?" …":"")+"</b>　採点はそのまま続けます。";
+  var s=store();
+  s.bunpo.raw=$("f_raw").value; s.bunpo.kind=$("f_kind").value;
+  s.bunpo.unum=unitNum(); s.bunpo.lnum=listNum(); saveS(s);
+  Q=buildQs(SENTS); qi=0;
+  RUN={ts:Date.now(), name:fullName(), n:SENTS.length, rows:[]};
+  show("learn"); renderQ();
+});
+$("q_quit").addEventListener("click",function(){ show("intro"); });
+
+var picked=[];              // 並びかえで選んだ札の番号
+function renderQ(){
+  var q=Q[qi], s=SENTS[q.si], T=TYPES[q.type];
+  $("q_count").textContent="文 "+(q.si+1)+"/"+SENTS.length+"　問 "+(qi+1)+"/"+Q.length;
+  $("q_tag").textContent=T.tag;
+  $("q_verdict").innerHTML="";
+  $("q_check").classList.remove("hide"); $("q_check").disabled=false;
+  $("q_next").classList.add("hide");
+  var base=qi-(qi%5);
+  $("qSteps").innerHTML=[0,1,2,3,4].map(function(k){
+    var t=Q[base+k].type, cls=(base+k===qi)?"now":((base+k<qi)?"done":"");
+    return '<span class="'+cls+'">'+TYPES[t].tag+'</span>';
+  }).join("");
+  var h='<p class="hint" style="margin:0 0 8px">'+T.lead+'</p>';
+  if(q.type==="copy"){
+    h+='<div class="qen">'+esc(s.en)+'</div><div class="qja">'+esc(s.ja)+'</div>'+inputBox("そのまま打つ");
+  }else if(q.type==="trans"){
+    h+='<div class="qja">'+esc(s.ja)+'</div>'+inputBox("英語で打つ");
+  }else if(q.type==="blank"){
+    h+='<div class="qja">'+esc(s.ja)+'</div><div class="qen">'+blanked(s.toks,q.at)+'</div>'+inputBox("1語だけ");
+  }else{
+    h+='<div class="qja">'+esc(s.ja)+'</div>'+
+       '<div class="wo-build" id="woBuild"><span class="wo-empty">ここに札が並びます</span></div>'+
+       '<div class="wo-bank" id="woBank"></div>'+
+       '<div class="row"><button class="btn ghost sm" id="woUndo">1つもどす</button>'+
+       '<button class="btn ghost sm" id="woClear">ぜんぶ消す</button></div>';
   }
-  // 採点：AIの丸つけは見ない。わたしの答えと正解の一致だけで決める
-  p.rows.forEach(function(r){
-    var pt=(r.kind==="sel")?2:4;
-    var v=judge(r.mine, r.ans, pt, r.kind==="sel"?"exact":"order");
-    r.tag=v.tag; r.pt=v.pt; r.why=v.why;
-    (r.kind==="sel"?R.sel:R.wo).push(r);
-  });
-  finish(p);
+  $("q_body").innerHTML=h;
+  if(q.type==="order"){
+    picked=[];
+    $("woBank").innerHTML=q.chips.map(function(c,i){
+      return '<button class="chip" data-i="'+i+'">'+esc(c)+'</button>'; }).join("");
+    $("woBank").querySelectorAll(".chip").forEach(function(b){
+      b.addEventListener("click",function(){
+        var i=+b.getAttribute("data-i");
+        if(picked.indexOf(i)>=0) return;
+        picked.push(i); drawWo();
+      });
+    });
+    $("woUndo").addEventListener("click",function(){ picked.pop(); drawWo(); });
+    $("woClear").addEventListener("click",function(){ picked=[]; drawWo(); });
+    drawWo();
+  }else{
+    var el=$("q_in"); el.focus();
+    el.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); $("q_check").click(); } });
+  }
+}
+function inputBox(ph){
+  return '<input type="text" class="en" id="q_in" placeholder="'+ph+'" autocomplete="off" '+
+    'autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:9px">';
+}
+function blanked(toks,at){
+  return toks.map(function(t,i){
+    if(i!==at) return esc(t);
+    var tail=(t.match(/[.,!?;:]+$/)||[""])[0];
+    return '<span class="bl">(&nbsp;&nbsp;)</span>'+esc(tail);
+  }).join(" ");
+}
+function drawWo(){
+  var q=Q[qi];
+  $("woBuild").innerHTML = picked.length
+    ? picked.map(function(i){ return '<span class="chip in">'+esc(q.chips[i])+'</span>'; }).join("")
+    : '<span class="wo-empty">ここに札が並びます</span>';
+  $("woBank").querySelectorAll(".chip").forEach(function(b){
+    b.disabled = picked.indexOf(+b.getAttribute("data-i"))>=0; });
+}
+$("q_check").addEventListener("click",function(){
+  var q=Q[qi], s=SENTS[q.si];
+  var mine = (q.type==="order") ? picked.map(function(i){ return q.chips[i]; }).join(" ")
+                                : $("q_in").value;
+  var v=judge(mine, q.ans, q.type);
+  RUN.rows.push({si:q.si, type:q.type, en:s.en, ja:s.ja, mine:mine, ans:q.ans, tag:v.tag, pt:v.pt, why:v.why});
+  var cls=(v.tag==="○")?"ok":((v.tag==="△")?"mid":"ng");
+  $("q_verdict").innerHTML='<div class="verdict '+cls+'">'+v.tag+' '+v.pt+'点'+
+    (v.tag==="○" ? "" :
+      '<small>'+(v.why?esc(v.why)+"／":"")+'正しくは <span class="ans">'+esc(q.ans)+'</span>'+
+      // 空欄の正解は1語なので、文まるごとも並べて出す。他の型は q.ans が文そのもの
+      (q.type==="blank" ? '<br>'+esc(s.en) : "")+'</small>')+'</div>';
+  if(q.type==="order"){
+    $("woBank").querySelectorAll(".chip").forEach(function(b){ b.disabled=true; });
+    $("woUndo").disabled=true; $("woClear").disabled=true;
+  }else $("q_in").disabled=true;
+  this.classList.add("hide");
+  var nx=$("q_next");
+  nx.classList.remove("hide");
+  nx.textContent=(qi>=Q.length-1)?"結果を見る →":"次へ →";
+  nx.focus();
+});
+$("q_next").addEventListener("click",function(){
+  qi++;
+  if(qi>=Q.length){ finish(); return; }
+  renderQ();
 });
 
-/* ================= 結果 ================= */
-function finish(p){
-  var maxR=G.sentences.length*4;
-  var gotR=R.recall.reduce(function(a,x){return a+x.pt;},0);
-  var maxS=R.sel.length*2, gotS=R.sel.reduce(function(a,x){return a+x.pt;},0);
-  var maxW=R.wo.length*4,  gotW=R.wo.reduce(function(a,x){return a+x.pt;},0);
-  var got=gotR+gotS+gotW, max=maxR+maxS+maxW, pct=max?Math.round(got/max*100):0;
-  var copyMiss=R.copy.filter(function(x){return x.tag!=="○";}).length;
-  graded={ts:R.ts, item:G.key, promptV:R.promptV, got:got, max:max, pct:pct, copyMiss:copyMiss,
-          selOK:R.sel.filter(function(x){return x.pt===2;}).length, selN:R.sel.length,
-          woOK:R.wo.filter(function(x){return x.pt===4;}).length, woN:R.wo.length,
-          recall:R.recall, sel:R.sel, wo:R.wo, bad:p.bad};
+/* ================= ③ 結果 ================= */
+var graded=null;
+function finish(){
+  var rows=RUN.rows;
+  var got=rows.reduce(function(a,x){ return a+x.pt; },0), max=rows.length;   // 1問1点
+  var pct=max?Math.round(got/max*100):0;
+  function tally(t){ var a=rows.filter(function(x){ return x.type===t; });
+    return {ok:a.filter(function(x){ return x.pt; }).length, n:a.length}; }
+  var C=tally("copy"), T=tally("trans"), B=tally("blank"), O=tally("order");
+  var weak=rows.filter(function(x){ return !x.pt; })
+               .map(function(x){ return x.ans; }).join(" / ");
+  graded={ts:RUN.ts, name:RUN.name, n:RUN.n, got:got, max:max, pct:pct,
+          copyMiss:C.n-C.ok, C:C, T:T, B:B, O:O, rows:rows, weak:weak};
   $("r_score").textContent=got+" / "+max;
   $("k_pct").textContent=pct+"%";
-  $("k_copy").textContent=copyMiss+"文";
-  $("k_sel").textContent=graded.selOK+" / "+graded.selN;
-  $("k_wo").textContent=graded.woOK+" / "+graded.woN;
+  $("k_copy").textContent=C.ok+" / "+C.n;
+  $("k_trans").textContent=T.ok+" / "+T.n;
+  $("k_blank").textContent=B.ok+" / "+B.n;
   var note=$("r_note"); note.className="msg show ok";
-  note.innerHTML="AIの丸つけは使わず、<b>「わたしの答え」と「正解」だけ</b>で計算しました。"+
-    (copyMiss?("　見ながらの写しで"+copyMiss+"文まちがえたのは、つづりを見る練習が要るサインです。"):"")+
-    (p.bad?("　読み取れなかった行が"+p.bad+"行ありました。"):"");
-  var weak=[].concat(
-    R.recall.filter(function(x){return x.tag!=="○";}).map(function(x){return {t:"思い出す", mine:x.mine, ans:x.en, why:x.why};}),
-    R.sel.filter(function(x){return x.pt<2;}).map(function(x){return {t:"選択", mine:x.mine, ans:x.ans, why:x.why};}),
-    R.wo.filter(function(x){return x.pt<4;}).map(function(x){return {t:"並べかえ", mine:x.mine, ans:x.ans, why:x.why};}));
-  $("r_detail").innerHTML = weak.length
-    ? '<h3>まちがえたところ</h3><table><thead><tr><th>どこ</th><th>あなた</th><th>正解</th><th>なぜ</th></tr></thead><tbody>'+
-      weak.map(function(x){ return '<tr><td>'+x.t+'</td><td class="en">'+esc(x.mine||"（空）")+
-        '</td><td class="en">'+esc(x.ans)+'</td><td>'+esc(x.why||"")+'</td></tr>'; }).join("")+'</tbody></table>'
-    : '<p class="hint">まちがいなし。次はAIに「もっとむずかしく」と注文してみよう。</p>';
+  note.innerHTML=esc(RUN.name)+"　"+RUN.n+"文 × 5問 = <b>"+max+"点満点</b>。"+
+    "　並びかえは "+O.ok+" / "+O.n+"。"+
+    (graded.copyMiss?("<br>見ながらの写しで "+graded.copyMiss+"問まちがえました。"+
+      "<b>つづりを1文字ずつ見る練習</b>が要るサインです。"):"");
+  var bad=rows.filter(function(x){ return !x.pt; });
+  $("r_detail").innerHTML = bad.length
+    ? '<h3>まちがえたところ（'+bad.length+'問）</h3><table><thead><tr><th>種類</th><th>あなた</th>'+
+      '<th>正解</th><th>なぜ</th></tr></thead><tbody>'+
+      bad.map(function(x){ return '<tr><td>'+TYPES[x.type].tag+'</td><td class="en">'+
+        esc(x.mine||"（空）")+'</td><td class="en">'+esc(x.ans)+'</td><td>'+esc(x.why||"")+'</td></tr>'; }).join("")+
+      '</tbody></table>'
+    : '<p class="hint">全問正解。次はキーセンテンスを増やすか、次のページに進もう。</p>';
   $("saveMsg").className="msg";
   $("saveRun").disabled=false; $("sendRun").disabled=false; $("sendRun").textContent="先生に送信";
   fillIdentity();
   show("result");
 }
+$("again").addEventListener("click",function(){ show("intro"); renderHome(); });
+$("home").addEventListener("click",function(){ show("intro"); renderHome(); });
 
 $("saveRun").addEventListener("click",function(){
   if(!graded) return;
   var s=store();
-  s.bunpo.runs.push({ts:graded.ts, item:graded.item, got:graded.got, max:graded.max, pct:graded.pct,
-    copyMiss:graded.copyMiss, promptV:graded.promptV});
+  s.bunpo.runs.push({ts:graded.ts, item:graded.name, n:graded.n,
+    got:graded.got, max:graded.max, pct:graded.pct, copyMiss:graded.copyMiss});
   saveS(s);
   var m=$("saveMsg"); m.className="msg show ok";
   m.textContent="記録しました（この端末に保存）。これまで"+s.bunpo.runs.length+"回。";
@@ -408,14 +460,12 @@ $("sendRun").addEventListener("click",function(){
   post({action:"policy"}).then(function(j){
     var ver=(j&&j.ver)||"";
     if(!/jigaku/.test(ver)) throw new Error("__OLD__"+ver);
-    var weak=[].concat(
-      graded.sel.filter(function(x){return x.pt<2;}).map(function(x){return x.ans;}),
-      graded.wo.filter(function(x){return x.pt<4;}).map(function(x){return x.ans;})).join(" / ");
-    var payload={kind:"jigaku", ver:"bunpo 0.2", cls:cls, num:num, name:name,
-      lane:"文法", unit:graded.item, src:"アプリ内", listN:"",
-      total:graded.max, ok:graded.got, pct:graded.pct,
-      promptV:(graded.promptV?("v"+graded.promptV):""),
-      notDb:graded.copyMiss, weak:weak.slice(0,400)};
+    // notDb（列名「リスト外の語」）は、文法レーンでは写しがきのミス数として使う。
+    // 列を増やすと先生に再デプロイをお願いすることになるので、既にある数値列に載せる。
+    var payload={kind:"jigaku", ver:"bunpo 1.0", cls:cls, num:num, name:name,
+      lane:"文法", unit:graded.name, src:"キーセンテンス", listN:graded.n,
+      total:graded.max, ok:graded.got, pct:graded.pct, promptV:"",
+      notDb:graded.copyMiss, weak:graded.weak.slice(0,400)};
     if(window.SITE) SITE.tag(payload);
     return post(payload);
   }).then(function(j){
@@ -448,14 +498,24 @@ $("sendRun").addEventListener("click",function(){
 /* ---------- 履歴 ---------- */
 function renderHome(){
   var s=store(), box=$("hist");
-  if(!s.bunpo.runs.length){ box.innerHTML='<p class="hint">まだ記録がありません。上の基本文をおぼえて、練習へ進もう。</p>'; return; }
-  var h='<table><thead><tr><th>日付</th><th>項目</th><th>点</th><th>正答率</th><th>写しミス</th><th>版</th></tr></thead><tbody>';
+  if(!s.bunpo.runs.length){
+    box.innerHTML='<p class="hint">まだ記録がありません。教科書のキーセンテンスを貼って、はじめよう。</p>'; return; }
+  var h='<table><thead><tr><th>日付</th><th>どこ</th><th>文数</th><th>点</th><th>正答率</th><th>写しミス</th></tr></thead><tbody>';
   s.bunpo.runs.slice().reverse().slice(0,12).forEach(function(r){
-    h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td><td>'+esc(r.item)+'</td>'+
-       '<td>'+r.got+' / '+r.max+'</td><td>'+r.pct+'%</td><td>'+(r.copyMiss||0)+'</td>'+
-       '<td>'+(r.promptV?("v"+r.promptV):"—")+'</td></tr>';
+    h+='<tr><td>'+new Date(r.ts).toLocaleDateString("ja-JP")+'</td><td>'+esc(r.item||"—")+'</td>'+
+       '<td>'+(r.n||"—")+'</td><td>'+r.got+' / '+r.max+'</td><td>'+r.pct+'%</td>'+
+       '<td>'+(r.copyMiss||0)+'</td></tr>';
   });
   box.innerHTML=h+'</tbody></table>';
 }
-renderHome();
+(function init(){
+  var s=store();
+  if(s.bunpo.raw){ $("f_raw").value=s.bunpo.raw;
+    if(s.bunpo.kind) $("f_kind").value=s.bunpo.kind;
+    if(s.bunpo.unum!=null) $("f_unum").value=String(s.bunpo.unum);
+    if(s.bunpo.lnum!=null) $("f_lnum").value=String(s.bunpo.lnum);
+    renderPreview();
+  }
+  echoUnit(); renderHome();
+})();
 })();
