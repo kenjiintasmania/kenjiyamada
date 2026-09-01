@@ -10,7 +10,8 @@
   読解道場（高校入試レベル読解力向上・3層構造の Stage1/Stage2）
    Stage1 学ぶ … テクカード（先生のテクニック＝英検アプリ「中学入学準備」・語順メソッド・
                  リスニングメモ術＋提案テク）。説明→ミニ例題→修了スタンプ。
-   Stage2 鍛える … スキル種目ドリル S1「根拠さがし」（大問5対策）・S3「図表突合」（大問2対策）。
+   Stage2 鍛える … スキル種目ドリル S1「根拠さがし」（大問5対策）・S2「図形分析」（先生の図形分析法）・
+                 S3「図表突合」（大問2対策）。
                  1問ごとに正誤＋根拠（why/trap）＋関連テクを表示。全自動採点。
    Stage3 実践 … 既存の岡山県模試10本（mogi/okayama.html へのリンク）。
    ※ 記録は端末のみ（localStorage: dojo_v1）。GAS送信・マイページ連動は第2弾で検討。
@@ -108,6 +109,12 @@
   .weak-list button{font:inherit;font-size:13px;margin:3px 4px 0 0;padding:5px 12px;border-radius:999px;
     border:2px solid #c9d4ff;background:#f3f6ff;color:#4a5fd0;font-weight:bold;cursor:pointer}
 
+  /* 図形分析（S2） */
+  .sent{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;
+    font-size:19px;line-height:1.9;letter-spacing:.01em}
+  .marked{background:#f4faf6;border:2px solid #bfe3cc;border-radius:10px;padding:10px 13px;
+    font-size:17px;line-height:1.95;margin-bottom:8px}
+  .marked b{color:#1d7a45}
   /* ちらし（S3） */
   .flyer{background:#fff;border:2px dashed #b7d3c4;border-radius:12px;padding:12px 14px;margin:8px 0;font-family:var(--en)}
   .flyer .fly-t{font-size:17px;font-weight:bold;color:var(--c1);margin-bottom:6px}
@@ -173,6 +180,9 @@
         <button class="stage" data-skill="S1"><span class="emoji">🔍</span>
           <div class="t">S1 根拠さがし</div><div class="d">内容一致・言い換えを見抜く（大問5対策）</div>
           <div class="prog" id="m_S1"></div></button>
+        <button class="stage" data-skill="S2"><span class="emoji">✏️</span>
+          <div class="t">S2 図形分析</div><div class="d">＝ ≒ V ／ → ← ＆ で骨組みを見抜く（先生の図形分析法）</div>
+          <div class="prog" id="m_S2"></div></button>
         <button class="stage" data-skill="S3"><span class="emoji">📊</span>
           <div class="t">S3 図表突合</div><div class="d">ちらし×条件の照合（大問2対策）</div>
           <div class="prog" id="m_S3"></div></button>
@@ -215,12 +225,13 @@
 <script src="../assets/site.js"></script>
 <script src="data/tech.js"></script>
 <script src="data/drill_s1.js"></script>
+<script src="data/drill_s2.js"></script>
 <script src="data/drill_s3.js"></script>
 <script>
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var TECHS=window.DOJO_TECHS||[], BANKS={S1:window.DOJO_S1||null, S3:window.DOJO_S3||null};
+  var TECHS=window.DOJO_TECHS||[], BANKS={S1:window.DOJO_S1||null, S2:window.DOJO_S2||null, S3:window.DOJO_S3||null};
   var CATS=["読解","図表","リスニング","英作文","勉強法・会話"];
   var PER_SESSION=8;
 
@@ -246,7 +257,7 @@
     var done=TECHS.filter(function(t){return st.tech[t.id];}).length;
     $("h_tech").textContent="修了 "+done+" / "+TECHS.length+" 枚";
     var parts=[];
-    ["S1","S3"].forEach(function(k){ var r=st.skill[k]; if(r&&r.count) parts.push(k+" ベスト"+r.best+"/"+PER_SESSION); });
+    ["S1","S2","S3"].forEach(function(k){ var r=st.skill[k]; if(r&&r.count) parts.push(k+" ベスト"+r.best+"/"+PER_SESSION); });
     $("h_skill").textContent=parts.length?parts.join("・"):"はじめてみよう";
   }
 
@@ -323,7 +334,7 @@
   /* ---------- 種目メニュー ---------- */
   function renderDrillMenu(){
     var st=store();
-    ["S1","S3"].forEach(function(k){
+    ["S1","S2","S3"].forEach(function(k){
       var r=st.skill[k], el=$("m_"+k);
       el.textContent = BANKS[k]? (r&&r.count? "ベスト "+r.best+"/"+PER_SESSION+"（"+r.count+"回）":"未挑戦") : "準備中";
     });
@@ -348,6 +359,7 @@
     $("d_score").textContent="○"+dScore;
     var stim=$("d_stim");
     if(dSkill==="S1"){ stim.innerHTML='<div class="passage">'+it.passage+'</div>'; }
+    else if(dSkill==="S2"){ stim.innerHTML='<div class="sent en">'+esc(it.sent)+'</div>'; }
     else { stim.innerHTML='<div class="flyer">'+it.flyer+'</div>'; }
     $("d_q").textContent=it.q;
     var ch=$("d_choices"); ch.innerHTML="";
@@ -374,6 +386,8 @@
     [].forEach.call(ch.children,function(c){ c.setAttribute("disabled","1"); });
     var fb=$("d_fb"); fb.className="fb show";
     fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+
+      // S2 は「記号をつけた形」を見せるのが答え合わせの中身。図で覚えさせる。
+      ((dSkill==="S2"&&it.marked)?'<div class="marked en">'+it.marked+'</div>':"")+
       '<div>'+esc(it.why||"")+'</div>'+
       (!ok&&it.trap?'<div class="trap">⚠ ワナ：'+esc(it.trap)+'</div>':"")+
       '<div class="tech-chips">'+(it.tech||[]).map(function(t){return '<span class="chip">'+esc(techName(t))+'</span>';}).join("")+'</div>';
@@ -403,7 +417,7 @@
         wl.appendChild(b);
       });
     } else {
-      box.innerHTML='<p class="hint" style="text-align:center">全問正解！テクが body に入ってきてる。県模試で実践しよう🗾</p>';
+      box.innerHTML='<p class="hint" style="text-align:center">全問正解！テクが身についてきてる。県模試で実践しよう🗾</p>';
     }
   }
   $("r_again").addEventListener("click",function(){ startDrill(dSkill); });

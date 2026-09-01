@@ -190,5 +190,57 @@ window.DOJO_TECHS = [
   drill:[
     { q:"会話中に文法をまちがえたと気づいたら？",
       choices:["気にしすぎず、言いたいことを続ける","会話をやめる","全部言い直して止まる","あやまり続ける"],
-      answer:0, ex:"会話は完璧さより継続。通じればOK、と考えよう。" } ] }
+      answer:0, ex:"会話は完璧さより継続。通じればOK、と考えよう。" } ] },
+  /* ── 図形分析法（先生・note「図形で理解させるリーディング指導」より） ── */
+  { id:"G01", cat:"読解", name:"動詞に印（＝ ≒ V）", from:"先生",
+    what:"文の動詞に印をつけると、<b>その手前までが主語</b>だと目で分かる。日本語に訳さずに文の骨組みをつかむための第一手（先生の図形分析法）。",
+    how:[
+      "左から見て、はじめの動詞をさがす",
+      "be動詞（am/is/are/was/were）なら <b>＝</b>",
+      "look / sound / feel / become のような知覚・変化の動詞なら <b>≒</b>（イコールに近い）",
+      "それ以外のふつうの動詞なら <b>V</b>",
+      "肩書を差しこむ「,」も <b>＝</b>（Mr. Sato, our teacher, ... は Mr. Sato ＝ our teacher）"
+    ],
+    drill:[
+      { q:"The tall boy in the blue cap plays soccer. — V をつけるのはどの語？",
+        choices:["plays","boy","tall","in"], answer:0,
+        ex:"plays が動詞。その手前 The tall boy in the blue cap までが丸ごと主語。主語が長くても印を打てば切れ目が見える。" },
+      { q:"She looks happy. — つける印は？",
+        choices:["≒","V","＝","／"], answer:0,
+        ex:"look は「〜に見える」＝ほぼイコールの働き。She ≒ happy。sound / feel / become も同じ仲間。" }
+    ] },
+
+  { id:"G02", cat:"読解", name:"つなぎに印（／ → ← ＆ ←→ ＞）", from:"先生",
+    what:"前置詞やつなぎ語に印をつけると、<b>かたまりの切れ目と、その関係</b>が見える。スラッシュで切るだけより意味が残る（先生の図形分析法）。",
+    how:[
+      "前置詞を見つけたら、その<b>前</b>に <b>／</b>（そこで目的語が終わる）",
+      "<b>to</b> は <b>→</b>、<b>from</b> は <b>←</b>（向きが図で分かる）",
+      "<b>and</b> は <b>＆</b>。前後にある<b>同じ種類のもの</b>（名詞×2／動詞×2／文×2）をさがす",
+      "<b>but</b> は <b>←→</b>（逆向き）、<b>than</b> は <b>＞</b>（大小）"
+    ],
+    drill:[
+      { q:"I ate lunch and walked to the park. — ＆ がつなぐのは？",
+        choices:["ate と walked（動詞×2）","lunch と park（名詞×2）","I と the park","ate と to"], answer:0,
+        ex:"and の前後で同じ種類をさがす。ate も walked も動詞。単語の意味が分からなくても「動詞が2つ並んでいる」と分かる。" },
+      { q:"He went to school from his house. — to と from につける印は？",
+        choices:["to→ / from←","to← / from→","どちらも ／","どちらも ＝"], answer:0,
+        ex:"to は向かう先だから →、from は出どころだから ←。矢印の向きで移動が読める。" }
+    ] },
+
+  { id:"G03", cat:"読解", name:"（ ）でくくる", from:"先生",
+    what:"前置詞のない副詞・時・場所を<b>丸括弧でくくる</b>と、主語と目的語の終わりが浮き出る。前置詞が無いと ／ を入れるきっかけが無いので、（ ）が代わりの区切りになる（先生の図形分析法）。",
+    how:[
+      "文中の <b>~ly</b>・sometimes・always・often などは（ ）でくくる → 主語が浮き出る",
+      "文末の <b>today</b>・here・yesterday・now などもくくる → 目的語の終わりが決まる",
+      "くくったあとに残ったものが、主語・動詞・目的語の骨組み",
+      "at / in / on などが付いているときは前置詞なので ／ を使う（（ ）は使わない）"
+    ],
+    drill:[
+      { q:"My sister sometimes reads books here. — （ ）でくくるのはどれとどれ？",
+        choices:["sometimes と here","books と here","My sister と books","reads と books"], answer:0,
+        ex:"sometimes は文中の副詞、here は前置詞の付かない場所。くくると My sister / reads / books の骨組みが残る。" },
+      { q:"We played soccer in the park. — in the park の扱いは？",
+        choices:["前置詞があるので ／ を入れる","（ ）でくくる","V をつける","＆ をつける"], answer:0,
+        ex:"in という前置詞があるので、その前で ／。（ ）は前置詞が無いかたまりのための道具。" }
+    ] }
 ];
