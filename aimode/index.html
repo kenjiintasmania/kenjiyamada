@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5b7cff">
+<title>AI練習メニュー｜Phase 1（実践研究）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🧭</text></svg>">
+<!-- AI練習メニュー（Phase 1）：localStorage の記録から練習プロンプトを作る INDEX。 -->
+<style>
+  :root{
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --accent3:#5b7cff; --m1:#39b3a6; --m2:#5b7cff; --m3:#ff7a59; --m4:#a35bff; --m5:#e0a32e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 500px at 110% -10%,#e7ecff 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#d8f3ef 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.6;padding:16px 14px 80px}
+  .wrap{max-width:860px;margin:0 auto}
+  .crumbs{font-size:13px;margin:2px 0 8px}
+  .crumbs a{color:var(--accent3);text-decoration:none;font-weight:bold}
+  .hero h1{font-size:24px;margin:6px 0 0;text-align:center}
+  .hero p{color:#7a7363;font-size:13.5px;margin:6px 0 0;text-align:center}
+  .ver{color:#b3ab98;font-size:11px}
+
+  .consent{background:#fff6e6;border:2px dashed #f0c879;border-radius:12px;
+    padding:10px 12px;margin:12px 0;font-size:13px;color:#7a5b1e}
+  .consent b{color:#b9791b}
+
+  .card{background:#fff;border:3px solid var(--line);border-radius:16px;
+    padding:14px;margin:14px 0;box-shadow:0 5px 0 #efe7d4}
+  .card h2{font-size:17px;margin:0 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 .emoji{font-size:20px}
+  .card h2 .badge{margin-left:auto;font-size:11.5px;font-weight:bold;padding:2px 9px;border-radius:999px}
+  .badge.open{background:#e3f6e8;color:#2e9e57}
+  .badge.gate{background:#fdf0e1;color:#c47a25}
+
+  .diag{display:flex;gap:8px;flex-wrap:wrap}
+  .diag .mini{background:#fbf9f1;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;min-width:120px}
+  .diag .k{font-size:11.5px;color:#7a7363}
+  .diag .v{font-size:16px;font-weight:bold}
+  .weak{font-size:13px;color:#7a7363;margin:8px 0 0}
+  .weak b{color:#d9603e}
+
+  .mode{border-color:#e6dcc6}
+  .mode.m6{border-color:#ded0f5}
+  .mode.m3{border-color:#ffd9cc}.mode.m4{border-color:#e7d6ff}.mode.m5{border-color:#f3e3b6}
+  /* 言語バッジ：上から難易度順に並ぶが、言語は英→英→日→日英と切り替わる。ここを明示する */
+  .lang{display:inline-block;border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:700;margin-left:6px;vertical-align:middle}
+  .lang.en{background:#EAF2FF;color:#2C5AA0;border:1px solid #BBD2F2}
+  .lang.ja{background:#EEF8F0;color:#2C7A52;border:1px solid #BFE0CD}
+  .lang.je{background:#F3EEFC;color:#6D3FBF;border:1px solid #CFC0EC}
+  .sub-mode{border:1px dashed #cfc0ec;border-radius:10px;padding:9px 12px;margin-top:10px;background:#FBFAFE}
+  .sub-mode b{color:#6D3FBF}
+  .freepass{border:1px dashed #e0a32e;border-radius:10px;padding:10px 13px;background:#fff}
+  .freepass .fp-t{font-weight:800;color:#a3781c;font-size:13.5px;margin-bottom:4px}
+  .freepass .fp-l{margin:0 0 6px 1.2em;padding:0;font-size:13px;line-height:1.75}
+  .freepass .fp-n{font-size:12.5px;color:#5b5647;border-top:1px dashed #eadfc2;padding-top:6px}
+  .mode .desc{font-size:13px;color:#5b5647;margin:0 0 8px}
+  textarea.pt{width:100%;min-height:128px;font:inherit;font-size:13px;line-height:1.55;
+    border:2px solid var(--line);border-radius:10px;padding:9px;background:#fffdf6;color:var(--ink);resize:vertical}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .btn{font:inherit;font-size:14px;font-weight:bold;border:none;border-radius:10px;
+    padding:8px 16px;cursor:pointer;color:#fff;background:var(--accent3);box-shadow:0 3px 0 #3f5fd6}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #3f5fd6}
+  .btn.ghost{background:#fff;color:var(--accent3);border:2px solid var(--accent3);box-shadow:0 3px 0 #dfe2f5}
+  .copied{font-size:12.5px;color:#2e9e57;font-weight:bold}
+  .locked{opacity:.55}
+  .locknote{font-size:12.5px;color:#c47a25;margin:6px 0 0}
+
+  .checklist{font-size:13px;color:#5b5647;margin:6px 0 8px;padding-left:18px}
+  .checklist li{margin:2px 0}
+  details summary{cursor:pointer;font-weight:bold;color:var(--accent3);font-size:14px}
+  .foot{font-size:11.5px;color:#b3ab98;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .manual{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#7a7363}
+  .manual select,.manual input{font:inherit;font-size:14px;padding:6px 8px;border:2px solid var(--line);border-radius:8px;background:#fffdf6}
+  footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:22px}
+  .ailinks{text-align:center;font-size:12.5px;color:#7a7363;margin:2px 0 8px}
+  .ailinks a{color:var(--accent3);font-weight:bold;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ</a> ／ <a href="../me/index.html">マイページ</a></div>
+  <div class="hero">
+    <h1>AI練習メニュー 🧭 <span class="ver" id="ver"></span></h1>
+  </div>
+
+  <!-- 診断 -->
+  <div class="card">
+    <h2><span class="emoji">📊</span>いまの目安<span class="badge open" id="src_badge">記録から</span></h2>
+    <div class="diag">
+      <div class="mini"><div class="k">英語レベルの目安</div><div class="v" id="d_level">–</div></div>
+      <div class="mini"><div class="k">英検の目安</div><div class="v" id="d_eiken">–</div></div>
+      <div class="mini"><div class="k">いまの段階</div><div class="v" id="d_stage">知識</div></div>
+    </div>
+    <p class="weak" id="d_weak"></p>
+    <div class="manual" id="manualBox" style="margin-top:10px">
+      記録が無いときは手動で選ぶ：
+      <select id="manualLv">
+        <option value="">レベルを選ぶ</option>
+        <option value="2">英検5級ぐらい</option>
+        <option value="4">英検4級ぐらい</option>
+        <option value="5">英検3級ぐらい</option>
+        <option value="6">英検準2級ぐらい</option>
+        <option value="8">英検2級ぐらい</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ailinks">貼り付け先AI（コピー後に開く）：
+    <a href="https://www.google.com/search?udm=50" target="_blank" rel="noopener">AIモード</a> ・
+    <a href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> ・
+    <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a> ・
+    <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a></div>
+
+  <!-- モード群 -->
+  <div id="modes"></div>
+
+  <!-- フリーパス申請（v0.96：モードではない。装置の外側で起きること） -->
+  <div class="card" style="border-color:#e0a32e;background:#fffdf6">
+    <h2><span class="emoji">🎫</span>フリーパス申請<span class="lang ja">アプリの外</span></h2>
+    <p class="desc" style="font-size:13.5px">
+      <b>アプリを通さずにAIを使いたいときは、先生にそう言ってください。</b>それがフリーパスです。<br>
+      このアプリの中に「自分で設計する枠」は置きません。<b>枠の中で自由にやるのは、まだ枠の中の話</b>だからです。
+      本当に自分で設計するというのは、この画面を経由しないでAIを使うということ。だから申請は、装置の外で行います。
+    </p>
+    <div class="freepass">
+      <div class="fp-t">先生に言うこと（4つだけ）</div>
+      <ol class="fp-l">
+        <li><b>何をしたいか</b>（例：自由研究の資料を英語で探したい）</li>
+        <li><b>どのAIを使うか</b>（AIモード／ChatGPT／Gemini／Claude／そのほか）</li>
+        <li><b>なぜこの画面を通さないのか</b>（例：ここのモードでは目的に合わないから）</li>
+        <li><b>終わったら何を見せるか</b>（例：やりとりの記録／作ったもの）</li>
+      </ol>
+      <div class="fp-n">
+        ③の「なぜ通さないのか」がいちばん大事です。<b>ここが言えたら、もう自分で設計できています。</b><br>
+        断られることもあります。理由も聞いてください。<b>先生も理由を言う義務があります。</b>
+      </div>
+    </div>
+    <p class="desc" style="font-size:12.5px;color:#7a7259;margin-top:8px">
+      申請が通ったときの記録は、このアプリには入りません。<b>入れないのが正しい。</b>
+      アプリの外で起きたことをアプリが数えはじめたら、それはもうフリーパスではなくなります。
+    </p>
+  </div>
+
+  <!-- 先生ゲート -->
+  <div class="card" style="border-color:#dfe6cf">
+    <h2><span class="emoji">🧑‍🏫</span>先生へ</h2>
+    <p class="desc" style="font-size:13px;color:#5b5647">
+      v0.95 で<b>鍵を外しました</b>。4つとも最初から開いています。
+      並びは難易度順ですが、上から順にやらせる必要はありません。<br>
+      唯一の順序は <b>③探求 → ③-b プレゼン原稿</b> です。ここだけは中身が無いと原稿が作れないので、
+      探究カルテのボタンが自然に順序を決めます。
+    </p>
+    <div class="row">
+      <button class="btn ghost" id="unlockBtn">記録の書き出し・カルテへ</button>
+      <span class="copied" id="unlockMsg"></span>
+    </div>
+  </div>
+
+  <!-- まとめ送信 -->
+  <div class="card" style="border-color:#cdd9ff">
+    <h2><span class="emoji">📤</span>まとめを送信</h2>
+    <p class="desc" style="font-size:13px;color:#5b5647">AIへ「<b>まとめ</b>」と言うと項目が出ます（1〜7・9・10はAI、9=今日の名言／10=セリフの4層配置）。コピーして<b>ここに貼りつけ</b>、<b>8番（今日の振り返り）</b>を書いてから<b>送信</b>しましょう。</p>
+    <!-- ★v0.94: 名前欄を撤去。原則1（氏名は収集しない）に反していた。送信も保存もしない -->
+    <div class="manual" style="margin-bottom:8px">学年 <select id="f_cls"><option value="">-</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option></select> 番号 <input id="f_num" inputmode="numeric" style="width:60px"> <span style="font-size:12px;color:#9a927e">（名前は入れません。番号だけで届きます）</span></div>
+    <textarea class="pt" id="logBox" rows="11" placeholder="ここにAIの「まとめ」を貼りつけて、8番（今日の振り返り）を書く。"></textarea>
+    <div class="row"><button class="btn" id="sendBtn">送信</button><span class="copied" id="sendmsg"></span></div>
+    <div style="font-size:11.5px;color:#9a927e;margin-top:8px">GASの応答（下に表示されます）：<code>{"result":"ok"}</code> なら成功。ログイン画面が出たらアクセスが「全員」でない。</div>
+    <iframe id="gas_sink" name="gas_sink" style="width:100%;height:110px;border:1px dashed var(--line);border-radius:8px;background:#fff;margin-top:4px"></iframe>
+  </div>
+
+  <footer>Phase 1 INDEX</footer>
+</div>
+<script src="../assets/site.js"></script>
+
+<script>
+(function(){
+  "use strict";
+  var APP_VER="ai 0.96 (phase1)";   // v0.96: フリーパスをモードから外した（教員への申告に置き換え）
+  // 送信先GASの /exec URL（log_gas.gs をデプロイして貼る。空なら送信オフ）
+  var LOG_GAS_URL="https://script.google.com/macros/s/AKfycbw6GODXQM0HZtYvaxoO61jKOMwqQe9ZYxNJTVLBARBJ-hvWUU8Tw7KVelRKq2wGOHgdrA/exec";
+  /* ▼英語学習アプリ側の追記（このスレッドが足した1行。上のロジックは無改変）
+     実証モード（?site=aso）では実証用 log_gas に切りかえる。これが無いと、
+     実証端末のAIモードの記録だけが生徒用ブックへ落ちる。実証用URLが未設定なら
+     gasFor は "" を返し、下の !LOG_GAS_URL のガードで送信そのものが止まる。 */
+  if(window.SITE) LOG_GAS_URL = SITE.gasFor("aimode", LOG_GAS_URL);
+  // 「コピーしてAIを開く」で開く既定AI（Google AIモード。必要なら変更）
+  var AI_URL="https://www.google.com/search?udm=50";
+  /* ★配布名を変えるときはここだけ直す（同じフォルダに置く前提）。
+     例：探究カルテを AImode.html という名前で公開しているなら APP_KARTE を変える。 */
+  var APP_KARTE="mypage.html";   // 探究カルテ
+  var APP_PRES ="pres.html";     // 発表カルテ（プレゼン練習）
+  var $=function(id){return document.getElementById(id);};
+  $("ver").textContent=APP_VER;
+
+  /* ---- localStorage ヘルパ（マイページと同じ） ---- */
+  function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  function lsJSON(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+  function lsNum(k){var v=lsGet(k);return v==null?null:parseFloat(v);}
+  function han(s){return (s||"").replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-65248);}).replace(/[^0-9]/g,"");}
+
+  /* ---- 英検レベル座標(0〜8)とラベル（マイページ準拠） ---- */
+  var LBL=["7未満","7級","6級","5級","4級","3級","準2級","準2+","2級"];
+  function levelLabel(L){
+    if(L==null)return "まだ判定なし";
+    if(L<1)return "英検7級にチャレンジ中"; if(L>=8)return "英検2級レベル";
+    var i=Math.floor(L+1e-9),f=L-i;
+    if(f<0.125)return "英検"+LBL[i]+"ギリ"; if(f<0.625)return "英検"+LBL[i]+"前後";
+    return "英検"+LBL[Math.min(i+1,8)]+"の手前";
+  }
+  var GN={"7":"7級","6":"6級","5":"5級","4":"4級","3":"3級","pre2":"準2級","pre2plus":"準2級+","2":"2級"};
+
+  /* ---- 記録の読取（localStorage） ---- */
+  function readData(){
+    var avgO=lsJSON("mado_levelavg_v1");
+    var eiken={ full:lsNum("mado_bestfull_v1"), quick:lsNum("mado_bestquick_v1"),
+      avg:(avgO&&avgO.count)?avgO.sum/avgO.count:null, last:lsJSON("mado_loop_lasttest_v1") };
+    var mb=lsJSON("mogi_best_v1")||{}, mBest=0, mDone=0;
+    Object.keys(mb).forEach(function(k){ if(mb[k]){mDone++; if((mb[k].best||0)>mBest)mBest=mb[k].best||0;} });
+    var sh=lsJSON("shuku_v1")||{};
+    function one(id){var r=sh[id]; return r?{pct:r.max?Math.round((r.best||0)/r.max*100):0,count:r.count||0}:null;}
+    var store=lsJSON("tango_v2")||{}, cleared=store.cleared||{}, wAll=Object.keys(cleared).length;
+    return { eiken:eiken, mBest:mBest, mDone:mDone, c2:one("c2"), c3:one("c3s2"), wAll:wAll,
+      year:lsGet("mado_year")||"", policy:lsGet("mado_policy")||"" };
+  }
+
+  /* ---- 診断：客観データ→レベル座標Lと弱点（S1/S2のみ客観判定） ---- */
+  function diagnose(D, manualL){
+    var L = manualL!=null ? manualL
+          : (D.eiken.full!=null?D.eiken.full
+          : (D.eiken.avg!=null?D.eiken.avg
+          : (D.c3&&D.c3.pct>=80?5 : (D.c2&&D.c2.pct>=80?4 : (D.mBest>=70?4:(D.wAll>0?3:null))))));
+    var weak=[];
+    if(D.c2 && D.c2.pct<80) weak.push("中2の単語（"+D.c2.pct+"%）");
+    if(D.c3 && D.c3.pct<80) weak.push("中3の単語（"+D.c3.pct+"%）");
+    if(D.eiken.last && !D.eiken.last.pass) weak.push("英検"+(GN[D.eiken.last.grade]||"")+"の見直し");
+    if(D.mDone>0 && D.mBest<60) weak.push("模試の得点（最高"+D.mBest+"点）");
+    // v0.95: 開閉の判断には使わない（ゲートを撤去した）。表示の目安としてだけ残す。
+    var knowSolid = (D.c2&&D.c2.pct>=80) || (D.c3&&D.c3.pct>=80) || (L!=null&&L>=5);
+    var stage = (L==null) ? "まず声に出すところから"
+              : (knowSolid ? "討論・探求へ進める" : "プレゼン練習から");
+    return { L:L, weak:weak, stage:stage, knowSolid:!!knowSolid, hasData:(L!=null) };
+  }
+
+  /* ---- レベル座標→使ってよい文法・語彙・英検級 ---- */
+  function rangeFor(L){
+    if(L==null) return {label:"基礎", grade:"5級", grammar:"be動詞・一般動詞の現在形、複数形、can、疑問文", vocab:"身近な基礎語"};
+    if(L<4)  return {label:"英検5級前後", grade:"5級", grammar:"現在形、複数形、代名詞、can、be動詞の疑問・否定", vocab:"身近な基礎語"};
+    if(L<5)  return {label:"英検4級前後", grade:"4級", grammar:"現在形・過去形・未来(will/be going to)・助動詞(must/should)・比較の基本・不定詞の基本", vocab:"基本語＋中2範囲の既習語"};
+    if(L<6)  return {label:"英検3級前後", grade:"3級", grammar:"＋現在完了・受動態・関係代名詞(基本)・動名詞・接続詞", vocab:"中3範囲までの語"};
+    if(L<7)  return {label:"英検準2級前後", grade:"準2級", grammar:"＋いろいろな時制・分詞・句動詞・複文", vocab:"準2級レベルの語"};
+    return     {label:"英検準2+〜2級", grade:"準2級+", grammar:"高校英文法の基礎全般", vocab:"準2級+〜2級の語"};
+  }
+
+  /* ---- 共通の末尾（切りかえ＋まとめ。全モード） ---- */
+  function tail_(modeName){
+    return "【切りかえの言葉】「難易度を下げて」「もう一度」「まとめ」（上のモードへは、できるようになったらAIが合図する）\n"
+      +"【「まとめ」と言われたら】次の項目で出す（1〜7と9・10は今日の会話から記入、8は空欄にして生徒に書かせる）：\n"
+      +"1.今日の目的／2.使ったモード："+modeName+"（5モード＝知識/思考/議論/探求/フリーパス のうちこれ。変えてなければこのまま書く）／3.途中で変えたモード（変えた時だけ 知識/思考/議論/探求/フリーパス を書く。無ければ「なし」）／4.使えた単語・文法／5.難しかったこと／6.次回やること／7.AI活用レベルの評価(知識/思考/議論/探求 それぞれを★で)／8.今日の振り返り(生徒が記入)\n"
+      +"さらに次の2つも出す（教員の検証用。要約・脚色せず、私が実際に言った言葉を〈原文のまま〉引用）：\n"
+      +"9.今日の名言：今日 私が実際に口にした言葉の中で、最も印象的だった一言を、圧縮せず〈原文のまま〉1つ。\n"
+      +"10.セリフの4層配置：今日 私が実際に使った言葉を、知識／思考／議論／探求 の4層に振り分けて一覧にする（〈原文のまま〉引用・各層に複数可・無い層は空でよい。9の名言はこの中から選ぶ）。例）議論「じゃあ植物は殺していいの？」「クジラだけ守るのはヘン」／探求「本当のエコって何？」「結局人類のエゴでは？」";
+  }
+  /* ---- engRulesJP_：旧・知識／思考モードの共通文。v0.95 では未使用（将来の再利用に残す）。 ---- */
+  function engRulesJP_(R, modeName, unlockLine){
+    return "【約束（必ず守る）】\n"
+      +"・前置き・確認をせず、すぐ問題から始める。手順やレベルの確認（メタ質問）はしない。\n"
+      +"・一度に1問。私が答えてから次へ。\n"
+      +"・問題は英語で出す。説明・ヒント・なおしは日本語でよい（短く）。長い訳の丸写しは出さない。\n"
+      +"・"+R.grade+"の範囲。範囲外の難しい表現は使わない。使ってよい文法："+R.grammar+"。\n"
+      +"・教科書に無い<新しい例>で出す（丸写しにせず、その場で考えさせる）。\n"
+      +"・答えをすぐ教えない。間違えたら「なぜそう考えた？」と問い返し、自分で直させる。\n"
+      +"・むやみにほめない。直す所は一つずつ。\n"
+      +unlockLine
+      +tail_(modeName);
+  }
+  /* ---- 議論モード：ここだけ全部 英語。約束＋進級。 ---- */
+  function engRulesEN_(R, modeName, unlockLine){
+    return "【RULES (must follow)】\n"
+      +"・Speak ONLY in English in this mode. Keep it at "+R.grade+" ("+R.label+") level.\n"
+      +"・No preface, no meta talk. Start right away. One turn at a time; wait for my reply.\n"
+      +"・Don't just give answers. Push back gently, ask my reasons, and make me respond.\n"
+      +"・Don't over-praise. Fix one thing at a time, briefly. Allowed grammar: "+R.grammar+".\n"
+      +"・Exception: when I say 「まとめ」, output the Japanese summary form below.\n"
+      +unlockLine
+      +tail_(modeName);
+  }
+  /* ---- 探求モード(④)：日本語で自由対話。キーワードだけ英語併記。探究力を鍛える ---- */
+  function inqRules_(modeName){
+    return "【約束（必ず守る）】\n"
+      +"・日本語で自由に対話する。これは英語練習ではなく『探究力』を鍛えるモード。\n"
+      +"・専門用語・キーワードだけ日英併記する（例：光合成 (photosynthesis)）。他は日本語でよい。\n"
+      +"・前置き・手順確認（メタ質問）はしない。私がトピックを言ったら、すぐ深掘りを始める。\n"
+      +"・答えを教えない。私の考えの<ひっかかり・前提・とびはね・反例>を一緒に掘る。\n"
+      +"・勉強法や時間の使い方など実用の相談でも同じ。対策リストや手順書（『◯つのルール』『◯◯法のすすめ』）にまとめて出さない。私の前提を問い返し、次に試す<実験>は私に1つだけ決めさせる。\n"
+      +"・この対話が進むほど、最初より一歩深いところへ進める。ときどき「さっきより深まったか」を一緒に振り返る。\n"
+      +"・『なぜ？』『本当に？』『他の見方は？』『何が分かれば決まる？』で深める。\n"
+      +"・最後に『まだ誰もはっきり答えていないかもしれない問い』を一緒に立てる。\n"
+      +tail_(modeName);
+  }
+
+  /* ---- 進級の合図（解放はAIが会話の中で出す。アプリは外部AIの会話を数えられないため） ---- */
+  var UNLOCK_M3="【LEVEL UP】After 3 or more back-and-forth exchanges of real discussion, tell me in English: \"You can move on to Inquiry mode!\" (cue word: 「探求モード」). Until then, keep the discussion going.\n";
+
+  /* ---- モードのプロンプト生成（v0.95：難易度順・4枠）----
+     単語（旧①知識）と文法（旧②思考）は削除した。理由：正解キーがあり、AIに採点させる必要がない領域で、
+     すでに良い教材が他にある。残した4つは、いずれも「AIとのやりとり自体が中身」になるもの。
+     並びは難易度順。ただし言語は 英→英→日→日英 と切り替わるので、各カードに言語バッジを出す。 */
+  function buildPrompts(diag){
+    var R=rangeFor(diag.L);
+    return [
+      { n:"①", key:"m6", cls:"m6", title:"プレゼン練習モード", lang:"en", app:APP_PRES,
+        desc:"用意した原稿を声に出す。アプリが書き起こしと突き合わせて〈言えた文の割合〉を出します。AIは発音を採点しません（音を聞いていないので）。",
+        body:"" },
+      { n:"②", key:"m3", cls:"m3", title:"討論モード", lang:"en",
+        desc:"答えのないテーマで賛成・反対をやりとりする。ここだけ全部 英語。",
+        body:"You are my English debate partner. Use easy English at "+R.grade+" level. Pick one familiar topic where opinions differ (uniforms, smartphones, homework). Give reasons for both sides, get my opinion, and push back once. Do not give me the answer. Keep each turn short. "+UNLOCK_M3 },
+      { n:"③", key:"m4", cls:"m4", title:"探求モード", lang:"ja", sub:true,
+        desc:"日本語でOK。キーワードだけ英語併記。答えより問いを深める。",
+        body:"あなたは探究のパートナーです。\n"+inqRules_("探求") },
+      /* v0.96: フリーパスはモードから外した。
+         アプリの中に「自分で設計する枠」を置くと、それはまだアプリの中の話でしかない。
+         本当のフリーパスは<アプリを通さずにAIを使うこと>であり、それは
+         「アプリを通さずにAIを使っていいですか」と教員に申告する行為そのものである。
+         申告は装置の外側で起きる。だから装置の中に枠を作らない。下の「フリーパス申請」を参照。 */
+    ];
+  }
+
+  /* ---- 英検二次面接プロンプト（谷本杏の例の改良版を③枠に同梱） ---- */
+  function interviewPrompt(diag){
+    var R=rangeFor(diag.L);
+    return "あなたは英検"+R.grade+"の二次面接の試験官です。\n"
+      +"・本番形式で行う。途中で間違いを指摘しない。日本語は使わない。\n"
+      +"・軽い挨拶→カード内容（文章＋イラストの説明）を文字で提示→20秒黙読→音読→No.1〜No.4の質問、の順。\n"
+      +"・私が答えてから次の問題へ。先の問題を先に出さない。\n"
+      +"・全問おわったら日本語で評価する。評価項目は〔質問への答え方／文法／語彙／理由の具体性／発音の聞き取りやすさ〕の5つ。\n"
+      +"・最後に、次回練習すべき表現を3つ出す。";
+  }
+
+  /* ---- レンダリング（v0.95：ゲートは撤去） ----
+     旧版は 知識80%→思考、先生解錠→議論・探求・FP という鍵を持っていた。
+     知識・思考を削除したので土台が消えたうえ、80%判定は実質形骸で、効いていたのは先生解錠だけだった。
+     鍵に意味があるのは1つだけ（内容が無ければプレゼン原稿は物理的に作れない）。それは
+     探求カルテ側のボタンが自然に担うので、ここでは全部開けておく。 */
+  var unlocked=false;   /* 先生モードの互換のため残す（いまは開閉に使わない） */
+  function modeIsOpen(){ return true; }
+  function langBadge(m){
+    var t={en:"英語だけ", ja:"日本語でOK", je:"日本語→英語"}[m.lang]||"";
+    return t? '<span class="lang '+m.lang+'">'+t+'</span>' : "";
+  }
+  function modeBadge(){ return '<span class="badge open">いつでも</span>'; }
+  function renderModes(diag){
+    var arr=buildPrompts(diag), host=$("modes"); host.innerHTML="";
+    arr.forEach(function(m){
+      var isOpen=modeIsOpen(m,diag);
+      var card=document.createElement("div");
+      card.className="card mode "+m.cls+(isOpen?"":" locked");
+      var inner='<h2><span class="emoji">'+m.n+'</span>'+m.title+langBadge(m)+modeBadge()+'</h2>'
+              +'<p class="desc">'+m.desc+'</p>';
+      if(m.app){
+        /* アプリ型：プロンプトを配るのではなく、突き合わせを行う画面へ渡す */
+        inner+='<div class="row"><button class="btn" data-app="'+m.app+'">🎤 プレゼン練習をひらく</button>'
+          +'<span class="copied">原稿は「AIに作らせる／探求から作る／自分で書く」の3つから選べます</span></div>';
+      } else {
+        var body=m.body;
+        if(m.key==="m3"){ body+="\n\n――― 英検二次面接で練習したいとき（コピーして使う）―――\n"+interviewPrompt(diag); }
+        inner+='<textarea class="pt" id="pt_'+m.key+'" readonly>'+body+'</textarea>'
+          +'<div class="row"><button class="btn" data-open="pt_'+m.key+'">📋コピーしてAIを開く</button>'
+          +'<button class="btn ghost" data-copy="pt_'+m.key+'">コピーだけ</button>'
+          +'<span class="copied" id="copied_pt_'+m.key+'"></span></div>';
+      }
+      if(m.sub){
+        /* 従属モード：探求の中身をそのままプレゼン原稿にする。
+           見た目としては探求モードにぶら下げる（別カードにしない）。 */
+        inner+='<div class="sub-mode">'
+          +'<b>③-b　この内容でプレゼン原稿を作る</b><span class="lang je">日本語→英語</span>'
+          +'<div class="desc" style="margin:4px 0 6px">探求が終わったら、<b>探究カルテの送信ボタンの横</b>にある'
+          +'「この内容でプレゼン練習する →」を押してください。まとめがそのまま原稿の材料になります。'
+          +'<b>内容は変えません。</b>変わるのは言い方だけ。だから、くり返すほど〈言えた文の割合〉が伸びていきます。</div>'
+          +'<div class="row"><button class="btn ghost" data-app="'+APP_KARTE+'">探究カルテをひらく</button>'
+          +'<button class="btn ghost" data-app="'+APP_PRES+'">発表カルテをひらく</button></div>'
+          +'</div>';
+      }
+      card.innerHTML=inner;
+      host.appendChild(card);
+    });
+    host.querySelectorAll("[data-app]").forEach(function(b){
+      b.onclick=function(){ location.href=b.getAttribute("data-app"); };
+    });
+    bindCopy(); bindOpen();
+  }
+
+  function renderDiag(D,diag){
+    $("d_level").textContent = diag.L!=null ? rangeFor(diag.L).label : "まだ記録なし";
+    $("d_eiken").textContent = diag.L!=null ? levelLabel(diag.L) : "–";
+    $("d_stage").textContent = diag.stage;
+    $("d_weak").innerHTML = diag.weak.length ? ("いま強くしたい所：<b>"+diag.weak.join("／")+"</b>") : "弱点は記録から見つかりませんでした。まずはプレゼン練習モードでOK。";
+    $("src_badge").textContent = diag.hasData ? "記録から" : "手動";
+    $("src_badge").className = "badge "+(diag.hasData?"open":"gate");
+  }
+
+  /* ---- コピー ---- */
+  function copyText(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText){ return navigator.clipboard.writeText(t); }
+    return new Promise(function(res,rej){
+      try{var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();
+        document.execCommand("copy");document.body.removeChild(ta);res();}catch(e){rej(e);}
+    });
+  }
+  function bindCopy(){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"),function(b){
+      b.onclick=function(){
+        var el=$(b.getAttribute("data-copy")); if(!el)return;
+        copyText(el.value).then(function(){
+          var m=$("copied_"+b.getAttribute("data-copy")); if(m){m.textContent="コピーしました ✓";
+            setTimeout(function(){m.textContent="";},2000);}
+        });
+      };
+    });
+  }
+  function bindOpen(){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-open]"),function(b){
+      b.onclick=function(){
+        var el=$(b.getAttribute("data-open")); if(!el)return;
+        try{ window.open(AI_URL,"_blank","noopener"); }catch(e){}   // 先にAIを開く(ポップアップ許可のため同期)
+        copyText(el.value).then(function(){
+          var m=$("copied_"+b.getAttribute("data-open")); if(m){m.textContent="コピー済 → 開いたAIに貼り付け(Ctrl+V)";
+            setTimeout(function(){m.textContent="";},3500);}
+        });
+      };
+    });
+  }
+
+  /* ---- 送信（隠しフォーム→隠しiframe へPOST：CORS非依存・file://可） ---- */
+  function send(){
+    var msg=$("sendmsg");
+    var cls=$("f_cls").value.trim(), num=han($("f_num").value), raw=$("logBox").value.trim();
+    function err(t){ msg.style.color="#d9603e"; msg.textContent=t; }
+    if(!cls||!num) return err("学年と番号を入れてね");
+    if(!raw)       return err("まとめを貼りつけてね");
+    if(!LOG_GAS_URL) return err("先生へ：送信先(GAS)が未設定です");
+    try{
+      var sink=$("gas_sink");
+      if(!sink){ sink=document.createElement("iframe"); sink.id="gas_sink"; sink.name="gas_sink";
+        sink.style.display="none"; document.body.appendChild(sink); }
+      var f=document.createElement("form");
+      f.method="POST"; f.action=LOG_GAS_URL; f.target="gas_sink"; f.style.display="none";
+      var inp=document.createElement("input"); inp.type="hidden"; inp.name="payload";
+      // ★v0.94: name は送らない（原則1）。学年・番号・level・raw のみ
+      var payload={kind:"ai_log",ver:APP_VER,cls:cls,num:num,
+        level:(curDiag&&curDiag.L!=null?curDiag.L:""),raw:raw};
+      if(window.SITE) SITE.tag(payload);              /* ▼追記：実証モードの印だけ足す */
+      inp.value=JSON.stringify(payload);
+      f.appendChild(inp); document.body.appendChild(f); f.submit(); document.body.removeChild(f);
+      msg.style.color="#2e9e57"; msg.textContent="送信しました ✓（スプシのAIログを確認）"; $("logBox").value="";
+    }catch(e){ err("送信できませんでした（"+String(e).slice(0,24)+"）"); }
+  }
+
+  /* ---- 本人情報（マイページと同じキー） ---- */
+  function fillIdentity(){
+    $("f_cls").value=lsGet("mado_year")||"";
+    $("f_num").value=han(lsGet("mado_num")||"");
+    // ★v0.94: 氏名の復元はしない（欄そのものを撤去済み）
+  }
+
+  /* ---- 起動 ---- */
+  var D=readData(), curDiag=null;
+  function refresh(){
+    curDiag=diagnose(D, $("manualLv").value?parseFloat($("manualLv").value):null);
+    renderDiag(D,curDiag); renderModes(curDiag);
+  }
+  try{ localStorage.removeItem("mado_name"); }catch(e){}   // ★v0.94: 端末に残っていた氏名も消す（原則1）
+  fillIdentity(); refresh();
+  $("f_cls").addEventListener("change",function(){ lsSet("mado_year",this.value); });
+  $("f_num").addEventListener("input",function(){ this.value=han(this.value); lsSet("mado_num",this.value); });
+  $("manualLv").addEventListener("change",refresh);
+  /* v0.95: 鍵は無くなったので、このボタンは探究カルテへの導線に変えた。 */
+  $("unlockBtn").addEventListener("click",function(){ location.href=APP_KARTE; });
+  $("sendBtn").addEventListener("click",send);
+})();
+</script>
+</body>
+</html>

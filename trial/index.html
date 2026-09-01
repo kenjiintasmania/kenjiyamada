@@ -139,6 +139,13 @@
     gasPill.className="pill warn"; gasPill.textContent="未設定";
     note.textContent="assets/site.js の TRIAL_GAS が空です。設定するまで、実証モードでは記録は送信されません（生徒用シートには入りません）。";
   }
+  /* AIモード（aimode/）は log_gas.gs＝別プロジェクト・別URL。summary/eiken とは別に設定が要る。
+     ここを出しておかないと「他は送れているのにAIモードだけ送れない」理由が分からない。 */
+  if(SITE.trialAimodeConfigured && !SITE.trialAimodeConfigured()){
+    note.innerHTML += '<br><b style="color:#b45309">AI練習メニュー（aimode/）の送信先はまだ未設定です。</b>'
+      + 'こちらは <code>log_gas.gs</code> の実証用デプロイが別に要ります。'
+      + '未設定のあいだ、AIモードの記録は<b>送信されません</b>（生徒用ブックには入りません）。';
+  }
 
   /* ---- 接続テスト：GAS側の action:"ping" に応答させる（シートには何も書かない） ----
      403 は「コードの誤り」ではなく、ほぼ必ずデプロイの公開設定で起きる。

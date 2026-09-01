@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>発表カルテ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🎤</text></svg>">
+<!--
+  発表カルテ（プレゼン練習モード）v0.1 — 探究カルテ・英会話カルテに続く4つ目のアプリ。
+
+  ★この画面の一番大事な設計判断★
+  発音の採点を生成AIにさせない。貼り付け先のAI（Google AIモード等）は音を聞いていない。
+  音声入力があっても、AIに届くのは文字起こし後のテキストであり、「発音を採点して」と頼めば
+  聞いていないものを褒める。全肯定と同じ穴になる。
+  したがって、この画面は 原稿 と 書き起こし をアプリ側で突き合わせ、
+  最長共通部分列（LCS）で「原稿の語を何割ひろえたか」を数える。AIは介在しない。
+  音声認識は忖度しないので、AIに評を聞くより冷たく正確な指標になる。
+
+  ループ:
+    ① 原稿を用意する（探究から作る / AIに例文を作らせる / 自分で書く）
+    ② 練習のしかたを選ぶ（音読＝見ながら / 暗唱＝隠す）
+    ③ 予測を先に確定させる（結果を見る前に。三者照合の作法は探究カルテと同じ）
+    ④ 話す（音声入力 or 打ち込み）
+    ⑤ アプリが突き合わせる → 操作率・語一致率・文ごとの ○△✕
+    ⑥ 任意でAIに評をもらう（✕△の文だけ渡す。発音の採点は禁止と明記したプロンプトを配る）
+    ⑦ 送信（kind:"pres" → GASの「発表カルテ」タブ）
+
+  操作率 = 言えた文 ÷ 全体の文数。これが5段ラダー（①クラス→⑤本番）の主指標。
+  データは端末内(localStorage)。送信で外に出るのは 原稿・書き起こし・学年・番号・数値のみ（名前なし）。
+-->
+<style>
+  :root{ --pp:#6D3FBF; --amber:#B45309; --gold:#B8860B; --ink:#1F2430; --sub:#5A6473; --line:#E6E0D4; --tk:#6D3FBF; }
+  *{box-sizing:border-box}
+  body{ margin:0; background:#F9F8FC; color:var(--ink);
+        font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+        font-size:15px; line-height:1.6; }
+  .wrap{ max-width:860px; margin:0 auto; padding:14px 14px 40px; }
+  .crumbs{ font-size:12px; color:#9a93aa; }
+  h1{ font-size:22px; margin:2px 0 0; }
+  h1 .sub{ font-size:12px; color:var(--tk); font-weight:600; margin-left:6px; }
+  .toolbar{ margin:8px 0 2px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .toolbar .chip{ font-size:12px; color:var(--sub); border:1px solid var(--line); background:#fff; border-radius:999px; padding:2px 10px; }
+  button{ font:inherit; cursor:pointer; border-radius:8px; border:1px solid var(--line); background:#fff; padding:6px 12px; }
+  button.primary{ background:var(--tk); border-color:var(--tk); color:#fff; font-weight:700; }
+  button.primary:disabled{ background:#bdaee0; border-color:#bdaee0; cursor:not-allowed; }
+  button.ghost{ color:var(--sub); }
+  button.mic{ background:#FDF0E1; border-color:#E8C89A; color:var(--amber); font-weight:700; }
+  button.mic.on{ background:var(--amber); border-color:var(--amber); color:#fff; }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:14px 0; }
+  .card h2{ font-size:15px; margin:0 0 8px; border-left:4px solid var(--tk); padding-left:8px; }
+  .card h2 small{ color:var(--sub); font-weight:400; margin-left:6px; }
+  .muted{ color:var(--sub); font-size:12.5px; }
+  .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+  .ok{ font-size:12.5px; color:#2C7A52; font-weight:700; }
+  .warn{ font-size:12.5px; color:var(--amber); font-weight:700; }
+  textarea{ width:100%; font:13px/1.6 ui-monospace,Menlo,monospace; border:1px solid var(--line);
+            border-radius:8px; padding:8px; background:#FCFBFE; }
+  textarea.script{ min-height:120px; }
+  textarea.said{ min-height:110px; }
+  textarea.prompt{ min-height:96px; font-size:12px; background:#FBFAFE; }
+  .idrow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0; font-size:13.5px; }
+  .idrow select,.idrow input{ font:inherit; border:1px solid var(--line); border-radius:8px; padding:6px 8px; background:#fff; }
+  .idrow input.num{ width:64px; text-align:center; }
+  .idrow input.self{ width:86px; font-size:18px; font-weight:800; text-align:center; border:2px solid var(--tk); }
+  .seg{ display:flex; gap:6px; flex-wrap:wrap; }
+  .seg label{ border:1.5px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; cursor:pointer; background:#fff; }
+  .seg input{ display:none; }
+  .seg input:checked + span{ font-weight:800; color:var(--tk); }
+  .seg label:has(input:checked){ border-color:var(--tk); background:#F3EEFC; }
+  .tiles{ display:flex; gap:10px; flex-wrap:wrap; }
+  .tile{ flex:1; min-width:140px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#FCFBFE; }
+  .tile .lab{ font-size:12px; color:var(--sub); }
+  .tile .val{ font-size:22px; font-weight:800; }
+  .tile.meas{ background:#F1ECFB; border-color:#CFC0EC; }
+  .badge{ display:inline-block; border-radius:999px; padding:3px 12px; font-weight:700; font-size:13px; margin-top:8px; }
+  .badge.gold{ background:#FFF7E0; color:#8A6D00; border:1.5px solid var(--gold); }
+  .badge.find{ background:#FDF0E3; color:var(--amber); border:1.5px solid var(--amber); }
+  .badge.good{ background:#EEF8F0; color:#2C7A52; border:1.5px solid #3FAE74; }
+  .badge.note{ background:#F4F4F6; color:var(--sub); border:1.5px solid #CFD4DD; }
+  .formula{ font-size:12px; color:var(--sub); background:#FCFBFE; border:1px dashed var(--line);
+            border-radius:8px; padding:6px 10px; margin-top:8px; }
+  ol.sent{ margin:8px 0 0; padding-left:0; list-style:none; }
+  ol.sent li{ border:1px solid var(--line); border-left-width:5px; border-radius:8px;
+              padding:6px 10px; margin-bottom:6px; background:#fff; }
+  ol.sent li.o{ border-left-color:#3FAE74; }
+  ol.sent li.d{ border-left-color:var(--gold); }
+  ol.sent li.x{ border-left-color:#C0504D; }
+  ol.sent .mk{ font-weight:800; margin-right:8px; }
+  ol.sent .txt{ font-family:Georgia,serif; }
+  ol.sent .pc{ float:right; font-size:12px; color:var(--sub); font-weight:700; }
+  ol.sent .miss{ display:block; font-size:11.5px; color:var(--amber); margin-top:2px; }
+  table.hist{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.hist th{ text-align:left; color:var(--sub); font-weight:600; border-bottom:1.5px solid var(--line); padding:4px 6px; font-size:12px; }
+  table.hist td{ border-bottom:1px solid #EFEDF4; padding:5px 6px; vertical-align:middle; }
+  .panel{ border:1.5px solid var(--tk); background:#F5F1FC; border-radius:10px; padding:10px 12px; margin-top:10px; }
+  .inbox{ border:1.5px solid var(--amber); background:#FDF8F1; border-radius:10px; padding:10px 12px; margin:10px 0; }
+  .foot{ font-size:11.5px; color:#9a93aa; border-top:1px solid var(--line); margin-top:20px; padding-top:8px; }
+  .hidden{ display:none !important; }
+  details.gasres summary{ cursor:pointer; font-size:11.5px; color:#9a93aa; }
+  details.gasres iframe{ width:100%; height:90px; border:1px dashed var(--line); border-radius:8px; background:#fff; margin-top:4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="crumbs">Phase 1 ｜ カルテの表示は<b>この端末の中だけ</b>。送信すると「原稿・書き起こし・学年・番号・数値」だけが先生のスプレッドシートに記録されます（<b>名前は送りません</b>）</div>
+  <h1>発表カルテ<span class="sub">プレゼン練習 <span id="ver"></span></span></h1>
+  <div class="toolbar">
+    <span class="chip">練習した回数 <b id="cntAll">0</b></span>
+    <span class="chip">前回の操作率 <b id="cntLast">—</b></span>
+    <button id="btnExport" class="ghost">記録を書き出す</button>
+    <button id="btnWipe" class="ghost">全消去</button>
+  </div>
+</header>
+
+<div id="inboxBox" class="inbox hidden">
+  <b>探究から原稿の材料が届いています</b>　<span class="muted" id="inboxWhen"></span>
+  <div class="muted" id="inboxTheme"></div>
+  <div class="row">
+    <button class="primary" id="btnMakeScript">この内容で原稿を作るプロンプトを出す</button>
+    <button class="ghost" id="btnDropInbox">使わない</button>
+  </div>
+</div>
+
+<section class="card">
+  <h2>① 原稿を用意する <small>出どころは3つ。どれでも操作率は同じ式で出ます</small></h2>
+
+  <div class="idrow">
+    学年 <select id="inCls"><option value="">-</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option></select>
+    英検 <select id="inEiken">
+      <option value="">まだ</option><option value="5">5級</option><option value="4">4級</option>
+      <option value="3">3級</option><option value="p2">準2級</option><option value="2">2級</option>
+    </select>
+    <span class="muted">難易度つまみ <b id="lvOut">—</b> / 10</span>
+  </div>
+
+  <div class="seg" id="srcSeg" style="margin-top:8px">
+    <label><input type="radio" name="src" value="inquiry"><span>探究から作る</span></label>
+    <label><input type="radio" name="src" value="ai" checked><span>AIに例文を作らせる</span></label>
+    <label><input type="radio" name="src" value="own"><span>自分で書く</span></label>
+  </div>
+
+  <div id="promptBox" style="margin-top:8px">
+    <textarea class="prompt" id="outPrompt" readonly></textarea>
+    <div class="row">
+      <button class="primary" id="btnCopyOpen">📋コピーしてAIを開く</button>
+      <button id="btnCopyOnly">コピーだけ</button>
+      <span class="ok" id="copyMsg"></span>
+    </div>
+  </div>
+
+  <div style="margin-top:10px">
+    <div class="muted">原稿（英語）。AIが出した英文を貼るか、自分で打つ。1行に1文でも、続けて書いてもOK。</div>
+    <textarea class="script" id="inScript" placeholder="Hello. I am going to talk about our town. ..."></textarea>
+    <div class="row"><span class="muted" id="scriptStat">—</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>② 練習のしかたを選んで、先に予測する <small>結果を見る前に決めるのが約束</small></h2>
+
+  <div class="seg" id="waySeg">
+    <label><input type="radio" name="way" value="read" checked><span>音読（原稿を見ながら）</span></label>
+    <label><input type="radio" name="way" value="recite"><span>暗唱（原稿を隠す）</span></label>
+  </div>
+  <div class="muted" id="wayHint" style="margin-top:4px"></div>
+
+  <div class="idrow" style="margin-top:10px">
+    番号 <input class="num" id="inNum" inputmode="numeric" placeholder="番号">
+    <b>予測</b> <input class="self" id="inSelf" inputmode="numeric" placeholder="0〜100">
+    <span class="muted">％　原稿のうち、何％を言えると思う？</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2>③ 話す <small>アプリが書き起こしと原稿を突き合わせます。AIは使いません</small></h2>
+
+  <div id="reciteCover" class="panel hidden"><b>暗唱モードです。</b>原稿は隠しました。話し終えたら結果が出ます。</div>
+
+  <div class="row">
+    <button class="mic" id="btnMic">🎤 音声入力を始める</button>
+    <button class="ghost" id="btnMicClear">書き起こしを消す</button>
+    <span class="muted" id="micMsg"></span>
+  </div>
+  <div class="muted" style="margin-top:6px">音声が使えない端末では、聞こえたとおりを<b>自分で打ち込んで</b>ください。式は同じです。</div>
+  <textarea class="said" id="inSaid" placeholder="（ここに書き起こしが入ります。打ち込みでも構いません）"></textarea>
+
+  <div class="row" style="margin-top:8px">
+    <button class="primary" id="btnCheck" disabled>突き合わせる</button>
+    <button class="ghost" id="btnReveal">原稿を出す</button>
+  </div>
+  <div class="formula">
+    式（初期値・要較正）：原稿と書き起こしを小文字化・記号除去して語に分け、<b>最長共通部分列</b>をとる。<br>
+    <b>語一致率</b>＝ひろえた語 ÷ 原稿の語数。<b>文の判定</b>＝その文の語を8割以上ひろえたら ○、5割以上で △、それ未満は ✕。<br>
+    <b>操作率</b>＝○の文数 ÷ 全体の文数。<b>発音そのものは測っていません</b>（機械が聞き取れたかどうかだけ）。
+  </div>
+</section>
+
+<section class="card" id="resultCard">
+  <h2>④ 結果 <small>予測 × 実測</small></h2>
+  <div id="resultBody"><p class="muted">まだ突き合わせていません。</p></div>
+</section>
+
+<section class="card" id="coachCard">
+  <h2>⑤ AIに評をもらう（任意） <small>渡すのは ✕ と △ の文だけ。発音の採点は頼みません</small></h2>
+  <textarea class="prompt" id="outCoach" readonly placeholder="③で突き合わせると、ここにプロンプトが出ます"></textarea>
+  <div class="row">
+    <button class="primary" id="btnCoachCopy" disabled>📋コピーしてAIを開く</button>
+    <span class="ok" id="coachMsg"></span>
+  </div>
+</section>
+
+<section class="card">
+  <h2>⑥ 送信 <small>名前は送りません</small></h2>
+  <div class="row">
+    <button class="primary" id="btnSend" disabled>送信してカルテ更新</button>
+    <span class="muted" id="sendMsg"></span>
+  </div>
+  <details class="gasres"><summary>送信の応答を確認（先生用）</summary>
+    <iframe id="gas_sink" name="gas_sink"></iframe>
+  </details>
+</section>
+
+<section class="card">
+  <h2>記録 <small>操作率の推移。同じ内容を相手を変えて話すほど、ここが伸びる</small></h2>
+  <table class="hist" id="hist"><tr><th>日付</th><th>出どころ</th><th>やり方</th><th>文</th><th>操作率</th><th>予測</th></tr></table>
+</section>
+
+<div class="foot">
+  数えているのは<b>語と文の一致</b>だけ。声の大きさ・速さ・気分・感情は測っていません（DURC方針）。点数は成績と無関係。<br>
+  <b>この画面は発音を採点しません。</b>できるのは「機械が聞き取れた語をどれだけ拾えたか」までです。
+  聞き取れなかった語は、発音のせいかもしれないし、雑音や機械の癖かもしれません。そこは人が見ます。<br>
+  送信で記録されるもの＝原稿・書き起こし・学年・番号・出どころ・やり方・文数・操作率・語一致率・予測（名前なし）。
+</div>
+
+</div>
+<script src="../assets/site.js"></script>
+<script>
+"use strict";
+var APP_VER="pres 0.1 (phase1)";
+/* 送信先GASの /exec URL（log_gas.gs をデプロイして貼る。空なら送信オフ） */
+var LOG_GAS_URL="https://script.google.com/macros/s/AKfycbw6GODXQM0HZtYvaxoO61jKOMwqQe9ZYxNJTVLBARBJ-hvWUU8Tw7KVelRKq2wGOHgdrA/exec";
+/* ▼英語学習アプリ側の追記（このスレッドが足した1行。上のロジックは無改変）
+   実証モード（?site=aso）では実証用 log_gas に切りかえる。これが無いと、
+   実証端末のAIモードの記録だけが生徒用ブックへ落ちる。実証用URLが未設定なら
+   gasFor は "" を返し、下の !LOG_GAS_URL のガードで送信そのものが止まる。 */
+if(window.SITE) LOG_GAS_URL = SITE.gasFor("aimode", LOG_GAS_URL);
+var AI_URL="https://www.google.com/search?udm=50";
+const KEY="tanqPres_v0";
+const INBOX="tanqPres_inbox";          /* 探究カルテ（mypage.html）から材料を受け取る場所 */
+const OK_HI=0.80, OK_LO=0.50;          /* 文の判定しきい値（初期値・要較正） */
+
+/* ---------- storage ---------- */
+let S=load();
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&Array.isArray(s.sessions)) return s; }catch(e){}
+  return {sessions:[]}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+const $=id=>document.getElementById(id);
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function zen2han(s){ return String(s).replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)); }
+function digits(s){ return zen2han(s).replace(/[^0-9]/g,""); }
+function fmtDate(ts){ const d=new Date(ts); return (d.getMonth()+1)+"/"+d.getDate(); }
+
+/* ---------- 難易度つまみ（学年＋英検級）---------- */
+const EIKEN={ "":0, "5":0, "4":1, "3":2, "p2":3, "2":4 };
+const EIKEN_NAME={ "":"級はまだ", "5":"英検5級", "4":"英検4級", "3":"英検3級", "p2":"英検準2級", "2":"英検2級" };
+function levelNum(){
+  const c=parseInt($("inCls").value,10);
+  if(!c) return null;
+  const base=3+c;                                   /* 中1=4 / 中2=5 / 中3=6 */
+  return Math.max(1, Math.min(10, base + (EIKEN[$("inEiken").value]||0)));
+}
+function levelWord(){
+  const n=levelNum();
+  if(n==null) return "（学年を選ぶと決まります）";
+  const words=["とても短い文","短い文","基本の文","基本の文＋理由","理由と例","理由と例と反対の見方",
+               "つなぎ言葉つきの段落","段落と言いかえ","質問に答えられる長さ","即興でのばせる長さ"];
+  return "難易度つまみ "+n+"／10（"+words[n-1]+"）。"+EIKEN_NAME[$("inEiken").value]+"相当。";
+}
+
+/* ---------- プロンプト生成 ---------- */
+function scriptLen(){
+  const n=levelNum()||5;
+  return { sent: Math.max(3, Math.min(12, 2+n)), words: Math.max(5, 3+n) };
+}
+function promptAI(){
+  const L=scriptLen();
+  return "あなたは英語のプレゼン練習の相手です。\n"
+   +"【いまから作ってほしいもの】私が声に出して練習するための、短い英語のスピーチ原稿。\n"
+   +"・"+levelWord()+"\n"
+   +"・全部で "+L.sent+" 文。1文は "+L.words+" 語くらいまで。\n"
+   +"・話題は私が選びます。まず「何について話したい？」と1回だけ日本語で聞いてください。\n"
+   +"・原稿は英語だけで、1行に1文ずつ出す。番号も記号も付けない。日本語訳は原稿の下にまとめて置く。\n"
+   +"・むずかしい言い回しで飾らない。私が実際に言える語だけを使う。\n"
+   +"・three つの型を必ず1回ずつ入れる：But / Because / For example。\n"
+   +"【禁止】原稿の中に説明や注釈を混ぜない。発音記号を入れない。";
+}
+function promptOwn(){
+  return "あなたは英語のプレゼン練習の相手です。\n"
+   +"私がこれから自分で英語の原稿を書きます。書いたら貼るので、次の3つだけしてください。\n"
+   +"1. 私が言えなさそうな語を指摘する（言い直しの候補を1つずつ。むずかしくしない）\n"
+   +"2. But / Because / For example が入っているか確認する\n"
+   +"3. 1文が長すぎるところを短く切る案を出す\n"
+   +"【禁止】書き直した完成版を先に出さない。ほめるだけの返事をしない。発音については何も言わない（あなたは音を聞いていません）。";
+}
+function promptFromInquiry(inbox){
+  const L=scriptLen();
+  const body=(inbox&&inbox.raw)? String(inbox.raw).slice(0,2500) : "";
+  return "あなたは英語のプレゼン練習の相手です。\n"
+   +"【材料】これは私が日本語で行った探究のまとめです。ここから英語のスピーチ原稿を作ります。\n"
+   +"----- ここから材料 -----\n"+body+"\n----- ここまで材料 -----\n"
+   +"【作ってほしいもの】\n"
+   +"・"+levelWord()+"\n"
+   +"・全部で "+L.sent+" 文。1文は "+L.words+" 語くらいまで。\n"
+   +"・材料に<書いていないことを足さない>。私が考えていないことを、私の原稿にしない。\n"
+   +"・原稿は英語だけで、1行に1文ずつ出す。番号も記号も付けない。日本語訳は原稿の下にまとめて置く。\n"
+   +"・But / Because / For example を必ず1回ずつ入れる。材料の中の「でも」「なぜかと言うと」「たとえば」に対応させる。\n"
+   +"・材料のうち原稿に入れなかった部分を、最後に日本語で3行以内で挙げる（何を落としたか私が知るため）。\n"
+   +"【禁止】むずかしい語で飾らない。私が実際に言える語だけを使う。発音記号を入れない。";
+}
+function promptCoach(script, sents){
+  const bad=sents.filter(s=>s.mark!=="o");
+  const lines=bad.map(s=>"・"+s.text).join("\n");
+  return "あなたは英語のプレゼン練習の相手です。\n"
+   +"【前提】私は原稿を声に出して練習し、音声認識にかけました。アプリが原稿と書き起こしを突き合わせた結果、\n"
+   +"次の文が<機械にうまく拾われませんでした>。\n"
+   +(lines||"（拾われなかった文はありません）")+"\n"
+   +"【お願い】この文ごとに、次の3つだけ返してください。\n"
+   +"1. 言いにくい原因になりそうな語を1つ指摘する（語のつながり・音の数・語順のどれか）\n"
+   +"2. 同じ意味で<もっと短い言い方>を1つ出す\n"
+   +"3. その短い言い方を、私が練習しやすいように区切って書く（例：I think / it is / too small）\n"
+   +"【禁止・重要】\n"
+   +"・<発音を採点しないでください>。あなたは音を聞いていません。届いているのは文字だけです。\n"
+   +"・「上手ですね」などの評価をしない。できていない前提で、直す材料だけを出す。\n"
+   +"・原稿全体を書き直さない。挙げた文だけ扱う。";
+}
+
+/* ---------- 突き合わせ（LCS）---------- */
+function normTokens(s){
+  return String(s||"")
+    .toLowerCase()
+    .replace(/[‘’]/g,"'")
+    .replace(/[^a-z0-9' ]+/g," ")
+    .replace(/\s+/g," ").trim()
+    .split(" ").filter(Boolean);
+}
+function splitSentences(s){
+  const raw=String(s||"").replace(/\r/g,"");
+  const out=[];
+  raw.split("\n").forEach(line=>{
+    let buf="";
+    for(const ch of line){
+      buf+=ch;
+      if(ch==="."||ch==="!"||ch==="?"){ if(buf.trim()) out.push(buf.trim()); buf=""; }
+    }
+    if(buf.trim()) out.push(buf.trim());
+  });
+  return out.filter(t=>normTokens(t).length>0);
+}
+/* 原稿の語のうち、書き起こしに順序を保って現れた語に印をつける */
+function lcsMark(a, b){
+  const n=a.length, m=b.length;
+  if(!n||!m) return new Array(n).fill(false);
+  const dp=[];
+  for(let i=0;i<=n;i++) dp.push(new Int32Array(m+1));
+  for(let i=1;i<=n;i++){
+    for(let j=1;j<=m;j++){
+      dp[i][j] = (a[i-1]===b[j-1]) ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  const mark=new Array(n).fill(false);
+  let i=n, j=m;
+  while(i>0 && j>0){
+    if(a[i-1]===b[j-1]){ mark[i-1]=true; i--; j--; }
+    else if(dp[i-1][j] >= dp[i][j-1]) i--;
+    else j--;
+  }
+  return mark;
+}
+function compare(script, said){
+  const sents=splitSentences(script);
+  const perSent=sents.map(t=>normTokens(t));
+  const flat=[]; const owner=[];
+  perSent.forEach((toks,si)=>{ toks.forEach(w=>{ flat.push(w); owner.push(si); }); });
+  const saidToks=normTokens(said);
+  const mark=lcsMark(flat, saidToks);
+
+  const got=new Array(sents.length).fill(0);
+  const miss=sents.map(()=>[]);
+  mark.forEach((ok,k)=>{ if(ok) got[owner[k]]++; else miss[owner[k]].push(flat[k]); });
+
+  const rows=sents.map((t,i)=>{
+    const total=perSent[i].length || 1;
+    const r=got[i]/total;
+    const mk = r>=OK_HI ? "o" : (r>=OK_LO ? "d" : "x");
+    return { text:t, total:perSent[i].length, got:got[i], ratio:r, mark:mk,
+             miss:miss[i].slice(0,6), missMore:Math.max(0, miss[i].length-6) };
+  });
+  const totalWords=flat.length;
+  const gotWords=mark.filter(Boolean).length;
+  const sayable=rows.filter(r=>r.mark==="o").length;
+  return {
+    rows, sentN:sents.length, sayable,
+    grip: sents.length? Math.round(sayable/sents.length*100) : 0,
+    wordRate: totalWords? Math.round(gotWords/totalWords*100) : 0,
+    totalWords, gotWords,
+    extra: Math.max(0, saidToks.length - gotWords)
+  };
+}
+function judge(self, grip){
+  if(self==null) return {cls:"note", name:"予測なし", note:"次は先に予測を書いてから話してみよう。"};
+  const d=grip-self;
+  if(Math.abs(d)<=10) return {cls:"gold", name:"🏅 自己較正",
+    note:"予測と実測の差 "+Math.abs(d)+" ポイント。自分の実力が見えている。"};
+  if(d>=25) return {cls:"good", name:"◎ 自分に厳しすぎた",
+    note:"実測は予測より "+d+" ポイント上。もっと自信を持っていい。"};
+  if(d>0) return {cls:"good", name:"○ 予測より上",
+    note:"実測が "+d+" ポイント上。"};
+  if(d<=-25) return {cls:"find", name:"🔎 見立てが甘かった",
+    note:"予測より "+(-d)+" ポイント下。ここが伸びしろ。原稿を短くするのも手。"};
+  return {cls:"note", name:"予測より少し下", note:"差は "+(-d)+" ポイント。"};
+}
+
+/* ---------- UI ---------- */
+$("ver").textContent=APP_VER;
+function srcVal(){ const el=document.querySelector('input[name="src"]:checked'); return el?el.value:"ai"; }
+function wayVal(){ const el=document.querySelector('input[name="way"]:checked'); return el?el.value:"read"; }
+function selfVal(){ const v=digits($("inSelf").value); if(v==="") return null;
+  const n=parseInt(v,10); return (n>=0&&n<=100)?n:null; }
+
+let inbox=null;
+function readInbox(){
+  try{ const s=JSON.parse(lsGet(INBOX)); if(s&&s.raw) return s; }catch(e){}
+  return null;
+}
+function renderInbox(){
+  inbox=readInbox();
+  if(!inbox){ $("inboxBox").classList.add("hidden"); return; }
+  $("inboxBox").classList.remove("hidden");
+  $("inboxWhen").textContent=fmtDate(inbox.ts)+" の探究";
+  $("inboxTheme").textContent="テーマ：" + (inbox.theme||"（無題）");
+}
+function renderPrompt(){
+  $("lvOut").textContent = levelNum()==null ? "—" : levelNum();
+  const s=srcVal();
+  if(s==="inquiry"){
+    if(!inbox){
+      $("outPrompt").value="探究カルテ（AImode）で「この内容でプレゼン練習する」を押すと、ここに材料が届きます。\nまだ届いていません。";
+    }else{
+      $("outPrompt").value=promptFromInquiry(inbox);
+    }
+  }else if(s==="own"){
+    $("outPrompt").value=promptOwn();
+  }else{
+    $("outPrompt").value=promptAI();
+  }
+}
+function renderScriptStat(){
+  const sents=splitSentences($("inScript").value);
+  const words=normTokens($("inScript").value).length;
+  $("scriptStat").textContent = sents.length ? (sents.length+"文 / "+words+"語") : "—";
+  gate();
+}
+function renderWayHint(){
+  const w=wayVal();
+  $("wayHint").innerHTML = (w==="read")
+   ? "見ながら読みます。ここで測れるのは<b>音声化の正確さ</b>だけです。"
+   : "原稿を隠します。ここで測れるのは<b>記憶＋音声化</b>です。音読と数字を直接くらべないでください。";
+  const hide = (w==="recite");
+  $("inScript").classList.toggle("hidden", hide);
+  $("scriptStat").parentElement.classList.toggle("hidden", hide);
+  $("reciteCover").classList.toggle("hidden", !hide);
+}
+function gate(){
+  const hasScript=splitSentences($("inScript").value).length>0;
+  const hasSaid=normTokens($("inSaid").value).length>0;
+  $("btnCheck").disabled = !(hasScript && hasSaid);
+  $("btnSend").disabled = !(last && $("inCls").value && digits($("inNum").value));
+}
+
+let last=null;
+function renderResult(){
+  if(!last){ $("resultBody").innerHTML='<p class="muted">まだ突き合わせていません。</p>'; return; }
+  const c=last.c, b=judge(last.self, c.grip);
+  let h='<div class="tiles">'
+   +'<div class="tile meas"><div class="lab">操作率（言えた文 ÷ 全体）</div><div class="val">'+c.grip+'%</div></div>'
+   +'<div class="tile"><div class="lab">言えた文 / 全体</div><div class="val">'+c.sayable+' / '+c.sentN+'</div></div>'
+   +'<div class="tile"><div class="lab">語一致率</div><div class="val">'+c.wordRate+'%</div></div>'
+   +'<div class="tile"><div class="lab">きみの予測</div><div class="val">'+(last.self==null?"—":last.self+"%")+'</div></div>'
+   +'</div>'
+   +'<div class="badge '+b.cls+'">'+b.name+'</div> <span class="muted">'+esc(b.note)+'</span>';
+  if(c.extra>0) h+='<div class="muted" style="margin-top:6px">原稿に無い語を '+c.extra+' 語 足しています。'
+   +(wayVal()==="recite"?"暗唱では言いかえたぶんです。減点ではありません。":"読み違えか、言い足しです。")+'</div>';
+  h+='<ol class="sent">';
+  c.rows.forEach((r,i)=>{
+    const mk = r.mark==="o" ? "○" : (r.mark==="d" ? "△" : "✕");
+    h+='<li class="'+r.mark+'"><span class="pc">'+Math.round(r.ratio*100)+'%</span>'
+      +'<span class="mk">'+mk+'</span><span class="txt">'+esc(r.text)+'</span>'
+      +(r.miss.length?'<span class="miss">拾えなかった語：'+esc(r.miss.join(" / "))
+        +(r.missMore?(' ほか'+r.missMore+'語'):'')+'</span>':'')
+      +'</li>';
+  });
+  h+='</ol>';
+  $("resultBody").innerHTML=h;
+}
+function renderHist(){
+  const t=$("hist");
+  t.innerHTML='<tr><th>日付</th><th>出どころ</th><th>やり方</th><th>文</th><th>操作率</th><th>予測</th></tr>';
+  const SRCN={inquiry:"探究から", ai:"AI例文", own:"自作"};
+  const WAYN={read:"音読", recite:"暗唱"};
+  S.sessions.slice().reverse().slice(0,20).forEach(r=>{
+    t.innerHTML+='<tr><td>'+fmtDate(r.ts)+'</td><td>'+(SRCN[r.src]||r.src)+'</td><td>'+(WAYN[r.way]||r.way)+'</td>'
+      +'<td>'+r.sayable+'/'+r.sentN+'</td><td><b>'+r.grip+'%</b></td><td>'+(r.self==null?"—":r.self+"%")+'</td></tr>';
+  });
+  $("cntAll").textContent=S.sessions.length;
+  $("cntLast").textContent = S.sessions.length ? (S.sessions[S.sessions.length-1].grip+"%") : "—";
+}
+function renderAll(){ renderPrompt(); renderScriptStat(); renderWayHint(); renderResult(); renderHist(); gate(); }
+
+/* ---------- copy ---------- */
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+  return new Promise(function(res,rej){ try{ const ta=document.createElement("textarea"); ta.value=t;
+    document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); res();
+  }catch(e){ rej(e); } });
+}
+
+/* ---------- 音声入力（Web Speech API。無い端末では打ち込みに落とす）---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec=null, recOn=false;
+if(!SR){
+  $("btnMic").disabled=true;
+  $("micMsg").innerHTML='<span class="warn">この端末では音声入力が使えません。</span> 聞こえたとおりを打ち込んでください。';
+}else{
+  $("btnMic").addEventListener("click", ()=>{
+    if(recOn){ try{ rec.stop(); }catch(e){} return; }
+    rec=new SR();
+    rec.lang="en-US"; rec.continuous=true; rec.interimResults=false;
+    rec.onstart=()=>{ recOn=true; $("btnMic").classList.add("on"); $("btnMic").textContent="■ 止める";
+      $("micMsg").textContent="聞いています。ふつうの声で、原稿のとおりに。"; };
+    rec.onresult=(e)=>{
+      let add="";
+      for(let i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) add+=e.results[i][0].transcript+" "; }
+      if(add){ $("inSaid").value=($("inSaid").value+" "+add).replace(/\s+/g," ").trim(); gate(); }
+    };
+    rec.onerror=(e)=>{ $("micMsg").innerHTML='<span class="warn">音声入力が止まりました（'+esc(e.error||"")+'）。</span> 打ち込みに切りかえてください。'; };
+    rec.onend=()=>{ recOn=false; $("btnMic").classList.remove("on"); $("btnMic").textContent="🎤 音声入力を始める";
+      if(!/止まりました/.test($("micMsg").innerHTML)) $("micMsg").textContent="止めました。"; };
+    try{ rec.start(); }catch(e){ $("micMsg").innerHTML='<span class="warn">開始できませんでした。</span>打ち込みでどうぞ。'; }
+  });
+}
+$("btnMicClear").addEventListener("click", ()=>{ $("inSaid").value=""; gate(); });
+
+/* ---------- events ---------- */
+$("inCls").addEventListener("change", renderPrompt);
+$("inEiken").addEventListener("change", renderPrompt);
+$("inNum").addEventListener("input", gate);
+document.querySelectorAll('input[name="src"]').forEach(r=>r.addEventListener("change", renderPrompt));
+document.querySelectorAll('input[name="way"]').forEach(r=>r.addEventListener("change", renderWayHint));
+$("inScript").addEventListener("input", renderScriptStat);
+$("inSaid").addEventListener("input", gate);
+
+$("btnCopyOpen").addEventListener("click", ()=>{
+  copyText($("outPrompt").value).then(()=>{ $("copyMsg").textContent="コピーしました"; window.open(AI_URL,"_blank","noopener"); })
+    .catch(()=>{ $("copyMsg").textContent="コピーできませんでした。手で選んでください"; });
+});
+$("btnCopyOnly").addEventListener("click", ()=>{
+  copyText($("outPrompt").value).then(()=>{ $("copyMsg").textContent="コピーしました"; })
+    .catch(()=>{ $("copyMsg").textContent="コピーできませんでした。手で選んでください"; });
+});
+$("btnMakeScript").addEventListener("click", ()=>{
+  document.querySelector('input[name="src"][value="inquiry"]').checked=true;
+  renderPrompt();
+  $("outPrompt").scrollIntoView({behavior:"smooth", block:"center"});
+});
+$("btnDropInbox").addEventListener("click", ()=>{ lsDel(INBOX); renderInbox(); renderPrompt(); });
+$("btnReveal").addEventListener("click", ()=>{
+  $("inScript").classList.remove("hidden");
+  $("scriptStat").parentElement.classList.remove("hidden");
+  $("reciteCover").classList.add("hidden");
+});
+
+$("btnCheck").addEventListener("click", ()=>{
+  const script=$("inScript").value, said=$("inSaid").value;
+  const c=compare(script, said);
+  if(!c.sentN){ $("resultBody").innerHTML='<div class="panel">原稿が読み取れませんでした。英語の文を入れてください。</div>'; return; }
+  last={ c, self:selfVal(), script, said, src:srcVal(), way:wayVal() };
+  $("outCoach").value=promptCoach(script, c.rows);
+  $("btnCoachCopy").disabled=false;
+  $("btnReveal").click();
+  renderResult(); gate();
+  $("resultCard").scrollIntoView({behavior:"smooth", block:"start"});
+});
+$("btnCoachCopy").addEventListener("click", ()=>{
+  copyText($("outCoach").value).then(()=>{ $("coachMsg").textContent="コピーしました"; window.open(AI_URL,"_blank","noopener"); })
+    .catch(()=>{ $("coachMsg").textContent="コピーできませんでした。手で選んでください"; });
+});
+
+function sendGas(payload){
+  if(!LOG_GAS_URL) return false;
+  const f=document.createElement("form");
+  f.method="POST"; f.action=LOG_GAS_URL; f.target="gas_sink"; f.style.display="none";
+  const inp=document.createElement("input"); inp.type="hidden"; inp.name="payload";
+  if(window.SITE) SITE.tag(payload);
+  inp.value=JSON.stringify(payload);
+  f.appendChild(inp); document.body.appendChild(f); f.submit(); document.body.removeChild(f);
+  return true;
+}
+$("btnSend").addEventListener("click", ()=>{
+  if(!last) return;
+  const cls=$("inCls").value, num=digits($("inNum").value);
+  if(!cls||!num) return;
+  const c=last.c;
+  const rec={ ts:Date.now(), src:last.src, way:last.way, sentN:c.sentN, sayable:c.sayable,
+              grip:c.grip, wordRate:c.wordRate, self:last.self };
+  S.sessions.push(rec); save();
+  const sent=sendGas({ kind:"pres", ver:APP_VER, cls, num,
+    src:last.src, way:last.way, sentN:c.sentN, sayable:c.sayable,
+    grip:c.grip, wordRate:c.wordRate, self:(last.self==null?"":last.self),
+    lv:(levelNum()==null?"":levelNum()), eiken:$("inEiken").value,
+    script:last.script, said:last.said });
+  renderHist();
+  $("sendMsg").innerHTML = sent
+    ? "送信しました ✓（応答は「先生用」▼で確認）"
+    : "<b>送信オフ（GAS未設定）</b>＝カルテのみ更新";
+  if(last.src==="inquiry") lsDel(INBOX), renderInbox();
+});
+
+$("btnExport").addEventListener("click", ()=>{
+  const head="日付,出どころ,やり方,文数,言えた文,操作率%,語一致率%,予測%\n";
+  const body=S.sessions.map(r=>[new Date(r.ts).toISOString().slice(0,10), r.src, r.way,
+    r.sentN, r.sayable, r.grip, r.wordRate, (r.self==null?"":r.self)].join(",")).join("\n");
+  const blob=new Blob([head+body], {type:"text/csv"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="pres-karte.csv"; a.click();
+});
+$("btnWipe").addEventListener("click", ()=>{
+  if(!confirm("この端末の発表カルテを全部消します。よいですか？")) return;
+  lsDel(KEY); S=load(); last=null; renderAll();
+});
+
+renderInbox();
+renderAll();
+</script>
+</body>
+</html>

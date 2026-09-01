@@ -27,7 +27,11 @@
      空のままだと実証モードでは送信されません（生徒用には絶対に入りません）。 */
   var TRIAL_GAS = {
     summary: "https://script.google.com/macros/s/AKfycbyKM0YO4nJJbmql__uBVRXiaKKbDY7-wAK03xZo_Jjez6tCBTgsKnMYPkvtj3BcZd0IAg/exec",     // マイページ・模試（単元テスト）用
-    eiken:   "https://script.google.com/macros/s/AKfycbyKM0YO4nJJbmql__uBVRXiaKKbDY7-wAK03xZo_Jjez6tCBTgsKnMYPkvtj3BcZd0IAg/exec"      // 英検アプリ用
+    eiken:   "https://script.google.com/macros/s/AKfycbyKM0YO4nJJbmql__uBVRXiaKKbDY7-wAK03xZo_Jjez6tCBTgsKnMYPkvtj3BcZd0IAg/exec",     // 英検アプリ用
+    /* AIモード（aimode/ の3画面）は log_gas.gs＝別プロジェクト・別URL。
+       実証用の log_gas をデプロイしたらここに貼る。空のままなら実証モードでは送信しない。
+       ★空でも「生徒用に落ちる」ことは起きない（gasFor が "" を返して送信を止める）。 */
+    aimode:  ""
   };
 
   var SITES = {
@@ -101,6 +105,7 @@
 
     /* 以下は設定確認用（モードに関係なく素の値を返す）。trial/ の設定画面が使う。 */
     trialConfigured: function(){ return !!(TRIAL_GAS.summary || TRIAL_GAS.eiken); },
+    trialAimodeConfigured: function(){ return !!TRIAL_GAS.aimode; },
     trialUrl: function(kind){ return TRIAL_GAS[kind] || ""; }
   };
   window.SITE = SITE;

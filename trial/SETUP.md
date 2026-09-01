@@ -65,10 +65,16 @@ var TEACHER_PIN = "【実証用の合言葉。生徒用とは別の値に】";
 
 ```js
 var TRIAL_GAS = {
-  summary: "https://script.google.com/macros/s/…/exec",   // マイページ・模試
-  eiken:   "https://script.google.com/macros/s/…/exec"    // 英検アプリ
+  summary: "https://script.google.com/macros/s/…/exec",   // マイページ・模試・自学マイページ
+  eiken:   "https://script.google.com/macros/s/…/exec",   // 英検アプリ
+  aimode:  ""                                            // AI練習メニュー（別GAS・下記）
 };
 ```
+
+> **`aimode` は別のGASです。** `aimode/` の3画面（AI練習メニュー・探究カルテ・発表カルテ）は
+> `log_gas.gs` という**別プロジェクト・別URL**へ送ります。実証で使うなら、その実証用デプロイを
+> 作って `aimode` に貼ってください。空のままだと**AIモードの記録だけ送信されません**
+> （生徒用ブックには入りません）。`trial/` の状態表示にも出ます。
 
 `master` に push すると数分で GitHub Pages に反映されます。
 
@@ -170,7 +176,8 @@ var TRIAL_GAS = {
 |---|---|
 | `trial/index.html` | 実証用の入口・状態確認・接続テスト |
 | `trial/SETUP.md` | この手順書 |
-| `assets/site.js` | 送信先の切り替え（★URLを貼るのはここ） |
+| `assets/site.js` | 送信先の切り替え（★URLを貼るのはここ。`summary`／`eiken`／`aimode` の3枠） |
+| `aimode/` | AI練習メニュー・探究カルテ・発表カルテ（別GAS `log_gas.gs`。プロンプト設計スレッドが所有） |
 | `tools/score_gas_trial.gs` | 試用版GAS（自動生成。`node tools/make_trial_gas.mjs` で作り直す） |
 | `tools/make_trial_gas.mjs` | 上の生成スクリプト（本体 `score_gas.gs` から機械生成） |
 
