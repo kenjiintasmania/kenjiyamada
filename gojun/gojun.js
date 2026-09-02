@@ -89,12 +89,16 @@ function renderHome(){
           '<div class="fr">'+esc(frame)+'</div>'+badge+'</button>';
       }).join("");
   }
-  // 7つの箱で測れるものと、測れないので専用の枠を出すものを分けて見せる
-  $("itemList").innerHTML=
-    '<div class="gname">🧱 基本の語順（主語｜助動詞／＝｜動詞｜目的語｜その他｜場所｜時間）</div>'+
-    '<div class="items">'+cardsOf("base")+'</div>'+
-    '<div class="gname alt">🧩 この語順では測れないもの（それぞれ専用の枠）</div>'+
-    '<div class="items">'+cardsOf("other")+'</div>';
+  // 3つに分けて見せる。ならびがそのまま学習の順番になる
+  var GROUPS=[
+    ["base",  "gname",     "🧱 基本の語順（主語｜助動詞／＝｜動詞｜目的語｜その他｜場所｜時間）"],
+    ["other", "gname alt", "🧩 この語順では測れないもの（それぞれ専用の枠）"],
+    ["kata",  "gname kata","🔄 文の形（箱が動く・消える）　普通 → 疑問 → 命令 → 禁止 → 否定"]
+  ];
+  $("itemList").innerHTML=GROUPS.map(function(g){
+    var cards=cardsOf(g[0]);
+    return cards ? ('<div class="'+g[1]+'">'+g[2]+'</div><div class="items">'+cards+'</div>') : "";
+  }).join("");
   $("itemList").querySelectorAll(".item").forEach(function(b){
     b.addEventListener("click",function(){ start(+b.getAttribute("data-i")); });
   });
@@ -168,7 +172,9 @@ function drawBuilt(){
     var v=String(m[sl.k]||"").trim();
     if(v){ parts.push(esc(v)); any=true; } else parts.push('<span style="color:#c3bfd6">___</span>');
   });
-  $("q_built").innerHTML = any ? (parts.join(" ")+".") : '<span class="ph">箱をうめると、ここに英文ができていきます。</span>';
+  // 文の終わりの記号は、その文自身のものを使う（疑問文に . をつけない）
+  var end=(String(s.en||"").match(/[.?!]$/)||["."])[0];
+  $("q_built").innerHTML = any ? (parts.join(" ")+end) : '<span class="ph">箱をうめると、ここに英文ができていきます。</span>';
 }
 
 function grade(skipped){
