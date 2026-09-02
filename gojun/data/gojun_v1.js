@@ -924,9 +924,10 @@ items: [
      動くのは「主語」と「助動詞／＝」の2箱だけで、右半分（目的語・時間）は
      ひとつも動かない。そこが見えるように、内容を1文にそろえてある。
    ★疑問文のときだけ枠の並びが変わるので、この文にだけ slots を持たせている。 */
-{ key:"kata_jissen", group:"kata", title:"⑥ 実践編（同じ文を5つの形に）", emoji:"🔁",
+{ key:"kata_jissen", group:"kata", title:"⑥ 実践編①（一般動詞の文で）", emoji:"🔁",
   lead:"1つの文を 普通 → 疑問 → 命令 → 禁止 → 否定 の順に変えていきます。"+
-       "動くのは「主語」と「助動詞／＝」の2つの箱だけ。右半分（サッカーを・放課後）は一度も動きません。",
+       "動くのは「主語」と「助動詞／＝」の2つの箱だけ。右半分（サッカーを・放課後）は一度も動きません。"+
+       "一般動詞の文なので、疑問文・禁止・否定では Do を<b>借りてきます</b>。",
   extra:{ S:["He","She","We","They"],
           AUX:["Does","Did","doesn't","didn't","Do not","Is"],
           V:["plays","played","playing","to play"],
@@ -971,5 +972,57 @@ items: [
     ja:"あなたは 放課後 サッカーを しない。", en:"You don't play soccer after school.",
     fill:{S:{ja:"★主語がもどる",en:"You"}, AUX:{ja:"〜しない",en:"don't"}, V:{ja:"する",en:"play"},
           O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
-          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} } ] }
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} } ] },
+
+/* ===== ⑦ 実践編②：be動詞の文で =====
+   ★⑥（一般動詞）との対比が中身。一般動詞は Do を「借りてきた」が、
+     be動詞は be動詞そのものが前に出て、そのものに Don't がつく。借りてこない。
+   ★5つの形がどれも自然な文になるように「4時に体育館にいる」を選んである
+     （形容詞だと Be quiet. と Don't be quiet. のどちらかが必ず不自然になるため）。 */
+{ key:"kata_jissen2", group:"kata", title:"⑦ 実践編②（be動詞の文で）", emoji:"🔂",
+  lead:"こんどは be動詞の文で、同じ5つの形をたどります。⑥とくらべてください。"+
+       "一般動詞は Do を借りてきましたが、be動詞は<b>借りてきません</b>。"+
+       "be動詞そのものが主語の前に出て、be動詞そのものに Don't がつきます。",
+  extra:{ S:["He","She","We","They"],
+          AUX:["is","Is","isn't","Do","Don't","Does","was","Be not"],
+          PL:["in the library","at school","in the park","at home"],
+          T:["at five","after school","every day","at seven"] },
+  sents:[
+  { tag:"① 普通の文", ja:"あなたは 4時に 体育館に いる。", en:"You are in the gym at four.",
+    fill:{S:{ja:"あなたは",en:"You"}, AUX:{ja:"いる（＝）",en:"are"}, V:{ja:"（なし）",en:""},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} },
+
+  { tag:"② 疑問文", from:"You are in the gym at four.",
+    ja:"あなたは 4時に 体育館に いますか。", en:"Are you in the gym at four?",
+    slots:[
+      {k:"AUX",label:"助動詞／＝", q:"★be動詞そのものが出る"},
+      {k:"S",  label:"主語",   q:"だれが"},
+      {k:"V",  label:"動詞",   q:"する"},
+      {k:"O",  label:"目的語", q:"なにを"},
+      {k:"M",  label:"その他", q:"どのように"},
+      {k:"PL", label:"場所",   q:"どこで"},
+      {k:"T",  label:"時間",   q:"いつ"}
+    ],
+    fill:{AUX:{ja:"★Do は借りない",en:"Are"}, S:{ja:"あなたは",en:"you"}, V:{ja:"（なし）",en:""},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} },
+
+  { tag:"③ 命令文", from:"You are in the gym at four.",
+    ja:"4時に 体育館に いなさい。", en:"Be in the gym at four.",
+    fill:{S:{ja:"★消える（言わない）",en:""}, AUX:{ja:"★原形は Be",en:"Be"}, V:{ja:"（なし）",en:""},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} },
+
+  { tag:"④ 禁止の文", from:"Be in the gym at four.",
+    ja:"4時に 体育館に いては いけません。", en:"Don't be in the gym at four.",
+    fill:{S:{ja:"（消えたまま）",en:""}, AUX:{ja:"★Don't be（2語で1つ）",en:"Don't be"}, V:{ja:"（なし）",en:""},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} },
+
+  { tag:"⑤ 否定文", from:"You are in the gym at four.",
+    ja:"あなたは 4時に 体育館に いない。", en:"You aren't in the gym at four.",
+    fill:{S:{ja:"★主語がもどる",en:"You"}, AUX:{ja:"★are に not がつく",en:"aren't"}, V:{ja:"（なし）",en:""},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} } ] }
 ]};
