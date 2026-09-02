@@ -120,7 +120,27 @@ function start(i){
   RUN={ts:Date.now(), key:IT.key, title:IT.title, mode:MODE, rows:[], skip:0};
   show("quiz"); renderQ();
 }
-$("q_quit").addEventListener("click",function(){ show("home"); renderHome(); });
+/* あぶないほうのボタンは2回たずねる。1回のミスタッチで、といた分が消えるため。 */
+var quitArmed=0;
+$("q_quit").addEventListener("click",function(){
+  var b=this;
+  if(Date.now()-quitArmed < 4000){ quitArmed=0; show("home"); renderHome(); return; }
+  quitArmed=Date.now();
+  b.classList.add("armed"); b.textContent="ほんとうに消す？";
+  setTimeout(function(){ if(Date.now()-quitArmed>=4000){
+    b.classList.remove("armed"); b.textContent="記録せずやめる"; } }, 4100);
+});
+/* 残りをぜんぶスキップして結果へ。ここまでの点は残る。 */
+$("q_skipall").addEventListener("click",function(){
+  if(!answered) grade(true);                 // いまの問題もスキップ扱いにする
+  while(si < IT.sents.length-1){
+    si++;
+    var s=IT.sents[si];
+    RUN.skip++;
+    RUN.rows.push({ja:s.ja, en:s.en, pt:0, skipped:true, miss:[]});
+  }
+  finish();
+});
 
 function renderQ(){
   var s=IT.sents[si];
@@ -134,7 +154,8 @@ function renderQ(){
   $("q_verdict").innerHTML="";
   $("q_check").classList.remove("hide"); $("q_check").disabled=false;
   $("q_next").classList.add("hide");
-  $("q_skip").disabled=false;
+  $("q_skip").disabled=false; $("q_skipall").disabled=false;
+  quitArmed=0; $("q_quit").classList.remove("armed"); $("q_quit").textContent="記録せずやめる";
   $("q_frame").innerHTML=slotsOf(IT,s).map(function(sl,k){
     var f=s.fill[sl.k]||{ja:"（なし）",en:""};
     if(!f.en){

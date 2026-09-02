@@ -276,7 +276,37 @@ $("start").addEventListener("click",function(){
   RUN={ts:Date.now(), name:fullName(), n:SENTS.length, rows:[]};
   show("learn"); renderQ();
 });
-$("q_quit").addEventListener("click",function(){ show("intro"); });
+/* あぶないほうのボタンは2回たずねる。1回のミスタッチで、といた分が消えるため。 */
+var quitArmed=0;
+$("q_quit").addEventListener("click",function(){
+  var b=this;
+  if(Date.now()-quitArmed < 4000){ quitArmed=0; show("intro"); return; }
+  quitArmed=Date.now();
+  b.classList.add("armed"); b.textContent="ほんとうに消す？";
+  setTimeout(function(){ if(Date.now()-quitArmed>=4000){
+    b.classList.remove("armed"); b.textContent="記録せずやめる"; } }, 4100);
+});
+/* いまの問題をスキップ（0点で次へ） */
+function skipOne(){
+  var q=Q[qi], s=SENTS[q.si];
+  RUN.rows.push({si:q.si, type:q.type, en:s.en, ja:s.ja, mine:"", ans:q.ans,
+                 tag:"—", pt:0, why:"スキップ"});
+}
+$("q_skip").addEventListener("click",function(){
+  if($("q_check").classList.contains("hide")) return;   // 答え合わせずみ
+  skipOne();
+  $("q_verdict").innerHTML='<div class="verdict ng">— スキップ（0点）'+
+    '<small>正しくは <span class="ans">'+esc(Q[qi].ans)+'</span></small></div>';
+  $("q_check").classList.add("hide"); $("q_skip").disabled=true;
+  var nx=$("q_next"); nx.classList.remove("hide");
+  nx.textContent=(qi>=Q.length-1)?"結果を見る →":"次へ →";
+});
+/* 残りをぜんぶスキップして結果へ。ここまでの点は残る。 */
+$("q_skipall").addEventListener("click",function(){
+  if(!$("q_check").classList.contains("hide")) skipOne();
+  while(qi < Q.length-1){ qi++; skipOne(); }
+  finish();
+});
 
 var picked=[];              // 並びかえで選んだ札の番号
 function renderQ(){
@@ -285,6 +315,8 @@ function renderQ(){
   $("q_tag").textContent=T.tag;
   $("q_verdict").innerHTML="";
   $("q_check").classList.remove("hide"); $("q_check").disabled=false;
+  $("q_skip").disabled=false; $("q_skipall").disabled=false;
+  quitArmed=0; $("q_quit").classList.remove("armed"); $("q_quit").textContent="記録せずやめる";
   $("q_next").classList.add("hide");
   var base=qi-(qi%5);
   $("qSteps").innerHTML=[0,1,2,3,4].map(function(k){

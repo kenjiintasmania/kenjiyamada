@@ -47,27 +47,72 @@ function items(s){
   return String(s==null?"":s).split(/[,、，\/／]|\s+と\s+/).map(function(x){return x.trim();})
     .filter(Boolean);
 }
+
+/* ===== ゆるめの判定 =====
+   本文問題で測りたいのは「読み取れたか」であって、書き写しの正確さではない。
+   きびしくすると、読めているのに×になって手が止まる。 */
+
+/* (1) 記号の答え … ア でも あ でも A でも 1 でも ① でも、同じものとして見る。
+   正解が かな・アルファベット の記号のときだけ記号問題とみなす
+   （正解が「3」のような数字のときは、本物の数を答える問題かもしれないため）。 */
+var MARK_ANS=["アあＡA","イいＢB","ウうＣC","エえＤD","オおＥE"];
+var MARK_ANY=["アあＡAａa1１①","イいＢBｂb2２②","ウうＣCｃc3３③","エえＤDｄd4４④","オおＥEｅe5５⑤"];
+function markOf(s, table){
+  var t=String(s==null?"":s).trim().replace(/[.．、。,)）\]］]/g,"");
+  if(t.length!==1) return -1;
+  for(var i=0;i<table.length;i++) if(table[i].indexOf(t)>=0) return i;
+  return -1;
+}
+
+/* (2) だいたい合っていれば○
+   ・語の集合：短いほうの語がぜんぶ長いほうに入っている（library ↔ the library）
+   ・頭かおしりが重なっている（森本 ↔ 森本さん、Aozora ↔ Aozora Zoo）
+   ・つづりのちがいが4分の1まで（libary ↔ library）
+   「ten」が「often」にふくまれる、のような取りちがえが起きないよう、
+   ふくむ／ふくまれるは 語 か 頭・おしり でだけ見る。 */
+function near(mine, ans){
+  var a=norm(mine), b=norm(ans);
+  if(!a||!b) return false;
+  if(a===b) return true;
+  var A=a.split(" ").filter(Boolean), B=b.split(" ").filter(Boolean);
+  if(A.length>1||B.length>1){
+    var sm=(A.length<=B.length)?A:B, lg=(A.length<=B.length)?B:A;
+    if(sm.length && sm.every(function(w){ return lg.indexOf(w)>=0; })) return true;
+  }
+  // 頭・おしりの重なりは、日本語（区切りが無い）のときだけ見る。
+  // 英語でこれを許すと「ten」が「often」のおしりに入っていて○になってしまう。
+  // 英語の「Aozora ↔ Aozora Zoo」は上の語の集合でひろえている。
+  var sh=(a.length<=b.length)?a:b, lo=(a.length<=b.length)?b:a;
+  if(/[^\x00-\x7f]/.test(lo) && sh.length>=2 && sh.length*2>=lo.length &&
+     (lo.indexOf(sh)===0 || lo.lastIndexOf(sh)===lo.length-sh.length)) return true;
+  return edist(a,b) <= Math.max(1, Math.floor(Math.max(a.length,b.length)/4));
+}
 /* 1問ぶんの判定。
-   ・単一の答え … 一致で満点。1文字ちがいは「つづりミス −1」（本文からの抜き書きなので、
-                  読み取れたかが主眼。つづりそのものを問うてはいない）
+   ・記号の答え … ア／あ／A／1／① どれで書いても同じ
+   ・単一の答え … ぴったりでも、だいたい合っていても満点（読み取れたかを測っているので）
    ・列挙       … 集合で比べ、合った数で按分。よけいに挙げた分は減点しない */
 function judge(mine, ans){
   var A=items(mine), B=items(ans);
   if(!String(mine||"").trim()) return {pt:0, tag:"—", why:"書けなかった", hit:[]};
   if(B.length<=1){
+    var ai=markOf(ans, MARK_ANS);
+    if(ai>=0){                                   // 記号をえらぶ問題
+      var mi=markOf(mine, MARK_ANY);
+      return (mi===ai) ? {pt:PT, tag:"○", why:"", hit:[ans]}
+                       : {pt:0,  tag:"×", why:"", hit:[]};
+    }
     if(norm(mine)===norm(ans)) return {pt:PT, tag:"○", why:"", hit:[ans]};
-    if(edist(norm(mine),norm(ans))<=1 && norm(ans).length>2)
-      return {pt:PT-1, tag:"△", why:"つづりミス −1", hit:[ans]};
+    if(near(mine, ans)) return {pt:PT, tag:"○", why:"だいたい合っています（正しくは "+ans+"）", hit:[ans]};
     return {pt:0, tag:"×", why:"", hit:[]};
   }
   var got=[], extra=0;
   var used={};
   A.forEach(function(a){
     var f=null;
-    B.forEach(function(b,bi){ if(!used[bi]&&norm(a)===norm(b)){ f=bi; } });
+    B.forEach(function(b,bi){ if(f==null && !used[bi] && near(a,b)){ f=bi; } });
     if(f!=null){ used[f]=1; got.push(B[f]); } else extra++;
   });
-  var pt=Math.floor(PT*got.length/B.length);
+  var pt=Math.round(PT*got.length/B.length);
   return {pt:pt, tag:(got.length===B.length?"○":(got.length?"△":"×")),
           why:(got.length===B.length?"":(B.length+"つ中"+got.length+"つ"+(extra?("／よけいに"+extra+"つ"):""))),
           hit:got};
@@ -198,9 +243,27 @@ function buildPrompt(mine){
     p.push("");
   }
   if(hasMark){
-    p.push("【はじめに】問題に入る前に、わたしの印のつけ方（どこを大事だと思ったか）について、");
-    p.push("　よかった点と、拾えていなかったかもしれない点を、あわせて3行以内でコメントしてください。");
-    p.push("　点数はつけないでください。コメントだけです。");
+    // ★問題より先に、印のつけ方そのものへコメントさせる。書式を固定しないと
+    //   「よく書けています」で終わってしまい、次に何をすればいいか分からないため。
+    p.push("【はじめに：印のつけ方へのコメント】");
+    p.push("問題に入る前に、わたしがつけた印について、下の書式のとおりにコメントしてください。");
+    p.push("項目ごとに、①できていたこと を1行、②次にできるとよいこと を1行。合計4行です。");
+    p.push("点数はつけないでください。ほめるだけで終わらせず、次の一手を必ず書いてください。");
+    p.push("");
+    p.push("１．記号の入れかた");
+    p.push("（できていたこと。例：＝が正しい位置に入っています）");
+    p.push("（次にできるとよいこと。例：／は in だけでなく on にもつけましょう）");
+    p.push("２．重要語");
+    p.push("（できていたこと。例：人名に◯がついていました）");
+    p.push("（次にできるとよいこと。例：数字の情報にも◯をつけましょう）");
+    p.push("");
+    p.push("・「１．記号の入れかた」で見るのは次の印です。");
+    p.push("　　be動詞に ＝ ／ look・feel・become などに ≒ ／ ふつうの動詞に V");
+    p.push("　　前置詞の前に ／（to は → 、from は ←）");
+    p.push("　　and に ＆ ／ but に ←→ ／ than に ＞");
+    p.push("　　前置詞のつかない副詞・時・場所（sometimes・today・here など）は（ ）でくくる");
+    p.push("・「２．重要語」で見るのは、数字・人名・地名・つなぎ語・結論にあたる語です。");
+    p.push("・印が1つも見あたらないときは、この【はじめに】をとばして、すぐ問題から始めてください。");
     p.push("");
   }
   p.push("【出す問題】ぜんぶで"+NQ+"問。次の3種から出してください。");
@@ -233,6 +296,12 @@ function buildPrompt(mine){
   p.push("・「種別」は 数字／接続詞／重要 のどれかにしてください。");
   p.push("・「わたしの答え」には、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
   p.push("・○×や点数は書かないでください。採点はわたしのアプリがやります。");
+  p.push("");
+  p.push("【採点のものさし】※アプリはこの基準で採点します。あなたが厳しく直す必要はありません。");
+  p.push("　・記号でえらぶ問題は、ア でも あ でも A でも 1 でも ① でも正解にします。");
+  p.push("　・だいたい合っていれば正解にします（the library と library、森本 と 森本さん、");
+  p.push("　　libary と library のような小さなちがいは正解です）。");
+  p.push("　・そのため「正解」の欄には、本文どおりの正しい形をそのまま書いてください。");
   return p.join("\n");
 }
 var current=null;

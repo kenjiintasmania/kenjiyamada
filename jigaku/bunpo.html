@@ -48,6 +48,13 @@
   .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
   .btn.sm{font-size:13px;padding:7px 14px}
   .btn:disabled{opacity:.5;cursor:default}
+  .btn.skip{background:#fff;color:var(--gray);border:2px solid var(--line)}
+  .btn.danger{background:#fff;color:var(--ng);border:2px solid #f0c4b8}
+  .btn.danger:hover{background:#fdeee9}
+  .btn.danger.armed{background:var(--ng);color:#fff;border-color:var(--ng)}
+  /* あぶないボタンは、よく押すボタンから離す。ミスタッチで記録が消えるため */
+  .btnrow .gap{flex:1 1 26px;min-width:14px}
+  @media(max-width:560px){ .btnrow .gap{flex-basis:100%;height:6px} }
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
   .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
   label{font-size:13px;font-weight:bold;display:block;margin:10px 0 4px}
@@ -185,11 +192,16 @@
       <div id="q_body"></div>
       <div id="q_verdict"></div>
     </div>
-    <div class="row" style="margin-top:14px">
+    <div class="row btnrow" style="margin-top:14px">
       <button class="btn" id="q_check">答え合わせ</button>
       <button class="btn hide" id="q_next">次へ →</button>
-      <button class="btn ghost sm" id="q_quit">やめる</button>
+      <button class="btn skip sm" id="q_skip">スキップ</button>
+      <span class="gap"></span>
+      <button class="btn skip sm" id="q_skipall">全スキップしてやめる</button>
+      <button class="btn danger sm" id="q_quit">記録せずやめる</button>
     </div>
+    <p class="hint">「全スキップしてやめる」なら、<b>ここまでの点は残ります</b>。
+      「記録せずやめる」を押すと、といた分は消えます（押しまちがい防止に2回たずねます）。</p>
   </div>
 </div>
 
