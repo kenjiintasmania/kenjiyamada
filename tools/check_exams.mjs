@@ -13,7 +13,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
 const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c3u1','c3u2','c3u3','c3u4',
-  'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10','okayama11','okayama12'];
+  'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
+  'chu3_341','chu3_342'];
 const ENGINE = r('mogi/assets/engine.js');
 
 let fails = 0;
@@ -141,9 +142,12 @@ function checkWords(){
   if(!rel.length && !empty.length && !reveal.length) pass('words', `${WORDS.length}語・相対参照/空訳/答えバレ なし`);
 }
 
-// 県立入試スタイル(okayama*)の横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか
+// 新規創作ぶんの横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか。
+// 対象は okayama*（県立入試スタイル）と、同じ型で書き下ろした chu3_34x・c3u3/c3u4。
+// 既存の chu2*/chu3_1〜4 等は正進社の過去問ベースで言い回しが元から近いので含めない。
+const NEW_STYLE = /^(okayama\d+|chu3_34\d|c3u[34])$/;
 function okayamaDupCheck(){
-  const set = EXAMS.filter(id=>/^okayama\d+$/.test(id));
+  const set = EXAMS.filter(id=>NEW_STYLE.test(id));
   if(set.length<2) return;
   const strip = s => String(s==null?'':s).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
   const norm  = s => strip(s).toLowerCase().replace(/[.,!?;:"'’“”]/g,'').replace(/\s+/g,' ').trim();
@@ -159,14 +163,14 @@ function okayamaDupCheck(){
   }
   const dups = Object.values(map).filter(o=>o.ids.size>=2);
   if(dups.length) dups.forEach(o=> fail('okayama-dup', `重複「${o.raw}」 in [${[...o.ids].sort().join(', ')}]`));
-  else pass('okayama', `${set.length}本クロス重複なし（並べかえ/抜き出し/長い選択肢）`);
+  else pass('新作', `${set.length}本クロス重複なし（並べかえ/抜き出し/長い選択肢）`);
 }
 
 console.log('— 模試データ 自動採点＆構造チェック —');
 for(const id of EXAMS){ try{ gradeExam(id); }catch(e){ fail(id, `例外: ${e.message}`); } }
 console.log('— 単語データ —');
 checkWords();
-console.log('— 県立入試スタイルの横断重複 —');
+console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
 console.log('— 活用編（動詞の変化形／形容詞の比較） —');
 checkKatsuyo();

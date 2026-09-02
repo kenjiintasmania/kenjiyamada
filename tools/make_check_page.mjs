@@ -3,7 +3,7 @@
 // 目的  : 検証担当者が「全ページを漏れなく踏んで、何を見ればよいか」が分かる一覧を作る。
 //         URLはすべて実証モード（?site=aso）付き＝記録は実証用スプレッドシートにだけ入る。
 //         ページ一覧・模試IDはリポジトリの実体から拾うので、増減しても作り直せば追随する。
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -19,7 +19,11 @@ const EXAMS = [...metaSrc[1].matchAll(/^\s*([a-z0-9_]+):\s*\{([^\n]*)/gm)].map(m
   const title = (m[2].match(/title:\s*'([^']*)'/) || m[2].match(/title:\s*"([^"]*)"/) || [])[1] || m[1];
   return { id: m[1], unit: /unit:\s*true/.test(m[2]), title: title.replace(/<[^>]+>/g, '').trim() };
 });
-if (EXAMS.length !== 24) die(`模試の件数が想定外です (${EXAMS.length})`);
+// ★件数は数えない。模試を1本足すたびにここを直し忘れて落ちるため。
+// かわりに「レジストリに書いてあるIDのデータファイルが実在するか」を見る。
+if (!EXAMS.length) die('exam.html の meta から模試IDを1件も取れません');
+{ const missing = EXAMS.filter(e => !existsSync(resolve(ROOT, `mogi/data/${e.id}.js`)));
+  if (missing.length) die(`データファイルが無い模試ID: ${missing.map(e=>e.id).join(', ')}`); }
 
 /* ---------- 収録数（実データから数える） ---------- */
 const count = {};
@@ -44,7 +48,7 @@ const PAGES = [
   ['mogi/index.html', '模擬テスト 一覧', '中2・中3の入口', '各回へのリンクが開く'],
   ['mogi/chu2.html', '模擬テスト 中2', '中2の回を選ぶ', '一覧が出る'],
   ['mogi/chu3.html', '模擬テスト 中3', '中3の回を選ぶ', '一覧が出る'],
-  ['mogi/okayama.html', '入試模試 一覧（岡山県スタイル）', '全10パターンの入口', '10本ぶん並ぶ'],
+  ['mogi/okayama.html', '入試模試 一覧（岡山県スタイル）', '県立入試スタイル新作の入口', 'カードが並ぶ'],
   ['mogi/vocab_chu2.html', '習熟度単語テスト 中2', '答えの単語だけを確認するテスト', '採点される'],
   ['mogi/vocab_chu3_2.html', '習熟度単語テスト 中3第2回', '同上', '採点される'],
   ['mogi/vocab_chu3_3.html', '習熟度単語テスト 中3第3回', '同上', '採点される'],

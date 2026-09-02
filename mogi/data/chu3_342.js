@@ -1,12 +1,12 @@
-/* data/okayama12.js ─ 岡山県スタイル 模擬テスト⑫
-   参照：factory/inputs/okayama_notes.md（岡山県公立入試の「傾向のみ」を参照。冊子コード 633340 系を追加分析）。
+/* data/chu3_342.js ─ 中3 習熟度テスト対策 342
+   参照：factory/inputs/okayama_notes.md（習熟度テスト・県立入試の「傾向のみ」を参照。冊子コード 633340 系を分析）。
    出題形式・問題数・配点バランスのみ踏襲し、本文・設問・選択肢はすべて新規創作。
    題材：星空観察／天文台／科学クラブ（架空の町 Hoshino / Kawakami）。
-   ※過去問および okayama1〜11・chu3_* との内容重複なし。 */
+   ※過去問および既存の模試データとの内容重複なし。 */
 const E = s => '<span class="en">'+s+'</span>';
 
 window.EXAM = {
-title: "岡山県スタイル 模擬テスト⑫",
+title: "中3 習熟度テスト対策 342",
 sections: [
 
 /* ===== 大問1 リスニング（問題A〜D） ===== */
