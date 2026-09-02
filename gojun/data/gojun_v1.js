@@ -918,5 +918,58 @@ items: [
   { ja:"あなたは 京都を 訪れたことが ない。", en:"You haven't visited Kyoto.",
     fill:{S:{ja:"あなたは",en:"You"}, AUX:{ja:"〜したことがない",en:"haven't"}, V:{ja:"訪れ",en:"visited"},
           O:{ja:"京都を",en:"Kyoto"}, M:{ja:"（なし）",en:""},
-          PL:{ja:"（なし）",en:""}, T:{ja:"（なし）",en:""}} } ] }
+          PL:{ja:"（なし）",en:""}, T:{ja:"（なし）",en:""}} } ] },
+/* ===== ⑥ 実践編：同じ文を5つの形に =====
+   ★1つの文を 普通 → 疑問 → 命令 → 禁止 → 否定 の順に変えていく。
+     動くのは「主語」と「助動詞／＝」の2箱だけで、右半分（目的語・時間）は
+     ひとつも動かない。そこが見えるように、内容を1文にそろえてある。
+   ★疑問文のときだけ枠の並びが変わるので、この文にだけ slots を持たせている。 */
+{ key:"kata_jissen", group:"kata", title:"⑥ 実践編（同じ文を5つの形に）", emoji:"🔁",
+  lead:"1つの文を 普通 → 疑問 → 命令 → 禁止 → 否定 の順に変えていきます。"+
+       "動くのは「主語」と「助動詞／＝」の2つの箱だけ。右半分（サッカーを・放課後）は一度も動きません。",
+  extra:{ S:["He","She","We","They"],
+          AUX:["Does","Did","doesn't","didn't","Do not","Is"],
+          V:["plays","played","playing","to play"],
+          O:["tennis","the guitar","baseball","this book"],
+          M:["well","hard","fast","together"],
+          PL:["in the park","at school","here","at home"],
+          T:["every day","last night","tomorrow","now"] },
+  sents:[
+  { tag:"① 普通の文", ja:"あなたは 放課後 サッカーを する。", en:"You play soccer after school.",
+    fill:{S:{ja:"あなたは",en:"You"}, AUX:{ja:"（なし）",en:""}, V:{ja:"する",en:"play"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} },
+
+  { tag:"② 疑問文", from:"You play soccer after school.",
+    ja:"あなたは 放課後 サッカーを しますか。", en:"Do you play soccer after school?",
+    slots:[
+      {k:"AUX",label:"助動詞／＝", q:"★主語の前に出た"},
+      {k:"S",  label:"主語",   q:"だれが"},
+      {k:"V",  label:"動詞",   q:"する（原形）"},
+      {k:"O",  label:"目的語", q:"なにを"},
+      {k:"M",  label:"その他", q:"どのように"},
+      {k:"PL", label:"場所",   q:"どこで"},
+      {k:"T",  label:"時間",   q:"いつ"}
+    ],
+    fill:{AUX:{ja:"（Do を借りる）",en:"Do"}, S:{ja:"あなたは",en:"you"}, V:{ja:"しますか",en:"play"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} },
+
+  { tag:"③ 命令文", from:"You play soccer after school.",
+    ja:"放課後 サッカーを しなさい。", en:"Play soccer after school.",
+    fill:{S:{ja:"★消える（言わない）",en:""}, AUX:{ja:"（なし）",en:""}, V:{ja:"しなさい",en:"Play"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} },
+
+  { tag:"④ 禁止の文", from:"Play soccer after school.",
+    ja:"放課後 サッカーを してはいけません。", en:"Don't play soccer after school.",
+    fill:{S:{ja:"（消えたまま）",en:""}, AUX:{ja:"★Don't が入る",en:"Don't"}, V:{ja:"する",en:"play"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} },
+
+  { tag:"⑤ 否定文", from:"You play soccer after school.",
+    ja:"あなたは 放課後 サッカーを しない。", en:"You don't play soccer after school.",
+    fill:{S:{ja:"★主語がもどる",en:"You"}, AUX:{ja:"〜しない",en:"don't"}, V:{ja:"する",en:"play"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} } ] }
 ]};

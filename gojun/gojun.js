@@ -10,9 +10,10 @@ var $=function(i){return document.getElementById(i);};
 var SCREENS=["home","quiz","result"];
 var G=window.GOJUN;
 function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0); }
-/* 枠は項目ごと。比較級・It for to・関係代名詞は7つの箱では測れないので自前の枠を持つ。
-   持っていない項目は既定の7枠を使う。 */
-function slotsOf(item){ return (item && item.slots) || G.slots; }
+/* 枠は 文 ＞ 項目 ＞ 既定 の順で決まる。
+   ・項目ごと … 比較級・It for to・関係代名詞は7つの箱では測れないので自前の枠を持つ
+   ・文ごと  … 実践編は1問ずつ形が変わる（疑問文のときだけ 助動詞／＝ が主語の前に出る） */
+function slotsOf(item, sent){ return (sent && sent.slots) || (item && item.slots) || G.slots; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
@@ -83,7 +84,7 @@ function renderHome(){
           ? ('<span class="s">最高 '+(b.easy!=null?("えらぶ "+b.easy+"/5"):"")+
              ((b.easy!=null&&b.hard!=null)?"　":"")+(b.hard!=null?("打つ "+b.hard+"/5"):"")+'</span>')
           : '<span class="s">まだ挑戦していません</span>';
-        var frame=slotsOf(x.it).map(function(sl){ return sl.label; }).join("｜");
+        var frame=slotsOf(x.it, x.it.sents[0]).map(function(sl){ return sl.label; }).join("｜");
         return '<button class="item" data-i="'+x.i+'"><div class="e">'+x.it.emoji+'</div>'+
           '<div class="t">'+esc(x.it.title)+'</div><div class="d">'+esc(x.it.lead)+'</div>'+
           '<div class="fr">'+esc(frame)+'</div>'+badge+'</button>';
@@ -126,12 +127,15 @@ function renderQ(){
   answered=false;
   $("q_title").textContent=IT.emoji+" "+IT.title;
   $("q_prog").textContent="第 "+(si+1)+" 文 / "+IT.sents.length;
-  $("q_ja").textContent=s.ja;
+  $("q_ja").innerHTML=(s.tag?'<span class="qtag2">'+esc(s.tag)+'</span>':"")+esc(s.ja);
+  // 実践編は「もとの文をどう変えるか」なので、変える前の文を見せる
+  $("q_from").innerHTML = s.from ? ('もとの文 → <span class="en">'+esc(s.from)+'</span>') : "";
+  $("q_from").classList.toggle("hide", !s.from);
   $("q_verdict").innerHTML="";
   $("q_check").classList.remove("hide"); $("q_check").disabled=false;
   $("q_next").classList.add("hide");
   $("q_skip").disabled=false;
-  $("q_frame").innerHTML=slotsOf(IT).map(function(sl,k){
+  $("q_frame").innerHTML=slotsOf(IT,s).map(function(sl,k){
     var f=s.fill[sl.k]||{ja:"（なし）",en:""};
     if(!f.en){
       return '<div class="box empty" data-k="'+sl.k+'"><span class="bh">'+esc(sl.label)+'</span>'+
@@ -166,7 +170,7 @@ function mine(){
 /* 埋めるそばから英文が組み上がるのを見せる。左から読むと英文になる、が伝わるように */
 function drawBuilt(){
   var s=IT.sents[si], m=mine(), parts=[], any=false;
-  slotsOf(IT).forEach(function(sl){
+  slotsOf(IT,s).forEach(function(sl){
     var f=s.fill[sl.k]||{en:""};
     if(!f.en) return;
     var v=String(m[sl.k]||"").trim();
@@ -179,7 +183,7 @@ function drawBuilt(){
 
 function grade(skipped){
   var s=IT.sents[si], m=mine(), miss=[], all=true;
-  slotsOf(IT).forEach(function(sl){
+  slotsOf(IT,s).forEach(function(sl){
     var f=s.fill[sl.k]||{en:""};
     var box=$("q_frame").querySelector('.box[data-k="'+sl.k+'"]');
     if(!f.en) return;                                  // 使わない箱は採点しない
