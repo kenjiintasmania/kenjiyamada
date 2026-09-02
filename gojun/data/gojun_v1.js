@@ -1,5 +1,9 @@
 /* gojun/data/gojun_v1.js ─ 語順文法テストの教材
-   ★語順の枠は7つ：主語／助動詞／動詞／目的語／その他／場所／時間
+   ★既定の枠は7つ：主語／助動詞＝／動詞／目的語／その他／場所／時間
+     「助動詞／＝」の箱には、can・will・have のような助動詞と、be動詞（＝の役割）の
+     両方が入る。進行形の am/was、受け身の is/was はここ。＝ は先生の図形分析法の記号。
+   ★比較級・It for to・関係代名詞は、この7枠では測れない。項目ごとに slots を持てる
+     ようにして、それぞれ専用の枠を出す（枠がちがっても、左から読むと英文になるのは同じ）。
      英語の語順「だれが → する → なにを → どのように → どこで → いつ」を、
      箱に入れる形で身につけさせる。空欄になる箱は「—」で見せる（使わない箱を
      見せないと、枠そのものが覚えられないため）。
@@ -15,7 +19,7 @@ window.GOJUN = {
 ver: "v1",
 slots: [
   {k:"S",  label:"主語",   q:"だれが"},
-  {k:"AUX",label:"助動詞", q:""},
+  {k:"AUX",label:"助動詞／＝", q:"＝ は be動詞"},
   {k:"V",  label:"動詞",   q:"する"},
   {k:"O",  label:"目的語", q:"なにを"},
   {k:"M",  label:"その他", q:"どのように"},
@@ -25,8 +29,8 @@ slots: [
 items: [
 
 /* ===== ① 一般動詞（現在形） ===== */
-{ key:"ippan_now", title:"一般動詞（現在形）", emoji:"🔤",
-  lead:"助動詞の箱は空になります。主語が he / she のときは動詞に s がつくところが山場です。",
+{ key:"ippan_now", group:"base", title:"一般動詞（現在形）", emoji:"🔤",
+  lead:"「助動詞／＝」の箱は空になります。主語が he / she のときは動詞に s がつくところが山場です。",
   extra:{ V:["play","read","study","eats","runs"], M:["slowly","carefully"], T:["every night"] },
   sents:[
   { ja:"わたしは 毎日 家で 熱心に 英語を 勉強する。", en:"I study English hard at home every day.",
@@ -51,8 +55,8 @@ items: [
           PL:{ja:"川のそばを",en:"by the river"}, T:{ja:"朝に",en:"in the morning"}} } ] },
 
 /* ===== ② 助動詞 can ===== */
-{ key:"can", title:"助動詞 can", emoji:"💪",
-  lead:"助動詞の箱に can が入ります。can のうしろの動詞は、s も ed もつかない形（原形）です。",
+{ key:"can", group:"base", title:"助動詞 can", emoji:"💪",
+  lead:"「助動詞／＝」の箱に can が入ります。can のうしろの動詞は、s も ed もつかない形（原形）です。",
   extra:{ AUX:["will","must","should"], V:["plays","played","seeing","swims"], M:["hard","slowly"] },
   sents:[
   { ja:"わたしは 毎回 スタジアムで うまく サッカーを することが できる。", en:"I can play soccer well at the stadium every time.",
@@ -77,8 +81,8 @@ items: [
           PL:{ja:"（なし）",en:""}, T:{ja:"（なし）",en:""}} } ] },
 
 /* ===== ③ 過去形 ===== */
-{ key:"kako", title:"過去形", emoji:"⏪",
-  lead:"助動詞の箱は空。動詞の箱が過去形になります。時間の箱に yesterday や last 〜 が入ります。",
+{ key:"kako", group:"base", title:"過去形", emoji:"⏪",
+  lead:"「助動詞／＝」の箱は空。動詞の箱が過去形になります。時間の箱に yesterday や last 〜 が入ります。",
   extra:{ V:["study","sing","make","come","clean"], T:["yesterday","last month","two days ago"] },
   sents:[
   { ja:"わたしは 昨日 図書館で 熱心に 英語を 勉強した。", en:"I studied English hard in the library yesterday.",
@@ -103,9 +107,10 @@ items: [
           PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} } ] },
 
 /* ===== ④ 現在進行形 ===== */
-{ key:"shinkou", title:"現在進行形", emoji:"🏃",
-  lead:"助動詞の箱に am / is / are、動詞の箱に 〜ing が入ります。主語で am・is・are を選び分けます。",
-  extra:{ AUX:["am","is","are","was","were"], V:["read","make","play","study","practice"] },
+{ key:"shinkou", group:"base", title:"現在進行形", emoji:"🏃",
+  lead:"「助動詞／＝」の箱に am / is / are（＝ の役割）、動詞の箱に 〜ing が入ります。主語で am・is・are を選び分けます。",
+  extra:{ AUX:["am","is","are","was","were"], V:["read","make","play","study","practice"],
+          T:["then","last night","every day","yesterday"] },
   sents:[
   { ja:"わたしは 今 自分の部屋で 静かに 本を 読んでいる。", en:"I am reading a book quietly in my room now.",
     fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"〜している",en:"am"}, V:{ja:"読んで",en:"reading"},
@@ -129,9 +134,10 @@ items: [
           PL:{ja:"体育館で",en:"in the gym"}, T:{ja:"今",en:"now"}} } ] },
 
 /* ===== ⑤ 未来 will ===== */
-{ key:"will", title:"未来 will", emoji:"🔮",
-  lead:"助動詞の箱に will。can と同じで、うしろの動詞は原形です。時間の箱に tomorrow や next 〜 が入ります。",
-  extra:{ AUX:["can","must","is","are"], V:["studied","visited","cleans","gets up"], T:["next year","this evening"] },
+{ key:"will", group:"base", title:"未来 will", emoji:"🔮",
+  lead:"「助動詞／＝」の箱に will。can と同じで、うしろの動詞は原形です。時間の箱に tomorrow や next 〜 が入ります。",
+  extra:{ AUX:["can","must","is","are"], V:["studied","visited","cleans","gets up"], T:["next year","this evening"],
+          PL:["at home","in the park","at school"] },
   sents:[
   { ja:"わたしは 明日 図書館で 英語を 勉強するつもりだ。", en:"I will study English in the library tomorrow.",
     fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"〜するつもりだ",en:"will"}, V:{ja:"勉強する",en:"study"},
@@ -155,10 +161,11 @@ items: [
           PL:{ja:"体育館で",en:"in the gym"}, T:{ja:"今夜",en:"tonight"}} } ] },
 
 /* ===== ⑥ 現在完了 ===== */
-{ key:"kanryo", title:"現在完了", emoji:"⏳",
-  lead:"助動詞の箱に have / has、動詞の箱に過去分詞。時間の箱に for 〜・since 〜・twice などが入ります。",
+{ key:"kanryo", group:"base", title:"現在完了", emoji:"⏳",
+  lead:"「助動詞／＝」の箱に have / has、動詞の箱に過去分詞。時間の箱に for 〜・since 〜・twice などが入ります。",
   extra:{ AUX:["have","has","had","am","is"], V:["live","visit","read","study","practice"],
-          T:["for two years","since 2020","three times"] },
+          T:["for two years","since 2020","three times"],
+          M:["together","well","quietly","fast"] },
   sents:[
   { ja:"わたしは 3年間 この町に 住んでいる。", en:"I have lived in this town for three years.",
     fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"〜している",en:"have"}, V:{ja:"住んで",en:"lived"},
@@ -179,6 +186,160 @@ items: [
   { ja:"彼らは 2時間 体育館で 熱心に 練習している。", en:"They have practiced hard in the gym for two hours.",
     fill:{S:{ja:"彼らは",en:"They"}, AUX:{ja:"〜している",en:"have"}, V:{ja:"練習して",en:"practiced"},
           O:{ja:"（なし）",en:""}, M:{ja:"熱心に",en:"hard"},
-          PL:{ja:"体育館で",en:"in the gym"}, T:{ja:"2時間",en:"for two hours"}} } ] }
+          PL:{ja:"体育館で",en:"in the gym"}, T:{ja:"2時間",en:"for two hours"}} } ] },
 
+/* ===== ⑦ 過去進行形 ===== */
+{ key:"kako_shinkou", group:"base", title:"過去進行形", emoji:"🕰️",
+  lead:"「助動詞／＝」の箱に was / were が入ります（＝ の役割）。動詞の箱は 〜ing のまま。",
+  extra:{ AUX:["am","is","are","will","have"], V:["read","make","play","study","practice"],
+          T:["last night","yesterday morning"] },
+  sents:[
+  { ja:"わたしは そのとき 自分の部屋で 静かに 本を 読んでいた。", en:"I was reading a book quietly in my room then.",
+    fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"〜していた（＝）",en:"was"}, V:{ja:"読んで",en:"reading"},
+          O:{ja:"本を",en:"a book"}, M:{ja:"静かに",en:"quietly"},
+          PL:{ja:"自分の部屋で",en:"in my room"}, T:{ja:"そのとき",en:"then"}} },
+  { ja:"彼は 昨夜 台所で 夕食を 作っていた。", en:"He was making dinner in the kitchen last night.",
+    fill:{S:{ja:"彼は",en:"He"}, AUX:{ja:"〜していた（＝）",en:"was"}, V:{ja:"作って",en:"making"},
+          O:{ja:"夕食を",en:"dinner"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"台所で",en:"in the kitchen"}, T:{ja:"昨夜",en:"last night"}} },
+  { ja:"わたしたちは そのとき 校庭で いっしょに サッカーを していた。", en:"We were playing soccer together in the schoolyard then.",
+    fill:{S:{ja:"わたしたちは",en:"We"}, AUX:{ja:"〜していた（＝）",en:"were"}, V:{ja:"して",en:"playing"},
+          O:{ja:"サッカーを",en:"soccer"}, M:{ja:"いっしょに",en:"together"},
+          PL:{ja:"校庭で",en:"in the schoolyard"}, T:{ja:"そのとき",en:"then"}} },
+  { ja:"彼女は 昨日の朝 図書館で 英語を 勉強していた。", en:"She was studying English in the library yesterday morning.",
+    fill:{S:{ja:"彼女は",en:"She"}, AUX:{ja:"〜していた（＝）",en:"was"}, V:{ja:"勉強して",en:"studying"},
+          O:{ja:"英語を",en:"English"}, M:{ja:"（なし）",en:""},
+          PL:{ja:"図書館で",en:"in the library"}, T:{ja:"昨日の朝",en:"yesterday morning"}} },
+  { ja:"彼らは そのとき 体育館で 熱心に 練習していた。", en:"They were practicing hard in the gym then.",
+    fill:{S:{ja:"彼らは",en:"They"}, AUX:{ja:"〜していた（＝）",en:"were"}, V:{ja:"練習して",en:"practicing"},
+          O:{ja:"（なし）",en:""}, M:{ja:"熱心に",en:"hard"},
+          PL:{ja:"体育館で",en:"in the gym"}, T:{ja:"そのとき",en:"then"}} } ] },
+
+/* ===== ⑧ 受け身 ===== */
+{ key:"ukemi", group:"base", title:"受け身", emoji:"📥",
+  lead:"「助動詞／＝」の箱に is / are / was / were（＝ の役割）。動詞の箱は過去分詞。"+
+       "「〜によって」は by 〜 で『その他』の箱に入ります。",
+  extra:{ AUX:["am","is","are","was","were"], V:["write","clean","sing","build","wrote","cleaned"],
+          M:["by my mother","by many students"],
+          PL:["at school","in the park","in Japan"] },
+  sents:[
+  { ja:"この手紙は 先週 父によって 書かれた。", en:"This letter was written by my father last week.",
+    fill:{S:{ja:"この手紙は",en:"This letter"}, AUX:{ja:"〜された（＝）",en:"was"}, V:{ja:"書か",en:"written"},
+          O:{ja:"（なし）",en:""}, M:{ja:"父によって",en:"by my father"},
+          PL:{ja:"（なし）",en:""}, T:{ja:"先週",en:"last week"}} },
+  { ja:"その部屋は 毎日 生徒たちによって そうじされる。", en:"The room is cleaned by the students every day.",
+    fill:{S:{ja:"その部屋は",en:"The room"}, AUX:{ja:"〜される（＝）",en:"is"}, V:{ja:"そうじさ",en:"cleaned"},
+          O:{ja:"（なし）",en:""}, M:{ja:"生徒たちによって",en:"by the students"},
+          PL:{ja:"（なし）",en:""}, T:{ja:"毎日",en:"every day"}} },
+  { ja:"これらの本は 世界中で 多くの人に 読まれている。", en:"These books are read by many people all over the world.",
+    fill:{S:{ja:"これらの本は",en:"These books"}, AUX:{ja:"〜れている（＝）",en:"are"}, V:{ja:"読ま",en:"read"},
+          O:{ja:"（なし）",en:""}, M:{ja:"多くの人に",en:"by many people"},
+          PL:{ja:"世界中で",en:"all over the world"}, T:{ja:"（なし）",en:""}} },
+  { ja:"その歌は 昨年 若い歌手によって 歌われた。", en:"The song was sung by a young singer last year.",
+    fill:{S:{ja:"その歌は",en:"The song"}, AUX:{ja:"〜された（＝）",en:"was"}, V:{ja:"歌わ",en:"sung"},
+          O:{ja:"（なし）",en:""}, M:{ja:"若い歌手によって",en:"by a young singer"},
+          PL:{ja:"（なし）",en:""}, T:{ja:"昨年",en:"last year"}} },
+  { ja:"わたしたちの学校は 50年前に この町に 建てられた。", en:"Our school was built in this town fifty years ago.",
+    fill:{S:{ja:"わたしたちの学校は",en:"Our school"}, AUX:{ja:"〜られた（＝）",en:"was"}, V:{ja:"建て",en:"built"},
+          O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
+          PL:{ja:"この町に",en:"in this town"}, T:{ja:"50年前に",en:"fifty years ago"}} } ] },
+
+/* ============================================================
+   ここから下は「7つの箱では測れない」文法。項目ごとに専用の枠を持つ。
+   枠がちがっても、左から読むと英文になるのは同じ。
+   ============================================================ */
+
+/* ===== ⑨ 比較級・最上級 ===== */
+{ key:"hikaku", group:"other", title:"比較級・最上級", emoji:"📏",
+  lead:"7つの箱では測れないので専用の枠です。くらべる中身と、くらべる相手を分けて置きます。",
+  slots:[
+    {k:"S",  label:"主語",     q:"だれが・なにが"},
+    {k:"BE", label:"助動詞／＝", q:"＝ は be動詞"},
+    {k:"V",  label:"動詞",     q:"する"},
+    {k:"C",  label:"くらべる中身", q:"どれくらい"},
+    {k:"X",  label:"相手・はんい", q:"何と・どこで"}
+  ],
+  extra:{ BE:["am","are","was"], V:["run","sing","runs","sings"],
+          C:["more popular","the best","faster","as popular"],
+          X:["than my sister","in the world","in my class"] },
+  sents:[
+  { ja:"この本は あの本より おもしろい。", en:"This book is more interesting than that one.",
+    fill:{S:{ja:"この本は",en:"This book"}, BE:{ja:"〜だ（＝）",en:"is"}, V:{ja:"（なし）",en:""},
+          C:{ja:"よりおもしろい",en:"more interesting"}, X:{ja:"あの本より",en:"than that one"}} },
+  { ja:"富士山は 日本で いちばん高い山だ。", en:"Mt. Fuji is the highest mountain in Japan.",
+    fill:{S:{ja:"富士山は",en:"Mt. Fuji"}, BE:{ja:"〜だ（＝）",en:"is"}, V:{ja:"（なし）",en:""},
+          C:{ja:"いちばん高い山",en:"the highest mountain"}, X:{ja:"日本で",en:"in Japan"}} },
+  { ja:"わたしの兄は わたしより 速く 走る。", en:"My brother runs faster than I do.",
+    fill:{S:{ja:"わたしの兄は",en:"My brother"}, BE:{ja:"（なし）",en:""}, V:{ja:"走る",en:"runs"},
+          C:{ja:"より速く",en:"faster"}, X:{ja:"わたしより",en:"than I do"}} },
+  { ja:"サッカーは 野球と 同じくらい人気がある。", en:"Soccer is as popular as baseball.",
+    fill:{S:{ja:"サッカーは",en:"Soccer"}, BE:{ja:"〜だ（＝）",en:"is"}, V:{ja:"（なし）",en:""},
+          C:{ja:"同じくらい人気が",en:"as popular"}, X:{ja:"野球と",en:"as baseball"}} },
+  { ja:"彼女は クラスでいちばん 上手に 歌う。", en:"She sings the best in her class.",
+    fill:{S:{ja:"彼女は",en:"She"}, BE:{ja:"（なし）",en:""}, V:{ja:"歌う",en:"sings"},
+          C:{ja:"いちばん上手に",en:"the best"}, X:{ja:"クラスで",en:"in her class"}} } ] },
+
+/* ===== ⑩ It ... for 〜 to ... 構文 ===== */
+{ key:"it_for_to", group:"other", title:"It ... for 〜 to ... 構文", emoji:"🪜",
+  lead:"7つの箱では測れないので専用の枠です。頭の It は形だけの主語。"+
+       "「だれにとって」が for 〜、「何をすることが」が to 〜 です。",
+  slots:[
+    {k:"IT", label:"It",       q:"意味はない"},
+    {k:"BE", label:"助動詞／＝", q:"＝ は be動詞"},
+    {k:"C",  label:"どんな",    q:"どうだ"},
+    {k:"FOR",label:"for だれ",  q:"だれにとって"},
+    {k:"TO", label:"to する",   q:"何をすることが"},
+    {k:"O",  label:"なにを",    q:"目的語"}
+  ],
+  extra:{ BE:["are","am","were"], C:["difficult","fun","necessary","interesting"],
+          FOR:["for them","for you","for my brother"],
+          TO:["to write","to sing","to make","to speak"],
+          IT:["That","This","He","There"] },
+  sents:[
+  { ja:"わたしたちが英語を勉強することは 大切だ。", en:"It is important for us to study English.",
+    fill:{IT:{ja:"形だけの主語",en:"It"}, BE:{ja:"〜だ（＝）",en:"is"}, C:{ja:"大切",en:"important"},
+          FOR:{ja:"わたしたちが",en:"for us"}, TO:{ja:"勉強することは",en:"to study"}, O:{ja:"英語を",en:"English"}} },
+  { ja:"彼がこの本を読むことは 簡単だ。", en:"It is easy for him to read this book.",
+    fill:{IT:{ja:"形だけの主語",en:"It"}, BE:{ja:"〜だ（＝）",en:"is"}, C:{ja:"簡単",en:"easy"},
+          FOR:{ja:"彼が",en:"for him"}, TO:{ja:"読むことは",en:"to read"}, O:{ja:"この本を",en:"this book"}} },
+  { ja:"子どもたちがこの歌を歌うことは 楽しい。", en:"It is fun for children to sing this song.",
+    fill:{IT:{ja:"形だけの主語",en:"It"}, BE:{ja:"〜だ（＝）",en:"is"}, C:{ja:"楽しい",en:"fun"},
+          FOR:{ja:"子どもたちが",en:"for children"}, TO:{ja:"歌うことは",en:"to sing"}, O:{ja:"この歌を",en:"this song"}} },
+  { ja:"わたしがこの質問に答えることは 難しい。", en:"It is difficult for me to answer this question.",
+    fill:{IT:{ja:"形だけの主語",en:"It"}, BE:{ja:"〜だ（＝）",en:"is"}, C:{ja:"難しい",en:"difficult"},
+          FOR:{ja:"わたしが",en:"for me"}, TO:{ja:"答えることは",en:"to answer"}, O:{ja:"この質問に",en:"this question"}} },
+  { ja:"彼女がその重い箱を運ぶことは 大変だった。", en:"It was hard for her to carry the heavy box.",
+    fill:{IT:{ja:"形だけの主語",en:"It"}, BE:{ja:"〜だった（＝）",en:"was"}, C:{ja:"大変",en:"hard"},
+          FOR:{ja:"彼女が",en:"for her"}, TO:{ja:"運ぶことは",en:"to carry"}, O:{ja:"その重い箱を",en:"the heavy box"}} } ] },
+
+/* ===== ⑪ 関係代名詞 ===== */
+{ key:"kankei", group:"other", title:"関係代名詞", emoji:"🔗",
+  lead:"7つの箱では測れないので専用の枠です。名詞のうしろに who / which / that をつけて、"+
+       "そのあとで「どんな名詞か」を説明します。",
+  slots:[
+    {k:"S", label:"主語",   q:"だれが"},
+    {k:"V", label:"動詞",   q:"する"},
+    {k:"N", label:"先行詞", q:"どの名詞を説明する？"},
+    {k:"R", label:"関係詞", q:"who / which / that"},
+    {k:"E", label:"そのあとの説明", q:"どんな〜か"}
+  ],
+  extra:{ R:["what","when","where","whose"], V:["knows","have","has","read","visit"],
+          N:["a girl","the book","the town"],
+          E:["lives in Tokyo","is famous for its food","I bought yesterday"] },
+  sents:[
+  { ja:"わたしは ギターをひける 男の子を 知っている。", en:"I know a boy who can play the guitar.",
+    fill:{S:{ja:"わたしは",en:"I"}, V:{ja:"知っている",en:"know"}, N:{ja:"男の子を",en:"a boy"},
+          R:{ja:"（人なので）",en:"who"}, E:{ja:"ギターをひける",en:"can play the guitar"}} },
+  { ja:"これは 父がとった 写真です。", en:"This is the picture which my father took.",
+    fill:{S:{ja:"これは",en:"This"}, V:{ja:"です（＝）",en:"is"}, N:{ja:"写真",en:"the picture"},
+          R:{ja:"（ものなので）",en:"which"}, E:{ja:"父がとった",en:"my father took"}} },
+  { ja:"わたしには 大阪に住んでいる 友達が いる。", en:"I have a friend who lives in Osaka.",
+    fill:{S:{ja:"わたしには",en:"I"}, V:{ja:"いる",en:"have"}, N:{ja:"友達が",en:"a friend"},
+          R:{ja:"（人なので）",en:"who"}, E:{ja:"大阪に住んでいる",en:"lives in Osaka"}} },
+  { ja:"彼女は わたしが彼女にあげた 本を 読んだ。", en:"She read the book that I gave her.",
+    fill:{S:{ja:"彼女は",en:"She"}, V:{ja:"読んだ",en:"read"}, N:{ja:"本を",en:"the book"},
+          R:{ja:"（that でもよい）",en:"that"}, E:{ja:"わたしが彼女にあげた",en:"I gave her"}} },
+  { ja:"わたしたちは 城で有名な 町を 訪れた。", en:"We visited the town which is famous for its castle.",
+    fill:{S:{ja:"わたしたちは",en:"We"}, V:{ja:"訪れた",en:"visited"}, N:{ja:"町を",en:"the town"},
+          R:{ja:"（ものなので）",en:"which"}, E:{ja:"城で有名な",en:"is famous for its castle"}} } ] },
 ]};

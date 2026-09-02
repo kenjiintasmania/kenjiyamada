@@ -67,7 +67,7 @@
   .msg.ng{background:var(--ngbg);color:var(--ng)}
   .msg.warn{background:var(--midbg);color:var(--mid)}
   /* 項目えらび */
-  .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:6px}
+  .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:6px}
   .item{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
     border-radius:12px;padding:12px 13px}
   .item:hover{border-color:var(--c1)}
@@ -76,6 +76,11 @@
   .item .d{font-size:12px;color:var(--gray);margin-top:3px;line-height:1.5}
   .item .s{font-size:11.5px;color:var(--c1d);background:#efecf7;border-radius:999px;
     padding:2px 9px;display:inline-block;margin-top:6px}
+  .item .fr{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45;
+    border-top:1px dashed var(--line);padding-top:5px}
+  .gname{font-size:13.5px;font-weight:bold;color:var(--c1d);margin:14px 0 2px}
+  .gname:first-child{margin-top:2px}
+  .gname.alt{color:var(--c2)}
   /* モード */
   .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
   @media(max-width:620px){.modes{grid-template-columns:1fr}}
@@ -126,7 +131,7 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="../index.html">← 英語学習アプリ</a></div>
   <h1>語順文法テスト <span class="en">Word Order</span></h1>
-  <p>主語｜助動詞｜動詞｜目的語｜その他｜場所｜時間 の箱に入れる。左から読むと、そのまま英文になります。</p>
+  <p>主語｜助動詞／＝｜動詞｜目的語｜その他｜場所｜時間 の箱に入れる。左から読むと、そのまま英文になります。</p>
 </div></div>
 
 <div class="wrap">
@@ -150,7 +155,7 @@
 
   <div class="card">
     <h2>② 文法をえらぶ</h2>
-    <div class="items" id="itemList"></div>
+    <div id="itemList"></div>
   </div>
 
   <div class="card"><h2>これまでの記録</h2><div id="hist"></div></div>

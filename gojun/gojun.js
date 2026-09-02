@@ -10,6 +10,9 @@ var $=function(i){return document.getElementById(i);};
 var SCREENS=["home","quiz","result"];
 var G=window.GOJUN;
 function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!==n); }); window.scrollTo(0,0); }
+/* 枠は項目ごと。比較級・It for to・関係代名詞は7つの箱では測れないので自前の枠を持つ。
+   持っていない項目は既定の7枠を使う。 */
+function slotsOf(item){ return (item && item.slots) || G.slots; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
@@ -71,15 +74,27 @@ function setMode(m){
 }
 function renderHome(){
   var s=store();
-  $("itemList").innerHTML=G.items.map(function(it,i){
-    var b=s.best[it.key]||{};
-    var badge = (b.easy!=null||b.hard!=null)
-      ? ('<span class="s">最高 '+(b.easy!=null?("えらぶ "+b.easy+"/5"):"")+
-         ((b.easy!=null&&b.hard!=null)?"　":"")+(b.hard!=null?("打つ "+b.hard+"/5"):"")+'</span>')
-      : '<span class="s">まだ挑戦していません</span>';
-    return '<button class="item" data-i="'+i+'"><div class="e">'+it.emoji+'</div>'+
-      '<div class="t">'+esc(it.title)+'</div><div class="d">'+esc(it.lead)+'</div>'+badge+'</button>';
-  }).join("");
+  function cardsOf(group){
+    return G.items.map(function(it,i){ return {it:it,i:i}; })
+      .filter(function(x){ return (x.it.group||"base")===group; })
+      .map(function(x){
+        var b=s.best[x.it.key]||{};
+        var badge = (b.easy!=null||b.hard!=null)
+          ? ('<span class="s">最高 '+(b.easy!=null?("えらぶ "+b.easy+"/5"):"")+
+             ((b.easy!=null&&b.hard!=null)?"　":"")+(b.hard!=null?("打つ "+b.hard+"/5"):"")+'</span>')
+          : '<span class="s">まだ挑戦していません</span>';
+        var frame=slotsOf(x.it).map(function(sl){ return sl.label; }).join("｜");
+        return '<button class="item" data-i="'+x.i+'"><div class="e">'+x.it.emoji+'</div>'+
+          '<div class="t">'+esc(x.it.title)+'</div><div class="d">'+esc(x.it.lead)+'</div>'+
+          '<div class="fr">'+esc(frame)+'</div>'+badge+'</button>';
+      }).join("");
+  }
+  // 7つの箱で測れるものと、測れないので専用の枠を出すものを分けて見せる
+  $("itemList").innerHTML=
+    '<div class="gname">🧱 基本の語順（主語｜助動詞／＝｜動詞｜目的語｜その他｜場所｜時間）</div>'+
+    '<div class="items">'+cardsOf("base")+'</div>'+
+    '<div class="gname alt">🧩 この語順では測れないもの（それぞれ専用の枠）</div>'+
+    '<div class="items">'+cardsOf("other")+'</div>';
   $("itemList").querySelectorAll(".item").forEach(function(b){
     b.addEventListener("click",function(){ start(+b.getAttribute("data-i")); });
   });
@@ -112,7 +127,7 @@ function renderQ(){
   $("q_check").classList.remove("hide"); $("q_check").disabled=false;
   $("q_next").classList.add("hide");
   $("q_skip").disabled=false;
-  $("q_frame").innerHTML=G.slots.map(function(sl,k){
+  $("q_frame").innerHTML=slotsOf(IT).map(function(sl,k){
     var f=s.fill[sl.k]||{ja:"（なし）",en:""};
     if(!f.en){
       return '<div class="box empty" data-k="'+sl.k+'"><span class="bh">'+esc(sl.label)+'</span>'+
@@ -147,7 +162,7 @@ function mine(){
 /* 埋めるそばから英文が組み上がるのを見せる。左から読むと英文になる、が伝わるように */
 function drawBuilt(){
   var s=IT.sents[si], m=mine(), parts=[], any=false;
-  G.slots.forEach(function(sl){
+  slotsOf(IT).forEach(function(sl){
     var f=s.fill[sl.k]||{en:""};
     if(!f.en) return;
     var v=String(m[sl.k]||"").trim();
@@ -158,7 +173,7 @@ function drawBuilt(){
 
 function grade(skipped){
   var s=IT.sents[si], m=mine(), miss=[], all=true;
-  G.slots.forEach(function(sl){
+  slotsOf(IT).forEach(function(sl){
     var f=s.fill[sl.k]||{en:""};
     var box=$("q_frame").querySelector('.box[data-k="'+sl.k+'"]');
     if(!f.en) return;                                  // 使わない箱は採点しない
