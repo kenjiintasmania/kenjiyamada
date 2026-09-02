@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5b3fa8">
+<title>語順文法テスト｜英語の語順を箱で覚える</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>🧱</text></svg>">
+<!--
+  gojun/index.html ─ 語順文法テスト（試作 v1）
+
+   主語｜助動詞｜動詞｜目的語｜その他｜場所｜時間 の7つの箱に、日本語訳に従って
+   英語を入れていく。左から読むとそのまま英文になる、というのが教える中身。
+
+   モードは2つ：
+     えらぶ（イージー）… 箱ごとにドロップダウン。選択肢はその項目の5文の答えから作る
+                          （現在形の項目に過去形がまざらない）。
+     じぶんで打つ（ハード）… 直接入力。
+
+   1文＝完答で1点。1つでもちがえば ❌ と正解を出して次へ（部分点なし）。
+   どうしても進めない人のために「スキップ」も置く（0点。何回使ったかは記録する）。
+
+   ★採点はこのページがやる。生成AIは使わない。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#f8f7fc; --line:#e0dcec;
+    --c1:#5b3fa8; --c1d:#432e80; --c2:#b45309;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9; --mid:#b45309; --midbg:#fff6e5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+    font-family:var(--jp);line-height:1.65;padding:0 0 70px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#5b3fa8,#3b2a6b);color:#fff;padding:20px 0 16px;margin-bottom:14px}
+  .hero h1{margin:0;font-size:22px}
+  .hero p{margin:5px 0 0;font-size:13px;color:#d6cdf0}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#c9bcf0;text-decoration:none;font-weight:bold}
+  .hide{display:none!important}
+  .card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0}
+  h2{font-size:16.5px;margin:0 0 10px}
+  h3{font-size:14px;margin:14px 0 6px;color:var(--gray)}
+  .btn{font:inherit;font-size:15px;font-weight:bold;border:none;border-radius:11px;
+    padding:10px 20px;cursor:pointer;color:#fff;background:var(--c1)}
+  .btn:hover{background:var(--c1d)}
+  .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
+  .btn.sm{font-size:13px;padding:7px 14px}
+  .btn.skip{background:#fff;color:var(--gray);border:2px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  label{font-size:13px;font-weight:bold;display:block;margin:10px 0 4px}
+  input[type=text],select{font:inherit;font-size:14px;width:100%;
+    border:2px solid var(--line);border-radius:9px;padding:7px 8px;background:#fff;color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  .en{font-family:var(--en)}
+  code{background:#efecf7;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  .note{background:#fffbeb;border:2px solid #fde68a;border-radius:11px;padding:11px 13px;font-size:13px;margin:10px 0}
+  .note b{color:var(--c2)}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin:10px 0;display:none}
+  .msg.show{display:block}
+  .msg.ok{background:var(--okbg);color:var(--ok)}
+  .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .msg.warn{background:var(--midbg);color:var(--mid)}
+  /* 項目えらび */
+  .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:6px}
+  .item{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
+    border-radius:12px;padding:12px 13px}
+  .item:hover{border-color:var(--c1)}
+  .item .e{font-size:22px}
+  .item .t{font-weight:bold;font-size:15px;margin-top:2px}
+  .item .d{font-size:12px;color:var(--gray);margin-top:3px;line-height:1.5}
+  .item .s{font-size:11.5px;color:var(--c1d);background:#efecf7;border-radius:999px;
+    padding:2px 9px;display:inline-block;margin-top:6px}
+  /* モード */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  @media(max-width:620px){.modes{grid-template-columns:1fr}}
+  .mode{text-align:left;font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);
+    border-radius:12px;padding:11px 13px}
+  .mode.on{border-color:var(--c1);background:#efecf7}
+  .mode .t{font-weight:bold;font-size:15px}
+  .mode .d{font-size:12px;color:var(--gray);margin-top:3px;line-height:1.5}
+  /* ★7つの箱 */
+  .frame{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:10px}
+  @media(max-width:860px){.frame{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  @media(max-width:560px){.frame{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .box{border:2px solid var(--line);border-radius:11px;padding:7px 8px;background:#fff;min-width:0}
+  .box .bh{font-size:11px;font-weight:bold;color:#fff;background:var(--c1);border-radius:999px;
+    padding:2px 8px;display:inline-block}
+  .box .bq{font-size:10.5px;color:var(--muted);margin-top:3px}
+  .box .bj{font-size:13px;font-weight:bold;margin:4px 0 5px;min-height:20px}
+  .box.empty{background:#f4f3f8;border-style:dashed}
+  .box.empty .dash{font-family:var(--en);font-size:18px;color:var(--muted);text-align:center;padding:5px 0}
+  .box.ok{border-color:#a7d9bf;background:var(--okbg)}
+  .box.ng{border-color:#f0b8a8;background:var(--ngbg)}
+  .box .right{font-family:var(--en);font-size:13px;color:var(--ok);margin-top:4px;font-weight:bold}
+  .box .mark{float:right;font-size:14px;font-weight:bold}
+  /* 組み上がった英文 */
+  .built{font-family:var(--en);font-size:19px;line-height:1.55;background:#fff;border:2px dashed var(--line);
+    border-radius:11px;padding:10px 13px;margin-top:11px;min-height:46px;word-break:break-word}
+  .built .ph{color:var(--muted);font-size:14px;font-family:var(--jp)}
+  .jaline{font-size:15.5px;font-weight:bold;background:#efecf7;border-radius:10px;padding:9px 12px}
+  .prog{float:right;font-size:12.5px;color:var(--muted);font-weight:normal}
+  .verdict{font-size:15px;font-weight:bold;padding:10px 12px;border-radius:10px;margin-top:11px}
+  .verdict.ok{background:var(--okbg);color:var(--ok)}
+  .verdict.ng{background:var(--ngbg);color:var(--ng)}
+  .verdict .ans{font-family:var(--en);font-size:17px;color:var(--ink);display:block;margin-top:5px}
+  /* 結果 */
+  .score{font-size:38px;font-weight:bold;font-family:var(--en);color:var(--c1);text-align:center}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}
+  .kpi div{background:#f2f0f9;border-radius:10px;padding:9px 11px}
+  .kpi b{display:block;font-size:19px;color:var(--c1)}
+  .kpi span{font-size:11.5px;color:var(--gray)}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+  th{background:#efecf7;font-size:12px;white-space:nowrap}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="../index.html">← 英語学習アプリ</a></div>
+  <h1>語順文法テスト <span class="en">Word Order</span></h1>
+  <p>主語｜助動詞｜動詞｜目的語｜その他｜場所｜時間 の箱に入れる。左から読むと、そのまま英文になります。</p>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ ホーム ============ -->
+<div id="home">
+  <div class="card">
+    <h2>① やりかたをえらぶ</h2>
+    <div class="modes">
+      <button class="mode on" id="modeEasy"><div class="t">🟢 えらぶ（イージー）</div>
+        <div class="d">箱ごとに候補が出るので、その中から選ぶ。まず<b>順番</b>を体で覚える人向け。</div></button>
+      <button class="mode" id="modeHard"><div class="t">🔴 じぶんで打つ（ハード）</div>
+        <div class="d">候補なし。自分で英語を書く。<b>つづりまで</b>仕上げたい人向け。</div></button>
+    </div>
+    <div class="note">
+      1文ずつ、7つの箱をぜんぶ埋めて答え合わせします。<b>1つでもちがえば ❌</b>（部分点なし）。
+      正解を見せてから次へ進みます。<b>1項目5文＝5点満点。</b>
+      どうしても進めないときは「スキップ」を押してください（0点になりますが、先へ進めます）。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>② 文法をえらぶ</h2>
+    <div class="items" id="itemList"></div>
+  </div>
+
+  <div class="card"><h2>これまでの記録</h2><div id="hist"></div></div>
+</div>
+
+<!-- ============ 出題 ============ -->
+<div id="quiz" class="hide">
+  <div class="card">
+    <h2><span id="q_title"></span><span class="prog" id="q_prog"></span></h2>
+    <div class="jaline" id="q_ja"></div>
+    <div class="frame" id="q_frame"></div>
+    <div class="built" id="q_built"></div>
+    <div id="q_verdict"></div>
+    <div class="row" style="margin-top:13px">
+      <button class="btn" id="q_check">答え合わせ</button>
+      <button class="btn hide" id="q_next">次へ →</button>
+      <button class="btn skip sm" id="q_skip">スキップ</button>
+      <button class="btn ghost sm" id="q_quit">やめる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 結果 ============ -->
+<div id="result" class="hide">
+  <div class="card">
+    <h2>結果（このページが自分で計算しました）</h2>
+    <div class="score" id="r_score">– / –</div>
+    <div class="kpi">
+      <div><b id="k_pct">–</b><span>正答率</span></div>
+      <div><b id="k_mode">–</b><span>やりかた</span></div>
+      <div><b id="k_skip">–</b><span>スキップ</span></div>
+    </div>
+    <div class="msg" id="r_note"></div>
+    <div id="r_detail"></div>
+    <h3>先生に送る</h3>
+    <div class="grid2">
+      <div><label for="f_cls">学年</label>
+        <select id="f_cls"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></div>
+      <div><label for="f_num">番号</label><input type="text" id="f_num" placeholder="例：5"></div>
+    </div>
+    <label for="f_name">名前（任意）</label>
+    <input type="text" id="f_name" placeholder="入れなくても送れます">
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="saveRun">記録する</button>
+      <button class="btn" id="sendRun">先生に送信</button>
+      <button class="btn ghost sm" id="again">同じ文法をもう1回</button>
+      <button class="btn ghost sm" id="home2">ホーム</button>
+    </div>
+    <div class="msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<footer>語順文法テスト（試作 v1）</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="data/gojun_v1.js"></script>
+<script src="gojun.js"></script>
+</body>
+</html>
