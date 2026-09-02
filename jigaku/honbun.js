@@ -64,7 +64,12 @@ function markOf(s, table){
   return -1;
 }
 
-/* (2) だいたい合っていれば○
+/* (2) 答えが日本語か英語か。
+   日本語で説明する問題は「読み取れたか」だけを見るのでだいたいで満点。
+   英語で本文から抜き出す問題は、写す正確さも力のうちなので つづりミス −1 を残す。 */
+function isJa(s){ return /[ぁ-んァ-ヶ一-龥々ー]/.test(String(s==null?"":s)); }
+
+/* (3) だいたい合っていれば○
    ・語の集合：短いほうの語がぜんぶ長いほうに入っている（library ↔ the library）
    ・頭かおしりが重なっている（森本 ↔ 森本さん、Aozora ↔ Aozora Zoo）
    ・つづりのちがいが4分の1まで（libary ↔ library）
@@ -102,20 +107,27 @@ function judge(mine, ans){
                        : {pt:0,  tag:"×", why:"", hit:[]};
     }
     if(norm(mine)===norm(ans)) return {pt:PT, tag:"○", why:"", hit:[ans]};
-    if(near(mine, ans)) return {pt:PT, tag:"○", why:"だいたい合っています（正しくは "+ans+"）", hit:[ans]};
+    if(near(mine, ans)){
+      // 日本語で説明する問題＝だいたいで満点／英語で抜き出す問題＝つづりミス −1
+      return isJa(ans)
+        ? {pt:PT,   tag:"○", why:"だいたい合っています（正しくは "+ans+"）", hit:[ans]}
+        : {pt:PT-1, tag:"△", why:"つづりミス −1（正しくは "+ans+"）", hit:[ans]};
+    }
     return {pt:0, tag:"×", why:"", hit:[]};
   }
-  var got=[], extra=0;
+  var got=[], extra=0, slip=0;
   var used={};
   A.forEach(function(a){
-    var f=null;
-    B.forEach(function(b,bi){ if(f==null && !used[bi] && near(a,b)){ f=bi; } });
-    if(f!=null){ used[f]=1; got.push(B[f]); } else extra++;
+    var f=null, exact=false;
+    B.forEach(function(b,bi){ if(f==null && !used[bi] && near(a,b)){ f=bi; exact=(norm(a)===norm(b)); } });
+    if(f!=null){ used[f]=1; got.push(B[f]); if(!exact && !isJa(B[f])) slip++; } else extra++;
   });
   var pt=Math.round(PT*got.length/B.length);
-  return {pt:pt, tag:(got.length===B.length?"○":(got.length?"△":"×")),
-          why:(got.length===B.length?"":(B.length+"つ中"+got.length+"つ"+(extra?("／よけいに"+extra+"つ"):""))),
-          hit:got};
+  if(slip) pt=Math.max(0, pt-1);              // 英語の抜き出しはつづりも見る
+  var why=(got.length===B.length?"":(B.length+"つ中"+got.length+"つ"))+
+          (extra?("／よけいに"+extra+"つ"):"")+(slip?"／つづりミス −1":"");
+  return {pt:pt, tag:(got.length===B.length&&!slip?"○":(got.length?"△":"×")),
+          why:why, hit:got};
 }
 
 /* ================= ① 本文を用意する ================= */
@@ -265,6 +277,15 @@ function buildPrompt(mine){
     p.push("・「２．重要語」で見るのは、数字・人名・地名・つなぎ語・結論にあたる語です。");
     p.push("・印が1つも見あたらないときは、この【はじめに】をとばして、すぐ問題から始めてください。");
     p.push("");
+    // ★コメントを先に書かせるのは、そのあとの出題を記号・重要語のほうへ引き寄せるため。
+    //   引き寄せは自然にも起きるが、あてにせず「拾えていなかったところを出せ」と言い切る。
+    p.push("【コメントと問題のつなぎかた】");
+    p.push("　・上で「次にできるとよいこと」に挙げたところを、あとの問題の");
+    p.push("　　**少なくとも1問でねらって**ください。拾えていなかったところこそ、といてほしいところです。");
+    p.push("　・ただしコメントの中に、**答えそのもの（人名・地名・数そのもの）は書かないでください**。");
+    p.push("　　「人名に◯がついていました」はよいですが、「Ms. Sato に◯がついていました」は、");
+    p.push("　　あとの問題の答えを先に見せてしまうのでいけません。");
+    p.push("");
   }
   p.push("【出す問題】ぜんぶで"+NQ+"問。次の3種から出してください。");
   p.push("　・数字・人名・地名 … 本文に出てくる数・人の名前・場所を答えさせる");
@@ -299,8 +320,9 @@ function buildPrompt(mine){
   p.push("");
   p.push("【採点のものさし】※アプリはこの基準で採点します。あなたが厳しく直す必要はありません。");
   p.push("　・記号でえらぶ問題は、ア でも あ でも A でも 1 でも ① でも正解にします。");
-  p.push("　・だいたい合っていれば正解にします（the library と library、森本 と 森本さん、");
-  p.push("　　libary と library のような小さなちがいは正解です）。");
+  p.push("　・答えが日本語の問題（内容を説明させるもの）は、だいたい合っていれば正解にします。");
+  p.push("　・答えが英語の問題（本文から抜き出すもの）は、写す正確さも見るので、");
+  p.push("　　つづりが1文字ちがうと1点だけ引きます（0点にはしません）。");
   p.push("　・そのため「正解」の欄には、本文どおりの正しい形をそのまま書いてください。");
   return p.join("\n");
 }
