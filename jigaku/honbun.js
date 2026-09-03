@@ -27,8 +27,16 @@ function saveS(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){
 function store(){ var s=load(); s.honbun=s.honbun||{prompts:[],runs:[]}; return s; }
 
 /* ================= 判定のものさし ================= */
+/* 全角で打っても半角と同じものとして見る。※学年・番号欄の han() とは別物（あちらは数字だけ残す）。「３」と「3」、「Ｉ」と「I」を
+   区別しても学力の差にはならず、スマホの入力モードのちがいで落ちるだけになる。
+   U+FF01〜U+FF5E は ASCII の ! 〜 ~ に 1 対 1 で対応しているので、まとめて寄せる。 */
+function zenhan(s){
+  return String(s==null?"":s)
+    .replace(/[！-～]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-65248); })
+    .replace(/　/g," ");
+}
 function norm(s){
-  return String(s==null?"":s).toLowerCase().replace(/['’]/g,"")
+  return zenhan(s).toLowerCase().replace(/['’]/g,"")
     .replace(/[.,!?;:"“”（）()]/g," ").replace(/\s+/g," ").trim();
 }
 function edist(a,b){
@@ -320,6 +328,8 @@ function buildPrompt(mine){
   p.push("");
   p.push("【採点のものさし】※アプリはこの基準で採点します。あなたが厳しく直す必要はありません。");
   p.push("　・記号でえらぶ問題は、ア でも あ でも A でも 1 でも ① でも正解にします。");
+  p.push("　・**全角と半角のちがいは見ません。**「３」と「3」、「Ｉ」と「I」はどちらも正解です。");
+  p.push("　　スマホの入力モードのちがいで落とさないでください。");
   p.push("　・答えが日本語の問題（内容を説明させるもの）は、だいたい合っていれば正解にします。");
   p.push("　・答えが英語の問題（本文から抜き出すもの）は、写す正確さも見るので、");
   p.push("　　つづりが1文字ちがうと1点だけ引きます（0点にはしません）。");

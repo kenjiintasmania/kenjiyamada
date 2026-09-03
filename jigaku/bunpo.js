@@ -157,8 +157,16 @@ function shuffled(a){
 }
 
 /* ================= 判定のものさし（単語レーンと同じ） ================= */
+/* 全角で打っても半角と同じものとして見る。※学年・番号欄の han() とは別物（あちらは数字だけ残す）。「３」と「3」、「Ｉ」と「I」を
+   区別しても学力の差にはならず、スマホの入力モードのちがいで落ちるだけになる。
+   U+FF01〜U+FF5E は ASCII の ! 〜 ~ に 1 対 1 で対応しているので、まとめて寄せる。 */
+function zenhan(s){
+  return String(s==null?"":s)
+    .replace(/[！-～]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-65248); })
+    .replace(/　/g," ");
+}
 function norm(s){
-  return String(s==null?"":s).toLowerCase().replace(/['’]/g,"")
+  return zenhan(s).toLowerCase().replace(/['’]/g,"")
     .replace(/[.,!?;:"“”]/g," ").replace(/\s+/g," ").trim();
 }
 function words(s){ return norm(s).split(" ").filter(Boolean); }

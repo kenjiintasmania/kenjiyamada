@@ -344,8 +344,16 @@
   function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
   function store(){ var s=load(); s.prompts=s.prompts||[]; s.runs=s.runs||[]; return s; }
 
+  /* 全角で打っても半角と同じものとして見る。※学年・番号欄の han() とは別物（あちらは数字だけ残す）。「３」と「3」、「Ｉ」と「I」を
+     区別しても学力の差にはならず、スマホの入力モードのちがいで落ちるだけになる。
+     U+FF01〜U+FF5E は ASCII の ! 〜 ~ に 1 対 1 で対応しているので、まとめて寄せる。 */
+  function zenhan(s){
+    return String(s==null?"":s)
+      .replace(/[！-～]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-65248); })
+      .replace(/　/g," ");
+  }
   function norm(s){
-    return String(s==null?"":s).toLowerCase().trim()
+    return zenhan(s).toLowerCase().trim()
       .replace(/[.,!?;:"'’“”（）()]/g,"").replace(/[-_/]/g," ").replace(/\s+/g," ").trim();
   }
   /* ★リストに play(s) / visit(ed) / child(ren) と書いてある語は、（ ）の中を
@@ -579,6 +587,7 @@
     p.push("【出し方】日本語を見せて、わたしが英語のつづりを書く形式にしてください。");
     p.push("【条件】");
     p.push("- リストの外から語を足さないでください。足りなければ問題数を減らして構いません。");
+    p.push("- **全角と半角のちがいは見ないでください。**「３」と「3」、「Ｉ」と「I」はどちらも正解です。");
     p.push("- リストに play(s) / visit(ed) / child(ren) のように（ ）で書いてある語は、");
     p.push("　（ ）の中を**つけてもつけなくても正解**にしてください。play でも plays でも○です。");
     p.push("　どちらで書いても×にしないでください。");
