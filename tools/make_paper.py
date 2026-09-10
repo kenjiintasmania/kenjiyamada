@@ -238,7 +238,13 @@ def render_item(doc, it, group, printable=True):
         stem = ""
     para(doc, head + ("　" + stem if stem else ""), 10.5, before=3, after=2)
     ty = it.get("type")
-    if ty in ("mcq", "bankpick"):
+    if ty == "mcqMulti":
+        # ★2つ選ぶ問題。分岐が無かったころは設問文だけ刷られ、選択肢も答え欄も出なかった。
+        for i, c in enumerate(it.get("choices") or []):
+            para(doc, "　{}　{}".format(KANA[i], strip(c)), 10, after=1, en=True)
+        n = len(it.get("answer") or [])
+        para(doc, "　答え（" + "　　・　　".join(["　　"] * max(2, n)) + "）", 10, after=2)
+    elif ty in ("mcq", "bankpick"):
         arr = it.get("choices") if ty == "mcq" else it.get("bank")
         if printable:
             for i, c in enumerate(arr or []):
@@ -289,7 +295,11 @@ def build_answer(exam, path, title):
     for sec in exam["sections"]:
         for cname, it, _ in items_of(sec):
             ty = it.get("type")
-            if ty == "mcq":
+            if ty == "mcqMulti":
+                aa = it.get("answer") or []
+                ch = it.get("choices") or []
+                ans = "・".join("{}（{}）".format(KANA[a], strip(ch[a]) if a < len(ch) else "?") for a in aa)
+            elif ty == "mcq":
                 ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("choices") or ["?"])[it.get("answer", 0)]))
             elif ty == "bankpick":
                 ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("bank") or ["?"])[it.get("answer", 0)]))
@@ -363,6 +373,8 @@ def answer_fields(exam):
             ty = it.get("type")
             if ty in ("mcq", "bankpick"):
                 kind = "sel"
+            elif ty == "mcqMulti":
+                kind = "word"          # 「ア・ウ」と2つ書くので、選択の小さな枠ではなく広い枠
             elif ty == "wordorder":
                 kind = "long"
             else:
@@ -380,6 +392,8 @@ def kind_of(it):
     ty = it.get("type")
     if ty in ("mcq", "bankpick"):
         return "sel"
+    if ty == "mcqMulti":
+        return "word"                  # 2つ書くので広い枠
     if ty == "wordorder":
         return "long"
     first = strip((it.get("answers") or [""])[0])
@@ -501,7 +515,11 @@ def build_key_csv(exam, path):
         wcsv.writerow(["大問", "コース", "問", "種別", "正解", "配点"])
         for sec, cname, it, kind in answer_fields(exam):
             ty = it.get("type")
-            if ty == "mcq":
+            if ty == "mcqMulti":
+                ch = it.get("choices") or []
+                ans = "・".join("{}（{}）".format(KANA[a], strip(ch[a]) if a < len(ch) else "")
+                                for a in (it.get("answer") or []))
+            elif ty == "mcq":
                 ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("choices") or [""])[it.get("answer", 0)]))
             elif ty == "bankpick":
                 ans = "{}（{}）".format(KANA[it.get("answer", 0)], strip((it.get("bank") or [""])[it.get("answer", 0)]))
@@ -510,7 +528,9 @@ def build_key_csv(exam, path):
             else:
                 ans = " / ".join(strip(a) for a in (it.get("answers") or []))
             wcsv.writerow([sec["no"], cname, it.get("label", ""),
-                           {"sel": "選択", "word": "記述(語)", "long": "記述(文)"}[kind], ans, it.get("pt", 0)])
+                           ("選択(2つ)" if ty == "mcqMulti"
+                            else {"sel": "選択", "word": "記述(語)", "long": "記述(文)"}[kind]),
+                           ans, it.get("pt", 0)])
 
 def verify_question(exam, path):
     """出来上がった問題用紙を読み直し、解くのに要る材料が刷られているか確かめる。
@@ -518,18 +538,31 @@ def verify_question(exam, path):
       「生成できた」ではなく「紙の上に在る」ことを毎回確認する。"""
     import zipfile
     xml = zipfile.ZipFile(path).read("word/document.xml").decode("utf-8")
-    text = re.sub(r"<[^>]+>", "", xml).lower()
+    # 空白のちがい（全角スペース・改行）で「刷られていない」と誤判定しないよう、
+    # 紙の側も比べる側も、空白は半角1つにそろえてから見る。
+    def flat(x): return re.sub(r"\s+", " ", re.sub(r"[\u3000\u00a0]", " ", str(x))).strip().lower()
+    text = flat(re.sub(r"<[^>]+>", "", xml))
     miss = []
     for sec in exam["sections"]:
         gs = sec.get("groups") or [{"intro": c.get("name",""), "items": c.get("items",[])}
                                    for c in sec.get("courses", [])]
         for g in gs:
             for it in g.get("items", []):
-                if it.get("type") != "wordorder":
-                    continue
-                for w in (it.get("words") or []):
-                    if str(w).lower() not in text:
-                        miss.append("大問{} {} 「{}」".format(sec["no"], it.get("label",""), w))
+                ty = it.get("type")
+                # 並べかえの語群
+                if ty == "wordorder":
+                    for w in (it.get("words") or []):
+                        if flat(w) not in text:
+                            miss.append("大問{} {} 語「{}」".format(sec["no"], it.get("label",""), w))
+                # 選択肢（型を1つ足し忘れると、設問文だけ刷られて選択肢が消える）。
+                # 放送でしか読まれない選択肢は紙に出ないので、そこは見ない。
+                # 「選択肢そのものが放送される」設問は、わざと生徒用紙に刷らない（is_audio_choice）。
+                elif ty in ("mcq", "mcqMulti", "bankpick") and not is_audio_choice(sec, g, it):
+                    arr = it.get("bank") if ty == "bankpick" else it.get("choices")
+                    for c in (arr or []):
+                        c2 = flat(re.sub(r"<[^>]+>", "", str(c)))
+                        if c2 and c2 not in text:
+                            miss.append("大問{} {} 選択肢「{}」".format(sec["no"], it.get("label",""), c2[:30]))
     if miss:
         print("✗ 問題用紙に刷られていない語があります：")
         for m in miss[:20]:
