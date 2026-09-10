@@ -335,8 +335,11 @@
   document.querySelectorAll("[data-go]").forEach(function(b){
     b.addEventListener("click",function(){ show(b.getAttribute("data-go")); }); });
   $("goTango").addEventListener("click",function(){ show("list"); prefillList(); });
-  $("goBunpo").addEventListener("click",function(){ location.href="bunpo.html"; });
-  $("goHonbun").addEventListener("click",function(){ location.href="honbun.html"; });
+  /* JS で飛ぶときは ?site= が落ちる（site.js の書き換えは a[href] だけが対象）。
+     遷移先はどちらも記録を送る画面なので、実証モードのまま渡す。 */
+  function goApp(u){ location.href=(window.SITE?SITE.href(u):u); }
+  $("goBunpo").addEventListener("click",function(){ goApp("bunpo.html"); });
+  $("goHonbun").addEventListener("click",function(){ goApp("honbun.html"); });
 
   /* ---------- 記録（端末） ---------- */
   var KEY="jigaku_v1";
@@ -645,7 +648,11 @@
      「… | science2 | 地球 | …」のように次の問題番号が前の欄の末尾にくっつく。
      数字の直前で改行を入れ直せば、元の行に戻せる。 */
   function repairOneLine(t){
-    return t.replace(/([^\d\s|])(\d{1,3})\s*\|/g, "$1\n$2 |");
+    return String(t)
+      // markdown の表が1行になると、行末の | と次の行頭の | がくっついて || になる。
+      // ここで切り戻せば、あとは行ごとのふつうの読み取りで通る。
+      .replace(/\|\s*\|/g, "|\n|")
+      .replace(/([^\d\s|])(\d{1,3})\s*\|/g, "$1\n$2 |");
   }
 
   /* 縦棒だけを頼りに4列を組み直す最後の砦。
@@ -659,21 +666,36 @@
     var name="";
     var mn=t.match(/(?:リスト|単元)\s*[:：]\s*([^|]*)/);
     if(mn) name=mn[1].replace(/\s*no\s*$/i,"").trim();
-    var tok=t.split("|");
+    /* markdown の表だと、行末と行頭の | が続いて空の欄になり、|---|---| の区切り行も
+       まざる。番号が独立した欄になっている形もあるので、まず要らない欄を落とす。 */
+    var tok=t.split("|").map(function(x){
+      return x.replace(/===\s*(?:TANGO|END)\s*===/g,"").trim(); })
+      .filter(function(x){ return x && !/^[-:\s]+$/.test(x); });
     var h=-1;
     for(var i=0;i<tok.length;i++){ if(/正解/.test(tok[i])){ h=i; break; } }
     if(h<0) return {name:name, rows:[], bad:0};
+    var rows=[], bad=0;
     var m=tok[h].match(/(\d{1,3})\s*$/);
-    if(!m) return {name:name, rows:[], bad:0};
-    var no=parseInt(m[1],10), rows=[], bad=0, k=h+1;
-    while(k+2 < tok.length){
-      var ja=tok[k].trim(), mine=tok[k+1].trim();
-      var rest=tok[k+2].replace(/===\s*(?:TANGO|END)\s*===/g,"").trim();
-      var mm=rest.match(/^(.*?)\s*(\d{1,3})\s*$/);       // 末尾の数字＝次の行の番号
-      var ans = mm ? mm[1].trim() : rest;
-      if(!ja && !ans) bad++; else rows.push({no:no, ja:ja, mine:mine, ans:ans});
-      if(!mm) break;                                       // 数字が付いていない＝最後の行
-      no=parseInt(mm[2],10); k+=3;
+    if(m){
+      // 「… | career career2 | …」＝前の行の正解に次の番号がくっついている形。3つずつ。
+      var no=parseInt(m[1],10), k=h+1;
+      while(k+2 < tok.length){
+        var ja=tok[k], mine=tok[k+1], rest=tok[k+2];
+        var mm=rest.match(/^(.*?)\s*(\d{1,3})\s*$/);     // 末尾の数字＝次の行の番号
+        var ans = mm ? mm[1].trim() : rest;
+        if(!ja && !ans) bad++; else rows.push({no:no, ja:ja, mine:mine, ans:ans});
+        if(!mm) break;                                     // 数字が付いていない＝最後の行
+        no=parseInt(mm[2],10); k+=3;
+      }
+    } else {
+      // 番号が独立した欄になっている形（markdown の表など）。4つずつ。
+      var k2=h+1;
+      while(k2+3 <= tok.length){
+        if(!/^\d{1,3}$/.test(tok[k2])) break;
+        var ja2=tok[k2+1], mine2=tok[k2+2], ans2=tok[k2+3];
+        if(!ja2 && !ans2) bad++; else rows.push({no:parseInt(tok[k2],10), ja:ja2, mine:mine2, ans:ans2});
+        k2+=4;
+      }
     }
     return {name:name, rows:rows, bad:bad};
   }
@@ -861,7 +883,10 @@
     post({action:"policy"})
       .then(function(j){
         var ver=(j&&j.ver)||"";
-        if(!/jigaku/.test(ver)){
+        // 版は「jigaku を含むか」だけでなく数でも見る。部分一致だと jigaku-1 でも通り、
+        // 単語 レーンが要る列がまだ無いサーバーへ送って落ちる（またはデータが欠ける）。
+        var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
+        if(!vn || Number(vn) < 3){
           throw new Error("__OLD__"+ver);
         }
         var weak=graded.rows.filter(function(r){return !r.ok;})

@@ -338,7 +338,9 @@ $("sendRun").addEventListener("click",function(){
   m.className="msg show"; m.textContent="送信しています…";
   post({action:"policy"}).then(function(j){
     var ver=(j&&j.ver)||"";
-    if(!/jigaku/.test(ver)) throw new Error("__OLD__"+ver);
+    // 版は「jigaku を含むか」だけでなく数でも見る（部分一致では jigaku-1 でも通ってしまう）。
+    var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
+    if(!vn || Number(vn) < 4) throw new Error("__OLD__"+ver);   // 語順 レーンが要る版
     var weak=graded.rows.filter(function(x){ return !x.pt; })
       .map(function(x){ return x.en; }).join(" / ");
     var payload={kind:"jigaku", ver:"gojun 1.0", cls:cls, num:num, name:name,

@@ -106,7 +106,9 @@ button:active{transform:translateY(1px)}
   .q-col .q:first-child{border-top:none;margin-top:0}
 }
 @media(max-width:819px){
-  .passage-col{position:sticky;top:6px;z-index:4}
+  /* 単元テストのときは上部に固定パネルが出る。その高さぶんだけ下げないと本文が隠れる
+     （--unit-panel-h は mogi/exam.html が測って立てる。ふだんは未設定＝0px）。 */
+  .passage-col{position:sticky;top:calc(var(--unit-panel-h, 0px) + 6px);z-index:4}
   .passage-col .passage-inner{max-height:44vh;overflow:auto;background:var(--paper);
     border-radius:12px;box-shadow:0 8px 18px rgba(43,43,58,.16)}
   .q-col{margin-top:6px}

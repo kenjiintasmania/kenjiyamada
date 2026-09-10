@@ -391,7 +391,7 @@
       host.appendChild(card);
     });
     host.querySelectorAll("[data-app]").forEach(function(b){
-      b.onclick=function(){ location.href=b.getAttribute("data-app"); };
+      b.onclick=function(){ var to=b.getAttribute("data-app"); location.href=(window.SITE?SITE.href(to):to); };
     });
     bindCopy(); bindOpen();
   }
@@ -490,7 +490,7 @@
   $("f_num").addEventListener("input",function(){ this.value=han(this.value); lsSet("mado_num",this.value); });
   $("manualLv").addEventListener("change",refresh);
   /* v0.95: 鍵は無くなったので、このボタンは探究カルテへの導線に変えた。 */
-  $("unlockBtn").addEventListener("click",function(){ location.href=APP_KARTE; });
+  $("unlockBtn").addEventListener("click",function(){ location.href=(window.SITE?SITE.href(APP_KARTE):APP_KARTE); });
   $("sendBtn").addEventListener("click",send);
 })();
 </script>

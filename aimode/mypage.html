@@ -452,7 +452,7 @@ function gate(){
 const PRES_INBOX="tanqPres_inbox";
 function handToPres(raw, theme){
   try{ lsSet(PRES_INBOX, JSON.stringify({ ts:Date.now(), theme:theme||"", raw:String(raw).slice(0,6000) })); }catch(e){}
-  location.href=APP_PRES;
+  location.href=(window.SITE?SITE.href(APP_PRES):APP_PRES);
 }
 $("btnToPres").addEventListener("click",()=>{
   const raw=$("inRaw").value.trim(); if(!raw) return;

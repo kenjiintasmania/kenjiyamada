@@ -569,7 +569,9 @@ $("sendRun").addEventListener("click",function(){
   m.className="msg show"; m.textContent="送信しています…";
   post({action:"policy"}).then(function(j){
     var ver=(j&&j.ver)||"";
-    if(!/jigaku/.test(ver)) throw new Error("__OLD__"+ver);
+    // 版は「jigaku を含むか」だけでなく数でも見る（部分一致では jigaku-1 でも通ってしまう）。
+    var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
+    if(!vn || Number(vn) < 5) throw new Error("__OLD__"+ver);   // 本文 レーンが要る版
     var weak=graded.rows.filter(function(r){return r.pt<PT;})
       .map(function(r){return r.ans;}).join(" / ");
     var payload={kind:"jigaku", ver:"honbun 0.1", cls:cls, num:num, name:name,

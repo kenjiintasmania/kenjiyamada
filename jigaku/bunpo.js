@@ -519,7 +519,9 @@ $("sendRun").addEventListener("click",function(){
   m.className="msg show"; m.textContent="送信しています…";
   post({action:"policy"}).then(function(j){
     var ver=(j&&j.ver)||"";
-    if(!/jigaku/.test(ver)) throw new Error("__OLD__"+ver);
+    // 版は「jigaku を含むか」だけでなく数でも見る（部分一致では jigaku-1 でも通ってしまう）。
+    var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
+    if(!vn || Number(vn) < 4) throw new Error("__OLD__"+ver);   // 文法 レーンが要る版
     // notDb（列名「リスト外の語」）は、文法レーンでは写しがきのミス数として使う。
     // 列を増やすと先生に再デプロイをお願いすることになるので、既にある数値列に載せる。
     var payload={kind:"jigaku", ver:"bunpo 1.0", cls:cls, num:num, name:name,

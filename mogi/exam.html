@@ -147,6 +147,16 @@
     const quiz=$("quiz"), panel=$("unitPanel"), badge=$("unitStatus"), msg=$("unitMsg"), btn=$("u_submit");
     const elc=$("u_cls"), eln=$("u_num"), elm=$("u_name");
     panel.classList.remove("hide");
+    /* スマホ幅では本文も画面上部に貼りつく（style.css の .passage-col）。
+       この単元パネルのほうが手前・高さ200px近くあるので、そのままだと本文が
+       まるごと隠れて読めない。パネルの高さを測って本文の top に足す。 */
+    function panelH(){
+      var h = panel.classList.contains("hide") ? 0 : panel.getBoundingClientRect().height;
+      document.documentElement.style.setProperty("--unit-panel-h", Math.round(h)+"px");
+    }
+    panelH();
+    window.addEventListener("resize", panelH);
+    if(window.ResizeObserver) new ResizeObserver(panelH).observe(panel);
     document.querySelectorAll(".controls").forEach(c=>c.classList.add("hide"));
     const nb=document.querySelector(".namebox"); if(nb) nb.style.display="none";
     const han=s=>(s||"").replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248)).replace(/[^0-9]/g,"");
