@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const VER  = "1.0";
+const VER  = "1.1";
 const NAME = `英語学習アプリ_インターフェース_v${VER}`;
 const OUT  = path.join(process.argv[2] || path.join(ROOT, "out"), NAME);
 
@@ -87,6 +87,21 @@ function readGas(){
   return w;
 }
 const G = readGas();
+
+/* ---- 模試の内訳（exam.html の meta と各データの fullMarks から。手書きしない） ---- */
+function readExams(){
+  const src = fs.readFileSync(path.join(ROOT,"mogi/exam.html"),"utf8");
+  const blk = (src.match(/const meta=\{([\s\S]*?)\n  \};/)||[])[1] || "";
+  return [...blk.matchAll(/^\s*([a-z0-9_]+):\s*\{([^\n]*)/gm)].map(m=>{
+    let full = 100;
+    try{ const d = fs.readFileSync(path.join(ROOT,`mogi/data/${m[1]}.js`),"utf8").match(/fullMarks:\s*(\d+)/);
+         if(d) full = Number(d[1]); }catch(e){}
+    const t = (m[2].match(/title:\s*'([^']*)'/)||[])[1] || m[1];
+    return { id:m[1], unit:/unit:\s*true/.test(m[2]), full, title:t.replace(/<[^>]+>/g,"").trim() };
+  });
+}
+const EX = readExams();
+const EX_MOCK = EX.filter(e=>!e.unit), EX_UNIT = EX.filter(e=>e.unit);
 const tbl = (arr)=> "| " + arr.map((h,i)=>`${i+1}. ${h}`).join(" | ") + " |";
 
 /* ---- 出力 ---- */
@@ -97,26 +112,29 @@ fs.mkdirSync(path.join(OUT,"server"), {recursive:true});
 for(const f of ["score_gas.gs","score_gas_trial.gs"])
   fs.writeFileSync(path.join(OUT,"server",f), scrub(fs.readFileSync(path.join(ROOT,"tools",f),"utf8")));
 fs.mkdirSync(path.join(OUT,"tools"), {recursive:true});
-for(const f of ["check_exams.mjs","make_paper.py"]){
+for(const f of ["check_exams.mjs","check_gas_contract.mjs","make_paper.py"]){
   let src = scrub(fs.readFileSync(path.join(ROOT,"tools",f),"utf8"));
   // 納品物では画面一式が app/ の下に入るので、検査ツールの基準ディレクトリもそこへ向ける
-  if(f==="check_exams.mjs"){
+  if(f.endsWith(".mjs")){
     const before = src;
     src = src.replace("resolve(dirname(fileURLToPath(import.meta.url)), '..')",
                       "resolve(dirname(fileURLToPath(import.meta.url)), '..', 'app')");
-    if(src===before){ console.error("✗ check_exams.mjs の ROOT 行が見つかりません（納品物で検査が動きません）"); process.exit(1); }
+    if(src===before){ console.error(`✗ ${f} の ROOT 行が見つかりません（納品物で検査が動きません）`); process.exit(1); }
+    // score_gas.gs は納品物では server/ に置くので、そこを見るように向け直す
+    src = src.replace(/(['"])tools\/score_gas\.gs\1/g, "'../server/score_gas.gs'");
   }
   fs.writeFileSync(path.join(OUT,"tools",f), src);
 }
 fs.writeFileSync(path.join(OUT,"tools","package.json"),
   JSON.stringify({name:"eigo-app-check", private:true, type:"module",
-    scripts:{check:"node check_exams.mjs"},
+    scripts:{check:"node check_exams.mjs && node check_gas_contract.mjs"},
     // jsdom が無いと 0_はじめに.md の「動作確認（10分）」手順7 がそのまま失敗する
     devDependencies:{jsdom:"^29.1.1"}}, null, 2));
 
 fs.writeFileSync(path.join(OUT,"0_はじめに.md"), doc0());
 fs.writeFileSync(path.join(OUT,"1_インターフェース仕様.md"), doc1());
 fs.writeFileSync(path.join(OUT,"2_デプロイ手順とデータ仕様.md"), doc2());
+fs.writeFileSync(path.join(OUT,"3_v1.0からの変更点.md"), doc3());
 
 /* ---- 検算：伏せ漏れが無いか ---- */
 let leak = [];
@@ -162,7 +180,8 @@ function doc0(){ return `# 英語学習アプリ ― インターフェース一
 | 2 | \`2_デプロイ手順とデータ仕様.md\` | いまの受け口（Google Apps Script）の立て方と、7タブの列定義 |
 | 3 | \`app/\` | 画面一式。単一HTML・依存ゼロ・ビルド不要 |
 | 4 | \`server/score_gas.gs\` | いまの受け口の全文（版 ${G.ver}） |
-| 5 | \`tools/\` | 品質ゲート（\`check_exams.mjs\`）と紙テスト生成器 |
+| 5 | \`tools/\` | 品質ゲート（\`check_exams.mjs\`・\`check_gas_contract.mjs\`）と紙テスト生成器 |
+| 6 | \`3_v1.0からの変更点.md\` | v1.0 をお持ちの場合、**差分だけ**を読めば追いつけます |
 
 **\`1_インターフェース仕様.md\` の §6（移行時の不変条件）だけは、必ずお読みください。**
 実装は置き換えていただいて構いませんが、そこが崩れると採点が信用できなくなります。
@@ -189,10 +208,11 @@ function doc0(){ return `# 英語学習アプリ ― インターフェース一
 | 画面 | 何をするか | 記録 |
 |---|---|---|
 | \`words/\` | 単語2000語＋活用編600点。品詞別に打ち込む | 端末 → マイページ経由で送信 |
-| \`mogi/\` | 模擬テスト（中2・中3・岡山県スタイル10本）。全自動採点 | 端末＋単元テストは即時送信 |
+| \`mogi/\` | 模擬テスト ${EX_MOCK.length}本（習熟度テスト対策・県立入試スタイル）＋単元テスト ${EX_UNIT.length}本。全自動採点。満点は県によって違う（${[...new Set(EX_MOCK.map(e=>e.full))].sort((a,b)=>b-a).join("点／")}点＝データの \`fullMarks\`） | 端末＋単元テストは即時送信 |
 | \`eiken/\` | 英検7〜2級のドリルと判定テスト | 1回ごとに送信 |
 | \`me/\` | マイページ。3アプリの記録をまとめて先生に送る | 送信の起点 |
 | \`jigaku/\` | 自学マイページ（単語・文法・本文の3レーン）。**AIに出題させ、アプリが再採点** | 1回ごとに送信 |
+| \`gojun/\` | 語順文法テスト。7つの箱（主語／助動詞・＝／動詞／目的語／その他／場所／時間）に、日本語訳どおり英語を入れる。えらぶ／打つの2モード・31項目×5文 | 1回ごとに送信 |
 | \`dojo/\` | 読解道場。テク→ドリル→県模試の3層 | 端末のみ |
 | \`listening/\` | 音の道場（疑似リスニング・スピーキング） | 端末のみ |
 | \`challenge/\` | 挑戦モード（単語50問・並べ替え英作文） | 端末のみ |
@@ -600,3 +620,121 @@ AImodeログ側のタブ名には依存せず、**列見出し「AI活用レベ�
 版を上げるときは、アプリ側の \`action:"policy"\` による版チェック（仕様書 §2.2）が
 安全弁として働きます。
 `; }
+
+/* ===================== v1.0 からの変更点 ===================== *
+ * v1.0（2026-09-01 時点）をすでにお持ちの方が、差分だけで追いつけるようにする。
+ * 数字は実体（exam.html の meta／各データの fullMarks／score_gas.gs）から出す。 */
+function doc3(){
+  const marks = [...new Set(EX_MOCK.map(e=>e.full))].sort((a,b)=>b-a);
+  return `# v1.0 からの変更点（→ v${VER}）
+
+対象：**2026-09-01 時点の v1.0** をお持ちの方。全部読み直す必要はありません。
+**インターフェース（送信の契約）に関わるのは §1〜§3 の3つだけ**です。§4以降は中身の改善です。
+
+---
+
+## 1. 送信する画面が1つ増えました ─ \`gojun/\`（語順文法テスト）
+
+**v1.0 の \`app/\` には入っていませんでした。**\`index.html\` からリンクされている稼働中の画面で、
+ほかの自学レーンと同じく \`kind:"jigaku"\` を送ります。
+
+| | |
+|---|---|
+| 画面 | \`app/gojun/index.html\` |
+| 中身 | 7つの箱（主語／助動詞・＝／動詞／目的語／その他／場所／時間）に、日本語訳どおり英語を入れる。えらぶ（選択）／打つ（入力）の2モード |
+| 送信 | \`kind:"jigaku"\`・\`lane:"語順"\`。届き先は既存の「自学ログ」タブ（**列の追加はありません**） |
+| 採点 | すべてアプリ側。1文は完答で1点（部分点なし） |
+
+**移行時にすること**：送信を受ける実装をお持ちの場合、\`lane\` の値に \`"語順"\` が増えるだけです。
+新しい列も新しいタブも要りません。
+
+---
+
+## 2. 模試の満点が 100点固定ではなくなりました
+
+県によって満点が違うため、データが \`fullMarks\` を持つようになりました。**無ければ 100** です。
+
+| いまの内訳 | |
+|---|---|
+| 模試 | ${EX_MOCK.length}本（満点 ${marks.join("点／")}点） |
+| 単元テスト | ${EX_UNIT.length}本 |
+
+**移行時にすること**：満点を \`100\` と決め打ちしている箇所があれば \`fullMarks ?? 100\` にしてください。
+採点の合計そのものはアプリが出して送るので、受け口側の計算は変わりません。
+（v1.0 同梱の \`check_exams.mjs\` は 100点決め打ちでした。同梱版を差し替えてあります。）
+
+---
+
+## 3. 受け口（\`score_gas.gs\`）が ${G.ver} になりました
+
+| 変更 | 中身 |
+|---|---|
+| 列の追加 | 「成績まとめ」の**末尾に3列**（模試_341／模試_342／模試_福岡1）。既存の列位置は動きません |
+| 単元テスト | \`UNIT_EXAMS\` に \`c3u3\`・\`c3u4\` を追加（計 ${EX_UNIT.length}本） |
+| 単元名の統合 | 自学ログの単元キーで **Unit と Lesson を同じ列に寄せる**。教科書で呼び名が違うだけで生徒には同じ単元のため（以前は \`U3\` と \`L3\` の2列に割れた） |
+| 版の見かた | アプリ側が **版番号を数で見る**ようになりました（以前は文字列の部分一致だったので、古い版でも通っていました） |
+
+**移行時にすること**：
+- 列を末尾に足す作法は v1.0 と同じです。**途中に挟むと既存データが列ズレします。**
+- 同梱の \`clearNewSummaryCols()\` を**1回だけ**実行してください。足した位置には以前
+  「自学_◯◯」の値が入っており、最高点を採る列なので古い値が勝ちつづけます。
+- 版番号を返す実装をお持ちの場合、\`jigaku-<数字>\` の形を保ってください。
+  アプリは \`jigaku-(\\d+)\` を取り出して下限と比べます（単語3／文法・語順4／本文5／管理画面8以上）。
+
+---
+
+## 4. 採点の基準を変えました（自学・本文レーン）
+
+「だいたい合っていれば○」に**下限**を入れました。下限が無かったころは7文字以下の答えが
+すべて「1文字ちがい＝ほぼ正解」になり、\`西\` と書いて \`東\` が満点になっていました。
+
+- **4文字以下は完全一致だけ。**数をふくむ短い答え（\`1985年\`・\`20人\`）も完全一致だけ。
+- 長い説明文の「4分の1までのつづりちがい」は従来どおり。
+- 読点は列挙の区切りにも文の読点にもなるので、**按分した点と1つの答えとして読んだ点の高いほう**を採ります。
+- 記号の答えは ア／あ／A／1／① のどれでも正解。**全角と半角は区別しません**（4レーン共通）。
+
+**移行時にすること**：なし。採点はすべてアプリ側で、送るのは結果の数字だけです。
+ただし §6 の不変条件「AIの自己採点を信じない」はこの版でも変わっていません。
+
+---
+
+## 5. 全体点検（総チェック）で 39件を修正しました
+
+10観点で監査し、各指摘を3つの視点で反証にかけて確定したものだけを直しています。
+検証で踏んでいただく際に、以前の版と挙動が違って見えるのはこのためです。主なもの：
+
+| どこ | 以前 | いま |
+|---|---|---|
+| 模試の並べかえ | 正解が✕、誤った並びが○になる問題が3問 | データ側に正解の順番を明示し、品質ゲートで検出 |
+| 単元テストの提出 | 誤タップ1回で0点が確定（取り消し不可） | 2回押し＋未回答数の表示 |
+| 紙のテスト | 「2つ選ぶ」問題が設問文だけ刷られ、選択肢も答え欄も出ない | 選択肢と2枠の答え欄を印刷。刷り忘れを検算で検出 |
+| 実証モード | マイページを開いただけで氏名つきの全成績を自動送信 | **自動送信しない。氏名も復元しない**（手動ボタンのみ） |
+| 端末の共有キー | AI練習を開くと他アプリの名前欄が消えた | 消さない |
+| 模試データ | 解答不能な設問、下線部が無いのに下線部を指す設問など | 修正し、同種を品質ゲートで検出 |
+
+---
+
+## 6. 品質ゲートが増えました
+
+\`tools/\` で \`npm install && npm run check\` を実行すると、次を毎回検査します。
+
+| 検査 | 何を見るか |
+|---|---|
+| \`check_exams.mjs\` | 全模試が満点で解けるか（**X/Yコース両方**）・構造・並べかえの一意性・下線部の参照・話者連続・横断重複・単語サニティ |
+| \`check_gas_contract.mjs\` | **アプリと受け口の食いちがい**（版の下限／成績まとめの全列に送信キーがあるか／単元テストが両方にそろっているか／模試が3か所そろっているか／送信先URLの取りちがえ） |
+
+\`check_gas_contract.mjs\` は今回の点検で「記録は取れているのに集計から落ちていた模試が2本あった」
+ことを受けて追加したものです。**受け口を作り替える場合、この検査が通ることを移行の完了条件に
+していただくと安全です。**
+
+---
+
+## 7. 変わっていないもの
+
+- 送信の方式（\`text/plain\` の POST・プリフライトを起こさない）
+- データモデル（7タブ・1人1行の upsert・記録は下げない）
+- **採点はすべてアプリ側で行い、AIには一切させない**という原則
+- \`1_インターフェース仕様.md\` §6 の**移行時の不変条件8つ**
+- 実証モードの分離（\`?site=aso\` と \`assets/site.js\` の1か所で完結）
+`;
+}

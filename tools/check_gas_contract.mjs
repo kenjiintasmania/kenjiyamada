@@ -73,8 +73,12 @@ if (!notCounted.length && mCols.length === mocks.length)
 const url = (t) => [...String(t).matchAll(/AKfycb[A-Za-z0-9_-]+/g)].map(m => m[0]);
 const TRIAL = url(r('assets/site.js'));
 const LIVE  = url(r('me/index.html'))[0];
-if (!LIVE) fail('me/index.html に生徒用の送信先がありません');
-['mogi/exam.html', 'jigaku/index.html', 'jigaku/bunpo.js', 'jigaku/honbun.js',
+/* 事業者へお渡しする一式では、稼働中のURLを伏せてある（make_handoff の scrub）。
+   その状態でこの節を回すと「URLが無い」で必ず落ちるので、伏せてあるときは飛ばす。 */
+const REDACTED = !LIVE && !TRIAL.length;
+if (REDACTED) console.log('  ⓘ gas     送信先URLは伏せられているため、この節は飛ばしました');
+else if (!LIVE) fail('me/index.html に生徒用の送信先がありません');
+if (!REDACTED) ['mogi/exam.html', 'jigaku/index.html', 'jigaku/bunpo.js', 'jigaku/honbun.js',
  'gojun/gojun.js', 'admin/index.html'].forEach(f => {
   const u = url(r(f));
   if (!u.length) return;
@@ -82,10 +86,10 @@ if (!LIVE) fail('me/index.html に生徒用の送信先がありません');
   if (u.some(x => TRIAL.includes(x))) fail(`${f} に実証用URLが混ざっています`);
 });
 // 英検だけは昔から別デプロイ。実証用が混ざっていないことと、1本だけであることを見る。
-const eiken = url(r('eiken/index.html'));
-if (eiken.length !== 1) fail(`eiken/index.html の送信先が1本ではありません（${eiken.length}本）`);
+const eiken = REDACTED ? [] : url(r('eiken/index.html'));
+if (!REDACTED && eiken.length !== 1) fail(`eiken/index.html の送信先が1本ではありません（${eiken.length}本）`);
 if (eiken.some(x => TRIAL.includes(x))) fail('eiken/index.html に実証用URLが混ざっています');
-if (!fails) {
+if (!fails && !REDACTED) {
   pass('送信先URL：生徒用と実証用が分かれている');
   if (eiken[0] !== LIVE)
     console.log('  ⓘ gas     英検だけ別デプロイ（…' + eiken[0].slice(-6) + '）。/admin の版表示は ' +

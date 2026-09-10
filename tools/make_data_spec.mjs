@@ -17,6 +17,17 @@ const mogi = r('mogi/exam.html');
 
 const die = (m) => { console.error('✗ ' + m); process.exit(1); };
 
+/* 通信先の本数は数える（英検だけ昔から別デプロイなので「1本だけ」と書くと事実とちがう）。 */
+const N_ENDPOINT = (() => {
+  const found = new Set();
+  for (const f of ['me/index.html', 'eiken/index.html', 'mogi/exam.html', 'jigaku/index.html',
+                   'jigaku/bunpo.js', 'jigaku/honbun.js', 'gojun/gojun.js', 'admin/index.html']) {
+    for (const m of r(f).matchAll(/AKfycb[A-Za-z0-9_-]+/g)) found.add(m[0]);
+  }
+  if (!found.size) die('送信先URLを1つも取得できません');
+  return found.size;
+})();
+
 /* ---------- 受信側：成績まとめの列定義 ---------- */
 const colsSrc = gas.match(/var SUMMARY_COLS = \[([\s\S]*?)\n\];/);
 if (!colsSrc) die('SUMMARY_COLS を取得できません');
@@ -71,6 +82,34 @@ const writtenKeys = (fnName) => {
 const EIKEN_WRITTEN = writtenKeys('handleEiken');
 const UNIT_WRITTEN = writtenKeys('handleUnitTest');
 
+/* ---------- 受信側：自学ログの列 ---------- */
+const JIGAKU_COLS = headerOf('handleJigaku');
+const JIGAKU_WRITTEN = writtenKeys('handleJigaku');
+TAB.jigaku = sheetName('JIGAKU_SHEET');
+
+/* ---------- 送信側：自学の4レーン（lane の値と、送る画面をソースから拾う） ---------- */
+const JIGAKU_LANES = [
+  ['jigaku/index.html', 'jigaku/index.html'],
+  ['jigaku/bunpo.html', 'jigaku/bunpo.js'],
+  ['jigaku/honbun.html', 'jigaku/honbun.js'],
+  ['gojun/index.html',  'gojun/gojun.js'],
+].map(([screen, src]) => {
+  const t = r(src);
+  const lane = (t.match(/lane\s*:\s*"([^"]+)"/) || [])[1];
+  if (!lane) die(`${src} から lane を取得できません`);
+  return { screen, lane };
+});
+/* 自学ログへ送る画面が増えたのに、ここに足し忘れていないかを見る。
+   （kind:"jigaku" を送るファイルの数と、上の一覧の数が合うこと） */
+{
+  const senders = ['jigaku/index.html', 'jigaku/bunpo.js', 'jigaku/honbun.js', 'gojun/gojun.js',
+                   'jigaku/honbun.html', 'jigaku/bunpo.html', 'gojun/index.html', 'me/index.html',
+                   'eiken/index.html', 'mogi/exam.html', 'aimode/index.html']
+    .filter(f => { try { return /kind\s*:\s*"jigaku"/.test(r(f)); } catch (e) { return false; } });
+  if (senders.length !== JIGAKU_LANES.length)
+    die(`自学ログへ送る画面が ${senders.length} 個ありますが、一覧は ${JIGAKU_LANES.length} 個です: ${senders.join(', ')}`);
+}
+
 /* ---------- 送信側：英検・単元テストのキー ---------- */
 const eikenPayload = eiken.match(/var payload=\{([\s\S]*?)\};/);
 if (!eikenPayload) die('英検の payload を取得できません');
@@ -117,8 +156,9 @@ let md = `# 送信されるデータ一式（英語学習アプリ）
 | 1 | マイページで「先生に送信」を押したとき（学年・番号が入っていれば自動送信も） | \`me/\` | ${TAB.summary} | 1人1行を上書き更新 |
 | 2 | 英検アプリで判定テストを終えて送信したとき | \`eiken/\` | ${TAB.eiken} | 1回ごとに1行追記 |
 | 3 | 模試の単元テストを提出したとき（先生が受付を開けている間のみ） | \`mogi/exam.html\` | ${TAB.unitLog} | 1回ごとに1行追記 |
+${JIGAKU_LANES.map((l, i) => `| ${4 + i} | 自学の練習を終えて「先生に送る」を押したとき（${l.lane}） | \`${l.screen}\` | ${TAB.jigaku} | 1回ごとに1行追記 |`).join('\n')}
 
-これ以外の操作（単語アプリ・読解道場・挑戦モード・入試模試の自己採点など）は
+これ以外の操作（単語アプリ・読解道場・挑戦モード・模試の自己採点など）は
 **通信しません**。記録は端末内（localStorage）に留まります。
 
 送信はすべて HTTPS の POST（JSON）で、宛先は Google Apps Script のウェブアプリ1本のみです。
@@ -136,6 +176,25 @@ let md = `# 送信されるデータ一式（英語学習アプリ）
 |---|---|---|---|
 `;
 
+/* 模試の満点は県によって違う（岡山100点／福岡60点）。列のキーから模試IDを引いて fullMarks を見る。 */
+const EXAM_FULL = (() => {
+  const blk = (mogi.match(/const meta=\{([\s\S]*?)\n  \};/) || [])[1] || '';
+  const ids = [...blk.matchAll(/^\s*([a-z0-9_]+):\s*\{/gm)].map(m => m[1]);
+  const out = {};
+  for (const id of ids) {
+    let full = 100;
+    try { const d = r(`mogi/data/${id}.js`).match(/fullMarks:\s*(\d+)/); if (d) full = Number(d[1]); } catch (e) {}
+    out[id] = full;
+  }
+  return out;
+})();
+// 送信キー（m_ok1 / m_341 / m_fk1 …）から模試IDを当てる。当たらなければ 100。
+function fullOf(key) {
+  const body = me.match(/function buildPayload\(\)\{([\s\S]*?)\n  \}/)[1];
+  const m = body.match(new RegExp(`${key}\\s*:\\s*ms\\("([a-z0-9_]+)"\\)`));
+  return (m && EXAM_FULL[m[1]] != null) ? EXAM_FULL[m[1]] : 100;
+}
+
 const DESC = {
   _ts: '受信した日時（**サーバー側で付与**。アプリは送りません）',
   cls: '学年（1〜3）。生徒が入力', num: '出席番号。半角数字のみ', name: '名前。**任意**（空でも送信できる）',
@@ -148,7 +207,7 @@ const DESC = {
   e_recent_grade: '直近に受けた級', e_recent_pct: '直近の正答率', e_recent_pass: '直近の合否',
 };
 for (const c of COLS) {
-  const d = DESC[c.key] || (/^m_/.test(c.key) ? '各回のベスト（100点満点）'
+  const d = DESC[c.key] || (/^m_/.test(c.key) ? `各回のベスト（${fullOf(c.key)}点満点）`
     : /^sv_.*_n$/.test(c.key) ? '挑戦回数'
     : /^sv_/.test(c.key) ? '正式点（80%以上のときだけ入る）' : '');
   md += `| ${esc(c.head)} | \`${c.key}\` | ${c.max ? '最大値' : '最新'} | ${d} |\n`;
@@ -203,7 +262,39 @@ ${rows(UNIT_COLS.map(h => `| ${esc(h)} | ${({
 
 ---
 
-## 4. 先生の操作で送るもの（生徒のデータではありません）
+## 4. ${TAB.jigaku}（自学の4レーン・1回ごと）
+
+同じタブに、4つの画面が同じ形で追記します。区別は「レーン」列の値です。
+
+| レーン | 送る画面 | 何をした記録か |
+|---|---|---|
+${rows(JIGAKU_LANES.map(l => `| ${esc(l.lane)} | \`${l.screen}\` | ${({
+  '単語': 'AIに作らせた単語テストを、生徒が自分で採点した結果',
+  '文法': '教科書のキーセンテンスから作った5問（写しがき／英訳／空欄2／並びかえ）',
+  '本文': '読んだ本文についての3種5問と、印のつけかたの突合',
+  '語順': '7つの箱に日本語訳どおり英語を入れる問題（完答で1点）',
+})[l.lane] || ''} |`))}
+
+| 列（見出し） | 内容 |
+|---|---|
+${rows(JIGAKU_COLS.map(h => `| ${esc(h)} | ${({
+  '日時': '受信した日時（サーバー側で付与）', '学年': '生徒が入力', '番号': '生徒が入力', '名前': '任意',
+  'レーン': '単語／文法／本文／語順', 'リスト名': '生徒が選んだ単元（例 Unit 3-1）',
+  '作り方': '出題の材料をどう用意したか（打ち込み／スクショ／キーセンテンス など）',
+  'リスト語数': '材料の語数・文数', '問題数': '出した問題の数', '正解数': '正解した数',
+  '正答率(%)': '％', 'プロンプト版': 'AIへ渡した指示の版',
+  'リスト外の語': 'レーンによって意味が変わる（単語＝リストに無い語／文法＝写しがきのミス数）',
+  'まちがえた語': '復習用', 'クリアした語': '通算のクリア語数を数えるために使う（同じ語を重複して数えない）',
+  '強調数': '本文レーンで生徒が印をつけた語の数', '的中数': 'そのうち設問の答えに絡んだ数',
+})[h] || ''} |`))}
+
+**採点はすべてアプリ側で行っています。**AIには出題と講評だけをさせ、点数には一切使いません
+（生徒が書いた文字列から、アプリがもう一度採点し直しています）。この原則は
+\`1_インターフェース仕様.md\` §6 の不変条件です。
+
+---
+
+## 5. 先生の操作で送るもの（生徒のデータではありません）
 
 先生用コンソール \`/admin/\` からは、次の操作だけを送ります。いずれも合言葉（PIN）が必要です。
 
@@ -218,7 +309,7 @@ ${rows(UNIT_COLS.map(h => `| ${esc(h)} | ${({
 
 ---
 
-## 5. 送らないもの（端末内に留まるもの）
+## 6. 送らないもの（端末内に留まるもの）
 
 | 記録 | 保存先キー | 送信 |
 |---|---|---|
@@ -234,8 +325,13 @@ ${rows(UNIT_COLS.map(h => `| ${esc(h)} | ${({
 - メールアドレス・アカウント情報（アプリはログイン不要で、取得する手段を持ちません）
 - 位置情報・端末識別子・生体・感情・カメラ・マイクの情報
 - Cookie・広告タグ・アクセス解析（第三者サービスへの通信は一切ありません。
-  アプリが通信する先は、上記の Google Apps Script のウェブアプリ **1本だけ** です）
-- 答案の本文や自由記述（送るのは点数・回数・レベルの数値のみ）
+  アプリが通信する先は、先生の Google Apps Script のウェブアプリ **${N_ENDPOINT}本だけ** です）
+- 長文の答案・自由記述の本文（模試や英検で送るのは点数・回数・レベルの数値のみです）
+
+> ただし**自学ログ（§4）だけは、生徒が打った語そのものを送ります** ―
+> 「まちがえた語」「クリアした語」「リスト名」「リスト外の語」の4列です。
+> 復習に使う語と、通算のクリア語数を語の実数で数えるために必要で、
+> それぞれ上限（500字・1200字）で切っています。文章や感想は送りません。
 
 なお、通信そのものは Google のインフラを経由するため、Google 側では一般的な
 アクセスログ（接続元IP等）が発生し得ます。**スプレッドシートに記録されるのは
@@ -245,7 +341,7 @@ ${rows(UNIT_COLS.map(h => `| ${esc(h)} | ${({
 
 ---
 
-## 6. 実証（試用版）での違い
+## 7. 実証（試用版）での違い
 
 | | 生徒用 | 実証用（\`?site=aso\`） |
 |---|---|---|
