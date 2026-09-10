@@ -14,7 +14,8 @@ const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
 const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c3u1','c3u2','c3u3','c3u4',
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
-  'chu3_341','chu3_342'];
+  'chu3_341','chu3_342',
+  'fukuoka1'];
 const ENGINE = r('mogi/assets/engine.js');
 
 let fails = 0;
@@ -118,8 +119,21 @@ function gradeExam(id){
   w.MockExam.gradeAll('bottom');
   const top = w.document.getElementById('scoretext').textContent;
   const bot = w.document.getElementById('scorebar_b').querySelector('.big').textContent;
-  if(top!=='100 / 100' || bot!=='100 / 100') fail(id, `満点で採点されない (top=${top} / bot=${bot})`);
-  else pass(id, `100/100 (${items.length}問)`);
+  // 満点は県によって違う（岡山100点／福岡60点）。データが fullMarks を持てばそれ、無ければ100。
+  // あわせて「配点の合計＝満点」も見る。合計がずれても100点で通ってしまう穴があったため。
+  const full = (typeof EXAM.fullMarks === 'number') ? EXAM.fullMarks : 100;
+  // コース制（中2のX/Y）は両コースぶんの設問が items に入るので、1コース分だけ数える
+  // ＝ engine が満点として出す値（make_paper.py の section_points と同じ数えかた）
+  const sumPt = (EXAM.sections||[]).reduce((a,sec)=>{
+    if(sec.courses && sec.courses.length){
+      return a + Math.max(...sec.courses.map(c=>(c.items||[]).reduce((x,it)=>x+(Number(it.pt)||0),0)));
+    }
+    return a + (sec.groups||[]).reduce((x,g)=>x+(g.items||[]).reduce((y,it)=>y+(Number(it.pt)||0),0), 0);
+  }, 0);
+  if(sumPt !== full) fail(id, `配点の合計が満点と合わない (合計${sumPt} / 満点${full})`);
+  const want = `${full} / ${full}`;
+  if(top!==want || bot!==want) fail(id, `満点で採点されない (top=${top} / bot=${bot} / 満点${full})`);
+  else if(sumPt===full) pass(id, `${full}/${full} (${items.length}問)`);
 }
 
 function checkWords(){
@@ -145,7 +159,7 @@ function checkWords(){
 // 新規創作ぶんの横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか。
 // 対象は okayama*（県立入試スタイル）と、同じ型で書き下ろした chu3_34x・c3u3/c3u4。
 // 既存の chu2*/chu3_1〜4 等は正進社の過去問ベースで言い回しが元から近いので含めない。
-const NEW_STYLE = /^(okayama\d+|chu3_34\d|c3u[34])$/;
+const NEW_STYLE = /^(okayama\d+|fukuoka\d+|chu3_34\d|c3u[34])$/;
 function okayamaDupCheck(){
   const set = EXAMS.filter(id=>NEW_STYLE.test(id));
   if(set.length<2) return;
@@ -174,7 +188,7 @@ console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
 console.log('— 活用編（動詞の変化形／形容詞の比較） —');
 checkKatsuyo();
-console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試100点・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK・活用編OK）');
+console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK・活用編OK）');
 process.exit(fails ? 1 : 0);
 
 // 活用編：150+50=200パターン・1パターン3疑似単語（原形→slot0/1/2）・id/kid重複なし・英字妥当性
