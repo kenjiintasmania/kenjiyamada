@@ -178,7 +178,7 @@ sections: [
     'Before that day, I thought selling vegetables was easy. Now I think it is much harder, and I want to tell you why.<br><br>'+
     '<b>②</b> On the first morning, I woke up at five. It was still dark and cold. '+
     'Mr. Baker, a farmer, was already washing carrots at the market. He said to me, '+
-    '"I always come here before the sun rises. Fresh vegetables are the thing I can be proud of." '+
+    '"I always come here before the sun rises. Fresh vegetables are something I can be proud of." '+
     'I carried heavy boxes with him, and my arms soon <u>(お) ___</u>. But he never stopped smiling.<br><br>'+
     '<b>③</b> At nine, many people came. An old woman bought my tomatoes and said, '+
     '"These look wonderful. Thank you for getting up so early." I was very glad to hear that. '+

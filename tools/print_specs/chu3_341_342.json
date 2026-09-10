@@ -1,0 +1,1906 @@
+{
+ "name": "中3習熟度テスト対策_341_342",
+ "title": "中3 習熟度テスト対策 341・342",
+ "subtitle": "アプリの模試341・342から作った紙の対策プリント。出てくる語・熟語・問題の形は、模試とそろえてあります。",
+ "wordSections": [
+  {
+   "title": "中2で習った語（模試に出たもの）",
+   "sub": "ここが抜けていると、読めても意味が取れません。",
+   "rows": [
+    {
+     "en": "ago",
+     "ja": "（今から）…前に"
+    },
+    {
+     "en": "agree",
+     "ja": "賛成する、意見が一致する"
+    },
+    {
+     "en": "almost",
+     "ja": "ほとんど"
+    },
+    {
+     "en": "answer",
+     "ja": "答える"
+    },
+    {
+     "en": "ask",
+     "ja": "たずねる、たのむ"
+    },
+    {
+     "en": "became",
+     "ja": "becomeの過去形"
+    },
+    {
+     "en": "because",
+     "ja": "なぜなら"
+    },
+    {
+     "en": "began",
+     "ja": "beginの過去形"
+    },
+    {
+     "en": "camp",
+     "ja": "キャンプする"
+    },
+    {
+     "en": "carry",
+     "ja": "運ぶ"
+    },
+    {
+     "en": "change",
+     "ja": "変化する、乗り換える"
+    },
+    {
+     "en": "check",
+     "ja": "…を点検する"
+    },
+    {
+     "en": "choose",
+     "ja": "選ぶ"
+    },
+    {
+     "en": "clear",
+     "ja": "はっきりした"
+    },
+    {
+     "en": "could",
+     "ja": "canの過去形。【ていねいな依頼】（　）you ...?　…してくださいませんか。"
+    },
+    {
+     "en": "cover",
+     "ja": "…をおおう、包む"
+    },
+    {
+     "en": "dream",
+     "ja": "夢"
+    },
+    {
+     "en": "early",
+     "ja": "早い"
+    },
+    {
+     "en": "easy",
+     "ja": "簡単な"
+    },
+    {
+     "en": "even",
+     "ja": "…でさえ"
+    },
+    {
+     "en": "excited",
+     "ja": "わくわくした"
+    },
+    {
+     "en": "feeling",
+     "ja": "感情、気持ち"
+    },
+    {
+     "en": "felt",
+     "ja": "feelの過去分詞"
+    },
+    {
+     "en": "field",
+     "ja": "競技場、（陸上競技の）フィールド"
+    },
+    {
+     "en": "finish",
+     "ja": "終わる、終える"
+    },
+    {
+     "en": "found",
+     "ja": "findの過去形"
+    },
+    {
+     "en": "gave",
+     "ja": "giveの過去形"
+    },
+    {
+     "en": "give",
+     "ja": "与える、渡す、もたらす"
+    },
+    {
+     "en": "glad",
+     "ja": "うれしい"
+    },
+    {
+     "en": "graph",
+     "ja": "グラフ、図表"
+    },
+    {
+     "en": "grow",
+     "ja": "育てる、育つ"
+    },
+    {
+     "en": "heavy",
+     "ja": "重い"
+    },
+    {
+     "en": "hope",
+     "ja": "望む（実現可能性のある望み）"
+    },
+    {
+     "en": "hour",
+     "ja": "時刻"
+    },
+    {
+     "en": "hurt",
+     "ja": "傷つける"
+    },
+    {
+     "en": "idea",
+     "ja": "考え、アイディア"
+    },
+    {
+     "en": "important",
+     "ja": "重要"
+    },
+    {
+     "en": "learn",
+     "ja": "学ぶ"
+    },
+    {
+     "en": "line",
+     "ja": "線、電線、路線"
+    },
+    {
+     "en": "member",
+     "ja": "一員、メンバー"
+    },
+    {
+     "en": "moon",
+     "ja": "（天体の）月"
+    },
+    {
+     "en": "more",
+     "ja": "［比較級を作る］（～より）もっと…"
+    },
+    {
+     "en": "most",
+     "ja": "［最上級を作る］いちばん…、最も…"
+    },
+    {
+     "en": "must",
+     "ja": "…しなければならない"
+    },
+    {
+     "en": "own",
+     "ja": "自分自身の、独自の"
+    },
+    {
+     "en": "pass",
+     "ja": "通り過ぎる、手渡す"
+    },
+    {
+     "en": "pay",
+     "ja": "支払う"
+    },
+    {
+     "en": "perfect",
+     "ja": "完全な、完ぺきな、最適な"
+    },
+    {
+     "en": "price",
+     "ja": "値段"
+    },
+    {
+     "en": "sell",
+     "ja": "売る"
+    },
+    {
+     "en": "shall",
+     "ja": "【提案・勧誘】［相手の意思をたずねて］（　）I ［we］...? …しましょうか。"
+    },
+    {
+     "en": "share",
+     "ja": "共有する"
+    },
+    {
+     "en": "should",
+     "ja": "…すべきである"
+    },
+    {
+     "en": "smile",
+     "ja": "ほほえむ、微笑する"
+    },
+    {
+     "en": "soon",
+     "ja": "すぐに、まもなく"
+    },
+    {
+     "en": "story",
+     "ja": "話、物語"
+    },
+    {
+     "en": "surprised",
+     "ja": "驚いた、びっくりした"
+    },
+    {
+     "en": "taught",
+     "ja": "teachの過去形"
+    },
+    {
+     "en": "than",
+     "ja": "…よりも"
+    },
+    {
+     "en": "told",
+     "ja": "tellの過去形"
+    },
+    {
+     "en": "true",
+     "ja": "本当の、真実の"
+    },
+    {
+     "en": "understood",
+     "ja": "understandの過去形"
+    },
+    {
+     "en": "will",
+     "ja": "【単なる未来】…でしょう、…だろう"
+    },
+    {
+     "en": "without",
+     "ja": "…なしで［に］"
+    },
+    {
+     "en": "woke",
+     "ja": "wakeの過去形"
+    },
+    {
+     "en": "young",
+     "ja": "若い"
+    }
+   ],
+   "cols": 2
+  },
+  {
+   "title": "中3で習った語（模試に出たもの）",
+   "sub": "数は少ないが、答えに直結する語が多い。",
+   "rows": [
+    {
+     "en": "air",
+     "ja": "空気、空中"
+    },
+    {
+     "en": "already",
+     "ja": "すでに、もう"
+    },
+    {
+     "en": "amazing",
+     "ja": "驚くべき"
+    },
+    {
+     "en": "been",
+     "ja": "beの過去分詞"
+    },
+    {
+     "en": "cheap",
+     "ja": "（品物・料金が）安い"
+    },
+    {
+     "en": "coat",
+     "ja": "上着、コート"
+    },
+    {
+     "en": "corner",
+     "ja": "コーナー"
+    },
+    {
+     "en": "drawing",
+     "ja": "絵、図、スケッチ"
+    },
+    {
+     "en": "happen",
+     "ja": "起こる、生じる"
+    },
+    {
+     "en": "held",
+     "ja": "holdの過去形"
+    },
+    {
+     "en": "hold",
+     "ja": "持つ、つかむ"
+    },
+    {
+     "en": "report",
+     "ja": "報告、レポート"
+    },
+    {
+     "en": "since",
+     "ja": "…（して）以来"
+    },
+    {
+     "en": "sky",
+     "ja": "空、大空"
+    },
+    {
+     "en": "sleep",
+     "ja": "眠る、寝ている"
+    },
+    {
+     "en": "until",
+     "ja": "…まで（ずっと）、［否定文で］…までは（～しない）"
+    },
+    {
+     "en": "visitor",
+     "ja": "訪問客、見学者"
+    }
+   ],
+   "cols": 2
+  },
+  {
+   "title": "単語アプリに無い語（模試では語注が付く語）",
+   "sub": "本番で語注が付くとはかぎりません。ここだけは丸ごと覚えてしまう。",
+   "rows": [
+    {
+     "en": "carrot",
+     "ja": "にんじん"
+    },
+    {
+     "en": "comfortable",
+     "ja": "気持ちのよい・快適な"
+    },
+    {
+     "en": "dirty",
+     "ja": "よごれた"
+    },
+    {
+     "en": "dust",
+     "ja": "ほこり"
+    },
+    {
+     "en": "farm",
+     "ja": "農場"
+    },
+    {
+     "en": "hall",
+     "ja": "会館・ホール"
+    },
+    {
+     "en": "hill",
+     "ja": "丘"
+    },
+    {
+     "en": "junior high school",
+     "ja": "中学校"
+    },
+    {
+     "en": "laugh",
+     "ja": "笑う"
+    },
+    {
+     "en": "lend",
+     "ja": "〜を貸す"
+    },
+    {
+     "en": "machine",
+     "ja": "機械"
+    },
+    {
+     "en": "myself",
+     "ja": "私自身"
+    },
+    {
+     "en": "nobody",
+     "ja": "だれも〜ない"
+    },
+    {
+     "en": "observatory",
+     "ja": "天文台"
+    },
+    {
+     "en": "proud",
+     "ja": "ほこりに思って"
+    },
+    {
+     "en": "recipe",
+     "ja": "作り方・レシピ"
+    },
+    {
+     "en": "ring",
+     "ja": "輪・指輪"
+    },
+    {
+     "en": "rocket",
+     "ja": "ロケット"
+    },
+    {
+     "en": "schoolyard",
+     "ja": "校庭"
+    },
+    {
+     "en": "simple",
+     "ja": "かんたんな"
+    },
+    {
+     "en": "telescope",
+     "ja": "望遠鏡"
+    },
+    {
+     "en": "tonight",
+     "ja": "今夜"
+    },
+    {
+     "en": "truck",
+     "ja": "トラック"
+    },
+    {
+     "en": "whole",
+     "ja": "全体の・まるごとの"
+    },
+    {
+     "en": "yen",
+     "ja": "円（日本のお金）"
+    },
+    {
+     "en": "Milky Way",
+     "ja": "天の川"
+    },
+    {
+     "en": "Saturn",
+     "ja": "土星"
+    }
+   ],
+   "cols": 2
+  },
+  {
+   "title": "形が変わる動詞（原形 — 過去形 — 過去分詞）",
+   "sub": "模試の空所補充は、ほぼここから出ます。",
+   "rows": [
+    {
+     "en": "break — broke — broken",
+     "ja": "こわす（こわれる）"
+    },
+    {
+     "en": "forget — forgot — forgotten",
+     "ja": "忘れる"
+    },
+    {
+     "en": "sleep — slept — slept",
+     "ja": "眠る"
+    },
+    {
+     "en": "grow — grew — grown",
+     "ja": "育てる・育つ"
+    },
+    {
+     "en": "bring — brought — brought",
+     "ja": "持って来る"
+    },
+    {
+     "en": "hold — held — held",
+     "ja": "開く・持つ"
+    },
+    {
+     "en": "buy — bought — bought",
+     "ja": "買う"
+    },
+    {
+     "en": "sell — sold — sold",
+     "ja": "売る"
+    },
+    {
+     "en": "cover — covered — covered",
+     "ja": "おおう"
+    },
+    {
+     "en": "build — built — built",
+     "ja": "建てる"
+    }
+   ],
+   "cols": 1
+  }
+ ],
+ "idioms": [
+  {
+   "en": "look at 〜",
+   "ja": "〜を見る",
+   "example": "Look at this, Nanami. The morning market will be held next Sunday.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "be held",
+   "ja": "開かれる・行われる",
+   "example": "The town festival is held every August. / This school was built in 1962.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "Shall we 〜?",
+   "ja": "いっしょに〜しませんか",
+   "example": "I have club practice until nine. Shall we meet at the station at nine thirty?",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "Don't worry.",
+   "ja": "心配しないで",
+   "example": "Oh no, I forgot my shopping bag. — Don't worry. You can use mine.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "be good at 〜",
+   "ja": "〜が得意だ（notをつけて「苦手だ」）",
+   "example": "I'm not good at speaking in front of many people.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "a lot",
+   "ja": "たくさん（動詞のあとで）",
+   "example": "The market is open until eleven, so you can still buy a lot.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "for a long time",
+   "ja": "長い間",
+   "example": "Wow, the thirtieth market! It has been held for a long time, right?",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "have been to 〜",
+   "ja": "〜へ行ったことがある",
+   "example": "Have you been to the morning market before? — Yes, I have been there many times.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "many times",
+   "ja": "何度も",
+   "example": "I have visited that museum many times.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "Of course.",
+   "ja": "もちろん",
+   "example": "Have you been there before? — Of course. I have bought vegetables there many times.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "talk about 〜",
+   "ja": "〜について話す",
+   "example": "Today, let's talk about the food in our town.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "How about 〜?",
+   "ja": "〜はどうですか",
+   "example": "I see. Mei, how about you?",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "like 〜 the most",
+   "ja": "〜が一番好きだ",
+   "example": "I like cooking with my grandmother the most.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "by oneself",
+   "ja": "ひとりで・自分だけで",
+   "example": "Running a café by yourself is not easy, but it is a nice dream.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "let me 〜",
+   "ja": "私に〜させて",
+   "example": "Now let me talk about myself.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "begin to 〜",
+   "ja": "〜し始める（to＋動詞の原形）",
+   "example": "I began to love them.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "start ~ing",
+   "ja": "〜し始める（動名詞）",
+   "example": "I started teaching here nine years ago.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "Would you like to 〜?",
+   "ja": "〜しませんか（ていねいなさそい）",
+   "example": "My grandfather grew them. Would you like to eat one?",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "more than 〜",
+   "ja": "〜より多く（教科書の訳は「〜以上」）",
+   "example": "How long has he grown them? — For more than thirty years.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "How long 〜?",
+   "ja": "どれくらい長く〜／どれくらいの期間〜",
+   "example": "How long has he grown them?",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "for the first time",
+   "ja": "初めて",
+   "example": "Last autumn, I helped at the morning market in our town for the first time.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "wake up",
+   "ja": "目が覚める・起きる",
+   "example": "On the first morning, I woke up at five. / So please wake up early next Sunday.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "get up",
+   "ja": "起き上がる・起床する",
+   "example": "Thank you for getting up so early.",
+   "from": "341",
+   "level": "中1"
+  },
+  {
+   "en": "Thank you for ~ing",
+   "ja": "〜してくれてありがとう",
+   "example": "Thank you for getting up so early.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "be proud of 〜",
+   "ja": "〜をほこりに思う",
+   "example": "Fresh vegetables are something I can be proud of.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "care about 〜",
+   "ja": "〜を大切に思う",
+   "example": "When we know the people who grow our food, we can care about our town more.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "be glad to 〜 / I'm glad (that) 〜",
+   "ja": "〜してうれしい",
+   "example": "I was very glad to hear that. / I'm glad you like it.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "how to 〜",
+   "ja": "〜のしかた",
+   "example": "I want to teach young farmers how to grow good vegetables.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "tell A about B",
+   "ja": "AにBについて話す",
+   "example": "I hope you will tell the world about our town.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "in the future",
+   "ja": "将来",
+   "example": "In the future, I want to teach young farmers how to grow good vegetables.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "want A to 〜",
+   "ja": "Aに〜してほしい",
+   "example": "I want many people to try our vegetables.",
+   "from": "341",
+   "level": "中3"
+  },
+  {
+   "en": "I think so, too.",
+   "ja": "私もそう思います",
+   "example": "It is a nice dream. — I think so, too.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "much + 比較級",
+   "ja": "ずっと〜（比べる文を強める）",
+   "example": "Now I think it is much harder than I thought.",
+   "from": "341/342",
+   "level": "中2"
+  },
+  {
+   "en": "bring A to B",
+   "ja": "AをBへ持って行く（連れて行く）",
+   "example": "I grow vegetables, and I bring them to the market every Friday morning.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "look + 形容詞",
+   "ja": "〜に見える",
+   "example": "Wow, these tomatoes look delicious. / These look wonderful.",
+   "from": "341",
+   "level": "中2"
+  },
+  {
+   "en": "next to 〜",
+   "ja": "〜のとなりに",
+   "example": "Takumi is looking up at the sky, and his dog is sitting next to him.",
+   "from": "342",
+   "level": "中1"
+  },
+  {
+   "en": "look up at 〜",
+   "ja": "〜を見上げる",
+   "example": "Takumi is looking up at the sky through a telescope. / I hope you will look up at the sky often.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "one of 〜",
+   "ja": "〜のうちの1つ",
+   "example": "On the second day of the science camp, you can join one of three activities.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "take photos of 〜（take 〜 photos）",
+   "ja": "〜の写真をとる",
+   "example": "Let's take photos of the moon. (= take moon photos)",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "at a time",
+   "ja": "一度に",
+   "example": "Telescope room … twenty people at a time",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "be covered with 〜",
+   "ja": "〜におおわれている",
+   "example": "The old telescope was covered with dust.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "not 〜 at all",
+   "ja": "まったく〜ない",
+   "example": "Two years ago, I did not care about the sky at all.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "in line",
+   "ja": "列になって",
+   "example": "Soon, ten students were waiting in line.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "ask A to 〜",
+   "ja": "Aに〜してくれるようたのむ",
+   "example": "I'll ask my brother to lend me his warm gloves.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "That sounds 〜.",
+   "ja": "〜そうですね（聞いた感想）",
+   "example": "That sounds exciting! / That sounds fun.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "I'd love to.",
+   "ja": "ぜひそうしたいです",
+   "example": "Shall we watch the stars on Saturday? — Yes, I'd love to.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "be surprised to 〜",
+   "ja": "〜しておどろく",
+   "example": "When I looked through it that evening, I was surprised to see the rings of Saturn.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "look through 〜",
+   "ja": "〜をのぞいて見る・〜を通して見る",
+   "example": "I looked through the telescope and saw the rings of Saturn.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "in the corner of 〜",
+   "ja": "〜のすみに",
+   "example": "I found an old telescope in the corner of the science room.",
+   "from": "342",
+   "level": "中3"
+  },
+  {
+   "en": "How much 〜?",
+   "ja": "いくらですか",
+   "example": "How much is the ticket? — Only two hundred yen.",
+   "from": "342",
+   "level": "中1"
+  },
+  {
+   "en": "It takes 〜.",
+   "ja": "（時間が）〜かかる",
+   "example": "It takes about three hours. / How long did it take?",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "get + 形容詞",
+   "ja": "〜（の状態）になる",
+   "example": "I cleaned the old telescope for two days, and my hands got dirty.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "I agree.",
+   "ja": "賛成です",
+   "example": "Pictures speak to all people. — I agree.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "be excited",
+   "ja": "わくわくしている",
+   "example": "I could not sleep that night because I was so excited.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "in the morning / in the evening",
+   "ja": "朝に／夕方に・夜に",
+   "example": "I walk my dog in the morning. / The star party starts at seven in the evening.",
+   "from": "342",
+   "level": "中1"
+  },
+  {
+   "en": "at first",
+   "ja": "はじめは",
+   "example": "At first, only two members came with me.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "speak to 〜",
+   "ja": "〜に話しかける・語りかける",
+   "example": "Pictures speak to all people.",
+   "from": "342",
+   "level": "中2"
+  },
+  {
+   "en": "be able to 〜",
+   "ja": "〜することができる",
+   "example": "I was able to answer all the questions.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "be interested in 〜",
+   "ja": "〜に興味がある",
+   "example": "I am interested in the stars and the moon.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "be famous for 〜",
+   "ja": "〜で有名だ",
+   "example": "This town is famous for its sweet tomatoes.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "be different from 〜",
+   "ja": "〜とちがう",
+   "example": "My idea is a little different from yours.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "be kind to 〜",
+   "ja": "〜に親切だ",
+   "example": "The farmers were very kind to us.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "be full of 〜",
+   "ja": "〜でいっぱいだ",
+   "example": "The park was full of people that morning.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "be made of 〜",
+   "ja": "〜で作られている（材料が見てわかる）",
+   "example": "This old telescope is made of wood and glass.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "take care of 〜",
+   "ja": "〜の世話をする",
+   "example": "I take care of the flowers every morning.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "look forward to ~ing",
+   "ja": "〜するのを楽しみに待つ",
+   "example": "I'm looking forward to visiting the market again.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "all over the world",
+   "ja": "世界中で",
+   "example": "This sport is popular all over the world.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "each other",
+   "ja": "おたがい",
+   "example": "We helped each other and finished the work.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "for example",
+   "ja": "たとえば",
+   "example": "I like many vegetables, for example, tomatoes and carrots.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "take part in 〜",
+   "ja": "〜に参加する",
+   "example": "Many students took part in the volunteer activity.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "help A with B",
+   "ja": "AのBを手伝う",
+   "example": "My father helped me with my science report.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "look for 〜",
+   "ja": "〜をさがす",
+   "example": "I am looking for my science notebook.",
+   "from": "同系統で出そう",
+   "level": "中1"
+  },
+  {
+   "en": "look like 〜",
+   "ja": "〜のように見える（あとに名詞）",
+   "example": "That cloud looks like a big white dog.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "wait for 〜",
+   "ja": "〜を待つ",
+   "example": "We waited for the last bus at the stop.",
+   "from": "同系統で出そう",
+   "level": "中1"
+  },
+  {
+   "en": "get to 〜",
+   "ja": "〜に着く",
+   "example": "How long does it take to get to the station?",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "give up",
+   "ja": "あきらめる",
+   "example": "Don't give up. You still have enough time.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "grow up",
+   "ja": "成長する・大人になる",
+   "example": "I want to be a farmer when I grow up.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "find out",
+   "ja": "（調べて）わかる・見つけ出す",
+   "example": "I want to find out more about Saturn.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "try to 〜",
+   "ja": "〜しようとする",
+   "example": "I tried to answer her question in English.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "decide to 〜",
+   "ja": "〜することに決める",
+   "example": "She decided to join the science club last spring.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "have to 〜 / don't have to 〜",
+   "ja": "〜しなければならない／〜しなくてよい",
+   "example": "You don't have to bring your own cup.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "too 〜 to ...",
+   "ja": "…するには〜すぎる",
+   "example": "This box is too heavy to carry alone.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "so 〜 that ...",
+   "ja": "とても〜なので…",
+   "example": "I was so excited that I couldn't sleep.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "as 〜 as ...",
+   "ja": "…と同じくらい〜",
+   "example": "My bag is as heavy as yours.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "because of 〜",
+   "ja": "〜のために・〜が理由で",
+   "example": "We couldn't see the stars because of the clouds.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "thanks to 〜",
+   "ja": "〜のおかげで",
+   "example": "Thanks to your help, I finished my speech.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "at last",
+   "ja": "ついに・とうとう",
+   "example": "At last the rain stopped and the sky became clear.",
+   "from": "同系統で出そう",
+   "level": "中3"
+  },
+  {
+   "en": "in front of 〜",
+   "ja": "〜の前で",
+   "example": "Let's meet in front of the station at six.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "Why don't you 〜?",
+   "ja": "〜したらどうですか",
+   "example": "Why don't you come to the market with us?",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "do one's best",
+   "ja": "全力をつくす",
+   "example": "I will do my best in the next test.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  },
+  {
+   "en": "one day",
+   "ja": "ある日",
+   "example": "One day, a little girl asked me a question.",
+   "from": "同系統で出そう",
+   "level": "中2"
+  }
+ ],
+ "dictation": [
+  {
+   "en": "air",
+   "ja": "空気、空中"
+  },
+  {
+   "en": "already",
+   "ja": "すでに、もう"
+  },
+  {
+   "en": "amazing",
+   "ja": "驚くべき"
+  },
+  {
+   "en": "been",
+   "ja": "beの過去分詞"
+  },
+  {
+   "en": "cheap",
+   "ja": "（品物・料金が）安い"
+  },
+  {
+   "en": "coat",
+   "ja": "上着、コート"
+  },
+  {
+   "en": "corner",
+   "ja": "コーナー"
+  },
+  {
+   "en": "drawing",
+   "ja": "絵、図、スケッチ"
+  },
+  {
+   "en": "happen",
+   "ja": "起こる、生じる"
+  },
+  {
+   "en": "held",
+   "ja": "holdの過去形"
+  },
+  {
+   "en": "hold",
+   "ja": "持つ、つかむ"
+  },
+  {
+   "en": "report",
+   "ja": "報告、レポート"
+  },
+  {
+   "en": "since",
+   "ja": "…（して）以来"
+  },
+  {
+   "en": "sky",
+   "ja": "空、大空"
+  },
+  {
+   "en": "sleep",
+   "ja": "眠る、寝ている"
+  },
+  {
+   "en": "until",
+   "ja": "…まで（ずっと）、［否定文で］…までは（～しない）"
+  },
+  {
+   "en": "visitor",
+   "ja": "訪問客、見学者"
+  },
+  {
+   "en": "carrot",
+   "ja": "にんじん"
+  },
+  {
+   "en": "comfortable",
+   "ja": "気持ちのよい・快適な"
+  },
+  {
+   "en": "dirty",
+   "ja": "よごれた"
+  },
+  {
+   "en": "dust",
+   "ja": "ほこり"
+  },
+  {
+   "en": "farm",
+   "ja": "農場"
+  },
+  {
+   "en": "hall",
+   "ja": "会館・ホール"
+  },
+  {
+   "en": "hill",
+   "ja": "丘"
+  },
+  {
+   "en": "junior high school",
+   "ja": "中学校"
+  },
+  {
+   "en": "laugh",
+   "ja": "笑う"
+  },
+  {
+   "en": "lend",
+   "ja": "〜を貸す"
+  },
+  {
+   "en": "machine",
+   "ja": "機械"
+  },
+  {
+   "en": "myself",
+   "ja": "私自身"
+  },
+  {
+   "en": "nobody",
+   "ja": "だれも〜ない"
+  },
+  {
+   "en": "observatory",
+   "ja": "天文台"
+  },
+  {
+   "en": "proud",
+   "ja": "ほこりに思って"
+  },
+  {
+   "en": "recipe",
+   "ja": "作り方・レシピ"
+  },
+  {
+   "en": "ring",
+   "ja": "輪・指輪"
+  },
+  {
+   "en": "rocket",
+   "ja": "ロケット"
+  },
+  {
+   "en": "schoolyard",
+   "ja": "校庭"
+  },
+  {
+   "en": "simple",
+   "ja": "かんたんな"
+  },
+  {
+   "en": "telescope",
+   "ja": "望遠鏡"
+  },
+  {
+   "en": "tonight",
+   "ja": "今夜"
+  },
+  {
+   "en": "truck",
+   "ja": "トラック"
+  },
+  {
+   "en": "whole",
+   "ja": "全体の・まるごとの"
+  },
+  {
+   "en": "yen",
+   "ja": "円（日本のお金）"
+  },
+  {
+   "en": "Milky Way",
+   "ja": "天の川"
+  },
+  {
+   "en": "Saturn",
+   "ja": "土星"
+  }
+ ],
+ "drills": [
+  {
+   "title": "語形変化（大問2(3)と同じ形）",
+   "lead": "大問2(3)と同じ形式です。（　）の中の語を、文に合う「最も適当な形」に変えて、1語で書きます。使う語はすべて 341・342 の本文に出てきたものです。答えを書いたら、声に出して1回読み、英語として自然かを確かめましょう。",
+   "items": [
+    {
+     "no": 1,
+     "q": "My family has ( grow ) tomatoes for many years.",
+     "answer": "grown",
+     "why": "have/has のうしろは過去分詞。grow の過去分詞は grown（grow-grew-grown）。",
+     "hint": "【現在完了】",
+     "from": "341"
+    },
+    {
+     "no": 2,
+     "q": "Yuka has already ( take ) many photos of the moon.",
+     "answer": "taken",
+     "why": "has のうしろは過去分詞。take の過去分詞は taken（took と混同しやすい）。",
+     "hint": "【現在完了】",
+     "from": "342"
+    },
+    {
+     "no": 3,
+     "q": "Ms. Clark has ( live ) in Yamabe for eight years.",
+     "answer": "lived",
+     "why": "has のうしろは過去分詞。live は規則動詞で、e で終わるので d だけつけて lived。",
+     "hint": "【現在完了】",
+     "from": "341"
+    },
+    {
+     "no": 4,
+     "q": "Takumi has ( see ) the rings of Saturn before.",
+     "answer": "seen",
+     "why": "has のうしろは過去分詞。see の過去分詞は seen（過去形 saw とはちがう形）。",
+     "hint": "【現在完了】語注：ring 輪／Saturn 土星",
+     "from": "342"
+    },
+    {
+     "no": 5,
+     "q": "The tomatoes in this town are ( sweet ) than the tomatoes in other towns.",
+     "answer": "sweeter",
+     "why": "than があるので比較級。sweet は短い語なので -er をつけて sweeter。",
+     "hint": "【比較】than に注目",
+     "from": "341"
+    },
+    {
+     "no": 6,
+     "q": "December 6 was the ( cold ) day of last winter.",
+     "answer": "coldest",
+     "why": "the がついて「いちばん〜」なので最上級。cold は短い語なので -est をつけて coldest。",
+     "hint": "【比較】the ＋「〜の中でいちばん」",
+     "from": "342"
+    },
+    {
+     "no": 7,
+     "q": "Winter is the ( good ) season to watch stars on this hill.",
+     "answer": "best",
+     "why": "the ＋最上級の形。good は不規則に変化して good-better-best。",
+     "hint": "【比較】不規則に変わる語",
+     "from": "342"
+    },
+    {
+     "no": 8,
+     "q": "The morning market has ( many ) visitors than the shops near the station.",
+     "answer": "more",
+     "why": "than があるので比較級。many の比較級は不規則で more（manyer とはしない）。popular や important のような長い語も more／most を前につけて比べる。",
+     "hint": "【比較】than に注目。長い語は more／most を前に置く",
+     "from": "341"
+    },
+    {
+     "no": 9,
+     "q": "Mr. Baker ( grow ) vegetables and brings them to the market every Friday.",
+     "answer": "grows",
+     "why": "主語が Mr. Baker（3人称単数）で、every Friday の現在の文。あとの brings と同じように s をつけて grows。",
+     "hint": "【三単現】every Friday と brings に注目",
+     "from": "341"
+    },
+    {
+     "no": 10,
+     "q": "The last bus for Kawakami Station ( leave ) the observatory at 9:20 p.m. every day.",
+     "answer": "leaves",
+     "why": "主語 The last bus は3人称単数、every day なので現在の文。s をつけて leaves。",
+     "hint": "【三単現】語注：observatory 天文台",
+     "from": "342"
+    },
+    {
+     "no": 11,
+     "q": "Rina ( watch ) the night sky almost every night.",
+     "answer": "watches",
+     "why": "3人称単数・現在の文。watch は ch で終わるので es をつけて watches。",
+     "hint": "【三単現】つづりに注意",
+     "from": "342"
+    },
+    {
+     "no": 12,
+     "q": "My grandmother ( have ) a small field near the station, and she grows carrots there.",
+     "answer": "has",
+     "why": "3人称単数・現在の文（あとの grows でわかる）。have の3単現は不規則で has。",
+     "hint": "【三単現】語注：field 畑",
+     "from": "341"
+    },
+    {
+     "no": 13,
+     "q": "Look! Takumi is ( sit ) next to his dog.",
+     "answer": "sitting",
+     "why": "is ＋ -ing で「今〜している」。sit は最後の t を重ねて sitting。",
+     "hint": "【進行形】つづりが変わる",
+     "from": "342"
+    },
+    {
+     "no": 14,
+     "q": "Rina is ( use ) the old telescope now.",
+     "answer": "using",
+     "why": "is ＋ -ing の形。use は最後の e をとって ing をつけ、using。",
+     "hint": "【進行形】語注：telescope 望遠鏡",
+     "from": "342"
+    },
+    {
+     "no": 15,
+     "q": "When I got to the market, Mr. Baker was ( wash ) carrots.",
+     "answer": "washing",
+     "why": "was ＋ -ing で「そのとき〜していた」。wash はそのまま ing をつけて washing。",
+     "hint": "【進行形】was のうしろ",
+     "from": "341"
+    },
+    {
+     "no": 16,
+     "q": "Look at the sky. It is ( get ) dark.",
+     "answer": "getting",
+     "why": "is ＋ -ing の形。get は最後の t を重ねて getting。",
+     "hint": "【進行形】つづりが変わる",
+     "from": "342"
+    },
+    {
+     "no": 17,
+     "q": "Haru's mother ( go ) to the morning market when she was a child.",
+     "answer": "went",
+     "why": "when she was a child なので過去の文。go の過去形は不規則で went。",
+     "hint": "【過去形】was に注目",
+     "from": "341"
+    },
+    {
+     "no": 18,
+     "q": "A teacher at our school ( make ) this telescope fifty years ago.",
+     "answer": "made",
+     "why": "fifty years ago があるので過去の文。make の過去形は made。",
+     "hint": "【過去形】〜 ago に注目",
+     "from": "342"
+    },
+    {
+     "no": 19,
+     "q": "That morning, Nana ( wake ) up at five because it was market day.",
+     "answer": "woke",
+     "why": "was があるので過去の文。wake の過去形は不規則で woke。",
+     "hint": "【過去形】market day 市が開かれる日",
+     "from": "341"
+    },
+    {
+     "no": 20,
+     "q": "Last autumn, Nana ( carry ) heavy boxes with Mr. Baker.",
+     "answer": "carried",
+     "why": "Last autumn なので過去の文。carry は〈子音字＋y〉なので y を i にかえて ed をつけ、carried。",
+     "hint": "【過去形】つづりが変わる",
+     "from": "341"
+    },
+    {
+     "no": 21,
+     "q": "Nanami is carrying two ( basket ) of tomatoes.",
+     "answer": "baskets",
+     "why": "two（2つ）なので複数形。basket にそのまま s をつけて baskets。",
+     "hint": "【複数形】two に注目",
+     "from": "341"
+    },
+    {
+     "no": 22,
+     "q": "Mr. Baker carried three heavy ( box ) to the market.",
+     "answer": "boxes",
+     "why": "three なので複数形。box は x で終わるので es をつけて boxes。",
+     "hint": "【複数形】つづりに注意",
+     "from": "341"
+    },
+    {
+     "no": 23,
+     "q": "Ten ( child ) were waiting in line to use the telescope.",
+     "answer": "children",
+     "why": "Ten と were があるので複数形。child の複数形は不規則で children。",
+     "hint": "【複数形】語注：in line 列になって",
+     "from": "342"
+    },
+    {
+     "no": 24,
+     "q": "Haru bought five ( potato ) at the morning market.",
+     "answer": "potatoes",
+     "why": "five なので複数形。potato は es をつけて potatoes。",
+     "hint": "【複数形】つづりに注意",
+     "from": "341"
+    }
+   ]
+  },
+  {
+   "title": "並べかえ（大問3・大問5(3)と同じ形）",
+   "lead": "341・342 の大問3と大問5(3)は「語を正しい順に並べる」問題です。ここでは同じ形式で18問練習します。日本語を先に読み、［　］の語（句）をすべて1回ずつ使って英文を作りましょう。大文字で書いてある語が文のはじめです。答えは1通りしかありません。書いたら声に出して読み返し、英語として自然かどうかを確かめてください。",
+   "items": [
+    {
+     "no": 1,
+     "q": "次の語を正しく並べかえなさい。「多くの人が、新鮮な野菜を買うためにこの市場に来ます。」［ to / fresh vegetables / come / Many people / buy / to this market ］",
+     "answer": "Many people come to this market to buy fresh vegetables.",
+     "why": "まず「多くの人がこの市場に来る」という骨組み（Many people come to this market）を作る。「〜するために」は to＋動詞の原形を、そのうしろにつなぐ。",
+     "hint": "不定詞（目的）。buy は「〜に売る」ではないので to this market は come の側につく。",
+     "from": "341"
+    },
+    {
+     "no": 2,
+     "q": "次の語を正しく並べかえなさい。「朝早く起きることは、私には簡単ではありません。」［ easy / up / for / Getting / me / early / not / is ］",
+     "answer": "Getting up early is not easy for me.",
+     "why": "Getting up early（早く起きること）までが主語のかたまり。主語は3人称単数あつかいなので is、not は is のすぐうしろ、for me は文の最後。",
+     "hint": "動名詞（〜すること）が主語になる形。",
+     "from": "341"
+    },
+    {
+     "no": 3,
+     "q": "次の語を正しく並べかえなさい。「ベイカーさんは私たちに新鮮なトマトをくれました。」［ some / us / tomatoes / gave / fresh / Mr. Baker ］",
+     "answer": "Mr. Baker gave us some fresh tomatoes.",
+     "why": "give は〈人＋もの〉の順に並べる（SVOO）。us（だれに）が先、some fresh tomatoes（何を）があと。",
+     "hint": "SVOO。to がないので us を先に置く。",
+     "from": "341"
+    },
+    {
+     "no": 4,
+     "q": "次の語を正しく並べかえなさい。ただし I で始めること。「野菜がとても新鮮なので、私はこの市場が好きです。」［ the vegetables / because / fresh / I / are / this market / very / like ］",
+     "answer": "I like this market because the vegetables are very fresh.",
+     "why": "I で始めると決まっているので、まず「私はこの市場が好きだ」（I like this market）を作り、そのうしろに理由の because 〜 をつなぐ。because を前に置く形も英語としては正しいが、この問題では使えない。",
+     "hint": "接続詞 because。理由はうしろに置く。",
+     "from": "341"
+    },
+    {
+     "no": 5,
+     "q": "次の語を正しく並べかえなさい。「その丘は私たちの町よりもずっと寒いです。」［ colder / than / The hill / much / our town / is ］",
+     "answer": "The hill is much colder than our town.",
+     "why": "比較級 colder のあとに than。「ずっと」は much を比較級の前に置く（very は比較級には使えない）。",
+     "hint": "比較級を強めるのは much。",
+     "from": "342"
+    },
+    {
+     "no": 6,
+     "q": "次の語を正しく並べかえなさい。「冬は星を見るのにいちばんよい季節です。」［ season / to / Winter / stars / best / is / watch / the ］",
+     "answer": "Winter is the best season to watch stars.",
+     "why": "最上級は the best。「〜するための」は名詞 season のうしろに to＋動詞の原形を置く（不定詞の形容詞的用法）。",
+     "hint": "the best season のうしろに to watch stars をつなぐ。",
+     "from": "342"
+    },
+    {
+     "no": 7,
+     "q": "次の語を正しく並べかえなさい。「私の家族は、何年もの間ずっとトマトを育てています。」［ grown / for / My family / tomatoes / many years / has ］",
+     "answer": "My family has grown tomatoes for many years.",
+     "why": "「ずっと〜している」は現在完了（継続）。主語が3人称単数なので has＋過去分詞 grown。期間は for many years。",
+     "hint": "grow — grew — grown。for は「〜の間」。",
+     "from": "341"
+    },
+    {
+     "no": 8,
+     "q": "次の語を正しく並べかえなさい。「私は一度もその天文台へ行ったことがありません。」［ been / the observatory / I / never / to / have ］",
+     "answer": "I have never been to the observatory.",
+     "why": "「〜へ行ったことがある」は have been to 〜（経験）。「一度も〜ない」の never は have と過去分詞の間に入れる。",
+     "hint": "observatory＝天文台。経験の現在完了。",
+     "from": "342"
+    },
+    {
+     "no": 9,
+     "q": "次の語を正しく並べかえなさい。「これらのトマトはベイカーさんによって育てられました。」［ grown / by / These / Mr. Baker / tomatoes / were ］",
+     "answer": "These tomatoes were grown by Mr. Baker.",
+     "why": "受け身は〈be動詞＋過去分詞〉。主語が複数で過去のことなので were grown、「〜によって」は by 〜。",
+     "hint": "7番と同じ grown を使うが、こちらは「育てられた」側が主語。",
+     "from": "341"
+    },
+    {
+     "no": 10,
+     "q": "次の語を正しく並べかえなさい。「その古い望遠鏡はほこりでおおわれていました。」［ covered / dust / The / was / with / telescope / old ］",
+     "answer": "The old telescope was covered with dust.",
+     "why": "受け身 was covered。be covered with 〜（〜でおおわれている）は by ではなく with を使う決まった言い方。",
+     "hint": "telescope＝望遠鏡／dust＝ほこり。",
+     "from": "342"
+    },
+    {
+     "no": 11,
+     "q": "次の語を正しく並べかえなさい。「私には、天文台で働いているおじがいます。」［ works / at / I / who / the observatory / have / an uncle ］",
+     "answer": "I have an uncle who works at the observatory.",
+     "why": "説明したい名詞 an uncle のすぐうしろに who を置く。who のあとの動詞は uncle（3人称単数）に合わせて works。",
+     "hint": "主格の関係代名詞 who。",
+     "from": "342"
+    },
+    {
+     "no": 12,
+     "q": "次の語を正しく並べかえなさい。「これは、私の兄が去年買った望遠鏡です。」［ my brother / which / This / last year / the telescope / bought / is ］",
+     "answer": "This is the telescope which my brother bought last year.",
+     "why": "the telescope のうしろに which＋〈主語＋動詞〉を続ける（目的格の関係代名詞）。bought のあとに目的語は置かない。",
+     "hint": "目的格の関係代名詞 which。it を書き足さないこと。",
+     "from": "342"
+    },
+    {
+     "no": 13,
+     "q": "次の語を正しく並べかえなさい。「トマトを売っている女性は、私のおばです。」［ selling / my / The / aunt / tomatoes / is / woman ］",
+     "answer": "The woman selling tomatoes is my aunt.",
+     "why": "The woman を selling tomatoes が後ろから説明する（現在分詞の後置修飾）。主語のかたまりが終わってから文の動詞 is が来る。",
+     "hint": "主語は The woman selling tomatoes までがひとかたまり。",
+     "from": "341"
+    },
+    {
+     "no": 14,
+     "q": "次の語を正しく並べかえなさい。「星の観察会が何時に始まるか知っていますか。」［ starts / what time / Do / the star party / know / you ］",
+     "answer": "Do you know what time the star party starts?",
+     "why": "Do you know のあとは〈疑問詞＋主語＋動詞〉の語順（間接疑問）。does を使わず、動詞は starts。",
+     "hint": "star party＝星の観察会。文の終わりは「?」。",
+     "from": "342"
+    },
+    {
+     "no": 15,
+     "q": "次の語を正しく並べかえなさい。「明日、朝市に行ってみませんか。」［ visit / tomorrow / like / Would / the morning market / to / you ］",
+     "answer": "Would you like to visit the morning market tomorrow?",
+     "why": "Would you like to ＋動詞の原形 で「〜しませんか」とていねいにさそう言い方。tomorrow は文の最後。",
+     "hint": "Would you like to 〜? 文の終わりは「?」。",
+     "from": "341"
+    },
+    {
+     "no": 16,
+     "q": "次の語を正しく並べかえなさい。「あなたはどれくらい長くこの町に住んでいるのですか。」［ lived / have / How / this town / in / long / you ］",
+     "answer": "How long have you lived in this town?",
+     "why": "How long は文の先頭。そのあとは疑問文の形にして have you＋過去分詞（現在完了・継続）。",
+     "hint": "How long have you 〜? 文の終わりは「?」。",
+     "from": "新規"
+    },
+    {
+     "no": 17,
+     "q": "次の語を正しく並べかえなさい。「朝市でいっしょに買い物をしませんか。」［ shopping / at / Shall / the morning market / go / we ］",
+     "answer": "Shall we go shopping at the morning market?",
+     "why": "Shall we ＋動詞の原形 で「（いっしょに）〜しましょうか」。「買い物に行く」は go shopping、場所は at 〜。",
+     "hint": "Shall we 〜? ／ go shopping。文の終わりは「?」。",
+     "from": "341"
+    },
+    {
+     "no": 18,
+     "q": "次の語を正しく並べかえなさい。「天文台への行き方を教えてくださいませんか。」［ get / how / Could / to the observatory / to / me / tell / you ］",
+     "answer": "Could you tell me how to get to the observatory?",
+     "why": "Could you tell me 〜? でていねいにたずねる。「〜への行き方」は how to get to 〜（how to＋動詞の原形）。",
+     "hint": "how to＋動詞の原形＝「〜のしかた」。文の終わりは「?」。",
+     "from": "342"
+    }
+   ]
+  },
+  {
+   "title": "共通語・抜き出し（大問2(1)(2)・大問4と同じ形）",
+   "lead": "同じ1語がちがう意味で2つの文に入る「共通語」と、短い英文から指定された語数でそのまま抜き出す「抜き出し」の練習です。341・342の大問2(1)(2)、大問4(1)、大問5(4)がこの型で出ます。抜き出しは、必ず本文にある形のまま、指定された語数ぴったりで書きましょう。",
+   "items": [
+    {
+     "no": 1,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① These tomatoes were picked this morning, so they are very （　）.\n② Let's open the window and get some （　） air.",
+     "answer": "fresh",
+     "hint": "f で始まる語。①「とれたての」②「新しい空気＝新鮮な空気」",
+     "why": "「とれたて・新鮮な」の意味。①はつみたての野菜、②は fresh air（新鮮な空気）という決まった言い方。341の大問2(1)と同じ型。",
+     "from": "341"
+    },
+    {
+     "no": 2,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① The sky was very （　） last night, so we could see a lot of stars.\n② Please speak in a （　） voice. Then everyone can understand you.",
+     "answer": "clear",
+     "hint": "c で始まる語。①空が「すんでいる」②声が「はっきりした」",
+     "why": "clear は「すみきった」と「はっきりした」の両方を表す。②に loud も入りそうだが、①には入らないので clear に決まる。342の大問2(1)と同じ型。",
+     "from": "342"
+    },
+    {
+     "no": 3,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① This box is not heavy at all. It is very （　）.\n② It got dark, so I turned on the （　） in my room.",
+     "answer": "light",
+     "hint": "l で始まる語。①「軽い」②「明かり」",
+     "why": "light は形容詞「軽い」と名詞「明かり」の2つの意味を持つ。heavy の反対語で①、turn on the light で②。",
+     "from": "新規"
+    },
+    {
+     "no": 4,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① It is very （　） on the hill at night, so wear a warm coat.\n② I caught a （　） last week, so I stayed home.",
+     "answer": "cold",
+     "hint": "c で始まる語。①「寒い」②catch a （　）で「かぜをひく」",
+     "why": "①は気温の「寒い」、②は catch a cold（かぜをひく）という決まった言い方。342の天文台の場面と同じ話題。",
+     "from": "342"
+    },
+    {
+     "no": 5,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① The soup is （　）. You don't have to pay for it.\n② Are you （　） next Sunday? Let's go to the morning market together.",
+     "answer": "free",
+     "hint": "f で始まる語。①「無料の」②「ひまな」",
+     "why": "free は「無料の」と「ひまな」の2つの意味。①は「お金をはらわなくてよい」、②は「予定が空いている」。341のポスターの Free soup とつながる。",
+     "from": "341"
+    },
+    {
+     "no": 6,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① Farmers work very （　）, but they always look happy.\n② This question is too （　） for me. I can't answer it.",
+     "answer": "hard",
+     "hint": "h で始まる語。①「いっしょうけんめいに」②「むずかしい」",
+     "why": "hard は副詞「熱心に」と形容詞「むずかしい」の両方。②に difficult も入るが、work very difficult とは言えないので hard に決まる。",
+     "from": "341"
+    },
+    {
+     "no": 7,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① Mr. Baker is very （　）. He always helps young farmers.\n② What （　） of vegetables do you like the best?",
+     "answer": "kind",
+     "hint": "k で始まる語。①「親切な」②what （　） of 〜 で「どんな種類の〜」",
+     "why": "kind は形容詞「親切な」と名詞「種類」の2つの意味。②は What kind of 〜? の決まった言い方。",
+     "from": "新規"
+    },
+    {
+     "no": 8,
+     "q": "次の2つの文の（　）に共通して入る英語1語を書きなさい。\n① My father gave me a new （　）, so I'm never late now.\n② Let's （　） the stars from the schoolyard on Friday night.",
+     "answer": "watch",
+     "hint": "w で始まる語。①「うで時計」②「〜をじっと見る」",
+     "why": "watch は名詞「うで時計」と動詞「じっと見る」の2つの使い方。①は時計だから遅れない、②は星の観察。",
+     "from": "342"
+    },
+    {
+     "no": 9,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nEmi went to the morning market with her mother last Sunday.\nThey bought some carrots and potatoes there.\nEmi got a free cup of soup because she came early.\nShe was very happy that day.\n\n問　エミが無料のスープをもらえたのはなぜですか。その理由にあたる部分を、本文中から英語3語で抜き出しなさい。",
+     "answer": "she came early",
+     "hint": "because のあとを見る。語注：free 無料の",
+     "why": "because she came early（早く来たから）の because をのぞいた3語が理由の中身。本文にそのままの形で出ている。",
+     "from": "341"
+    },
+    {
+     "no": 10,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nMr. Baker is a farmer in Yamabe.\nHe gets up at four every morning and washes his carrots.\nThen he takes them to the market before the sun rises.\nPeople often say his vegetables look beautiful.\n\n問　本文の内容に合うように、次の文の（　）に入る英語3語を、本文中からそのまま抜き出しなさい。\nEvery morning, Mr. Baker gets up at four and （　）.",
+     "answer": "washes his carrots",
+     "hint": "and のあとに続く動作をさがす。語注：rise （太陽が）のぼる",
+     "why": "2文目の gets up at four every morning and washes his carrots がそのまま使える。主語が He のままなので動詞は washes の形で書く。",
+     "from": "341"
+    },
+    {
+     "no": 11,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nOur town is famous for its sweet tomatoes.\nMy grandfather has grown them for more than thirty years.\nHe always says the most important thing is clean water.\nI want to learn a lot from him.\n\n問　祖父が「最も大切だ」と言っているものは何ですか。本文中から英語2語で抜き出しなさい。",
+     "answer": "clean water",
+     "hint": "the most important thing is 〜 のあとを見る。",
+     "why": "the most important thing is clean water の is のあとが答え。2語という指定なので clean water。",
+     "from": "341"
+    },
+    {
+     "no": 12,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nKen has a dream.\nHe wants to open a small café in his town.\nHe will use only vegetables from his town, so visitors can enjoy the taste of Yamabe.\nHe is studying cooking now.\n\n問　本文の内容に合うように、次の文の（　）に入る英語5語を、本文中からそのまま抜き出しなさい。\nIn his café, Ken will use （　）.",
+     "answer": "only vegetables from his town",
+     "hint": "will use のあとをそのまま5語で。語注：taste 味",
+     "why": "3文目の He will use only vegetables from his town がそのまま使える。5語という指定なので only を落とさない。",
+     "from": "341"
+    },
+    {
+     "no": 13,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nTakumi joined the science club last April.\nEvery Friday night, he looks at the moon through an old telescope.\nHe writes about it in his notebook.\nHe wants to be a scientist in the future.\n\n問　本文の内容に合うように、次の文の（　）に入る英語4語を、本文中からそのまま抜き出しなさい。\nEvery Friday night, Takumi （　） through an old telescope.",
+     "answer": "looks at the moon",
+     "hint": "telescope（望遠鏡）で何を見ているか。4語なので at と the も入れる。",
+     "why": "2文目がそのまま使える。主語が Takumi（3人称単数）なので looks の形のまま書く。",
+     "from": "342"
+    },
+    {
+     "no": 14,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nThe winter sky in Hoshino is very clear.\nMr. Barker says the air here is cleaner than the air in the city.\nIn December, many people come to the hill at night.\nThey can see the Milky Way there.\n\n問　12月の夜、多くの人がおとずれる場所はどこですか。本文中から英語2語で抜き出しなさい。",
+     "answer": "the hill",
+     "hint": "come to 〜 のあとをさがす。語注：Milky Way 天の川",
+     "why": "3文目の come to the hill at night から。the city も場所だが、人が来る先ではないので the hill に決まる。",
+     "from": "342"
+    },
+    {
+     "no": 15,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nLast Saturday, Yuka and her father went to the observatory by bus.\nThe hill was much colder than the town.\nYuka wore a warm coat, so she did not feel cold.\nThey watched the stars for two hours.\n\n問　ユカが寒さのために身につけていたものは何ですか。本文中から英語3語で抜き出しなさい。",
+     "answer": "a warm coat",
+     "hint": "wore（wear の過去形）のあとを見る。語注：observatory 天文台",
+     "why": "3文目の Yuka wore a warm coat から。3語の指定なので a も入れて書く。",
+     "from": "342"
+    },
+    {
+     "no": 16,
+     "q": "次の英文を読んで、あとの問いに答えなさい。\n\nAki is making a short movie about the science club.\nShe wants students who cannot come to the star night to watch it later.\nShe has already taken many pictures of the members.\nThe movie will be about five minutes long.\n\n問　本文の内容に合うように、次の文の（　）に入る英語4語を、本文中からそのまま抜き出しなさい。\nAki is making the movie for （　）.",
+     "answer": "students who cannot come",
+     "hint": "だれのために作るのかを表す部分。who は「〜する（人）」とつなぐ関係代名詞。",
+     "why": "2文目の She wants students who cannot come to the star night ... の中の4語がそのまま入る。「来られない生徒」という意味のかたまり。",
+     "from": "342"
+    }
+   ]
+  },
+  {
+   "title": "読解ミニ問題（大問4(4)・大問5と同じ形）",
+   "lead": "短い英文（60〜90語）を6本読んで、「内容に合うもの」「内容に合っていないもの」「空所に入る語の組合せ」を選ぶ練習です。341・342 の大問4(4)・大問5(1)(2)(6) と同じ選び方をします。コツは2つ。①まず英文を最後まで1回通して読む（分からない語で止まらない）。②そのあと選択肢ア〜エを1つずつ本文と照らし合わせ、本文のどの1文で決まるかに線を引く。「合っていないもの」を選ぶ問題は、合っているものを3つ消していくと確実です。",
+   "items": [
+    {
+     "no": 1,
+     "q": "【英文1】\nEvery spring, the students of Asahi Junior High School clean the Nagisa River near their school. Last year, about eighty students joined. Reo, a third-year student, found many plastic bottles under the bridge. \"I was surprised,\" he said. \"This river is used by many birds.\" After the work, the students made a poster and showed it at the station. This year, some people from the town joined them, and they collected more trash than last year.\n\n問1　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　The students clean the river every winter.\nイ　Only the teachers joined the work last year.\nウ　Reo found many plastic bottles under the bridge.\nエ　The students sold their poster at the station.",
+     "answer": "ウ",
+     "hint": "語注：trash ごみ／bridge 橋／be used by 〜 〜に使われている",
+     "why": "3文目に Reo, a third-year student, found many plastic bottles under the bridge. とそのまま書かれている。アは every spring（春）なので winter が誤り、イは about eighty students joined、エは showed（見せた）で sold（売った）ではない。"
+    },
+    {
+     "no": 2,
+     "q": "（上の英文について）\n\n問2　本文の内容と合っていないものを、ア〜エから1つ選びなさい。\nア　About eighty students took part in the cleanup last year.\nイ　The students collected less trash this year than last year.\nウ　Some people from the town joined the students this year.\nエ　Reo said that many birds come to the river.",
+     "answer": "イ",
+     "hint": "less（より少ない）と more（より多い）の見分けがポイント。",
+     "why": "最終文は they collected more trash than last year（去年より多く集めた）なので、less（より少ない）とするイが本文と合わない。ア・ウ・エはすべて本文どおり。"
+    },
+    {
+     "no": 3,
+     "q": "【英文2】\nEvery autumn, the students of Kaede Junior High School hold a used-book sale at the school festival. Students bring books they have already （　あ　）, and each book is sold for one hundred yen. Last year, they sold more than three hundred books. With the money, the school （　い　） new books for the library. Ms. Lane, the school librarian, was very happy. \"Old books find new readers, and our library gets new books, too,\" she said.\n\n問3　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　The students buy new books at a bookstore for the sale.\nイ　The school built a new library with the money.\nウ　Ms. Lane thinks old books should be thrown away.\nエ　The students hold the used-book sale in autumn.",
+     "answer": "エ",
+     "hint": "語注：used-book sale 古本市／librarian 図書館の先生（司書）／throw away 〜を捨てる",
+     "why": "1文目の Every autumn ... hold a used-book sale と一致する。イは「新しい本を買った」であって図書館を建てたのではない、ウは Ms. Lane が very happy と言っているので反対。"
+    },
+    {
+     "no": 4,
+     "q": "（上の英文について）\n\n問4　（あ）・（い）に入る英語の組み合わせとして最も適当なものを、ア〜エから1つ選びなさい。\nア　あ written　い bought\nイ　あ read　い bought\nウ　あ read　い sold\nエ　あ written　い sold",
+     "answer": "イ",
+     "hint": "books they have already （あ）＝「彼らがもう読んでしまった本」。read は原形・過去形・過去分詞が同じ形。",
+     "why": "生徒が持ちよるのは「自分が書いた本」ではなく「もう読み終えた本」なので（あ）は read。集めたお金で図書館が新しい本を買ったので（い）は bought。過去分詞であることは4つとも同じなので、見分けるのは形ではなく意味のほう。"
+    },
+    {
+     "no": 5,
+     "q": "【英文3】\nIn Terao Village, people can see fireflies along a small river in June. Twenty years ago, the water was dirty, and no fireflies came. Then the villagers began to clean the river every month. Ten years later, the fireflies came back. Now many visitors come to the village at night. The villagers ask them to turn off their car lights, because bright light is bad for the fireflies. Hazuki, a junior high school student, says, \"The fireflies are our village's treasure.\"\n\n問5　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　The fireflies came back one year after the cleaning started.\nイ　People can see the fireflies in the village in June.\nウ　Visitors come to the village early in the morning.\nエ　The villagers clean the river once a year.",
+     "answer": "イ",
+     "hint": "語注：firefly ホタル（複数形 fireflies）／villager 村の人／turn off 〜を消す／treasure 宝物",
+     "why": "1文目 people can see fireflies ... in June と一致。アは Ten years later（10年後）、ウは at night（夜）、エは every month（毎月）なので、それぞれ数字や語を入れかえたひっかけ。"
+    },
+    {
+     "no": 6,
+     "q": "（上の英文について）\n\n問6　本文の内容と合っていないものを、ア〜エから1つ選びなさい。\nア　Twenty years ago, the water of the river was dirty.\nイ　The villagers ask visitors to turn off their car lights.\nウ　The village gets no visitors from other places.\nエ　Hazuki thinks the fireflies are the treasure of her village.",
+     "answer": "ウ",
+     "hint": "ア〜エのキーワード（20年前の川／車のライト／村を訪れる人／村のたから）を本文から1つずつさがし、時期・人・数が本文とずれていないか確かめよう。",
+     "why": "本文は Now many visitors come to the village at night. なので、「よその人は来ない」とするウが合わない。ア・イ・エはそれぞれ本文の2文目・6文目・最終文どおり。"
+    },
+    {
+     "no": 7,
+     "q": "【英文4】\nUmino Town is by the sea, and many people there catch fish. Last year, the town started a new plan. Once a month, the school lunch is made with fish caught in Umino Town that morning. The fish is very （　あ　）, because it comes to the school only a few hours after it leaves the sea. Some students did not like fish before, but now they （　い　） it. A fisherman also visits the school on that day and talks about his work.\n\n問7　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　Once a month, the school lunch is made with fish from Umino Town.\nイ　The town started the new plan ten years ago.\nウ　A fisherman visits the school every morning.\nエ　Umino Town is far from the sea.",
+     "answer": "ア",
+     "hint": "語注：fisherman 漁師／caught catch（〜をとる）の過去分詞／by the sea 海のそばに",
+     "why": "3文目 Once a month, the school lunch is made with fish caught in Umino Town と一致。イは Last year、ウは on that day（月に1回のその日）、エは is by the sea（海のそば）なので反対。"
+    },
+    {
+     "no": 8,
+     "q": "（上の英文について）\n\n問8　（あ）・（い）に入る英語の組み合わせとして最も適当なものを、ア〜エから1つ選びなさい。\nア　あ old　い enjoy\nイ　あ fresh　い forget\nウ　あ fresh　い enjoy\nエ　あ old　い forget",
+     "answer": "ウ",
+     "hint": "（あ）の直後の because 以下、（い）の直前の but now に注目。",
+     "why": "（あ）は「海を出て数時間で学校に届く」から fresh（新しい）。old では because の説明と反対になる。（い）は「以前は好きではなかった、でも今は」と続くので enjoy。forget では but でつながらない。"
+    },
+    {
+     "no": 9,
+     "q": "【英文5】\nLast summer, the science club of Ibuki Junior High School made a \"green curtain.\" The members grew goya plants in front of the classroom windows. The large leaves blocked the strong sunlight, and the room became cooler. They checked the temperature in the room every day for two months. The room with the green curtain was about two degrees cooler than the other rooms. In September, they showed their data to the whole school, and other classes decided to try it, too.\n\n問9　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　The green curtain made the classroom hotter.\nイ　The club grew flowers in front of the windows.\nウ　The members checked the temperature every day for two months.\nエ　The club showed their data to the school in July.",
+     "answer": "ウ",
+     "hint": "語注：green curtain 緑のカーテン／goya ゴーヤ／sunlight 日光／temperature 気温／degree 度／whole 全体の",
+     "why": "4文目 They checked the temperature in the room every day for two months. と一致。アは cooler（すずしく）と反対、イは goya plants、エは In September なのでそれぞれ誤り。"
+    },
+    {
+     "no": 10,
+     "q": "（上の英文について）\n\n問10　本文の内容と合っていないものを、ア〜エから1つ選びなさい。\nア　The science club made the green curtain last summer.\nイ　The large leaves blocked the strong sunlight.\nウ　The room with the green curtain was cooler than the other rooms.\nエ　The other classes were not interested in the green curtain.",
+     "answer": "エ",
+     "hint": "最終文の decided to try it, too が決め手。",
+     "why": "最終文に other classes decided to try it, too（ほかのクラスもやってみることにした）とあるので、「興味を持たなかった」とするエが合わない。ア・イ・ウは本文どおり。"
+    },
+    {
+     "no": 11,
+     "q": "【英文6】\nEvery Saturday morning, some students of Sugita Junior High School go to the town's community center. There, they teach old people how to use smartphones. Mrs. Ohara is eighty years old. She learned how to send photos to her grandson, who lives far away. \"Now I can see his face and talk with him,\" she says with a smile. The students are happy, too. Kanata, a third-year student, said, \"I have learned many old stories about our town from them.\"\n\n問11　本文の内容と合っているものを、ア〜エから1つ選びなさい。\nア　The students visit the community center on Saturday mornings.\nイ　Mrs. Ohara teaches the students how to use smartphones.\nウ　Mrs. Ohara's grandson lives near her house.\nエ　The students go to the center after school on Friday.",
+     "answer": "ア",
+     "hint": "語注：community center 公民館／how to use 〜 〜の使い方／far away 遠くに",
+     "why": "1文目 Every Saturday morning, some students ... go to the town's community center. と一致。イは教えるのは生徒の側、ウは who lives far away（遠くに住んでいる）、エは曜日が違う。"
+    },
+    {
+     "no": 12,
+     "q": "（上の英文について）\n\n問12　本文の内容と合っていないものを、ア〜エから1つ選びなさい。\nア　The students learn nothing from the people at the center.\nイ　Mrs. Ohara is eighty years old.\nウ　Mrs. Ohara can see her grandson's face now.\nエ　Kanata has learned old stories about the town from the old people.",
+     "answer": "ア",
+     "hint": "最後の Kanata の発言をよく読もう。learn nothing は「何も学ばない」。",
+     "why": "最終文で Kanata が I have learned many old stories about our town from them. と言っているので、「生徒は何も学んでいない」とするアが合わない。イ・ウ・エは本文どおり。"
+    }
+   ]
+  }
+ ]
+}

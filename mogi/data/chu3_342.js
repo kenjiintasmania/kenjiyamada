@@ -176,7 +176,7 @@ sections: [
     '<b>②</b> When I joined the science club, I found an old telescope in the corner of the science room. '+
     'It was covered with dust, and nobody used it. I asked our teacher about it. He said, '+
     '"A student made it fifty years ago. It still works well." I cleaned it for two days, and my hands got '+
-    'black. But when I looked through it that evening, I was <u>(お) ___</u> to see the rings of Saturn.<br><br>'+
+    'dirty. But when I looked through it that evening, I was <u>(お) ___</u> to see the rings of Saturn.<br><br>'+
     '<b>③</b> After that, I brought the telescope to the schoolyard every Friday. '+
     'At first, only two members came with me. Then a first-year student came. She said, "My grandmother told me '+
     'about this star." Soon, ten students were waiting in line. One rainy Friday, nobody could see anything, '+
