@@ -17,7 +17,11 @@ const metaSrc = r('mogi/exam.html').match(/const meta=\{([\s\S]*?)\n  \};/);
 if (!metaSrc) die('exam.html の meta を取得できません');
 const EXAMS = [...metaSrc[1].matchAll(/^\s*([a-z0-9_]+):\s*\{([^\n]*)/gm)].map(m => {
   const title = (m[2].match(/title:\s*'([^']*)'/) || m[2].match(/title:\s*"([^"]*)"/) || [])[1] || m[1];
-  return { id: m[1], unit: /unit:\s*true/.test(m[2]), title: title.replace(/<[^>]+>/g, '').trim() };
+  // 満点は県によって違う（岡山100点／福岡60点）。データの fullMarks を見て、無ければ100。
+  let full = 100;
+  try { const d = r(`mogi/data/${m[1]}.js`).match(/fullMarks:\s*(\d+)/); if (d) full = Number(d[1]); } catch(e){}
+  return { id: m[1], unit: /unit:\s*true/.test(m[2]), full,
+           title: title.replace(/<[^>]+>/g, '').trim() };
 });
 // ★件数は数えない。模試を1本足すたびにここを直し忘れて落ちるため。
 // かわりに「レジストリに書いてあるIDのデータファイルが実在するか」を見る。
@@ -48,7 +52,9 @@ const PAGES = [
   ['mogi/index.html', '模擬テスト 一覧', '中2・中3の入口', '各回へのリンクが開く'],
   ['mogi/chu2.html', '模擬テスト 中2', '中2の回を選ぶ', '一覧が出る'],
   ['mogi/chu3.html', '模擬テスト 中3', '中3の回を選ぶ', '一覧が出る'],
-  ['mogi/okayama.html', '入試模試 一覧（岡山県スタイル）', '県立入試スタイル新作の入口', 'カードが並ぶ'],
+  ['mogi/okayama.html', '入試模試 一覧（県立入試スタイル）',
+   '岡山県スタイル（28問100点）と福岡県スタイル（26問60点）の入口',
+   '県ごとの見出しでカードが並ぶ'],
   ['mogi/vocab_chu2.html', '習熟度単語テスト 中2', '答えの単語だけを確認するテスト', '採点される'],
   ['mogi/vocab_chu3_2.html', '習熟度単語テスト 中3第2回', '同上', '採点される'],
   ['mogi/vocab_chu3_3.html', '習熟度単語テスト 中3第3回', '同上', '採点される'],
@@ -61,6 +67,21 @@ const PAGES = [
   ['dojo/index.html', `読解道場（テク${count.tech}枚・S1 ${count.s1}問・S3 ${count.s3}問）`,
    'テクカード→種目ドリル→県模試。全自動採点',
    '誤答すると根拠とワナが出る／送信は発生しない'],
+  ['jigaku/index.html', '自学（単語）',
+   'AIモードに作らせた単語テストを自分で採点し、記録を送る',
+   '貼りつけ→採点→送信で 実証シートの「自学ログ」に1行増える'],
+  ['jigaku/bunpo.html', '自学（文法）',
+   '教科書のキーセンテンスから 写しがき／英訳／空欄／並びかえ を作る。1文=5点',
+   '文を貼る→練習→送信で「自学ログ」に1行増える'],
+  ['jigaku/honbun.html', '自学（本文）',
+   '本文に印をつけて読み、AIモードの出題を自分で採点する',
+   '採点→送信で「自学ログ」に1行増える'],
+  ['gojun/index.html', '語順文法テスト',
+   '主語・助動詞・動詞…の7つの箱に、日本語訳どおり英語を入れる。えらぶ／打つの2モード',
+   '5問終える→送信で「自学ログ」に1行増える'],
+  ['listening/index.html', 'リスニング',
+   '音声を聞いて答える練習',
+   '再生できる／送信は発生しない'],
   ['me/index.html', 'マイページ（送信の出口）',
    '3アプリの記録を集約し、先生のスプレッドシートへ送信する唯一の画面',
    '学年・番号を入れる→自動送信→実証シートの「成績まとめ」に1行増える'],
@@ -71,6 +92,34 @@ const PAGES = [
    '状態表示・接続テスト・通常モードへの復帰',
    '「設定ずみ」と表示／接続テストが ✓'],
 ].map(a => P(...a));
+
+/* index.html が張っているのに一覧に無いディレクトリがあれば落とす（gojun がそれで抜けていた）。
+   aimode は別スレッド所有で実証の対象外なので、ここで明示的に除く。 */
+{
+  const linked = [...r('index.html').matchAll(/href="([a-z_]+)\//g)].map(m => m[1]);
+  const covered = new Set(PAGES.map(p => p.path.split('/')[0]));
+  const skip = new Set(['aimode']);
+  const miss = [...new Set(linked)].filter(d => !covered.has(d) && !skip.has(d));
+  if (miss.length) die(`検証表に載っていない画面があります: ${miss.join(', ')}`);
+}
+
+/* 実際に GAS へ送る画面を、ソースから拾って列挙する。
+   「送信するのはこの3つだけ」と決め打ちしていたころは、自学の4レーンが抜けていた。 */
+const SENDERS = [
+  ['me/index.html', 'マイページ', '成績まとめ'],
+  ['eiken/index.html', '英検アプリ（結果送信）', '英検テスト履歴'],
+  ['mogi/exam.html', '単元テストの提出', '単元テスト記録'],
+  ['jigaku/index.html', '自学・単語', '自学ログ'],
+  ['jigaku/bunpo.html', '自学・文法', '自学ログ'],
+  ['jigaku/honbun.html', '自学・本文', '自学ログ'],
+  ['gojun/index.html', '自学・語順', '自学ログ'],
+].filter(([f]) => {
+  // 画面そのものか、同じ場所の .js が GAS へ送っているか
+  const cand = [f, f.replace(/\.html$/, '.js'), f.replace(/index\.html$/, 'gojun.js'),
+                f.replace(/\/[^/]+$/, '/bunpo.js'), f.replace(/\/[^/]+$/, '/honbun.js')];
+  return cand.some(c => { try { return /GAS|gasFor/.test(r(c)); } catch(e){ return false; } });
+});
+if (SENDERS.length < 7) die(`送信する画面を拾えていません（${SENDERS.length}件）。make_check_page の SENDERS を見直してください`);
 
 const withSite = (p) => `${SITE}/${p}${p.includes('?') ? '&' : '?'}site=aso`;
 
@@ -84,7 +133,8 @@ const row = (id, url, name, what, check) =>
 
 const examRows = EXAMS.map(e => {
   const url = withSite(`mogi/exam.html?id=${e.id}`);
-  const what = e.unit ? '単元テスト（先生が受付を開けた時だけ解答・提出できる）' : '100点満点・1タップ自動採点';
+  const what = e.unit ? '単元テスト（先生が受付を開けた時だけ解答・提出できる）'
+                      : `${e.full}点満点・1タップ自動採点`;
   const check = e.unit ? '受付前はロック表示／提出すると「単元テスト記録」に1行増える'
                        : '「採点する」で点数が出る／送信は発生しない';
   return row('exam_' + e.id, url, `${e.title}（id=${e.id}）`, what, check);
@@ -142,7 +192,7 @@ const html = `<!DOCTYPE html>
     <ol>
       <li>下のリンクは<b>すべて新しいタブ</b>で開きます。画面上部に 🧪 の帯が出ていれば実証モードです</li>
       <li>チェック欄はこの端末に保存されます（複数人で分担するときは各自の端末で）</li>
-      <li>記録が実際に送られるのは<b>マイページ・英検の結果送信・単元テストの提出</b>の3つだけです</li>
+      <li>記録が実際に送られるのは次の画面です：<b>${SENDERS.map(x => x[1]).join('／')}</b>（それ以外の画面は採点だけで送信しません）</li>
       <li>送信される項目の一覧は <a href="https://github.com/kenjiintasmania/kenjiyamada/blob/master/trial/DATA.md" target="_blank" rel="noopener">DATA.md</a> にあります</li>
     </ol>
     <p class="note">進捗：<span class="prog" id="prog">0 / 0</span>　<button id="reset" style="font:inherit;font-size:12px;padding:3px 10px;border-radius:8px;border:1px solid #d8d2c4;background:#fff;cursor:pointer">チェックを消す</button></p>
@@ -158,7 +208,7 @@ ${PAGES.map(p => row(p.path, withSite(p.path), p.name, p.what, p.check)).join('\
 
   <div class="card">
     <h2>② 模擬テスト 各回（全${EXAMS.length}本）</h2>
-    <p class="note">うち末尾4本（id が c2u1／c2u2／c3u1／c3u2）は<b>単元テスト</b>で、先生用コンソールで受付を開けている間だけ解答・提出できます。</p>
+    <p class="note">うち${EXAMS.filter(e => e.unit).length}本（id が ${EXAMS.filter(e => e.unit).map(e => e.id).join('／')}）は<b>単元テスト</b>で、先生用コンソールで受付を開けている間だけ解答・提出できます。</p>
     <table><thead><tr><th>済</th><th>回 / URL</th><th>形式</th><th>確認すること</th></tr></thead>
     <tbody>
 ${examRows}
@@ -181,7 +231,7 @@ ${examRows}
       <tr><th>動作環境</th><td>Chrome / Edge / Safari の現行版。GIGA端末（Chromebook）はURLを開くだけ</td></tr>
       <tr><th>通信</th><td>記録送信時のみ。宛先は Google Apps Script のウェブアプリ1本。第三者サービスへの通信なし</td></tr>
       <tr><th>保存</th><td>学習状況は端末内（localStorage）。端末をまたいで共有されない</td></tr>
-      <tr><th>収録数</th><td>単語${count.words}語（基本${count.wBasic}／拡張${count.wExt}）＋活用600点・模試${EXAMS.length}本（各100点）・英検413問・読解道場テク${count.tech}枚＋ドリル${count.s1 + count.s3}問・並べ替え英作文${count.compose}問</td></tr>
+      <tr><th>収録数</th><td>単語${count.words}語（基本${count.wBasic}／拡張${count.wExt}）＋活用600点・模試${EXAMS.length}本（${[...new Set(EXAMS.filter(e => !e.unit).map(e => e.full))].sort((a, b) => b - a).join('点／')}点）・英検413問・読解道場テク${count.tech}枚＋ドリル${count.s1 + count.s3}問・並べ替え英作文${count.compose}問</td></tr>
       <tr><th>実証モードの解除</th><td>画面上部の帯の「通常モードにもどす」。60日で自動失効</td></tr>
     </table>
   </div>
