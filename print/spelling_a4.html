@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>頻出スペル24 ― なぞり＆テスト（A4）</title>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#111; --rule:#9aa3ad; --ghost:#c9ced4; --band:#f2f4f6; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#e9ecef; color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+  .sheet{ width:210mm; min-height:297mm; margin:8mm auto; padding:11mm 12mm 8mm;
+    background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+  .head{ display:flex; align-items:flex-end; justify-content:space-between;
+    border-bottom:2px solid var(--ink); padding-bottom:2mm; margin-bottom:3mm; }
+  .ttl{ font-size:15pt; font-weight:700; letter-spacing:.02em; }
+  .sub{ font-size:8.5pt; color:#555; margin-top:1mm; }
+  .name{ font-size:9pt; white-space:nowrap; }
+  .name span{ display:inline-block; border-bottom:1px solid var(--ink); }
+  .n-cls{ width:16mm; } .n-no{ width:11mm; } .n-nm{ width:38mm; }
+  .cap{ font-size:8.5pt; background:var(--band); border-left:3px solid var(--ink);
+    padding:1.4mm 3mm; margin:0 0 2mm; }
+  .grp{ font-size:8.5pt; font-weight:700; margin:2mm 0 .8mm; color:#333; }
+
+  /* ---- 表：なぞり ---- */
+  .row{ display:grid; grid-template-columns:6mm 30mm 1fr; align-items:stretch;
+    border-bottom:1px solid #dfe3e7; }
+  .row .no{ font-size:7.5pt; color:#777; padding-top:2.6mm; }
+  .row .jp{ font-size:9pt; padding:2.6mm 2mm 0 0; }
+  .strip{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+  .cell{ position:relative; height:8.8mm; border-left:1px dotted #d3d8dd; }
+  .cell::after{ content:""; position:absolute; left:2mm; right:2mm; bottom:1.6mm;
+    border-bottom:1px solid var(--rule); }
+  .w{ position:absolute; left:3mm; bottom:1.9mm; font-size:13pt; line-height:1;
+    font-family:Andika,"Century Gothic","Trebuchet MS",sans-serif; letter-spacing:.02em; }
+  .ghost .w{ color:var(--ghost); }
+
+  /* ---- 裏：テスト ---- */
+  .test{ display:grid; grid-template-columns:1fr 1fr; column-gap:8mm; }
+  .trow{ display:grid; grid-template-columns:6mm 28mm 1fr; align-items:end;
+    height:15.5mm; border-bottom:1px solid #dfe3e7; }
+  .trow .no{ font-size:7.5pt; color:#777; padding-bottom:2mm; }
+  .trow .jp{ font-size:9pt; padding:0 2mm 2mm 0; }
+  .blank{ position:relative; height:100%; }
+  .blank::after{ content:""; position:absolute; left:1mm; right:0; bottom:1.6mm;
+    border-bottom:1px solid var(--rule); }
+  .score{ margin-top:4mm; display:flex; justify-content:flex-end; align-items:center; gap:3mm;
+    font-size:9pt; }
+  .score b{ display:inline-block; border:1.5px solid var(--ink); padding:2mm 6mm; }
+  .foot{ font-size:7.5pt; color:#777; margin-top:2mm; text-align:right; }
+
+  @page{ size:A4 portrait; margin:0; }
+  @media print{
+    html,body{ background:#fff; }
+    .sheet{ width:auto; min-height:auto; margin:0; padding:11mm 12mm 8mm;
+      box-shadow:none; page-break-after:always; }
+    .sheet:last-child{ page-break-after:auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 表：なぞりがき ============ -->
+<section class="sheet">
+  <div class="head">
+    <div>
+      <div class="ttl">頻出スペル 24 ― なぞりがき</div>
+      <div class="sub">模試でいちばん落としている語。うすい字を2回なぞって、3つめは自分で書く。</div>
+    </div>
+    <div class="name">
+      3年 <span class="n-cls"></span>組 <span class="n-no"></span>番<br><br>
+      名前 <span class="n-nm"></span>
+    </div>
+  </div>
+
+  <p class="cap">声に出して読みながら書く。書けたら裏面のテストへ。まちがえた語は右はしに ✓ を付けておく。</p>
+
+  <div class="grp">A ｜ 曜日と数（聞きとれても書けずに落としている）</div>
+  <div class="row"><div class="no">1</div><div class="jp">水曜日</div><div class="strip">
+    <div class="cell ghost"><span class="w">Wednesday</span></div>
+    <div class="cell ghost"><span class="w">Wednesday</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">2</div><div class="jp">火曜日</div><div class="strip">
+    <div class="cell ghost"><span class="w">Tuesday</span></div>
+    <div class="cell ghost"><span class="w">Tuesday</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">3</div><div class="jp">12</div><div class="strip">
+    <div class="cell ghost"><span class="w">twelve</span></div>
+    <div class="cell ghost"><span class="w">twelve</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">4</div><div class="jp">13</div><div class="strip">
+    <div class="cell ghost"><span class="w">thirteen</span></div>
+    <div class="cell ghost"><span class="w">thirteen</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">5</div><div class="jp">20</div><div class="strip">
+    <div class="cell ghost"><span class="w">twenty</span></div>
+    <div class="cell ghost"><span class="w">twenty</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">6</div><div class="jp">30</div><div class="strip">
+    <div class="cell ghost"><span class="w">thirty</span></div>
+    <div class="cell ghost"><span class="w">thirty</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">7</div><div class="jp">40</div><div class="strip">
+    <div class="cell ghost"><span class="w">forty</span></div>
+    <div class="cell ghost"><span class="w">forty</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">8</div><div class="jp">50</div><div class="strip">
+    <div class="cell ghost"><span class="w">fifty</span></div>
+    <div class="cell ghost"><span class="w">fifty</span></div>
+    <div class="cell"></div></div></div>
+
+  <div class="grp">B ｜ 場所・ものの名前（大問1・2でよく出る）</div>
+  <div class="row"><div class="no">9</div><div class="jp">文化</div><div class="strip">
+    <div class="cell ghost"><span class="w">culture</span></div>
+    <div class="cell ghost"><span class="w">culture</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">10</div><div class="jp">博物館・美術館</div><div class="strip">
+    <div class="cell ghost"><span class="w">museum</span></div>
+    <div class="cell ghost"><span class="w">museum</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">11</div><div class="jp">レストラン</div><div class="strip">
+    <div class="cell ghost"><span class="w">restaurant</span></div>
+    <div class="cell ghost"><span class="w">restaurant</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">12</div><div class="jp">出発</div><div class="strip">
+    <div class="cell ghost"><span class="w">departure</span></div>
+    <div class="cell ghost"><span class="w">departure</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">13</div><div class="jp">子どもたち</div><div class="strip">
+    <div class="cell ghost"><span class="w">children</span></div>
+    <div class="cell ghost"><span class="w">children</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">14</div><div class="jp">動物</div><div class="strip">
+    <div class="cell ghost"><span class="w">animal</span></div>
+    <div class="cell ghost"><span class="w">animal</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">15</div><div class="jp">区域・エリア</div><div class="strip">
+    <div class="cell ghost"><span class="w">area</span></div>
+    <div class="cell ghost"><span class="w">area</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">16</div><div class="jp">衣服</div><div class="strip">
+    <div class="cell ghost"><span class="w">clothes</span></div>
+    <div class="cell ghost"><span class="w">clothes</span></div>
+    <div class="cell"></div></div></div>
+
+  <div class="grp">C ｜ 記述・英作文で必ず要る語</div>
+  <div class="row"><div class="no">17</div><div class="jp">be の過去分詞</div><div class="strip">
+    <div class="cell ghost"><span class="w">been</span></div>
+    <div class="cell ghost"><span class="w">been</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">18</div><div class="jp">出発する・去る</div><div class="strip">
+    <div class="cell ghost"><span class="w">leave</span></div>
+    <div class="cell ghost"><span class="w">leave</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">19</div><div class="jp">到着する</div><div class="strip">
+    <div class="cell ghost"><span class="w">arrive</span></div>
+    <div class="cell ghost"><span class="w">arrive</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">20</div><div class="jp">何か</div><div class="strip">
+    <div class="cell ghost"><span class="w">something</span></div>
+    <div class="cell ghost"><span class="w">something</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">21</div><div class="jp">日本の・日本語</div><div class="strip">
+    <div class="cell ghost"><span class="w">Japanese</span></div>
+    <div class="cell ghost"><span class="w">Japanese</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">22</div><div class="jp">英語</div><div class="strip">
+    <div class="cell ghost"><span class="w">English</span></div>
+    <div class="cell ghost"><span class="w">English</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">23</div><div class="jp">人々</div><div class="strip">
+    <div class="cell ghost"><span class="w">people</span></div>
+    <div class="cell ghost"><span class="w">people</span></div>
+    <div class="cell"></div></div></div>
+  <div class="row"><div class="no">24</div><div class="jp">外国の</div><div class="strip">
+    <div class="cell ghost"><span class="w">foreign</span></div>
+    <div class="cell ghost"><span class="w">foreign</span></div>
+    <div class="cell"></div></div></div>
+
+  <div class="foot">※ 大文字ではじまる語（Wednesday / Tuesday / Japanese / English）に注意。</div>
+</section>
+
+<!-- ============ 裏：テスト ============ -->
+<section class="sheet">
+  <div class="head">
+    <div>
+      <div class="ttl">頻出スペル 24 ― かくにんテスト</div>
+      <div class="sub">日本語を見て英語で書く。表は見ない。1問1点。</div>
+    </div>
+    <div class="name">
+      3年 <span class="n-cls"></span>組 <span class="n-no"></span>番<br><br>
+      名前 <span class="n-nm"></span>
+    </div>
+  </div>
+
+  <div class="test">
+    <div>
+      <div class="trow"><div class="no">1</div><div class="jp">水曜日</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">2</div><div class="jp">火曜日</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">3</div><div class="jp">12</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">4</div><div class="jp">13</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">5</div><div class="jp">20</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">6</div><div class="jp">30</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">7</div><div class="jp">40</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">8</div><div class="jp">50</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">9</div><div class="jp">文化</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">10</div><div class="jp">博物館・美術館</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">11</div><div class="jp">レストラン</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">12</div><div class="jp">出発</div><div class="blank"></div></div>
+    </div>
+    <div>
+      <div class="trow"><div class="no">13</div><div class="jp">子どもたち</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">14</div><div class="jp">動物</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">15</div><div class="jp">区域・エリア</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">16</div><div class="jp">衣服</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">17</div><div class="jp">be の過去分詞</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">18</div><div class="jp">出発する・去る</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">19</div><div class="jp">到着する</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">20</div><div class="jp">何か</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">21</div><div class="jp">日本の・日本語</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">22</div><div class="jp">英語</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">23</div><div class="jp">人々</div><div class="blank"></div></div>
+      <div class="trow"><div class="no">24</div><div class="jp">外国の</div><div class="blank"></div></div>
+    </div>
+  </div>
+
+  <div class="score"><span>得点</span><b>　　／ 24</b></div>
+  <div class="foot">まちがえた語は、表のうすい字をもう1回なぞってから、あすもう一度このテストをする。</div>
+</section>
+
+</body>
+</html>
