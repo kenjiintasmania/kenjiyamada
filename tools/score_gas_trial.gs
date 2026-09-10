@@ -88,12 +88,13 @@ function handleJigaku(d){
 function jigakuUnitKey(name){
   var s = String(name||"").trim();
   if (!s) return "その他";
-  var m = s.match(/(?:unit|ユニット)\s*[-.．_]?\s*(\d{1,2})/i)
-       || s.match(/(?:^|[^a-z])u\s*[-.．_]?\s*(\d{1,2})/i);
+  // ★Unit と Lesson は同じ列にまとめる。教科書によって呼び名がちがうだけで、
+  //   生徒にとっては同じ単元だから。呼び名を選ばせていた頃は、同じ単元が
+  //   U3 と L3 の2列に割れて表が増えた。アプリは "Unit N-M" で統一して送るように
+  //   なったが、それ以前の "Lesson N-M" の記録も、ここで同じ列に寄せる。
+  var m = s.match(/(?:unit|lesson|ユニット|レッスン)\s*[-.．_]?\s*(\d{1,2})/i)
+       || s.match(/(?:^|[^a-z])[ul]\s*[-.．_]?\s*(\d{1,2})/i);
   if (m) return "U" + Number(m[1]);
-  m = s.match(/(?:lesson|レッスン)\s*[-.．_]?\s*(\d{1,2})/i)
-   || s.match(/(?:^|[^a-z])l\s*[-.．_]?\s*(\d{1,2})/i);
-  if (m) return "L" + Number(m[1]);
   return "その他";
 }
 function jigakuUnitOrder(k){
@@ -280,8 +281,32 @@ var SUMMARY_COLS = [
   {key:"m_ok9",     head:"模試_岡山9",  max:true},
   {key:"m_ok10",    head:"模試_岡山10", max:true},
   // --- 活用編（動詞の変化形/形容詞の比較・1語形=1点・全600点） ---
-  {key:"w_katsuyo", head:"単語_活用",   max:true}
+  {key:"w_katsuyo", head:"単語_活用",   max:true},
+  // --- ここから jigaku-8 で追加（341/342 と福岡①がマイページ・シートに載っていなかった） ---
+  {key:"m_341",     head:"模試_341",    max:true},
+  {key:"m_342",     head:"模試_342",    max:true},
+  {key:"m_fk1",     head:"模試_福岡1",  max:true}   // 福岡は60点満点。模試_最高点とは別ものとして見る
 ];
+
+/* ★1回だけ実行（GASエディタで関数を選んで▶）。
+   固定列を末尾に足すと、その位置には前まで「自学_◯◯」が入っていたので、
+   見出しは新しくなっても数字が古い自学の値のまま残る。しかも max 列なので
+   Math.max で古い大きな数が勝ちつづける。足した直後に1回だけ空にする。 */
+function clearNewSummaryCols(){
+  var names = ["模試_341","模試_342","模試_福岡1"];
+  var sh = getSS().getSheetByName(SUMMARY_SHEET);
+  if (!sh || sh.getLastRow() < 2) return "対象の行がありません";
+  var head = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0]
+               .map(function(h){ return String(h).trim(); });
+  var n = 0;
+  names.forEach(function(h){
+    var i = head.indexOf(h);
+    if (i < 0) return;
+    sh.getRange(2, i+1, sh.getLastRow()-1, 1).clearContent();
+    n++;
+  });
+  return n + " 列を空にしました（" + names.join("／") + "）";
+}
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
  * ★先生へ：下の TEACHER_PIN を必ず自分だけが知る合言葉に変更してください。
@@ -295,10 +320,12 @@ var UNIT_EXAMS = {
   "c2u1": "中2 単元テスト①",
   "c2u2": "中2 単元テスト②",
   "c3u1": "中3 単元テスト①",
-  "c3u2": "中3 単元テスト②"
+  "c3u2": "中3 単元テスト②",
+  "c3u3": "中3 単元テスト③",
+  "c3u4": "中3 単元テスト④"
 };
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-5";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-8";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

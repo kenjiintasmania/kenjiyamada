@@ -178,10 +178,39 @@
       return;
     }
     poll(); setInterval(poll, 5000);
+    /* まだ書いていない設問の数。コース制の大問は、選んでいないほう（.dim）は数えない。 */
+    function unanswered(){
+      let n=0;
+      quiz.querySelectorAll(".q").forEach(q=>{
+        const box=q.closest(".coursebox");
+        if(box && box.classList.contains("dim")) return;      // 選んでいないコース
+        const written =
+          q.querySelector('.choices input:checked') ||
+          [...q.querySelectorAll('input[type="text"], textarea')].some(i=>i.value.trim()) ||
+          q.querySelector('.wo-build .wo-chip');
+        if(!written) n++;
+      });
+      return n;
+    }
+    /* ★提出は取り消せない（先生がシートの行を消すまで点が残る）。しかもこのボタンは
+       画面上部に貼りついていて、スクロール中ずっと指の下にある。誤タップ1回で0点が
+       確定しないよう、gojun/自学の「やめる」と同じで2回押しにする。 */
+    let armed=false, armTimer=null;
+    function disarm(){ armed=false; clearTimeout(armTimer); btn.textContent="採点して提出する"; }
     btn.addEventListener("click",function(){
       if(submitted||!open) return;
       const cls=elc.value.trim(), num=han(eln.value), name=elm.value.trim();
       if(!cls||!num){ msg.textContent="学年と番号を入れてね。"; return; }
+      if(!armed){
+        armed=true;
+        const rest=unanswered();
+        btn.textContent="もう一度おして提出";
+        msg.textContent=(rest? "まだ "+rest+" 問 書いていません。":"")+
+          "提出すると点が先生にとどきます。取り消せません。やめるなら5秒まってください。";
+        armTimer=setTimeout(function(){ disarm(); msg.textContent=""; }, 5000);
+        return;
+      }
+      disarm();
       quiz.querySelectorAll("input,textarea,button").forEach(el=>el.disabled=true);
       btn.disabled=true; btn.textContent="提出中…";
       MockExam.gradeAll();
@@ -194,7 +223,7 @@
           if(res.result==="ok"||res.result==="dup"){
             submitted=true; badge.textContent="✅ 提出ずみ"; badge.className="unit-badge done";
             btn.textContent="提出ずみ"; btn.disabled=true;
-            msg.textContent=(res.result==="dup"?"もう提出ずみです。":"提出しました！おつかれさま🎉")
+            msg.textContent=(res.result==="dup"?"もう提出ずみです（まちがえて出したなら先生に言ってね）。":"提出しました！おつかれさま🎉")
               +"（点数 "+r.score+" / "+r.total+"）";
           }else if(res.result==="locked"){
             msg.textContent="いまは受付していません（先生にきいてね）。";

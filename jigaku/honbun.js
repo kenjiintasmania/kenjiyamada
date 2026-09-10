@@ -37,6 +37,7 @@ function zenhan(s){
 }
 function norm(s){
   return zenhan(s).toLowerCase().replace(/['’]/g,"")
+    .replace(/(\d)[,，](\d)/g,"$1$2")            // 桁区切りの , は数の一部（1,000＝1000）
     .replace(/[.,!?;:"“”（）()]/g," ").replace(/\s+/g," ").trim();
 }
 function edist(a,b){
@@ -51,8 +52,10 @@ function edist(a,b){
   return d[m][n];
 }
 // 「A、B、C」のような列挙かどうか。列挙なら集合として比べる。
+// 1,000 の , は桁区切りで列挙の区切りではないので、切る前につぶしておく。
 function items(s){
-  return String(s==null?"":s).split(/[,、，\/／]|\s+と\s+/).map(function(x){return x.trim();})
+  return String(s==null?"":s).replace(/(\d)[,，](\d)/g,"$1$2")
+    .split(/[,、，\/／]|\s+と\s+/).map(function(x){return x.trim();})
     .filter(Boolean);
 }
 
@@ -95,34 +98,49 @@ function near(mine, ans){
   // 頭・おしりの重なりは、日本語（区切りが無い）のときだけ見る。
   // 英語でこれを許すと「ten」が「often」のおしりに入っていて○になってしまう。
   // 英語の「Aozora ↔ Aozora Zoo」は上の語の集合でひろえている。
+  // ※「ASCII 以外か」ではなく「かな・漢字があるか」で見る。読点1つで英語の答えまで
+  //   この道に入り、列挙の1つめだけ書いて○になっていた。
   var sh=(a.length<=b.length)?a:b, lo=(a.length<=b.length)?b:a;
-  if(/[^\x00-\x7f]/.test(lo) && sh.length>=2 && sh.length*2>=lo.length &&
+  if(isJa(lo) && sh.length>=2 && sh.length*2>=lo.length &&
      (lo.indexOf(sh)===0 || lo.lastIndexOf(sh)===lo.length-sh.length)) return true;
-  return edist(a,b) <= Math.max(1, Math.floor(Math.max(a.length,b.length)/4));
+  var LN=Math.max(a.length,b.length);
+  // 短い答えは1文字がまるごと情報。東と西、if と in、3 と 5 に「だいたい」は無い。
+  // ここに下限を置かないと、4文字以下はどんな答えでも1文字ちがい＝○になってしまう。
+  if(LN<5) return false;
+  // 数をふくむ短い答えも同じ（1985年 と 1986年、20人 と 10人）。
+  // 長い説明文にたまたま数字が入っているだけのときは、下の「4分の1」で見る。
+  if(LN<=8 && /[0-9]/.test(b)) return false;
+  return edist(a,b) <= Math.floor(LN/4);
+}
+/* 答えを「1つのもの」として読んだときの判定。合っていなければ null を返す。
+   ・記号の答え … ア／あ／A／1／① どれで書いても同じ
+   ・そのほか   … ぴったりでも、だいたい合っていても満点（読み取れたかを測っているので） */
+function judgeOne(mine, ans){
+  var ai=markOf(ans, MARK_ANS);
+  if(ai>=0){                                   // 記号をえらぶ問題
+    var mi=markOf(mine, MARK_ANY);
+    return (mi===ai) ? {pt:PT, tag:"○", why:"", hit:[ans]}
+                     : {pt:0,  tag:"×", why:"", hit:[]};
+  }
+  if(norm(mine)===norm(ans)) return {pt:PT, tag:"○", why:"", hit:[ans]};
+  if(near(mine, ans)){
+    // 日本語で説明する問題＝だいたいで満点／英語で抜き出す問題＝つづりミス −1
+    return isJa(ans)
+      ? {pt:PT,   tag:"○", why:"だいたい合っています（正しくは "+ans+"）", hit:[ans]}
+      : {pt:PT-1, tag:"△", why:"つづりミス −1（正しくは "+ans+"）", hit:[ans]};
+  }
+  return null;
 }
 /* 1問ぶんの判定。
-   ・記号の答え … ア／あ／A／1／① どれで書いても同じ
-   ・単一の答え … ぴったりでも、だいたい合っていても満点（読み取れたかを測っているので）
-   ・列挙       … 集合で比べ、合った数で按分。よけいに挙げた分は減点しない */
+   ・列挙 … 集合で比べ、合った数で按分。よけいに挙げた分は減点しない
+   ★読点は「A、B、C」の区切りにもなるが、日本語の文にはふつうに出てくる。
+     「ボランティアをすると、自分も元気になる」が2つ中1つ＝半分になっていたので、
+     列挙として按分した点と、1つの答えとして読んだ点をくらべて、高いほうを採る。 */
 function judge(mine, ans){
   var A=items(mine), B=items(ans);
   if(!String(mine||"").trim()) return {pt:0, tag:"—", why:"書けなかった", hit:[]};
-  if(B.length<=1){
-    var ai=markOf(ans, MARK_ANS);
-    if(ai>=0){                                   // 記号をえらぶ問題
-      var mi=markOf(mine, MARK_ANY);
-      return (mi===ai) ? {pt:PT, tag:"○", why:"", hit:[ans]}
-                       : {pt:0,  tag:"×", why:"", hit:[]};
-    }
-    if(norm(mine)===norm(ans)) return {pt:PT, tag:"○", why:"", hit:[ans]};
-    if(near(mine, ans)){
-      // 日本語で説明する問題＝だいたいで満点／英語で抜き出す問題＝つづりミス −1
-      return isJa(ans)
-        ? {pt:PT,   tag:"○", why:"だいたい合っています（正しくは "+ans+"）", hit:[ans]}
-        : {pt:PT-1, tag:"△", why:"つづりミス −1（正しくは "+ans+"）", hit:[ans]};
-    }
-    return {pt:0, tag:"×", why:"", hit:[]};
-  }
+  var one = judgeOne(mine, ans);
+  if(B.length<=1) return one || {pt:0, tag:"×", why:"", hit:[]};
   var got=[], extra=0, slip=0;
   var used={};
   A.forEach(function(a){
@@ -134,8 +152,9 @@ function judge(mine, ans){
   if(slip) pt=Math.max(0, pt-1);              // 英語の抜き出しはつづりも見る
   var why=(got.length===B.length?"":(B.length+"つ中"+got.length+"つ"))+
           (extra?("／よけいに"+extra+"つ"):"")+(slip?"／つづりミス −1":"");
-  return {pt:pt, tag:(got.length===B.length&&!slip?"○":(got.length?"△":"×")),
-          why:why, hit:got};
+  var many={pt:pt, tag:(got.length===B.length&&!slip?"○":(got.length?"△":"×")),
+            why:why, hit:got};
+  return (one && one.pt > many.pt) ? one : many;
 }
 
 /* ================= ① 本文を用意する ================= */
@@ -392,7 +411,8 @@ function parseSummary(raw){
     var c=cells(s);
     if(!c.length) return;
     if(/^[-:\s]+$/.test(c.join(""))) return;
-    if(/^no$/i.test(c[0])||/種別/.test(c[1]||"")) return;
+    // 番号が入っている行はデータ行（種別欄の語で見出しと誤判定しないように）
+    if(!/^\d/.test(c[0]) && (/^no$/i.test(c[0])||/種別/.test(c[1]||""))) return;
     if(!/^\d+$/.test(c[0].replace(/[^0-9]/g,""))) { bad++; return; }
     if(c.length<5){ bad++; return; }
     rows.push({no:parseInt(c[0].replace(/[^0-9]/g,""),10), kindLabel:c[1], kind:kindOf(c[1]),

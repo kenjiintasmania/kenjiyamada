@@ -246,7 +246,9 @@
     var prm=null; try{prm=new URLSearchParams(location.search);}catch(e){}
     $("f_cls").value=(prm&&prm.get("year"))||idGet("year");          // 学年(1〜3)
     $("f_num").value=han((prm&&prm.get("num"))||idGet("num"));        // 番号は半角のみ
-    $("f_name").value=(prm&&prm.get("name"))||idGet("name");
+    // 実証モードに実名は要らない。端末に残っている氏名を復元して外部の実証シートへ
+    // 送ってしまわないよう、ここでは空のままにする。
+    $("f_name").value=(window.SITE&&SITE.isTrial)?"":((prm&&prm.get("name"))||idGet("name"));
   }
   $("f_cls").addEventListener("change",function(){ idSet("year",this.value); });
   $("f_num").addEventListener("input",function(){ this.value=han(this.value); idSet("num",this.value); });
@@ -309,9 +311,11 @@
   var MOGI=[["chu2","中2 211"],["chu2_2","中2 212"],["chu2_3","中2 213"],["chu2_a1","中2 214"],
             ["chu3_1","中3 321"],["chu3_2","中3 322"],["chu3_4","中3 323"],["chu3_3","中3 324"],
             ["m332","中3 331"],["mock332","中3 332"],
+            ["chu3_341","中3 341"],["chu3_342","中3 342"],
             ["okayama1","岡山①"],["okayama2","岡山②"],["okayama3","岡山③"],["okayama4","岡山④"],
             ["okayama5","岡山⑤"],["okayama6","岡山⑥"],["okayama7","岡山⑦"],["okayama8","岡山⑧"],
-            ["okayama9","岡山⑨"],["okayama10","岡山⑩"]];
+            ["okayama9","岡山⑨"],["okayama10","岡山⑩"],
+            ["fukuoka1","福岡①"]];
   function readMogi(){
     var mb=lsJSON("mogi_best_v1")||{}, rows=[], best=0, done=0;
     MOGI.forEach(function(p){
@@ -488,9 +492,10 @@
       m_c2_1:ms("chu2"), m_c2_2:ms("chu2_2"), m_c2_3:ms("chu2_3"),
       m_c3_1:ms("chu3_1"), m_c3_2:ms("chu3_2"), m_c3_3:ms("chu3_3"), m_c3_4:ms("chu3_4"),
       m_c2_a1:ms("chu2_a1"), m_331:ms("m332"), m_332:ms("mock332"),
+      m_341:ms("chu3_341"), m_342:ms("chu3_342"),
       m_ok1:ms("okayama1"), m_ok2:ms("okayama2"), m_ok3:ms("okayama3"), m_ok4:ms("okayama4"),
       m_ok5:ms("okayama5"), m_ok6:ms("okayama6"), m_ok7:ms("okayama7"), m_ok8:ms("okayama8"),
-      m_ok9:ms("okayama9"), m_ok10:ms("okayama10"),
+      m_ok9:ms("okayama9"), m_ok10:ms("okayama10"), m_fk1:ms("fukuoka1"),
       m_best:m.done?m.best:"", m_done:m.done,
       // 英検（レベル座標0〜8と目安ラベル）
       e_full:r2(e.full), e_full_label:(e.full!=null?levelLabel(e.full):""),
@@ -544,8 +549,11 @@
   collect(); initComment();   // 先に集約してスナップショット比較（ほめ言葉のため）
   renderAll();
   $("teacherNote").textContent="";   // 先生向けメモは表示しない（生徒画面）
-  // 自動送信（本人情報があるときだけ）
-  if(SUMMARY_GAS_URL && $("f_cls").value.trim() && $("f_num").value.trim()){
+  // 自動送信（本人情報があるときだけ）。
+  // ★実証モードでは自動で送らない。開いただけで実証先のスプレッドシートへ
+  //   成績が飛ぶのは、生徒が「送る」と決めていない送信になるため。手動ボタンのみ。
+  if(SUMMARY_GAS_URL && !(window.SITE&&SITE.isTrial) &&
+     $("f_cls").value.trim() && $("f_num").value.trim()){
     setTimeout(function(){ send(true); }, 400);
   }
 })();

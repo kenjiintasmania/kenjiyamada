@@ -102,6 +102,20 @@ must(
     if (data.action === "status"){`,
   'ping');
 
+/* --check … 書かずに、いま置いてある score_gas_trial.gs と食いちがっていないかだけ見る。
+   本体（score_gas.gs）を直したのに作り直し忘れると、実証側だけ古い仕様のまま
+   デプロイされる（単元テスト③④が「未知の試験ID」になる、など）。品質ゲートから呼ぶ。 */
+if (process.argv.includes('--check')) {
+  let cur = '';
+  try { cur = readFileSync(OUT, 'utf8'); } catch(e){ cur = ''; }
+  if (cur === s) { console.log('  ✓ trial   score_gas_trial.gs は score_gas.gs と一致'); process.exit(0); }
+  const a = cur.split('\n'), b = s.split('\n');
+  let n = 0;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) if (a[i] !== b[i]) n++;
+  console.log(`  ✗ [trial] score_gas_trial.gs が古い（${n} 行ちがう）。node tools/make_trial_gas.mjs で作り直してください`);
+  process.exit(1);
+}
+
 writeFileSync(OUT, s);
 console.log(`✓ 生成: tools/score_gas_trial.gs（${s.split('\n').length} 行）`);
 console.log(`  生徒用ID ${PROD_ID.slice(0, 12)}… への書き込みは安全弁でブロックされます`);

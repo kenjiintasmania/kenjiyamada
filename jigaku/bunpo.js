@@ -295,6 +295,17 @@ $("q_quit").addEventListener("click",function(){
     b.classList.remove("armed"); b.textContent="記録せずやめる"; } }, 4100);
 });
 /* いまの問題をスキップ（0点で次へ） */
+/* 答え合わせ／スキップのあとは、その問題の入力をぜんぶ止める。
+   止めないと、Enter でもう一度 q_check が走って同じ問題が2行 記録され、
+   「1文＝5点」の満点がずれる（採点欄の合計も先生のシートも狂う）。 */
+function lockInput(type){
+  if(type==="order"){
+    $("woBank").querySelectorAll(".chip").forEach(function(b){ b.disabled=true; });
+    $("woUndo").disabled=true; $("woClear").disabled=true;
+  }else{
+    var el=$("q_in"); if(el) el.disabled=true;
+  }
+}
 function skipOne(){
   var q=Q[qi], s=SENTS[q.si];
   RUN.rows.push({si:q.si, type:q.type, en:s.en, ja:s.ja, mine:"", ans:q.ans,
@@ -306,6 +317,7 @@ $("q_skip").addEventListener("click",function(){
   $("q_verdict").innerHTML='<div class="verdict ng">— スキップ（0点）'+
     '<small>正しくは <span class="ans">'+esc(Q[qi].ans)+'</span></small></div>';
   $("q_check").classList.add("hide"); $("q_skip").disabled=true;
+  lockInput(Q[qi].type);
   var nx=$("q_next"); nx.classList.remove("hide");
   nx.textContent=(qi>=Q.length-1)?"結果を見る →":"次へ →";
 });
@@ -385,6 +397,7 @@ function drawWo(){
     b.disabled = picked.indexOf(+b.getAttribute("data-i"))>=0; });
 }
 $("q_check").addEventListener("click",function(){
+  if(this.classList.contains("hide")) return;   // 採点ずみ／スキップずみは二度受けつけない
   var q=Q[qi], s=SENTS[q.si];
   var mine = (q.type==="order") ? picked.map(function(i){ return q.chips[i]; }).join(" ")
                                 : $("q_in").value;
@@ -396,10 +409,7 @@ $("q_check").addEventListener("click",function(){
       '<small>'+(v.why?esc(v.why)+"／":"")+'正しくは <span class="ans">'+esc(q.ans)+'</span>'+
       // 空欄の正解は1語なので、文まるごとも並べて出す。他の型は q.ans が文そのもの
       (q.type==="blank" ? '<br>'+esc(s.en) : "")+'</small>')+'</div>';
-  if(q.type==="order"){
-    $("woBank").querySelectorAll(".chip").forEach(function(b){ b.disabled=true; });
-    $("woUndo").disabled=true; $("woClear").disabled=true;
-  }else $("q_in").disabled=true;
+  lockInput(q.type);
   this.classList.add("hide");
   var nx=$("q_next");
   nx.classList.remove("hide");

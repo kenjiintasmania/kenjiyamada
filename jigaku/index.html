@@ -708,7 +708,9 @@
       while(c.length && c[c.length-1]==="") c.pop();                   // markdown の | 終わり
       if(!c.length) return;
       if(/^[-:\s]+$/.test(c.join(""))) return;                         // |---|---| の区切り行
-      if(/^no$/i.test(c[0])||/日本語/.test(c[1])) return;              // 見出し行
+      // 見出し行。※「日本語」だけで見ると、意味が「日本語で（in Japanese）」の語まで
+      //   見出しあつかいで黙って消える。番号が入っている行はデータ行として扱う。
+      if(!/^\d/.test(c[0]) && (/^no$/i.test(c[0])||/日本語/.test(c[1]||""))) return;
       if(c.length<4) { bad++; return; }
       if(!/^\d+$/.test(c[0].replace(/[^0-9]/g,""))) { bad++; return; }
       // 5欄以上＝改行が落ちて2行がつながっている。ここで4欄だけ拾うと

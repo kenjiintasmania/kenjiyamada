@@ -458,7 +458,12 @@
       if(window.SITE) SITE.tag(payload);              /* ▼追記：実証モードの印だけ足す */
       inp.value=JSON.stringify(payload);
       f.appendChild(inp); document.body.appendChild(f); f.submit(); document.body.removeChild(f);
-      msg.style.color="#2e9e57"; msg.textContent="送信しました ✓（スプシのAIログを確認）"; $("logBox").value="";
+      /* iframe への POST なので、f.submit() は届いたかどうかを返さない。
+         ここで貼りつけた「まとめ」を消すと、届いていなかったときに打ち直しになる。
+         残したうえで、文面も「送りました」と言い切らない。 */
+      try{ localStorage.setItem("mado_ailog_last", raw); }catch(e){}
+      msg.style.color="#2e9e57";
+      msg.textContent="送信しました（先生のスプシ「AImodeログ」に出ているか、次の授業で確かめてね）";
     }catch(e){ err("送信できませんでした（"+String(e).slice(0,24)+"）"); }
   }
 
@@ -475,7 +480,11 @@
     curDiag=diagnose(D, $("manualLv").value?parseFloat($("manualLv").value):null);
     renderDiag(D,curDiag); renderModes(curDiag);
   }
-  try{ localStorage.removeItem("mado_name"); }catch(e){}   // ★v0.94: 端末に残っていた氏名も消す（原則1）
+  /* ★v0.94 は起動時に mado_name を消していたが、このキーは AI練習のものではなく
+     模試・マイページ・英検・自学の4レーンが名前欄に使う共有キー。ここで消すと
+     /aimode/ を開いただけで他のアプリの名前欄が空になる（単元テストは名前なしで
+     提出できてしまう）。原則1（AI練習は氏名を持たない）は、このファイルが
+     mado_name を読み書きしないことで守れるので、削除はしない。 */
   fillIdentity(); refresh();
   $("f_cls").addEventListener("change",function(){ lsSet("mado_year",this.value); });
   $("f_num").addEventListener("input",function(){ this.value=han(this.value); lsSet("mado_num",this.value); });
