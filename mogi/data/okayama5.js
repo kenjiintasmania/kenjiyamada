@@ -126,7 +126,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Ross:</span> Today, let\'s think about our town together. How can we make our town kind to visitors? Sota, please start.</span>'+
     '<span class="sp"><span class="who">Sota:</span> I want to put English signs at every tram stop. I want to show visitors how to find the right tram easily.</span>'+
     '<span class="sp"><span class="who">Mr. Ross:</span> That\'s a nice idea. Why do you choose the tram, Sota?</span>'+
-    '<span class="sp"><span class="who">Sota:</span> Many people use it to go around the town. I want to teach visitors how to ride it without getting lost.</span>'+
+    '<span class="sp"><span class="who">Sota:</span> Many people use it to go around the town. I want to teach visitors <u>how to ride</u> it without getting lost.</span>'+
     '<span class="sp"><span class="who">Mr. Ross:</span> Wonderful. Yua, how about you?</span>'+
     '<span class="sp"><span class="who">Yua:</span> I want to hold an English story time at the station library. I can read picture books to children from other countries.</span>'+
     '<span class="sp"><span class="who">Mr. Ross:</span> That sounds great. Do you often read at the library, Yua?</span>'+

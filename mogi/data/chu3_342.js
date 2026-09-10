@@ -198,7 +198,7 @@ sections: [
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["brought","the telescope","together","us"], answer:"The telescope brought us together",
       display:"The telescope brought us together" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old telescope （　え　） dust when Rina found it."),
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語2語を、第2段落中から抜き出して書きなさい。<br>"+E("The old telescope （　え　） with dust when Rina found it."),
       answers:["was covered"], hint:"第2段落の語・英語2語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>1台の古い（　①　）が、すべての生徒に（　②　）を好きにさせることはできない。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "望遠鏡","カメラ","時計","自転車" ], answer:0 },

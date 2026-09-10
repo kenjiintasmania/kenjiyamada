@@ -651,9 +651,9 @@ items: [
   { ja:"だれも 彼が なぜ おこっているか 知らない。", en:"Nobody knows why he is angry.",
     fill:{S:{ja:"だれも",en:"Nobody"}, V:{ja:"知らない",en:"knows"}, Q:{ja:"なぜ",en:"why"},
           S2:{ja:"彼が",en:"he"}, V2:{ja:"おこっているか",en:"is angry"}} },
-  { ja:"わたしたちは 昔の人が どのように 暮らしていたか 学んだ。", en:"We learned how people lived long ago.",
+  { ja:"わたしたちは 人々が どのように 昔 暮らしていたか 学んだ。", en:"We learned how people lived long ago.",
     fill:{S:{ja:"わたしたちは",en:"We"}, V:{ja:"学んだ",en:"learned"}, Q:{ja:"どのように",en:"how"},
-          S2:{ja:"昔の人が",en:"people"}, V2:{ja:"暮らしていたか",en:"lived long ago"}} } ] },
+          S2:{ja:"人々が",en:"people"}, V2:{ja:"昔 暮らしていたか",en:"lived long ago"}} } ] },
 
 /* ===== 分詞の後置修飾 ===== */
 { key:"bunshi", group:"other", title:"分詞の後置修飾", emoji:"🪞",
@@ -832,6 +832,8 @@ items: [
   lead:"★主語の箱が空になります。相手（あなた）に言うので、言わなくても分かるからです。"+
        "動詞は原形から始まります。（You play soccer. → Play soccer.）",
   extra:{ S:["You","He","We"], V:["plays","played","opening","closes"],
+          // Be quiet. の1文だけが「助動詞／＝」の箱を使うので、まぎらわしい形を候補に足す
+          AUX:["is","are","Are","Do","Don't","Being","Was"],
           M:["well","hard","fast","together","quietly"],
           PL:["at home","in the park","at school","here"],
           T:["today","every day","last night","tomorrow"],
@@ -842,7 +844,8 @@ items: [
           O:{ja:"サッカーを",en:"soccer"}, M:{ja:"（なし）",en:""},
           PL:{ja:"（なし）",en:""}, T:{ja:"放課後",en:"after school"}} },
   { ja:"図書館で 静かに しなさい。", en:"Be quiet in the library.",
-    fill:{S:{ja:"（言わない）",en:""}, AUX:{ja:"（なし）",en:""}, V:{ja:"〜しなさい（be動詞の原形）",en:"Be"},
+    /* be動詞は「助動詞／＝」の箱。動詞の箱は空。be動詞の文・実践編②と同じ置き方にそろえる。 */
+    fill:{S:{ja:"（言わない）",en:""}, AUX:{ja:"★原形は Be",en:"Be"}, V:{ja:"（なし）",en:""},
           O:{ja:"静かに",en:"quiet"}, M:{ja:"（なし）",en:""},
           PL:{ja:"図書館で",en:"in the library"}, T:{ja:"（なし）",en:""}} },
   { ja:"毎日 熱心に 英語を 勉強しなさい。", en:"Study English hard every day.",

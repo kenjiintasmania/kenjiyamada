@@ -125,7 +125,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Hill:</span> Today, let\'s talk about our town. How can we tell foreign people about the good points of our town? Riku, please start.</span>'+
     '<span class="sp"><span class="who">Riku:</span> I want to make an English map. I want to show visitors how to enjoy our old Japanese garden.</span>'+
     '<span class="sp"><span class="who">Mr. Hill:</span> That\'s a nice idea. Why do you like the garden, Riku?</span>'+
-    '<span class="sp"><span class="who">Riku:</span> It is very beautiful in every season. I want to teach visitors how to walk around it slowly.</span>'+
+    '<span class="sp"><span class="who">Riku:</span> It is very beautiful in every season. I want to teach visitors <u>how to walk</u> around it slowly.</span>'+
     '<span class="sp"><span class="who">Mr. Hill:</span> Wonderful. Aoi, how about you?</span>'+
     '<span class="sp"><span class="who">Aoi:</span> I want to hold a cooking event. My grandmother makes a local dish with peaches, and it is really delicious.</span>'+
     '<span class="sp"><span class="who">Mr. Hill:</span> That sounds great. Do you often cook with your grandmother, Aoi?</span>'+

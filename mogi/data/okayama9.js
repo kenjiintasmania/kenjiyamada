@@ -126,7 +126,7 @@ sections: [
 { no:4, title:"クラーク(Mr. Clark)先生の英語の授業で、Yuki、Ren、Aya が、留学生のアンナ(Anna)に日本文化を体験してもらう方法について話し合いをしています。次の英文は、話し合いと、それを聞いて Kota が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. Clark:</span> Today, let\'s talk about Anna. She is staying in Hikari for one month. How can we help her enjoy Japanese culture? Yuki, please start.</span>'+
-    '<span class="sp"><span class="who">Yuki:</span> I want to teach her origami. I want to show her how to fold a paper crane.</span>'+
+    '<span class="sp"><span class="who">Yuki:</span> I want to teach her origami. I want to show her <u>how to fold</u> a paper crane.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> That\'s a nice idea. Why do you like origami, Yuki?</span>'+
     '<span class="sp"><span class="who">Yuki:</span> We can make many things from just one piece of paper. I want to teach her how to make a beautiful flower, too.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> Wonderful. Ren, how about you?</span>'+

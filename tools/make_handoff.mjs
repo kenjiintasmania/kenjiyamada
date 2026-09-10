@@ -17,8 +17,11 @@ const OUT  = path.join(process.argv[2] || path.join(ROOT, "out"), NAME);
 /* ---- 同梱するもの / しないもの ---- */
 const INCLUDE = [
   "index.html", "assets", "words", "mogi", "eiken", "me",
-  "challenge", "dojo", "jigaku", "listening", "admin", "trial"
+  "challenge", "dojo", "jigaku", "gojun", "listening", "admin", "trial"
 ];
+/* index.html から張られているのに INCLUDE に無いディレクトリは、入れ忘れかどうかを
+   ここで宣言する。宣言も INCLUDE も無ければ最後の検算で落ちる（gojun がそれで抜けていた）。 */
+const SKIP_LINKED = { aimode: "別スレッド（プロンプト設計）が所有するため同梱しない" };
 const SKIP_DIR = new Set(["node_modules", ".git", "source"]);   // words/data/source は先生の元資料なので外す
 
 /* ---- 署名 ----
@@ -94,11 +97,22 @@ fs.mkdirSync(path.join(OUT,"server"), {recursive:true});
 for(const f of ["score_gas.gs","score_gas_trial.gs"])
   fs.writeFileSync(path.join(OUT,"server",f), scrub(fs.readFileSync(path.join(ROOT,"tools",f),"utf8")));
 fs.mkdirSync(path.join(OUT,"tools"), {recursive:true});
-for(const f of ["check_exams.mjs","make_paper.py"])
-  fs.writeFileSync(path.join(OUT,"tools",f), scrub(fs.readFileSync(path.join(ROOT,"tools",f),"utf8")));
+for(const f of ["check_exams.mjs","make_paper.py"]){
+  let src = scrub(fs.readFileSync(path.join(ROOT,"tools",f),"utf8"));
+  // 納品物では画面一式が app/ の下に入るので、検査ツールの基準ディレクトリもそこへ向ける
+  if(f==="check_exams.mjs"){
+    const before = src;
+    src = src.replace("resolve(dirname(fileURLToPath(import.meta.url)), '..')",
+                      "resolve(dirname(fileURLToPath(import.meta.url)), '..', 'app')");
+    if(src===before){ console.error("✗ check_exams.mjs の ROOT 行が見つかりません（納品物で検査が動きません）"); process.exit(1); }
+  }
+  fs.writeFileSync(path.join(OUT,"tools",f), src);
+}
 fs.writeFileSync(path.join(OUT,"tools","package.json"),
   JSON.stringify({name:"eigo-app-check", private:true, type:"module",
-    scripts:{check:"node check_exams.mjs"}}, null, 2));
+    scripts:{check:"node check_exams.mjs"},
+    // jsdom が無いと 0_はじめに.md の「動作確認（10分）」手順7 がそのまま失敗する
+    devDependencies:{jsdom:"^29.1.1"}}, null, 2));
 
 fs.writeFileSync(path.join(OUT,"0_はじめに.md"), doc0());
 fs.writeFileSync(path.join(OUT,"1_インターフェース仕様.md"), doc1());
@@ -115,6 +129,16 @@ let leak = [];
     if(/AKfycb[A-Za-z0-9_-]{10}/.test(t) || /1x3jpH6/.test(t)) leak.push(path.relative(OUT,p));
   }
 })(OUT);
+
+/* index.html から張られているのに、同梱も除外宣言もされていないディレクトリを落とす */
+const linked = [...fs.readFileSync(path.join(ROOT,"index.html"),"utf8")
+  .matchAll(/href="([a-z_]+)\//g)].map(m=>m[1]);
+const missed = [...new Set(linked)].filter(d=> !INCLUDE.includes(d) && !SKIP_LINKED[d]);
+if(missed.length){
+  console.error("✗ index.html から張られているのに同梱していません: "+missed.join(", ")+
+                "（INCLUDE か SKIP_LINKED に足してください）");
+  process.exit(1);
+}
 
 const count = (function c(d){ let n=0; for(const e of fs.readdirSync(d)){
   const p=path.join(d,e); n += fs.statSync(p).isDirectory()? c(p) : 1; } return n; })(OUT);

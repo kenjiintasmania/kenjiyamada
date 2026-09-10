@@ -126,7 +126,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Clark:</span> Today, let\'s talk about our school festival. How can we make it more fun for everyone? Kaito, please start.</span>'+
     '<span class="sp"><span class="who">Kaito:</span> I want to make a stage program. I want to show visitors how to enjoy the brass band concert.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> That\'s a nice idea. Why do you like the concert, Kaito?</span>'+
-    '<span class="sp"><span class="who">Kaito:</span> The music is exciting and beautiful. I want to tell visitors how to find the best seats early.</span>'+
+    '<span class="sp"><span class="who">Kaito:</span> The music is exciting and beautiful. I want to tell visitors <u>how to find</u> the best seats early.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> Wonderful. Mio, how about you?</span>'+
     '<span class="sp"><span class="who">Mio:</span> I want to open a small café. The drama club can serve tea and cakes, and people can take a rest there.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> That sounds great. Do you often make cakes, Mio?</span>'+

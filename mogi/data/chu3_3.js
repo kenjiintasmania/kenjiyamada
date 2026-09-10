@@ -124,7 +124,7 @@ sections: [
 { no:4, title:"ブラウン(Brown)先生の英語の授業で、Kenta、Sakura、Daiki が、将来つきたい仕事について話し合いをしています。次の英文は、話し合いと、それを聞いて Yui が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. Brown:</span> Today, let\'s talk about jobs. What job do you want to have in the future? Kenta, tell us first.</span>'+
-    '<span class="sp"><span class="who">Kenta:</span> I want to be a swimming coach. I love swimming, and I want to teach young children how to swim.</span>'+
+    '<span class="sp"><span class="who">Kenta:</span> I want to be a swimming coach. I love swimming, and I want to teach young children <u>how to swim</u>.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> That\'s nice. Are you good at swimming, Kenta?</span>'+
     '<span class="sp"><span class="who">Kenta:</span> Yes. I have been in the swim club for three years. I want to help children enjoy the water.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> Wonderful. I hope you\'ll be a great coach someday.</span>'+

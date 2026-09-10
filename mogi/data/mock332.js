@@ -124,7 +124,7 @@ sections: [
 { no:4, title:"クラーク(Mr. Clark)先生の英語の授業で、Yuma、Saki、Kai が、好きなスポーツについて話し合いをしています。次の英文は、話し合いと、それを聞いて Rin が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. Clark:</span> Today, let\'s talk about sports. What sport do you like the most? Yuma, tell us first.</span>'+
-    '<span class="sp"><span class="who">Yuma:</span> I like basketball. I love it, and I want to learn how to shoot better.</span>'+
+    '<span class="sp"><span class="who">Yuma:</span> I like basketball. I love it, and I want to learn <u>how to shoot</u> better.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> That\'s nice. Are you good at basketball, Yuma?</span>'+
     '<span class="sp"><span class="who">Yuma:</span> Yes. I have played basketball for four years. I want to win the city tournament with my team.</span>'+
     '<span class="sp"><span class="who">Mr. Clark:</span> Wonderful. I hope your dream will come true.</span>'+

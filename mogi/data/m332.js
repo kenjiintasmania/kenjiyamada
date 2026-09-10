@@ -124,7 +124,7 @@ sections: [
 { no:4, title:"グリーン(Ms. Green)先生の英語の授業で、Koki、Nao、Ren が、好きな本について話し合いをしています。次の英文は、話し合いと、それを聞いて Emi が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Ms. Green:</span> Today, let\'s talk about books. What kind of story do you like? Koki, tell us first.</span>'+
-    '<span class="sp"><span class="who">Koki:</span> I like reading science books. I love science, and I want to learn how to make robots.</span>'+
+    '<span class="sp"><span class="who">Koki:</span> I like reading science books. I love science, and I want to learn <u>how to make</u> robots.</span>'+
     '<span class="sp"><span class="who">Ms. Green:</span> That\'s nice. Are you good at science, Koki?</span>'+
     '<span class="sp"><span class="who">Koki:</span> Yes. I have read many science books for three years. I want to build a robot someday.</span>'+
     '<span class="sp"><span class="who">Ms. Green:</span> Wonderful. I hope your dream will come true.</span>'+

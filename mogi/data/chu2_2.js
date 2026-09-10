@@ -83,7 +83,7 @@ sections: [
     passage:
     '<span class="sp"><span class="who">Sam:</span> Haruka, have you seen this flyer?</span>'+
     '<span class="sp"><span class="who">Haruka:</span> Hi, Sam. Yes. It\'s a flyer from Midori Zoo. There we can feed the (　①　) and join a craft class.</span>'+
-    '<span class="sp"><span class="who">Sam:</span> The feeding time is popular. The zoo also has a craft class on the (　②　) Saturday of every month. (　③　) students can join. I joined last month and made a leaf card.</span>'+
+    '<span class="sp"><span class="who">Sam:</span> The feeding time is popular. The zoo also has a craft class on the (　②　) Saturday of every month. (　③　) students can join. I joined last month and made a nut animal.</span>'+
     '<span class="sp"><span class="who">Haruka:</span> That sounds fun. I want to visit next month. Can you go with me?</span>'+
     '<span class="sp"><span class="who">Sam:</span> Yes, but I can\'t go in the morning. I help my mother then. I\'m free in the afternoon.</span>'+
     '<span class="sp"><span class="who">Haruka:</span> That\'s OK. I want to join the elephant feeding.</span>'+

@@ -309,7 +309,7 @@ function lockInput(type){
 function skipOne(){
   var q=Q[qi], s=SENTS[q.si];
   RUN.rows.push({si:q.si, type:q.type, en:s.en, ja:s.ja, mine:"", ans:q.ans,
-                 tag:"—", pt:0, why:"スキップ"});
+                 tag:"—", pt:0, why:"スキップ", skipped:true});
 }
 $("q_skip").addEventListener("click",function(){
   if($("q_check").classList.contains("hide")) return;   // 答え合わせずみ
@@ -414,7 +414,9 @@ $("q_check").addEventListener("click",function(){
   var nx=$("q_next");
   nx.classList.remove("hide");
   nx.textContent=(qi>=Q.length-1)?"結果を見る →":"次へ →";
-  nx.focus();
+  /* ここで nx.focus() をすると、Enter → 採点 → フォーカスが「次へ」→ Enter → 次の問題
+     → 入力欄にフォーカス → Enter → 空欄のまま採点、と連鎖して問題が飛ぶ。
+     判定を読ませたい場面なので、フォーカスは動かさない。 */
 });
 $("q_next").addEventListener("click",function(){
   qi++;
@@ -428,13 +430,19 @@ function finish(){
   var rows=RUN.rows;
   var got=rows.reduce(function(a,x){ return a+x.pt; },0), max=rows.length;   // 1問1点
   var pct=max?Math.round(got/max*100):0;
-  function tally(t){ var a=rows.filter(function(x){ return x.type===t; });
+  /* スキップは「まちがえた」ではないので、写しがきのミス数から外す。
+     copyMiss は送信で「リスト外の語」列に写しミス数として載るため、
+     混ぜるとスキップした回数がそのまま「つづりを見る練習が要る」に化けていた。 */
+  function tally(t, noSkip){ var a=rows.filter(function(x){
+      return x.type===t && !(noSkip && x.skipped); });
     return {ok:a.filter(function(x){ return x.pt; }).length, n:a.length}; }
   var C=tally("copy"), T=tally("trans"), B=tally("blank"), O=tally("order");
+  var Cm=tally("copy", true);          // 写しミス数はスキップを除いて数える
   var weak=rows.filter(function(x){ return !x.pt; })
                .map(function(x){ return x.ans; }).join(" / ");
   graded={ts:RUN.ts, name:RUN.name, n:RUN.n, got:got, max:max, pct:pct,
-          copyMiss:C.n-C.ok, C:C, T:T, B:B, O:O, rows:rows, weak:weak};
+          copyMiss:Cm.n-Cm.ok, C:C, T:T, B:B, O:O, rows:rows, weak:weak,
+          skipped:rows.filter(function(x){ return x.skipped; }).length};
   $("r_score").textContent=got+" / "+max;
   $("k_pct").textContent=pct+"%";
   $("k_copy").textContent=C.ok+" / "+C.n;

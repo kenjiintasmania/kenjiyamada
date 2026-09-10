@@ -107,21 +107,21 @@ sections: [
     'October 24<br><br>'+
     'This morning, I went to school early with Emma. We went to our classroom together. '+
     'Emma asked, "What are you doing?" I said, "<u>(1)</u> because we want to teach everyone about the earth." '+
-    'Emma said, "I want to help you!" So we worked together. In the afternoon, we enjoyed <u>(2)</u> on the stage. Many people watched us.',
+    'Emma said, "I want to help you!" So we worked together. In the afternoon, I enjoyed <u>(2)</u> on the stage. Many people watched us.',
     passageEn:true,
     note:'語注：the earth 地球',
     items:[
     { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：アオイがリサイクルのポスターを作っている場面。次の語を正しく並べて英文を完成させなさい。",
       words:["making","I","poster","am","a","recycling"], answer:"I am making a recycling poster" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：午後にステージでおどっている場面。次の語を正しく並べて英文（we enjoyed のあとの部分）を完成させなさい。",
-      words:["together","dancing","Emma","with"], answer:"dancing with Emma together" } ]}
+    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：午後にステージでおどっている場面。次の語を正しく並べて英文（I enjoyed のあとの部分）を完成させなさい。",
+      words:["together","dancing","Emma","with"], answer:"dancing together with Emma" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋感想 ===== */
 { no:4, title:"ブラウン(Brown)先生の英語の授業で、Kenta、Aoi、Riku が、文化祭でやってみたいことについて話し合いをしています。次の英文は、話し合いと、それを聞いて Emma が書いた感想です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. Brown:</span> Today, let\'s talk about our school festival. What do you want to do at the festival? Kenta, tell us first.</span>'+
-    '<span class="sp"><span class="who">Kenta:</span> I want to make a quiz about the environment. I love nature, and I want to teach people how to protect it.</span>'+
+    '<span class="sp"><span class="who">Kenta:</span> I want to make a quiz about the environment. I love nature, and I want to teach people <u>how to protect</u> it.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> That\'s nice. Do you want to use pictures in your quiz?</span>'+
     '<span class="sp"><span class="who">Kenta:</span> Yes, I hope so. I want to show people many photos of beautiful forests.</span>'+
     '<span class="sp"><span class="who">Mr. Brown:</span> Wonderful. I hope many students will learn from your quiz.</span>'+

@@ -93,6 +93,17 @@ function memoFormat(id, EXAM){
   });
 }
 
+/* 「下線部の内容になるように…」と書いてあるのに、その大問の本文に <u> が無い設問。
+   生徒はどこを言いかえるのか分からないまま抜き出すことになる。10本で起きていた。 */
+function underlineRef(id, EXAM){
+  (EXAM.sections||[]).forEach(sec=>{
+    const groups = sec.groups||[];
+    const hasU = groups.some(g=>/<u>/.test(String(g.passage||'')+String(g.script||'')));
+    const needs = groups.some(g=>(g.items||[]).some(it=>/下線部/.test(String(it.stem||''))));
+    if(needs && !hasU) fail(id, `大問${sec.no} 設問が「下線部」を指しているのに本文に <u> が無い`);
+  });
+}
+
 // 話者連続：passage/script 内で同じ話者の <span class="who"> が2回続いていないか（QAで頻発した不具合）
 function speakerContinuity(id, EXAM){
   (EXAM.sections||[]).forEach(s=>{
@@ -133,6 +144,7 @@ function gradeExam(id, ci=0, label=''){
   const EXAM = w.EXAM;
   structuralChecks(id, EXAM);
   speakerContinuity(id, EXAM);
+  underlineRef(id, EXAM);
   memoFormat(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   // 採点するコースを選びなおす（既定は先頭＝Xコースだけ）

@@ -128,7 +128,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Parker:</span> Today, let\'s talk about our town. How can we reduce the trash in our town? Sota, please start.</span>'+
     '<span class="sp"><span class="who">Sota:</span> I want to make an English poster. I want to show people how to separate their trash.</span>'+
     '<span class="sp"><span class="who">Mr. Parker:</span> That\'s a nice idea. Why is separating trash important, Sota?</span>'+
-    '<span class="sp"><span class="who">Sota:</span> When we separate bottles and cans, we can recycle them easily. I want to teach people how to sort their trash at home.</span>'+
+    '<span class="sp"><span class="who">Sota:</span> When we separate bottles and cans, we can recycle them easily. I want to teach people <u>how to sort</u> their trash at home.</span>'+
     '<span class="sp"><span class="who">Mr. Parker:</span> Wonderful. Mio, how about you?</span>'+
     '<span class="sp"><span class="who">Mio:</span> I want to hold a recycling workshop. My aunt makes nice bags from old clothes, and they are really useful.</span>'+
     '<span class="sp"><span class="who">Mr. Parker:</span> That sounds great. Do you often make things with your aunt, Mio?</span>'+

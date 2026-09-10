@@ -84,7 +84,7 @@ sections: [
     passage:
     '<span class="sp"><span class="who">Ella:</span> Daichi, have you seen this flyer?</span>'+
     '<span class="sp"><span class="who">Daichi:</span> Hi, Ella. Yes. It\'s a flyer for the Sakura Junior High Festival. On the stage we can enjoy the (　①　) and some dances.</span>'+
-    '<span class="sp"><span class="who">Ella:</span> The stage shows are popular. The school also has a cooking class on the (　②　) Saturday of every month. Only (　③　) students can join. I joined last month and made cookies.</span>'+
+    '<span class="sp"><span class="who">Ella:</span> The stage shows are popular. The school also has a cooking class on the (　②　) Saturday of every month. Only (　③　) students can join. I joined last month and made a pizza.</span>'+
     '<span class="sp"><span class="who">Daichi:</span> That sounds interesting. I want to join next month. Can you come with me?</span>'+
     '<span class="sp"><span class="who">Ella:</span> Yes, but I can\'t come in the morning. I have a piano lesson then. I\'m free in the afternoon.</span>'+
     '<span class="sp"><span class="who">Daichi:</span> That\'s OK. I want to watch the chorus contest.</span>'+

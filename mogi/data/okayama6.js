@@ -125,7 +125,7 @@ sections: [
     '<span class="sp"><span class="who">Ms. Bell:</span> Today, let\'s talk about our town. How can we keep our traditional crafts for the future? Kaito, please start.</span>'+
     '<span class="sp"><span class="who">Kaito:</span> I want to open a small class. I want to teach children how to make a cup with clay.</span>'+
     '<span class="sp"><span class="who">Ms. Bell:</span> That\'s a nice idea. Why do you like pottery, Kaito?</span>'+
-    '<span class="sp"><span class="who">Kaito:</span> Each cup is different and warm. I want to show children how to enjoy making things by hand.</span>'+
+    '<span class="sp"><span class="who">Kaito:</span> Each cup is different and warm. I want to show children <u>how to enjoy</u> making things by hand.</span>'+
     '<span class="sp"><span class="who">Ms. Bell:</span> Wonderful. Yuna, how about you?</span>'+
     '<span class="sp"><span class="who">Yuna:</span> I want to make a website. Many craftsmen in our town are old, and few young people know about their work.</span>'+
     '<span class="sp"><span class="who">Ms. Bell:</span> That sounds great. Do you often use the Internet, Yuna?</span>'+

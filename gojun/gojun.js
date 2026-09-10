@@ -33,7 +33,9 @@ function zenhan(s){
     .replace(/　/g," ");
 }
 function norm(s){
-  return zenhan(s).toLowerCase().replace(/['’]/g,"'")
+  // アポストロフィは消す（他の3レーンと同じものさし）。don't も dont も同じ答えとして見る。
+  // 残していたころは、打つモードで ' を入れ忘れた文が丸ごと0点になっていた（禁止・否定で28か所）。
+  return zenhan(s).toLowerCase().replace(/['’]/g,"")
     .replace(/[.,!?;:"“”]/g," ").replace(/\s+/g," ").trim();
 }
 function same(a,b){ return norm(a)===norm(b); }
@@ -235,7 +237,8 @@ function grade(skipped){
   $("q_check").classList.add("hide"); $("q_skip").disabled=true;
   var nx=$("q_next"); nx.classList.remove("hide");
   nx.textContent=(si>=IT.sents.length-1)?"結果を見る →":"次へ →";
-  nx.focus();
+  /* 「次へ」にフォーカスを移すと、Enter の続けおしで正解表示を飛ばしてしまう
+     （この画面は正解を見せてから進む作り）。フォーカスは動かさない。 */
 }
 $("q_check").addEventListener("click",function(){ if(!answered) grade(false); });
 $("q_skip").addEventListener("click",function(){ if(!answered) grade(true); });

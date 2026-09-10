@@ -13,8 +13,15 @@
 'use strict';
 
 /* ---------- 正規化 ---------- */
+/* 全角で打っても半角と同じものとして見る（自学の4レーンと同じ扱い。模試だけ取り残されていた）。
+   IME が全角英数のままだと、中身が合っていても fill が必ず✕になっていた。 */
+function zenhan(s){
+  return String(s==null?"":s)
+    .replace(/[！-～]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-65248); })
+    .replace(/　/g," ");
+}
 function normSpell(s){
-  return (s||"").toLowerCase().trim()
+  return zenhan(s).toLowerCase().trim()
     .replace(/[.,!?;:"'’“”]/g,"")
     .replace(/[-_/]/g," ")
     .replace(/\s+/g," ").trim();
