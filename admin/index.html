@@ -179,8 +179,10 @@
   var STALE='⚠️ <b>サーバー（GAS）が古いコードのままです。</b><br>'+
     'Apps Scriptで〔デプロイ〕→〔デプロイを管理〕→ ✏️（編集）→ バージョン「新バージョン」→〔デプロイ〕してください。'+
     '<br>これを直すまで、スタートを押してもロックは解除されません。';
-  /* このページが要る版。単元テスト③④は score_gas の UNIT_EXAMS に入った jigaku-7 から開ける。 */
-  var ADMIN_NEED = 7;
+  /* いま置いてある tools/score_gas.gs の版。これ未満だと、
+     単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
+     模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
+  var ADMIN_NEED = 8;
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   function updateServerNote(st){
@@ -190,7 +192,10 @@
     var vn=st&&st.ver ? (String(st.ver).match(/jigaku-(\d+)/)||[])[1] : null;
     if(vn && Number(vn) >= ADMIN_NEED){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
     else if(st && st.ver){ el.style.display=""; el.className="card warn";
-      el.innerHTML="⚠️ サーバーの版が古いようです（"+st.ver+"／このページは jigaku-"+ADMIN_NEED+" 以上を想定）。<br>"+STALE; }
+      el.innerHTML="⚠️ サーバーの版が古いようです（いま "+st.ver+"／想定は jigaku-"+ADMIN_NEED+" 以上）。"+
+        "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない、といったことが起きます。<br>"+STALE+
+        "<br>※ jigaku-8 を貼ったあと、GASエディタで <b>clearNewSummaryCols()</b> を1回だけ実行してください"+
+        "（末尾に足した3列に、前の「自学_◯◯」の数字が残っているため）。"; }
     else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）
     else if(st && st.result==="ok"){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版
     else if(st && st.result==="error" && st.message){ el.style.display=""; el.className="card warn"; el.textContent="⚠️ サーバーからのエラー：「"+st.message+"」"; } // 真因をそのまま表示（例：スプレッドシートが見つかりません＝score_gasにIDを直書き＋新バージョンで再デプロイ）
