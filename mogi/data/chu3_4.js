@@ -105,7 +105,7 @@ sections: [
     passage:
     'October 12<br><br>'+
     'Joe visited my house in the afternoon. When he came into my room, he said, "What a big shelf of model cars! '+
-    '<u>(1)</u> you have?" I said, "About three hundred." I showed him some of my favorite model cars. We enjoyed looking at them together. '+
+    '<u>(1)</u>?" I said, "About three hundred." I showed him some of my favorite model cars. We enjoyed looking at them together. '+
     'At four thirty, he said, "I want to stay here longer, but I have <u>(2)</u> before five. I\'m going to bake cookies with my mother." '+
     'I wanted to talk with him more, but he left my house.',
     passageEn:true,

@@ -211,6 +211,7 @@ sections: [
     { type:"wordorder", label:"(1)", pt:2,
       stem:"①「わたしはエマを桂野郷土館へ連れて行きたい。」という文になるように、次の語句を正しく並べかえなさい。",
       words:["want","I","take","to","Emma","to the Keino Local Museum"],
+      order:["I","want","to","take","Emma","to the Keino Local Museum"],
       answer:"I want to take Emma to the Keino Local Museum",
       display:"I want to take Emma to the Keino Local Museum." },
     { type:"wordorder", label:"(2)", pt:2,

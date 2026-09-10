@@ -75,7 +75,7 @@ sections: [
     '<tr><td>15:00〜15:30</td><td>ペンギン</td></tr></table>'+
     '<div class="note">入園料　大人 600円／中・高校生 400円／小学生 200円</div>'+
     '<table style="margin-top:6px"><tr><th>工作教室（毎月第2土曜日・参加無料）</th><th></th></tr>'+
-    '<tr><td>定員</td><td>（　③　）名</td></tr>'+
+    '<tr><td>定員</td><td>20名</td></tr>'+
     '<tr><td>時間</td><td>13:00〜／15:00〜</td></tr>'+
     '<tr><td>9月</td><td>どんぐりの動物を作ろう</td></tr><tr><td>10月</td><td>落ち葉のカードを作ろう</td></tr>'+
     '<tr><td>11月</td><td>木の鳥を作ろう</td></tr><tr><td>12月</td><td>羊毛のマスコットを作ろう</td></tr></table>'+
@@ -210,6 +210,8 @@ sections: [
         display:"I stayed home because it was very rainy this morning." },
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("to / the / see / zoo")+' ］ the pandas last week.　B: That\'s nice.',
         words:["to","the","see","zoo"], answer:"I went to the zoo to see the pandas last week.",
+        /* to も the も answer に2回出るので、カッコに入る順を明示する。 */
+        order:["the","zoo","to","see"],
         display:"I went to the zoo to see the pandas last week." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, come to the zoo with me.　B: OK.',
         words:["are","you","if","free"], answer:"If you are free tomorrow, come to the zoo with me.",

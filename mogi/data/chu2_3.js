@@ -211,6 +211,8 @@ sections: [
         display:"I stayed home because it was very hot this afternoon." },
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("see / Tokyo / to / my")+' ］ uncle last week.　B: That\'s nice.',
         words:["see","Tokyo","to","my"], answer:"I went to Tokyo to see my uncle last week.",
+        /* answer に to が2回出るので、カッコに入る順を明示する。 */
+        order:["Tokyo","to","see","my"],
         display:"I went to Tokyo to see my uncle last week." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / if / you / free")+' ］ tomorrow, come to the festival with me.　B: OK.',
         words:["are","if","you","free"], answer:"If you are free tomorrow, come to the festival with me.",

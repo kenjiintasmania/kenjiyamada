@@ -24,7 +24,10 @@ function countWords(s){
   return t.replace(/\s+/g," ").split(" ").length;
 }
 const KATA = ["ア","イ","ウ","エ","オ","カ","キ","ク"];
-/* 並べかえ：answer(完成文)の中での出現位置で words を正しい順に並べる（複数語トークン対応） */
+/* 並べかえ：answer(完成文)の中での出現位置で words を正しい順に並べる（複数語トークン対応）。
+   ★ answer に同じ語が2回出る文（to 不定詞の to など）では、カッコの外の to を先に拾って
+     しまい、順番を取りちがえる。そういう設問はデータ側に order:[...] を持たせて、
+     そちらを正解とする（slotsOf と同じ「データが勝つ」流儀）。 */
 function orderTokens(words, answer){
   const aw = normSpell(answer).split(" ");
   function pos(tok){
@@ -257,7 +260,8 @@ function renderItem(it, ctx){
   if(it.type==="wordorder"){
     q.appendChild(el("div","stem", stem));
     q.appendChild(el("div","note","（　）内の"+it.words.length+"語だけを正しい順にタップしよう（カッコの外の語はそのまま）。もう一度タップで取り消し。"));
-    const correct = orderTokens(it.words, it.answer);
+    const correct = (it.order && it.order.length===it.words.length) ? it.order.slice()
+                                                                    : orderTokens(it.words, it.answer);
     const build=el("div","wo-build");
     const bank=el("div","wo-bank");
     let seq=[];

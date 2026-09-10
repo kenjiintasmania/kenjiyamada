@@ -102,7 +102,7 @@ sections: [
     passage:
     'October 17<br><br>'+
     'Emma visited my house in the afternoon. When she came into my room, she said, "What a big bookshelf! '+
-    '<u>(1)</u> you have?" I said, "About three hundred." I showed her some of my favorite stories. We enjoyed reading them together. '+
+    '<u>(1)</u>?" I said, "About three hundred." I showed her some of my favorite stories. We enjoyed reading them together. '+
     'At four thirty, she said, "I want to stay here longer, but I have <u>(2)</u> before five. I\'m going to read aloud with my sister." '+
     'I wanted to talk with her more, but she left my house.',
     passageEn:true,

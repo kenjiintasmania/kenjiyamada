@@ -194,6 +194,7 @@ sections: [
         display:"Where will you visit next Sunday?" },
       { type:"wordorder", label:"(2)", pt:3, stem:'A:［ '+E("you / to / going / are")+' ］ travel to Kyoto next month?　B: Yes, I am.',
         words:["you","to","going","are"], answer:"Are you going to travel to Kyoto next month?",
+        order:["are","you","going","to"],
         display:"Are you going to travel to Kyoto next month?" },
       { type:"wordorder", label:"(3)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ this weekend, let\'s join the town tour.　B: Sounds good.',
         words:["are","you","if","free"], answer:"If you are free this weekend, let's join the town tour.",

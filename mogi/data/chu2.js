@@ -209,6 +209,8 @@ sections: [
         display:"I didn't go out because it was very cold this morning." },
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("to / my / see / Osaka")+' ］ grandmother last week.　B: That\'s nice.',
         words:["to","my","see","Osaka"], answer:"I went to Osaka to see my grandmother last week.",
+        /* answer に to が2回出るので、カッコに入る順は answer からは決められない。ここで明示する。 */
+        order:["Osaka","to","see","my"],
         display:"I went to Osaka to see my grandmother last week." },
       { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("are / you / if / free")+' ］ tomorrow, come to the festival with me.　B: OK.',
         words:["are","you","if","free"], answer:"If you are free tomorrow, come to the festival with me.",

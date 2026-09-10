@@ -56,6 +56,18 @@ function structuralChecks(id, EXAM){
       const posOf = (t) => { const tw=normSpell(t).split(" ");
         for(let i=0;i+tw.length<=aw.length;i++){ let m=1; for(let j=0;j<tw.length;j++) if(aw[i+j]!==tw[j]){m=0;break;} if(m) return i; } return -1; };
       it.words.forEach(word=>{ if(posOf(word)<0) fail(id, `${w} 並べかえ語「${word}」が answer に見つからない`); });
+      // answer に同じ語が2回出ると、出現位置から順番を決められない（カッコの外の語を先に拾う）。
+      // そういう設問は data 側に order:[...] を持たせて、正解の順番を明示すること。
+      if(!it.order){
+        const hits = (t) => { const tw=normSpell(t).split(" "); let n=0;
+          for(let i=0;i+tw.length<=aw.length;i++){ let m=1; for(let j=0;j<tw.length;j++) if(aw[i+j]!==tw[j]){m=0;break;} if(m) n++; } return n; };
+        const dup = it.words.filter(t=>hits(t)>1);
+        if(dup.length) fail(id, `${w} 「${dup.join('／')}」が answer に2回出るので順番が決まらない（order:[...] を持たせること）`);
+      }
+      if(it.order){
+        if(it.order.length!==it.words.length) fail(id, `${w} order の語数が words と合わない`);
+        else if([...it.order].sort().join("|")!==[...it.words].sort().join("|")) fail(id, `${w} order と words の中身がちがう`);
+      }
     }
   });
 }
@@ -97,7 +109,22 @@ function speakerContinuity(id, EXAM){
   });
 }
 
-function gradeExam(id){
+/* コース制（中2の大問6 X/Y）は、選ばれたコースの設問しか grade() が呼ばれない。
+   既定のまま採点すると Xコースしか通らないので、コースの数だけ採点しなおす。 */
+function courseCount(EXAM){
+  return Math.max(1, ...(EXAM.sections||[]).map(s=>(s.courses||[]).length||1));
+}
+function sumPtFor(EXAM, ci){
+  return (EXAM.sections||[]).reduce((a,sec)=>{
+    if(sec.courses && sec.courses.length){
+      const c = sec.courses[Math.min(ci, sec.courses.length-1)];
+      return a + (c.items||[]).reduce((x,it)=>x+(Number(it.pt)||0),0);
+    }
+    return a + (sec.groups||[]).reduce((x,g)=>x+(g.items||[]).reduce((y,it)=>y+(Number(it.pt)||0),0), 0);
+  }, 0);
+}
+
+function gradeExam(id, ci=0, label=''){
   const dom = new JSDOM(`<!doctype html><div id=quiz></div><div class="scorebar" id=scorebar><span class=big id=scoretext></span><span class=msg></span></div><div class="scorebar" id=scorebar_b><span class=big></span><span class=msg></span></div><span id=totalpts></span>`, { url:'http://localhost' });
   const w = dom.window; w.scrollTo=()=>{}; w.Element.prototype.scrollIntoView=()=>{};
   new Function('window','document', ENGINE)(w, w.document);
@@ -108,13 +135,19 @@ function gradeExam(id){
   speakerContinuity(id, EXAM);
   memoFormat(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
+  // 採点するコースを選びなおす（既定は先頭＝Xコースだけ）
+  (EXAM.sections||[]).forEach(sec=>{
+    if(!(sec.courses && sec.courses.length)) return;
+    const pick = Math.min(ci, sec.courses.length-1);
+    [...w.document.querySelectorAll(`input[name="course_${sec.no}"]`)].forEach((r,i)=>{ r.checked = (i===pick); });
+  });
   const items = itemsOf(EXAM);
   const qs = [...w.document.querySelectorAll('#quiz .q')];
   items.forEach((it,i)=>{ const q = qs[i]; if(!q) return;
     if(it.type==='mcq' || it.type==='mcqMulti'){ const a=Array.isArray(it.answer)?it.answer:[it.answer]; const inp=[...q.querySelectorAll('.choices input')]; a.forEach(x=>{ if(inp[x]) inp[x].checked=true; }); }
     else if(it.type==='bankpick'){ const inp=[...q.querySelectorAll('.choices input')]; if(inp[it.answer]) inp[it.answer].checked=true; }
     else if(it.type==='fill'){ const el=q.querySelector('input'); if(el) el.value=(it.answers&&it.answers[0])||''; }
-    else if(it.type==='wordorder'){ orderTokens(it.words,it.answer).forEach(t=>{ const c=[...q.querySelectorAll('.wo-bank .wo-chip')].find(ch=>ch.textContent.trim()===t); if(c) c.click(); }); }
+    else if(it.type==='wordorder'){ (it.order || orderTokens(it.words,it.answer)).forEach(t=>{ const c=[...q.querySelectorAll('.wo-bank .wo-chip')].find(ch=>ch.textContent.trim()===t); if(c) c.click(); }); }
   });
   w.MockExam.gradeAll('bottom');
   const top = w.document.getElementById('scoretext').textContent;
@@ -122,18 +155,14 @@ function gradeExam(id){
   // 満点は県によって違う（岡山100点／福岡60点）。データが fullMarks を持てばそれ、無ければ100。
   // あわせて「配点の合計＝満点」も見る。合計がずれても100点で通ってしまう穴があったため。
   const full = (typeof EXAM.fullMarks === 'number') ? EXAM.fullMarks : 100;
-  // コース制（中2のX/Y）は両コースぶんの設問が items に入るので、1コース分だけ数える
-  // ＝ engine が満点として出す値（make_paper.py の section_points と同じ数えかた）
-  const sumPt = (EXAM.sections||[]).reduce((a,sec)=>{
-    if(sec.courses && sec.courses.length){
-      return a + Math.max(...sec.courses.map(c=>(c.items||[]).reduce((x,it)=>x+(Number(it.pt)||0),0)));
-    }
-    return a + (sec.groups||[]).reduce((x,g)=>x+(g.items||[]).reduce((y,it)=>y+(Number(it.pt)||0),0), 0);
-  }, 0);
-  if(sumPt !== full) fail(id, `配点の合計が満点と合わない (合計${sumPt} / 満点${full})`);
+  // コース制（中2のX/Y）は、いま採点しているコースぶんだけ数える
+  const sumPt = sumPtFor(EXAM, ci);
+  const tag = label ? `${id}${label}` : id;
+  if(sumPt !== full) fail(tag, `配点の合計が満点と合わない (合計${sumPt} / 満点${full})`);
   const want = `${full} / ${full}`;
-  if(top!==want || bot!==want) fail(id, `満点で採点されない (top=${top} / bot=${bot} / 満点${full})`);
-  else if(sumPt===full) pass(id, `${full}/${full} (${items.length}問)`);
+  if(top!==want || bot!==want) fail(tag, `満点で採点されない (top=${top} / bot=${bot} / 満点${full})`);
+  else if(sumPt===full) pass(tag, `${full}/${full} (${items.length}問)`);
+  return courseCount(EXAM);
 }
 
 function checkWords(){
@@ -181,7 +210,13 @@ function okayamaDupCheck(){
 }
 
 console.log('— 模試データ 自動採点＆構造チェック —');
-for(const id of EXAMS){ try{ gradeExam(id); }catch(e){ fail(id, `例外: ${e.message}`); } }
+for(const id of EXAMS){
+  try{
+    const n = gradeExam(id);
+    // コースがあるなら、残りのコースも同じように満点で解けるか見る
+    for(let ci=1; ci<n; ci++) gradeExam(id, ci, `(${ci+1}コース目)`);
+  }catch(e){ fail(id, `例外: ${e.message}`); }
+}
 console.log('— 単語データ —');
 checkWords();
 console.log('— 新規創作ぶんの横断重複 —');
