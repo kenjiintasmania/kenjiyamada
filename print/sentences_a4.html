@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文のかたち17 ― なぞり＆作文テスト（A4）</title>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#111; --rule:#9aa3ad; --ghost:#c5cad0; --band:#f2f4f6; --sub:#666; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#e9ecef; color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+  .sheet{ width:210mm; min-height:297mm; margin:8mm auto; padding:10mm 12mm 7mm;
+    background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+  .head{ display:flex; align-items:flex-end; justify-content:space-between;
+    border-bottom:2px solid var(--ink); padding-bottom:2mm; margin-bottom:2.5mm; }
+  .ttl{ font-size:14.5pt; font-weight:700; letter-spacing:.02em; }
+  .sub{ font-size:8.5pt; color:var(--sub); margin-top:.8mm; }
+  .name{ font-size:9pt; white-space:nowrap; text-align:right; }
+  .name span{ display:inline-block; border-bottom:1px solid var(--ink); }
+  .n-cls{ width:15mm; } .n-no{ width:10mm; } .n-nm{ width:36mm; }
+  .cap{ font-size:8.5pt; background:var(--band); border-left:3px solid var(--ink);
+    padding:1.3mm 3mm; margin:0 0 1.5mm; }
+  .grp{ font-size:8.5pt; font-weight:700; margin:1.5mm 0 .5mm; padding-bottom:.4mm;
+    border-bottom:1px solid var(--ink); }
+  .grp em{ font-style:normal; font-weight:400; color:var(--sub); font-size:8pt; margin-left:1.5mm; }
+
+  .item{ padding:.3mm 0 0; }
+  .jp{ font-size:8.8pt; display:flex; gap:2mm; align-items:baseline; }
+  .jp .no{ font-size:7.5pt; color:#888; min-width:5mm; }
+  .hint{ color:var(--sub); font-size:7.8pt; margin-left:auto; white-space:nowrap;
+    font-family:Andika,"Century Gothic","Trebuchet MS",sans-serif; }
+  .line{ position:relative; height:7.6mm; margin-left:5mm; }
+  .line::after{ content:""; position:absolute; left:0; right:0; bottom:1.4mm;
+    border-bottom:1px solid var(--rule); }
+  .en{ position:absolute; left:1.5mm; bottom:1.7mm; font-size:12pt; line-height:1;
+    font-family:Andika,"Century Gothic","Trebuchet MS",sans-serif; letter-spacing:.01em;
+    color:var(--ghost); }
+  .tall{ height:7.9mm; }
+
+  .score{ margin-top:2mm; display:flex; justify-content:flex-end; align-items:center; gap:3mm;
+    font-size:9pt; }
+  .score b{ display:inline-block; border:1.5px solid var(--ink); padding:1.8mm 6mm; }
+  .foot{ font-size:7.5pt; color:var(--sub); margin-top:1.5mm; text-align:right; }
+
+  @page{ size:A4 portrait; margin:0; }
+  @media print{
+    html,body{ background:#fff; }
+    .sheet{ width:auto; min-height:auto; margin:0; padding:10mm 12mm 7mm;
+      box-shadow:none; page-break-after:always; }
+    .sheet:last-child{ page-break-after:auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 表：なぞりがき（＝裏テストの答え） ============ -->
+<section class="sheet">
+  <div class="head">
+    <div>
+      <div class="ttl">文のかたち 17 ― なぞりがき</div>
+      <div class="sub">現在完了3つ／現在完了進行形／It … for ~ to …／SVO + to …　うすい字を最後までなぞる。</div>
+    </div>
+    <div class="name">3年 <span class="n-cls"></span>組 <span class="n-no"></span>番<br><br>
+      名前 <span class="n-nm"></span></div>
+  </div>
+
+  <p class="cap">日本語を声に出して読む → 英文をなぞる。<b>語のならび順</b>を目と手で覚えるのがねらい。この面がそのまま裏のテストの答え。</p>
+
+  <div class="grp">A｜現在完了 ＜継続＞ <em>have ／ has ＋ 過去分詞 ＋ for ・ since</em></div>
+  <div class="item"><div class="jp"><span class="no">1</span><span>私は3年間ずっと英語を勉強しています。</span><span class="hint">for</span></div>
+    <div class="line"><span class="en">I have studied English for three years.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">2</span><span>彼女は月曜日からずっと忙しい。</span><span class="hint">since</span></div>
+    <div class="line"><span class="en">She has been busy since Monday.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">3</span><span>私たちは10年間ここに住んでいます。</span><span class="hint">for</span></div>
+    <div class="line"><span class="en">We have lived here for ten years.</span></div></div>
+
+  <div class="grp">B｜現在完了 ＜経験＞ <em>have been to ／ ever ／ never</em></div>
+  <div class="item"><div class="jp"><span class="no">4</span><span>私は3回京都へ行ったことがあります。</span><span class="hint">been to</span></div>
+    <div class="line"><span class="en">I have been to Kyoto three times.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">5</span><span>あなたは今までにこの映画を見たことがありますか。</span><span class="hint">ever</span></div>
+    <div class="line"><span class="en">Have you ever seen this movie?</span></div></div>
+  <div class="item"><div class="jp"><span class="no">6</span><span>彼はその話を一度も聞いたことがありません。</span><span class="hint">never</span></div>
+    <div class="line"><span class="en">He has never heard the story.</span></div></div>
+
+  <div class="grp">C｜現在完了 ＜完了・結果＞ <em>already ／ just ／ yet</em></div>
+  <div class="item"><div class="jp"><span class="no">7</span><span>私はもう宿題を終えました。</span><span class="hint">already</span></div>
+    <div class="line"><span class="en">I have already finished my homework.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">8</span><span>彼はちょうど駅に着いたところです。</span><span class="hint">just</span></div>
+    <div class="line"><span class="en">He has just arrived at the station.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">9</span><span>あなたはもう昼食を食べましたか。</span><span class="hint">yet</span></div>
+    <div class="line"><span class="en">Have you eaten lunch yet?</span></div></div>
+
+  <div class="grp">D｜現在完了進行形 <em>have ／ has ＋ been ＋ ~ing　＝ ずっと…し続けている</em></div>
+  <div class="item"><div class="jp"><span class="no">10</span><span>私は2時間ずっとサッカーをしています。</span><span class="hint">been ~ing</span></div>
+    <div class="line"><span class="en">I have been playing soccer for two hours.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">11</span><span>今朝からずっと雨が降り続いています。</span><span class="hint">It has</span></div>
+    <div class="line"><span class="en">It has been raining since this morning.</span></div></div>
+
+  <div class="grp">E｜It is … for ~ to … <em>「~が…するのは…だ」　It ではじめて、for のあとに人</em></div>
+  <div class="item"><div class="jp"><span class="no">12</span><span>私たちが他の文化を学ぶことは大切です。</span><span class="hint">important</span></div>
+    <div class="line"><span class="en">It is important for us to learn about other cultures.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">13</span><span>彼にとって早く起きることは簡単ではありません。</span><span class="hint">not easy</span></div>
+    <div class="line"><span class="en">It is not easy for him to get up early.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">14</span><span>子どもたちが外で遊ぶのは楽しい。</span><span class="hint">fun</span></div>
+    <div class="line"><span class="en">It is fun for children to play outside.</span></div></div>
+
+  <div class="grp">F｜SVO ＋ to … <em>tell ／ ask ／ want ＋ 人 ＋ to ＋ 動詞　＝「人に…するように言う・頼む・してほしい」</em></div>
+  <div class="item"><div class="jp"><span class="no">15</span><span>母は私に部屋をそうじするように言いました。</span><span class="hint">told</span></div>
+    <div class="line"><span class="en">My mother told me to clean my room.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">16</span><span>私は彼に窓を開けるように頼みました。</span><span class="hint">asked</span></div>
+    <div class="line"><span class="en">I asked him to open the window.</span></div></div>
+  <div class="item"><div class="jp"><span class="no">17</span><span>私はあなたに手伝ってほしい。</span><span class="hint">want</span></div>
+    <div class="line"><span class="en">I want you to help me.</span></div></div>
+
+  <div class="foot">※ have／has のあとは<b>かならず過去分詞</b>。to のあとは<b>動詞のもとの形</b>。</div>
+</section>
+
+<!-- ============ 裏：作文テスト ============ -->
+<section class="sheet">
+  <div class="head">
+    <div>
+      <div class="ttl">文のかたち 17 ― 作文テスト</div>
+      <div class="sub">日本語を英語にする。表は見ない。1問1点。〔　〕はヒントの語。</div>
+    </div>
+    <div class="name">3年 <span class="n-cls"></span>組 <span class="n-no"></span>番<br><br>
+      名前 <span class="n-nm"></span></div>
+  </div>
+
+  <div class="grp">A｜現在完了 ＜継続＞</div>
+  <div class="item"><div class="jp"><span class="no">1</span><span>私は3年間ずっと英語を勉強しています。</span><span class="hint">〔 for 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">2</span><span>彼女は月曜日からずっと忙しい。</span><span class="hint">〔 since 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">3</span><span>私たちは10年間ここに住んでいます。</span><span class="hint">〔 for 〕</span></div><div class="line tall"></div></div>
+
+  <div class="grp">B｜現在完了 ＜経験＞</div>
+  <div class="item"><div class="jp"><span class="no">4</span><span>私は3回京都へ行ったことがあります。</span><span class="hint">〔 been to 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">5</span><span>あなたは今までにこの映画を見たことがありますか。</span><span class="hint">〔 ever 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">6</span><span>彼はその話を一度も聞いたことがありません。</span><span class="hint">〔 never 〕</span></div><div class="line tall"></div></div>
+
+  <div class="grp">C｜現在完了 ＜完了・結果＞</div>
+  <div class="item"><div class="jp"><span class="no">7</span><span>私はもう宿題を終えました。</span><span class="hint">〔 already 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">8</span><span>彼はちょうど駅に着いたところです。</span><span class="hint">〔 just 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">9</span><span>あなたはもう昼食を食べましたか。</span><span class="hint">〔 yet 〕</span></div><div class="line tall"></div></div>
+
+  <div class="grp">D｜現在完了進行形</div>
+  <div class="item"><div class="jp"><span class="no">10</span><span>私は2時間ずっとサッカーをしています。</span><span class="hint">〔 been ~ing 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">11</span><span>今朝からずっと雨が降り続いています。</span><span class="hint">〔 It has 〕</span></div><div class="line tall"></div></div>
+
+  <div class="grp">E｜It is … for ~ to …</div>
+  <div class="item"><div class="jp"><span class="no">12</span><span>私たちが他の文化を学ぶことは大切です。</span><span class="hint">〔 important 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">13</span><span>彼にとって早く起きることは簡単ではありません。</span><span class="hint">〔 not easy 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">14</span><span>子どもたちが外で遊ぶのは楽しい。</span><span class="hint">〔 fun 〕</span></div><div class="line tall"></div></div>
+
+  <div class="grp">F｜SVO ＋ to …</div>
+  <div class="item"><div class="jp"><span class="no">15</span><span>母は私に部屋をそうじするように言いました。</span><span class="hint">〔 told 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">16</span><span>私は彼に窓を開けるように頼みました。</span><span class="hint">〔 asked 〕</span></div><div class="line tall"></div></div>
+  <div class="item"><div class="jp"><span class="no">17</span><span>私はあなたに手伝ってほしい。</span><span class="hint">〔 want 〕</span></div><div class="line tall"></div></div>
+
+  <div class="score"><span>得点</span><b>　　／ 17</b></div>
+  <div class="foot">まちがえた文は、表のうすい字をもう1回なぞってから、あすもう一度このテストをする。</div>
+</section>
+
+</body>
+</html>
