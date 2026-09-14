@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ff7a59">
+<title>対戦表（予選リーグ＋決勝）｜山田先生</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🏆</text></svg>">
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#2b2b3a; --paper:#fffdf6; --line:#e7e0cf;
+    --accent:#ff7a59; --accent2:#39b3a6; --accent3:#5b7cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 500px at 110% -10%,#ffe9d6 0,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#d8f3ef 0,transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:var(--jp);line-height:1.6;padding:20px 14px 60px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .hero{text-align:center;margin:6px 0 4px}
+  .hero h1{font-size:27px;margin:0}
+  .hero h1 .en{font-family:var(--en);color:var(--accent)}
+  .hero p{color:#7a7363;font-size:14px;margin:8px 0 0}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0 6px}
+  button{font-family:var(--jp);font-size:14px;font-weight:bold;color:var(--ink);
+    background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 16px;
+    box-shadow:0 4px 0 #efe7d4;cursor:pointer;transition:transform .08s,box-shadow .12s}
+  button:hover{transform:translateY(-2px);box-shadow:0 6px 0 #e6dcc6}
+  button:active{transform:translateY(2px);box-shadow:0 1px 0 #e6dcc6}
+  button.warn{border-color:#ffd9cc;color:#c2452a}
+  .group{background:#fff;border:3px solid var(--line);border-radius:20px;
+    padding:16px 14px;margin:20px 0;box-shadow:0 7px 0 #efe7d4}
+  .group.g1{border-color:#cfe6e1}
+  .group.g2{border-color:#cdd9ff}
+  .group h2{font-size:20px;margin:2px 0 4px}
+  .group h2 .en{font-family:var(--en);font-size:16px;color:var(--accent3)}
+  .group .note{font-size:12.5px;color:#9a927e;margin:0 0 10px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+  th,td{border:2px solid var(--line);padding:0;text-align:center;vertical-align:middle}
+  thead th{background:#fbf7ea;font-size:13px;padding:6px 4px;line-height:1.3}
+  th.corner{background:#f3ece0}
+  td.name,th.name{background:#fbf7ea;width:22%;min-width:120px}
+  td.self{background:repeating-linear-gradient(135deg,#efe7d4 0 6px,#f7f1e2 6px 12px)}
+  td.cell{min-width:92px;height:52px}
+  td.stat{width:56px;font-weight:bold;font-size:15px}
+  td.rank{width:64px;font-weight:bold;font-size:17px}
+  td.rank.top{color:#c2452a;background:#fff4ef}
+  input{font-family:var(--jp);font-size:15px;color:var(--ink);background:transparent;
+    border:0;width:100%;height:100%;padding:6px 4px;text-align:center;outline:none}
+  input:focus{background:#fff8e6;box-shadow:inset 0 0 0 2px var(--accent)}
+  input.teamname{font-weight:bold;text-align:left;padding-left:10px}
+  .cellwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px}
+  .cellwrap input{height:30px}
+  .mark{font-size:15px;font-weight:bold;line-height:1;height:16px}
+  .mark.win{color:#c2452a}
+  .mark.lose{color:#5b7cff}
+  .mark.draw{color:#7a7363}
+  .final{background:#fff;border:3px solid #ffd9cc;border-radius:20px;
+    padding:16px 14px;margin:20px 0;box-shadow:0 7px 0 #f7ded3}
+  .final h2{font-size:20px;margin:2px 0 10px}
+  .final h2 .en{font-family:var(--en);font-size:16px;color:var(--accent)}
+  .match{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+  .side{flex:1 1 200px;max-width:260px;text-align:center;border:2px solid var(--line);
+    border-radius:14px;padding:10px;background:#fbf7ea}
+  .side .lbl{font-size:12px;color:#9a927e}
+  .side .team{font-size:18px;font-weight:bold;min-height:27px}
+  .side .sc{width:88px;margin:6px auto 0;border:2px solid var(--line);
+    border-radius:10px;background:#fff;height:44px}
+  .side .sc input{height:40px;font-size:22px;font-weight:bold}
+  .vs{font-family:var(--en);font-size:22px;color:var(--accent);font-weight:bold}
+  .champ{text-align:center;margin:14px 0 2px;font-size:19px;font-weight:bold}
+  .champ .who{color:#c2452a}
+  .tip{font-size:12.5px;color:#9a927e;text-align:center;margin:16px 0 0}
+  .back{display:block;text-align:center;margin:26px 0 0;color:#7a7363;font-size:14px}
+  @media(max-width:560px){
+    .hero h1{font-size:22px}
+    td.cell{min-width:84px}
+  }
+  @media print{
+    body{background:#fff;padding:0}
+    .bar,.tip,.back{display:none}
+    .group,.final{box-shadow:none;break-inside:avoid}
+    input{background:transparent}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>🏆 対戦表 <span class="en">Tournament</span></h1>
+    <p>予選はA〜Dグループ・E〜Hグループで総当り。各1位どうしが決勝です。<br>
+       マスには <b>7-5</b> のように点数を入れてください（○×は自動）。</p>
+  </div>
+
+  <div class="bar">
+    <button id="btnPrint">🖨 印刷する</button>
+    <button id="btnReset" class="warn">🧹 入力を全部消す</button>
+  </div>
+
+  <section class="group g1" data-group="1">
+    <h2>予選リーグ① <span class="en">Group 1</span></h2>
+    <p class="note">たてのチームから見た点数を入れます（例：7-5 なら たてのチームが7点）。反対のマスは自動で入ります。</p>
+    <div class="scroll"><table></table></div>
+  </section>
+
+  <section class="group g2" data-group="2">
+    <h2>予選リーグ② <span class="en">Group 2</span></h2>
+    <p class="note">たてのチームから見た点数を入れます（例：7-5 なら たてのチームが7点）。反対のマスは自動で入ります。</p>
+    <div class="scroll"><table></table></div>
+  </section>
+
+  <section class="final">
+    <h2>決勝 <span class="en">Final</span></h2>
+    <div class="match">
+      <div class="side">
+        <div class="lbl">予選リーグ① 1位</div>
+        <div class="team" id="fTeam1">—</div>
+        <div class="sc"><input id="fScore1" inputmode="numeric" placeholder="点"></div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="side">
+        <div class="lbl">予選リーグ② 1位</div>
+        <div class="team" id="fTeam2">—</div>
+        <div class="sc"><input id="fScore2" inputmode="numeric" placeholder="点"></div>
+      </div>
+    </div>
+    <div class="champ">優勝：<span class="who" id="champ">—</span></div>
+  </section>
+
+  <p class="tip">入力はこの端末のブラウザに自動保存されます（サーバーには送りません）。<br>
+     チーム名のところをクリックすると、学校名などに書きかえられます。</p>
+  <a class="back" href="../">← トップにもどる</a>
+</div>
+
+<script>
+(function(){
+  var KEY = 'taisen_v1';
+  var GROUPS = [
+    { id:1, teams:['Aチーム','Bチーム','Cチーム','Dチーム'] },
+    { id:2, teams:['Eチーム','Fチーム','Gチーム','Hチーム'] }
+  ];
+
+  // state.names[g][i] = チーム名 / state.scores[g]['i-j'] = [自分の点, 相手の点]
+  var state = { names:{}, scores:{}, final:['',''] };
+  GROUPS.forEach(function(g){
+    state.names[g.id] = g.teams.slice();
+    state.scores[g.id] = {};
+  });
+
+  try{
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(saved && saved.names && saved.scores){
+      GROUPS.forEach(function(g){
+        if(Array.isArray(saved.names[g.id])) state.names[g.id] = saved.names[g.id];
+        if(saved.scores[g.id]) state.scores[g.id] = saved.scores[g.id];
+      });
+      if(Array.isArray(saved.final)) state.final = saved.final;
+    }
+  }catch(e){ /* 壊れた保存データは無視して初期値で始める */ }
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  // 「7-5」「7 - 5」「7−5」「7ー5」「7:5」などを [7,5] にする。空や未完成は null。
+  function parseScore(text){
+    if(!text) return null;
+    var s = String(text).replace(/[０-９]/g, function(c){
+      return String.fromCharCode(c.charCodeAt(0) - 0xFEE0);
+    });
+    var m = s.match(/(\d+)\s*[-–—−ー:：対vsVS]+\s*(\d+)/);
+    if(!m) return null;
+    return [parseInt(m[1],10), parseInt(m[2],10)];
+  }
+
+  function markOf(a,b){
+    if(a > b) return ['○','win'];
+    if(a < b) return ['×','lose'];
+    return ['△','draw'];
+  }
+
+  function buildTable(g){
+    var sec = document.querySelector('.group[data-group="'+g.id+'"]');
+    var table = sec.querySelector('table');
+    var n = g.teams.length;
+    var html = '<thead><tr><th class="corner">チーム</th>';
+    for(var j=0;j<n;j++) html += '<th data-head="'+j+'">—</th>';
+    html += '<th>勝</th><th>分</th><th>敗</th><th>得点</th><th>失点</th><th>差</th><th>順位</th></tr></thead><tbody>';
+    for(var i=0;i<n;i++){
+      html += '<tr><td class="name"><input class="teamname" data-name="'+i+'" value=""></td>';
+      for(var j2=0;j2<n;j2++){
+        if(i===j2){ html += '<td class="self"></td>'; }
+        else{
+          html += '<td class="cell"><div class="cellwrap">'
+               +  '<input data-cell="'+i+'-'+j2+'" inputmode="text" placeholder="例 7-5">'
+               +  '<span class="mark" data-mark="'+i+'-'+j2+'"></span></div></td>';
+        }
+      }
+      html += '<td class="stat" data-st="w'+i+'">0</td><td class="stat" data-st="d'+i+'">0</td>'
+           +  '<td class="stat" data-st="l'+i+'">0</td><td class="stat" data-st="f'+i+'">0</td>'
+           +  '<td class="stat" data-st="a'+i+'">0</td><td class="stat" data-st="g'+i+'">0</td>'
+           +  '<td class="rank" data-st="r'+i+'">—</td></tr>';
+    }
+    html += '</tbody>';
+    table.innerHTML = html;
+
+    table.querySelectorAll('[data-name]').forEach(function(inp){
+      var i = +inp.dataset.name;
+      inp.value = state.names[g.id][i];
+      inp.addEventListener('input', function(){
+        state.names[g.id][i] = inp.value;
+        save(); render();
+      });
+    });
+
+    table.querySelectorAll('[data-cell]').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var p = inp.dataset.cell.split('-');
+        var sc = parseScore(inp.value);
+        delete state.scores[g.id][p[1]+'-'+p[0]];   // 反対のマスの記録は持たない
+        if(sc) state.scores[g.id][inp.dataset.cell] = sc;
+        else delete state.scores[g.id][inp.dataset.cell];
+        save(); render(p[0]+'-'+p[1]);
+      });
+      inp.addEventListener('blur', function(){ render(); });
+    });
+  }
+
+  function scoreOf(gid, i, j){
+    var direct = state.scores[gid][i+'-'+j];
+    if(direct) return direct;
+    var rev = state.scores[gid][j+'-'+i];
+    if(rev) return [rev[1], rev[0]];
+    return null;
+  }
+
+  function render(skipCell){
+    var champA = null, champB = null;
+
+    GROUPS.forEach(function(g){
+      var sec = document.querySelector('.group[data-group="'+g.id+'"]');
+      var n = g.teams.length, i, j;
+
+      for(j=0;j<n;j++){
+        sec.querySelector('[data-head="'+j+'"]').textContent = state.names[g.id][j] || '（名前）';
+      }
+
+      var st = [];
+      for(i=0;i<n;i++) st.push({i:i, w:0, d:0, l:0, f:0, a:0});
+
+      for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+          if(i===j) continue;
+          var sc = scoreOf(g.id, i, j);
+          var inp = sec.querySelector('[data-cell="'+i+'-'+j+'"]');
+          var mk = sec.querySelector('[data-mark="'+i+'-'+j+'"]');
+          if(sc){
+            if(inp && inp.dataset.cell !== skipCell) inp.value = sc[0] + '-' + sc[1];
+            var m = markOf(sc[0], sc[1]);
+            mk.textContent = m[0];
+            mk.className = 'mark ' + m[1];
+            st[i].f += sc[0]; st[i].a += sc[1];
+            if(sc[0] > sc[1]) st[i].w++; else if(sc[0] < sc[1]) st[i].l++; else st[i].d++;
+          }else{
+            if(inp && inp.dataset.cell !== skipCell) inp.value = '';
+            mk.textContent = ''; mk.className = 'mark';
+          }
+        }
+      }
+
+      // 順位：勝数 → 得失点差 → 総得点。同値なら同順位。
+      var order = st.slice().sort(function(x,y){
+        return (y.w - x.w) || ((y.f - y.a) - (x.f - x.a)) || (y.f - x.f);
+      });
+      var ranks = {}, cur = 0;
+      order.forEach(function(t, idx){
+        var prev = idx > 0 ? order[idx-1] : null;
+        var same = prev && prev.w === t.w && (prev.f - prev.a) === (t.f - t.a) && prev.f === t.f;
+        if(!same) cur = idx + 1;
+        ranks[t.i] = cur;
+      });
+
+      var played = Object.keys(state.scores[g.id]).length > 0;
+      for(i=0;i<n;i++){
+        var t = st[i];
+        sec.querySelector('[data-st="w'+i+'"]').textContent = t.w;
+        sec.querySelector('[data-st="d'+i+'"]').textContent = t.d;
+        sec.querySelector('[data-st="l'+i+'"]').textContent = t.l;
+        sec.querySelector('[data-st="f'+i+'"]').textContent = t.f;
+        sec.querySelector('[data-st="a'+i+'"]').textContent = t.a;
+        var diff = t.f - t.a;
+        sec.querySelector('[data-st="g'+i+'"]').textContent = (diff > 0 ? '+' : '') + diff;
+        var rc = sec.querySelector('[data-st="r'+i+'"]');
+        rc.textContent = played ? ranks[i] + '位' : '—';
+        rc.className = 'rank' + (played && ranks[i] === 1 ? ' top' : '');
+      }
+
+      // 全6試合そろって1位が単独なら決勝へ。途中でも暫定1位が単独なら表示する。
+      var tops = order.filter(function(t){ return ranks[t.i] === 1; });
+      var name = (played && tops.length === 1) ? (state.names[g.id][tops[0].i] || '（名前）') : null;
+      if(g.id === 1) champA = name; else champB = name;
+    });
+
+    document.getElementById('fTeam1').textContent = champA || '—';
+    document.getElementById('fTeam2').textContent = champB || '—';
+
+    var s1 = document.getElementById('fScore1').value.trim();
+    var s2 = document.getElementById('fScore2').value.trim();
+    var out = '—';
+    if(champA && champB && s1 !== '' && s2 !== ''){
+      var a = parseInt(s1,10), b = parseInt(s2,10);
+      if(!isNaN(a) && !isNaN(b)){
+        out = a > b ? champA : (a < b ? champB : '引き分け');
+      }
+    }
+    document.getElementById('champ').textContent = out;
+  }
+
+  GROUPS.forEach(buildTable);
+
+  ['fScore1','fScore2'].forEach(function(id, idx){
+    var inp = document.getElementById(id);
+    inp.value = state.final[idx] || '';
+    inp.addEventListener('input', function(){
+      state.final[idx] = inp.value;
+      save(); render();
+    });
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function(){ window.print(); });
+  document.getElementById('btnReset').addEventListener('click', function(){
+    if(!confirm('入力した点数とチーム名を全部消します。よろしいですか？')) return;
+    GROUPS.forEach(function(g){
+      state.names[g.id] = g.teams.slice();
+      state.scores[g.id] = {};
+    });
+    state.final = ['',''];
+    save();
+    GROUPS.forEach(buildTable);
+    document.getElementById('fScore1').value = '';
+    document.getElementById('fScore2').value = '';
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
