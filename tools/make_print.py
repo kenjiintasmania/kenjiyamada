@@ -220,6 +220,77 @@ def build_drills(spec, path):
     return path
 
 
+# ---------- ③ なぞり書き／テスト（両面1枚＝おもてなぞり・うらテスト） ----------
+# 印刷の約束：**おもて→うら→おもて→うら** の順に並べる。両面印刷（長辺とじ）にすると、
+# 1枚の表裏がいつも「同じ20語のなぞり書き」と「そのテスト」になる。
+# 最後に空白ページを作らない（表裏がずれると全部ずれるため）。
+TRACE_GRAY = (0xBB, 0xBB, 0xBB)
+
+
+def _trace_table(doc, rows, start, test=False):
+    """test=False … 日本語｜なぞる（薄い字）｜書く　／　test=True … 日本語｜英語（空欄）"""
+    heads = ([("#", Cm(0.9)), ("日本語", Cm(5.5)), ("英語を書く", Cm(11.5))] if test
+             else [("#", Cm(0.9)), ("日本語", Cm(4.2)), ("なぞる", Cm(6.4)), ("自分で書く", Cm(6.4))])
+    t = doc.add_table(rows=len(rows) + 1, cols=len(heads))
+    t.style = "Table Grid"
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for j, (txt, w) in enumerate(heads):
+        cell_text(t.cell(0, j), txt, 8.5, bold=True, align="c")
+        shade(t.cell(0, j), "E8E8E8")
+        for r in range(len(rows) + 1):
+            t.cell(r, j).width = w
+    for i, row in enumerate(rows, 1):
+        cell_text(t.cell(i, 0), str(start + i - 1), 8.5, align="c")
+        cell_text(t.cell(i, 1), row["ja"], 9)
+        if test:
+            cell_text(t.cell(i, 2), "", 13, en=True)
+        else:
+            # なぞる字は薄いグレー。上からペンでなぞらせる。
+            cell_text(t.cell(i, 2), row["en"], 13, en=True, color=TRACE_GRAY)
+            cell_text(t.cell(i, 3), "", 13, en=True)
+        t.rows[i].height = Cm(1.0)
+    return t
+
+
+def build_trace(spec, path):
+    doc = Document()
+    setup(doc, spec["title"])
+    # 語（学年別の表をぜんぶつなげる）と熟語を、それぞれ1ページぶんずつに割る
+    # 見出しは学年ごとに分けたまま持つ（中2ぶんだけ配る、といった使い方ができるように）。
+    blocks = [(sec["title"].replace("（模試に出たもの）", ""), sec.get("rows", []), 20)
+              for sec in spec["wordSections"] if sec.get("rows")]
+    if spec.get("idioms"):
+        blocks.append(("熟語", [{"en": x["en"], "ja": x["ja"]} for x in spec["idioms"]], 14))
+
+    pages = []          # [(見出し, その回ぶんの行, 通し番号の始まり)]
+    for name, rows, per in blocks:
+        no = 1          # 番号はブロックごとに1から。表裏で同じ番号がそろえばよい。
+        for i in range(0, len(rows), per):
+            pages.append((name, rows[i:i + per], no))
+            no += len(rows[i:i + per])
+
+    for k, (name, rows, start) in enumerate(pages):
+        if k:
+            doc.add_page_break()
+        # --- おもて：なぞり書き ---
+        para(doc, f"{spec['title']}　{name} なぞり書き（{start}〜{start + len(rows) - 1}）",
+             13, bold=True, after=1)
+        para(doc, "うすい字を上からなぞって、となりの欄にもう一度自分で書く。裏はこの{}語のテストです。"
+                  .format(len(rows)), 8.5, color=(0x66, 0x66, 0x66), after=4)
+        _trace_table(doc, rows, start, test=False)
+        doc.add_page_break()
+        # --- うら：テスト ---
+        para(doc, f"{spec['title']}　{name} テスト（{start}〜{start + len(rows) - 1}）",
+             13, bold=True, after=1)
+        para(doc, "日本語だけを見て英語を書く。答えはこの紙の裏（なぞり書きの面）にあります。",
+             8.5, color=(0x66, 0x66, 0x66), after=4)
+        para(doc, "　　なまえ　＿＿＿＿＿＿＿＿＿＿　　　　　　　　　/ {}".format(len(rows)),
+             9.5, after=4)
+        _trace_table(doc, rows, start, test=True)
+    doc.save(path)
+    return path, len(pages)
+
+
 def main():
     if len(sys.argv) < 3:
         print(__doc__)
@@ -230,12 +301,15 @@ def main():
     name = spec.get("name", "print")
     a = build_words(spec, os.path.join(out, f"{name}_単語熟語集.docx"))
     b = build_drills(spec, os.path.join(out, f"{name}_問題集.docx"))
+    c, npage = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
     nw = sum(len(s.get("rows", [])) for s in spec["wordSections"])
     nd = sum(len(s["items"]) for s in spec["drills"])
     print(f"✓ {a}")
     print(f"  語 {nw}／熟語 {len(spec.get('idioms', []))}／書き取り {len(spec.get('dictation', []))}")
     print(f"✓ {b}")
     print(f"  問題 {nd}（{'／'.join(s['title'] + str(len(s['items'])) + '問' for s in spec['drills'])}）")
+    print(f"✓ {c}")
+    print(f"  {npage}枚ぶん（両面{npage * 2}ページ・おもて なぞり書き／うら テスト）")
 
 
 if __name__ == "__main__":
