@@ -182,7 +182,7 @@
   /* いま置いてある tools/score_gas.gs の版。これ未満だと、
      単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
      模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
-  var ADMIN_NEED = 8;
+  var ADMIN_NEED = 9;
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   function updateServerNote(st){
@@ -193,7 +193,7 @@
     if(vn && Number(vn) >= ADMIN_NEED){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
     else if(st && st.ver){ el.style.display=""; el.className="card warn";
       el.innerHTML="⚠️ サーバーの版が古いようです（いま "+st.ver+"／想定は jigaku-"+ADMIN_NEED+" 以上）。"+
-        "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない、といったことが起きます。<br>"+STALE+
+        "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない・到達度テストが開かない、といったことが起きます。<br>"+STALE+
         "<br>※ jigaku-8 を貼ったあと、GASエディタで <b>clearNewSummaryCols()</b> を1回だけ実行してください"+
         "（末尾に足した3列に、前の「自学_◯◯」の数字が残っているため）。"; }
     else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）

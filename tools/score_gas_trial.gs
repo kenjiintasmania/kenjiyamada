@@ -322,10 +322,16 @@ var UNIT_EXAMS = {
   "c3u1": "中3 単元テスト①",
   "c3u2": "中3 単元テスト②",
   "c3u3": "中3 単元テスト③",
-  "c3u4": "中3 単元テスト④"
+  "c3u4": "中3 単元テスト④",
+  // 到達度テスト（ノンストップ・時間制限なし・何周でも）。1回で終わらせず、
+  // 次のコマでロックを開け直せば続きから再開する。記録は「到達度テスト」タブへ。
+  "m2000": "2000語 到達度テスト",
+  "mgram": "全文法 到達度テスト"
 };
+var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
+var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-8";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-9";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -358,6 +364,8 @@ function doPost(e){
       if (String(data.pin||"") !== TEACHER_PIN) return json({result:"error", message:"合言葉(PIN)が違います", ver:GAS_VERSION});
       return json({result:"ok", message:buildCorrelationTab(), ver:GAS_VERSION});
     }
+    if (data.action === "progress") return json(masteryProgress(data));
+    if (data.kind === "mastery")  return json(handleMastery(data));
     if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "jigaku")   return json(handleJigaku(data));
     if (data.kind === "summary"){
@@ -519,6 +527,69 @@ function setGate(data){
       return {result:"ok", open:false, exam:exam, title:UNIT_EXAMS[exam], session:String(sh.getRange(r,4).getValue()||"")};
     }
   } finally { lock.releaseLock(); }
+}
+
+/* ===================== 到達度テスト：1セットごとに記録 ===================== *
+ * 単元テストとの違い：
+ *   ・1人1回ではない。1セット終わるごとに1行増える（20セットで1周）
+ *   ・途中で終わってよい。次にゲートが開いたとき、続きのセットから再開する
+ *   ・「どこまで行ったか」の正はこのシート。端末（localStorage）は保険でしかない
+ *     （端末を変えても、キャッシュを消しても続きから戻れるようにするため）
+ * 列：A=日時 B=セッション C=試験 D=学年 E=番号 F=名前 G=周回 H=セット
+ *     I=正解数 J=問題数 K=経過秒 L=CPM M=版                                   */
+function masteryHeader(){
+  return ["日時","セッション","試験","学年","番号","名前","周回","セット",
+          "正解数","問題数","経過秒","CPM","版"];
+}
+function handleMastery(d){
+  var exam = d.exam;
+  if (!exam || !MASTERY_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
+  var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+  if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
+  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  try{
+    var st = gateStatus(exam);
+    if (!st.open) return {result:"locked", message:"いまは受付していません"};
+    var sh = getSheet(MASTERY_LOG, masteryHeader());
+    sh.getRange(1,1,1,masteryHeader().length).setValues([masteryHeader()]);
+    var round = Math.max(1, Number(d.round)||1), set = Math.max(1, Number(d.set)||1);
+    // 同じ周・同じセットの二重送信だけは弾く（通信のやり直しで2行になるのを防ぐ）
+    var last = sh.getLastRow();
+    if (last >= 2){
+      var v = sh.getRange(2,3,last-1,6).getValues();   // 試験,学年,番号,名前,周回,セット
+      for (var i=0;i<v.length;i++){
+        if (String(v[i][0])===exam && String(v[i][1]).trim()===cls &&
+            String(v[i][2]).trim()===num && Number(v[i][4])===round && Number(v[i][5])===set)
+          return {result:"dup", message:"このセットは記録ずみです", round:round, set:set};
+      }
+    }
+    var sec = Number(d.sec)||0, correct = Number(d.correct)||0;
+    var cpm = sec>0 ? Math.round(correct / (sec/60) * 10)/10 : "";
+    sh.appendRow([ new Date(), st.session, exam, cls, num, d.name||"",
+                   round, set, correct, numOrBlank(d.asked), sec, cpm, d.ver||"" ]);
+    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm};
+  } finally { lock.releaseLock(); }
+}
+/* 続きの位置を返す。端末ではなくここが正。 */
+function masteryProgress(d){
+  var exam = d.exam;
+  if (!exam || !MASTERY_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
+  var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+  var out = {result:"ok", exam:exam, round:1, set:1, done:0, correct:0, sets:{}};
+  if (!cls || !num) return out;
+  var sh = getSS().getSheetByName(MASTERY_LOG);
+  if (!sh || sh.getLastRow() < 2) return out;
+  var v = sh.getRange(2,3,sh.getLastRow()-1,10).getValues(); // 試験…CPM
+  var maxR = 0, maxS = 0;
+  for (var i=0;i<v.length;i++){
+    if (String(v[i][0])!==exam || String(v[i][1]).trim()!==cls || String(v[i][2]).trim()!==num) continue;
+    var r = Number(v[i][4])||0, st2 = Number(v[i][5])||0;
+    out.done++; out.correct += Number(v[i][6])||0;
+    out.sets[r+"-"+st2] = {correct:Number(v[i][6])||0, sec:Number(v[i][8])||0, cpm:Number(v[i][9])||0};
+    if (r > maxR || (r === maxR && st2 > maxS)){ maxR = r; maxS = st2; }
+  }
+  if (maxR){ out.round = maxR; out.set = maxS + 1; }   // 次にやるセット
+  return out;
 }
 
 /* ===================== 単元テスト：提出（開いてる時のみ・1人1回） ===================== */

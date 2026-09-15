@@ -17,7 +17,7 @@ const OUT  = path.join(process.argv[2] || path.join(ROOT, "out"), NAME);
 /* ---- 同梱するもの / しないもの ---- */
 const INCLUDE = [
   "index.html", "assets", "words", "mogi", "eiken", "me",
-  "challenge", "dojo", "jigaku", "gojun", "listening", "admin", "trial"
+  "challenge", "dojo", "jigaku", "gojun", "mastery", "listening", "admin", "trial"
 ];
 /* index.html から張られているのに INCLUDE に無いディレクトリは、入れ忘れかどうかを
    ここで宣言する。宣言も INCLUDE も無ければ最後の検算で落ちる（gojun がそれで抜けていた）。 */

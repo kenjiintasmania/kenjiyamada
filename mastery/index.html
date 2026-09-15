@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<title>2000語 到達度テスト｜ノンストップ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>⏱️</text></svg>">
+<!--
+  mastery/index.html ─ 到達度テスト（2000語）
+
+   ねらい：時間制限のない到達度評価（完全習得学習）。
+     ・100語×20セット＝1周。ノンストップで、どこまで行けたかを見る
+     ・1コマで終わらなくてよい。次にゲートが開いたら「続きのセット」から再開する
+     ・分からない語はアッサリ捨てる（空Enter＝パス）。速く何周もして潰していく
+
+   指標は CPM（Correct Per Minute＝1分あたりの正解語数）。
+   ★時間だけでは測れない：全部パスすれば誰でも最速になるため、正解数が主、CPMが従。
+   ★CPMはセット間で比べない：セット1は平均4.3字、セット20は11.4字で打鍵量が3倍ちがう。
+     比べるのは「同じセットの前の周と今の周」。百ますが同じ100問を繰り返すのと同じ理屈。
+
+   続きの位置の正はサーバー（スプレッドシート）。端末の記録は保険でしかない
+   （端末を変えても、キャッシュを消しても続きから戻れるようにするため）。
+
+   ★採点はこのページがやる。判定は ../assets/wordjudge.js（単語アプリと同じもの）。
+-->
+<style>
+  :root{
+    --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#17212b; --gray:#56656f; --muted:#93a1ab; --paper:#f4f8f7; --line:#d9e6e2;
+    --c1:#0f766e; --c1d:#0b5750; --c2:#b45309;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
+    font-family:var(--jp);line-height:1.6;padding:0 0 60px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:18px 0 14px;margin-bottom:12px}
+  .hero h1{margin:0;font-size:21px}
+  .hero p{margin:4px 0 0;font-size:13px;color:#b9e2dc}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#b9e2dc}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 12px}
+  .hide{display:none!important}
+  h2{font-size:17px;margin:0 0 8px}
+  .note{font-size:12.5px;color:var(--gray)}
+  .btn{font-family:inherit;font-size:15px;font-weight:bold;padding:9px 18px;border-radius:10px;
+    border:none;background:var(--c1);color:#fff;cursor:pointer}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.sub{background:#fff;color:var(--ink);border:2px solid var(--line)}
+
+  /* 受付（ロック） */
+  .gate{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .badge{font-weight:bold;font-size:14px;padding:5px 13px;border-radius:999px;white-space:nowrap}
+  .badge.lock{background:#fde7e1;color:#d9603e}
+  .badge.open{background:#e3f6e8;color:#2e9e57}
+  .idrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;margin-top:8px}
+  .idrow input,.idrow select{font-family:inherit;font-size:15px;padding:5px 7px;
+    border:1px solid var(--line);border-radius:8px}
+  .idrow input{width:110px}
+
+  /* セットの進み具合 */
+  .sets{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0 4px}
+  .sets i{display:block;height:26px;border-radius:6px;background:#e7eeec;border:1px solid var(--line);
+    font-style:normal;font-size:11px;line-height:24px;text-align:center;color:var(--muted)}
+  .sets i.done{background:#cdebdc;border-color:#a5d8bf;color:#2c7a52;font-weight:bold}
+  .sets i.now{background:var(--c1);border-color:var(--c1d);color:#fff;font-weight:bold}
+
+  /* 一覧（おぼえてからテスト） */
+  .list{max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 10px;margin:8px 0}
+  .list div{display:flex;justify-content:space-between;gap:12px;padding:3px 2px;border-bottom:1px dashed #eef2f1;font-size:14px}
+  .list b{color:var(--c1);font-family:var(--en);font-weight:normal}
+
+  /* 出題 */
+  .q{text-align:center;padding:10px 0 4px}
+  .q .pos{font-size:12px;color:var(--muted)}
+  .q .ja{font-size:30px;font-weight:bold;margin:2px 0 10px;word-break:break-all}
+  #ansIn{font-family:var(--en);font-size:26px;text-align:center;width:100%;max-width:460px;
+    padding:8px 10px;border:2px solid var(--line);border-radius:12px;outline:none}
+  #ansIn:focus{border-color:var(--c1)}
+  .prev{min-height:26px;text-align:center;font-size:14px;margin-top:8px}
+  .prev .mk{font-weight:bold}
+  .prev .mk.ok{color:var(--ok)} .prev .mk.ng{color:var(--ng)}
+  .prev .en{font-family:var(--en)}
+  .meter{display:flex;gap:14px;justify-content:center;font-size:13px;color:var(--gray);margin-top:6px}
+  .meter b{font-size:17px;color:var(--ink)}
+
+  /* 結果 */
+  .big{font-size:30px;font-weight:bold}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:6px}
+  th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}
+  th{background:#eef4f2}
+  @media(max-width:520px){
+    .sets{grid-template-columns:repeat(5,1fr)}
+    .q .ja{font-size:24px} #ansIn{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="../index.html">← トップ</a></div>
+  <h1>2000語 到達度テスト <span class="en">Mastery</span></h1>
+  <p>100語 × 20セット ＝ 1周。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。</p>
+</div></div>
+
+<div class="wrap">
+
+  <!-- 受付 -->
+  <div class="card" id="gateCard">
+    <div class="gate">
+      <span class="badge lock" id="gateBadge">🔒 確認中…</span>
+      <span class="note" id="gateMsg">先生が受付を開けている間だけ受けられます。</span>
+    </div>
+    <div class="idrow">
+      <label>学年
+        <select id="f_cls"><option value="">－</option><option>1</option><option>2</option><option>3</option></select>
+      </label>
+      <label>番号 <input id="f_num" inputmode="numeric" autocomplete="off"></label>
+      <label>名前 <input id="f_name" autocomplete="off" style="width:130px"></label>
+    </div>
+    <div class="sets" id="setBar"></div>
+    <div class="note" id="progMsg">　</div>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="card hide" id="listCard">
+    <h2 id="listTitle">セット1の100語</h2>
+    <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次の周でまた当たります。</p>
+    <div class="list" id="listBody"></div>
+    <button class="btn" id="startSet">▶ このセットを始める</button>
+    <button class="btn sub" id="backHome">もどる</button>
+  </div>
+
+  <!-- 出題 -->
+  <div class="card hide" id="testCard">
+    <div class="q">
+      <div class="pos" id="qPos">　</div>
+      <div class="ja" id="qJa">　</div>
+      <input id="ansIn" autocomplete="off" autocorrect="off" autocapitalize="none"
+             spellcheck="false" inputmode="latin" enterkeyhint="next" placeholder="英語を打って Enter">
+      <div class="prev" id="prevBox">　</div>
+      <div class="meter">
+        <span>のこり <b id="mLeft">0</b></span>
+        <span>正解 <b id="mOk">0</b></span>
+        <span>CPM <b id="mCpm">–</b></span>
+      </div>
+    </div>
+    <p class="note">分からなければ<b>そのまま Enter</b>でパス。正解した語はすぐ次へ進みます。
+      セットを終えるまで記録されないので、切りのいいところまで進めてください。</p>
+    <button class="btn sub" id="quitSet">このセットをやめる</button>
+  </div>
+
+  <!-- 結果 -->
+  <div class="card hide" id="doneCard">
+    <h2 id="doneTitle">セット1 おわり</h2>
+    <div class="big" id="doneScore">0 / 100</div>
+    <div class="note" id="doneSub">　</div>
+    <div class="note" id="sendMsg" style="margin-top:6px">　</div>
+    <div style="margin-top:10px">
+      <button class="btn" id="nextSet">次のセットへ →</button>
+      <button class="btn sub" id="toHome">今日はここまで</button>
+    </div>
+    <div id="missWrap" class="hide">
+      <h2 style="margin-top:14px;font-size:15px">取れなかった語</h2>
+      <div class="list" id="missBody" style="max-height:34vh"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../assets/wordjudge.js"></script>
+<script src="../words/data/words.js"></script>
+<script src="mastery.js"></script>
+</body>
+</html>
