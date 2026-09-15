@@ -67,48 +67,12 @@
   /* ---------- 正誤判定（英語の入力チェック） ---------- */
   // 入力・正解を正規化：前後の空白除去→小文字化→引用符の統一→
   // 前後の記号除去→内部の連続空白を1つに→ハイフンは空白扱い。
-  function normalizeAnswer(s) {
-    if (s == null) return "";
-    var t = String(s);
-    // 引用符・約物の統一（カーリー→ストレート、全角→半角の主要なもの）
-    t = t.replace(/[‘’ʼ′]/g, "'")   // ' ' ʼ ′ → '
-         .replace(/[“”]/g, '"')               // “ ” → "
-         .replace(/[‐-―−]/g, "-")         // 各種ダッシュ・マイナス → -
-         .replace(/　/g, " ");                       // 全角スペース → 半角
-    t = t.trim().toLowerCase();
-    t = t.replace(/-/g, " ");                            // ハイフンは空白と同一視
-    t = t.replace(/\s+/g, " ").trim();                   // 内部の連続空白を1つに
-    // 前後の約物を除去（語頭・語末のみ。内部のアポストロフィ等は保持）
-    t = t.replace(/^[\s.,!?;:"'()\[\]{}…~～、。･・]+/, "")
-         .replace(/[\s.,!?;:"'()\[\]{}…~～、。･・]+$/, "");
-    return t;
-  }
-
-  // 1つの正解 w から「許容される正規化済み解答」の集合を作る。
-  // 例: "as a result (of)" → {"as a result of", "as a result"}
-  //     括弧内が任意（省略可）の部分とみなし、付き／無しの両方を許容する。
-  function acceptableSet(w) {
-    var set = {};
-    function add(str) { var n = normalizeAnswer(str); if (n) set[n] = 1; }
-    function addP(s) {
-      add(s);
-      if (/[()]/.test(s)) {
-        add(s.replace(/\([^)]*\)/g, " "));   // 括弧（と中身）をすべて省いた形
-        add(s.replace(/[()]/g, " "));        // 括弧記号だけ外して中身は残す形
-      }
-    }
-    var main = (w && typeof w === "object") ? w.w : w;
-    var alts = (w && typeof w === "object" && w.alt) ? w.alt : [];
-    addP(main);
-    alts.forEach(addP);                      // 別表記（例: pencil case の旧表記 pencase）も正解扱い
-    return set;
-  }
-
-  function judge(input, w) {
-    var n = normalizeAnswer(input);
-    if (!n) return false;
-    return !!acceptableSet(w)[n];
-  }
+  /* 答え合わせは assets/wordjudge.js に1本化した（到達度テストと同じものさしを使うため）。
+     以前はここに写しを持っていて、角カッコ［are］や「... up」の印を解釈できず、
+     2000語のうち27語が誰にも正解できない状態だった。 */
+  function normalizeAnswer(s) { return window.WordJudge.normalizeAnswer(s); }
+  function acceptableSet(w) { return window.WordJudge.acceptable(w).set; }
+  function judge(input, w) { return window.WordJudge.judge(input, w); }
 
   /* ---------- DOM ---------- */
   var $ = function (id) { return document.getElementById(id); };
@@ -357,8 +321,10 @@
   }
 
   // 入力を確定して採点する
+  var lastSubmitAt = 0;        // 採点した瞬間。同じ Enter で次へ進んでしまうのを防ぐ
   function submitAnswer() {
     var it = session.current; if (!it || it.answered) return;
+    lastSubmitAt = Date.now();
     var inp = $("answerInput");
     var raw = inp.value;
     if (!normalizeAnswer(raw)) { focusInput(); return; }   // 空入力は無視
@@ -535,6 +501,10 @@
     // 採点後は Enter で次へ（入力欄からのEnterは上で処理）
     if (e.key === "Enter" && session.current.answered) {
       if (document.activeElement && document.activeElement.id === "answerInput") return;
+      // ★採点したのと同じ Enter では進めない。submitAnswer が nextBtn へ focus を移すため、
+      //   同じキーイベントがここまで上がってきて goNext() が走り、○✕を見せないまま
+      //   次の問題へ飛んでいた（キーボードで答える生徒には正解が一度も出ない）。
+      if (Date.now() - lastSubmitAt < 300) return;
       e.preventDefault(); goNext();
     }
   });
