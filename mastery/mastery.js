@@ -57,7 +57,11 @@
     var b = $("gateBadge"), m = $("gateMsg");
     if (!open) {
       b.className = "badge lock"; b.textContent = "🔒 受付していません";
-      m.textContent = "先生が受付を開けるまで待ってね。";
+      // セット中に閉じられても、そのセットは最後までやらせる（書いたぶんを捨てない）。
+      // 記録は端末に貯まり、次に開いたときに送られる。
+      m.textContent = busy()
+        ? "受付が閉じました。いまのセットは最後まで進められます。記録は次に開いたときに届きます。"
+        : "先生が受付を開けるまで待ってね。";
     } else if (!idOK()) {
       b.className = "badge open"; b.textContent = "✅ 受付中";
       m.textContent = "学年と番号を入れると始められます。";
@@ -73,7 +77,11 @@
         var was = open;
         session = st.session || ""; open = !!st.open;
         setGateView();
-        if (open && !was) fetchProgress();
+        if (open && !was) {
+          fetchProgress();
+          // 受付が閉じている間に終えたセットは端末にひかえてある。開いたら送り直す。
+          if (pending().length && idOK()) flush();
+        }
       }
     }).catch(function () {});
   }
@@ -117,7 +125,19 @@
       ? (pos.round + "周目・つぎは セット" + pos.set + "　／　これまで " + n + "セット・" + c + "語")
       : "　";
   }
-  function showHome() { show(null); renderBar(); if (open && idOK()) showList(); }
+  /* ★セット中・結果を読んでいる最中は画面を動かさない。
+     進捗の問い合わせは非同期なので、応答があとから届くと、答えている途中の生徒を
+     一覧へ蹴り出してしまう（学年→番号と入力すると2回飛ぶので、実際に起きた）。
+     受付が開き直したときも同じ道を通るので、ここ1か所で止める。 */
+  function busy() {
+    return !$("testCard").classList.contains("hide") || !$("doneCard").classList.contains("hide");
+  }
+  function showHome() {
+    renderBar();
+    if (busy()) return;
+    show(null);
+    if (open && idOK()) showList();
+  }
 
   /* ---------- 一覧（おぼえてからテスト） ---------- */
   function showList() {
@@ -132,6 +152,7 @@
 
   /* ---------- セット本番 ---------- */
   function startSet() {
+    if (pending().length && idOK()) flush();   // 前に送れていないぶんがあれば、ここでも送り直す
     var ws = setWords(pos.set).slice();
     run = { queue: ws.map(function (w) { return { w: w, retry: false }; }),
             i: 0, ok: {}, missed: [], passed: [], asked: 0, t0: 0, retried: false };

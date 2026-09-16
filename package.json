@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "description": "英語学習アプリ 検証ツール（模試の自動採点・構造チェック・単語サニティ）",
   "scripts": {
-    "check": "node tools/check_exams.mjs && node tools/make_trial_gas.mjs --check && node tools/check_gas_contract.mjs"
+    "check": "node tools/check_exams.mjs && node tools/make_trial_gas.mjs --check && node tools/check_gas_contract.mjs",
+    "test:gas": "node tools/tests/gate.test.mjs",
+    "test:ui": "node tools/tests/mastery_live.test.mjs"
   },
   "devDependencies": {
-    "jsdom": "^29.1.1"
+    "jsdom": "^29.1.1",
+    "playwright-core": "^1.56.0"
   }
 }
