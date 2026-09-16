@@ -116,7 +116,9 @@
     {id:"c3u3", title:"中3 単元テスト③"},
     {id:"c3u4", title:"中3 単元テスト④"},
     {id:"m2000", title:"2000語 到達度テスト", url:"../mastery/index.html",
-     note:"100語×20セット。開けている間だけ進められる。1コマで終わらなくてよく、次に開ければ続きから。"}
+     note:"100語×20セット。開けている間だけ進められる。1コマで終わらなくてよく、次に開ければ続きから。"},
+    {id:"mgram", title:"全文法 到達度テスト", url:"../mastery/gram.html",
+     note:"31項目×5文。7つの箱にえらんで入れる。解説はたたんであり、開きたい人だけ開く。"}
   ];
 
   var $=function(i){return document.getElementById(i);};
@@ -187,7 +189,7 @@
   /* いま置いてある tools/score_gas.gs の版。これ未満だと、
      単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
      模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
-  var ADMIN_NEED = 9;
+  var ADMIN_NEED = 10;
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   function updateServerNote(st){

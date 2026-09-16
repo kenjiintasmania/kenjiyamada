@@ -79,13 +79,13 @@ if (!noGate.length && !ghost.length) pass(`単元テスト ${units.length}本が
 {
   const gasM = [...gas.matchAll(/var MASTERY_EXAMS = \{([^}]*)\}/g)]
     .flatMap(m => [...m[1].matchAll(/"([a-z0-9_]+)"\s*:/g)].map(x => x[1]));
-  // 画面側は各アプリの EXAM = "..." を見る（増えたらここに足す）
-  const apps = { 'mastery/mastery.js': 'm2000' };
+  // 画面側は各アプリが MasteryCore.create に渡す exam を見る（増えたらここに足す）
+  const apps = { 'mastery/mastery.js': 'm2000', 'mastery/gram.js': 'mgram' };
   const used = [];
   for (const [f, want] of Object.entries(apps)) {
     let t = '';
     try { t = r(f); } catch (e) { fail(`${f} がありません（到達度テストの画面）`); continue; }
-    const m = t.match(/EXAM\s*=\s*"([a-z0-9_]+)"/);
+    const m = t.match(/exam:\s*"([a-z0-9_]+)"/);
     if (!m) { fail(`${f} から試験IDを取得できません`); continue; }
     if (m[1] !== want) fail(`${f} の試験IDが ${m[1]}（想定 ${want}）`);
     used.push(m[1]);
@@ -118,7 +118,7 @@ const REDACTED = !LIVE && !TRIAL.length;
 if (REDACTED) console.log('  ⓘ gas     送信先URLは伏せられているため、この節は飛ばしました');
 else if (!LIVE) fail('me/index.html に生徒用の送信先がありません');
 if (!REDACTED) ['mogi/exam.html', 'jigaku/index.html', 'jigaku/bunpo.js', 'jigaku/honbun.js',
- 'gojun/gojun.js', 'mastery/mastery.js', 'admin/index.html'].forEach(f => {
+ 'gojun/gojun.js', 'mastery/mastery.js', 'mastery/gram.js', 'admin/index.html'].forEach(f => {
   const u = url(r(f));
   if (!u.length) return;
   if (u.some(x => x !== LIVE)) fail(`${f} が マイページと違う送信先を持っています: ${u.join(', ')}`);

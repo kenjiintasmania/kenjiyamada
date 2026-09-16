@@ -331,7 +331,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-9";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-10";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -519,6 +519,17 @@ function setGate(data){
     var sh = unitSheetEnsured();
     var r = findUnitRow(sh, exam);
     if (data.open){
+      /* ★すでに開いているなら、何もせずいまの状態を返す。
+         先生が2台のPCで管理画面を開いて両方でスタートを押すと、押すたびに
+         セッションが作り直され、受験中の生徒が単元テストの提出で
+         「受付が切り替わりました」で弾かれ、提出数も0に戻っていた。
+         開け直したいときは、いったんストップしてからスタートする。 */
+      var cur = sh.getRange(r,3,1,4).getValues()[0];
+      if (String(cur[0]).trim() === "開" && cur[1]){
+        return {result:"ok", open:true, exam:exam, title:UNIT_EXAMS[exam],
+                session:String(cur[1]), submissions:Number(cur[3])||0, already:true,
+                message:"すでに受付中です（セッションはそのまま）"};
+      }
       var session = "S" + Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd-HHmmss");
       sh.getRange(r,3,1,4).setValues([["開", session, new Date(), 0]]);
       return {result:"ok", open:true, exam:exam, title:UNIT_EXAMS[exam], session:session, submissions:0};
@@ -538,7 +549,9 @@ function setGate(data){
  * 列：A=日時 B=セッション C=試験 D=学年 E=番号 F=名前 G=周回 H=セット
  *     I=正解数 J=問題数 K=経過秒 L=CPM M=版                                   */
 function masteryHeader(){
-  return ["日時","セッション","試験","学年","番号","名前","周回","セット",
+  // 「何回目」は全体の周ではなく、そのセット（項目）を何度やったか。
+  // セットを生徒が自由に選べる以上、全体の周という数えかたは成り立たないため。
+  return ["日時","セッション","試験","学年","番号","名前","何回目","セット",
           "正解数","問題数","経過秒","CPM","版"];
 }
 function handleMastery(d){

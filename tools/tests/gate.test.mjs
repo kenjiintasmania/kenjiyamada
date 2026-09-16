@@ -33,6 +33,19 @@ console.log("— ほかの試験のポーリングが混ざっても —");
 r=G.call({action:"status", exam:"m2000"});
 ok(r.open===true, "★admin が全試験をポーリングしても開いている（"+r.open+"）");
 
+console.log("— 管理画面を2台で開いて、両方でスタートを押す —");
+const before=G.call({action:"status", exam:"m2000"});
+const again=G.call({action:"gate", pin:PIN, exam:"m2000", open:true});
+ok(again.result==="ok" && again.already===true, "2回目のスタートは空振りになる "+JSON.stringify({already:again.already}));
+ok(again.session===before.session, "★セッションが作り直されない（"+(again.session===before.session)+"）");
+const after=G.call({action:"status", exam:"m2000"});
+ok(after.open===true && after.session===before.session, "開いたまま・セッションも同じ");
+ok(after.submissions===before.submissions, "★提出数が0に戻らない（"+before.submissions+"→"+after.submissions+"）");
+// ストップしてからスタートすれば、ちゃんと新しいセッションになる
+G.call({action:"gate", pin:PIN, exam:"m2000", open:false});
+const fresh=G.call({action:"gate", pin:PIN, exam:"m2000", open:true});
+ok(fresh.session!==before.session, "ストップ→スタートなら新しいセッションになる");
+
 console.log("— シートの中身 —");
 console.log("  タブ:", G.sheets().join(" / "));
 const u=G.dump("単元管理")||[];

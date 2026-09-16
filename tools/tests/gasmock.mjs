@@ -36,7 +36,9 @@ export function loadGas(){
   const g={
     SpreadsheetApp:{ openById(){ return SS; }, getActiveSpreadsheet(){ return SS; } },
     LockService:{ getScriptLock(){ return { waitLock(){return true;}, tryLock(){return true;}, releaseLock(){} }; } },
-    Utilities:{ formatDate(d,tz,f){ return "20260916-000000"; } },
+    /* 本物は日時から作る。模型では呼ばれるたびに1つ進める（同じ秒に2回押しても
+       別のセッションになる／固定値だと「開け直したのに同じ」を見落とすため）。 */
+    Utilities:{ _n:0, formatDate(d,tz,f){ this._n++; return "20260916-0000" + String(this._n).padStart(2,"0"); } },
     ContentService:{ createTextOutput(t){ return { setMimeType(){ return {__text:t}; }, __text:t }; }, MimeType:{JSON:"json"} },
     console, Date, JSON, String, Number, Math, Object, Array, RegExp, isNaN, parseInt, parseFloat, Error,
   };

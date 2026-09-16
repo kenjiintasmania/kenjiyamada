@@ -13,7 +13,10 @@ function show(n){ SCREENS.forEach(function(s){ $(s).classList.toggle("hide", s!=
 /* 枠は 文 ＞ 項目 ＞ 既定 の順で決まる。
    ・項目ごと … 比較級・It for to・関係代名詞は7つの箱では測れないので自前の枠を持つ
    ・文ごと  … 実践編は1問ずつ形が変わる（疑問文のときだけ 助動詞／＝ が主語の前に出る） */
-function slotsOf(item, sent){ return (sent && sent.slots) || (item && item.slots) || G.slots; }
+/* 判定・枠・選択肢は ../assets/gojuncore.js に1本化した（全文法 到達度テストと共通）。
+   同じ文なのに画面によって○✕が変わる、という事故を防ぐため。 */
+var C = window.GojunCore;
+function slotsOf(item, sent){ return C.slotsOf(G, item, sent); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
@@ -27,51 +30,16 @@ function store(){ var s=load(); s.runs=s.runs||[]; s.best=s.best||{}; return s; 
 /* 全角で打っても半角と同じものとして見る。※学年・番号欄の han() とは別物（あちらは数字だけ残す）。「３」と「3」、「Ｉ」と「I」を
    区別しても学力の差にはならず、スマホの入力モードのちがいで落ちるだけになる。
    U+FF01〜U+FF5E は ASCII の ! 〜 ~ に 1 対 1 で対応しているので、まとめて寄せる。 */
-function zenhan(s){
-  return String(s==null?"":s)
-    .replace(/[！-～]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-65248); })
-    .replace(/　/g," ");
-}
-function norm(s){
-  // アポストロフィは消す（他の3レーンと同じものさし）。don't も dont も同じ答えとして見る。
-  // 残していたころは、打つモードで ' を入れ忘れた文が丸ごと0点になっていた（禁止・否定で28か所）。
-  return zenhan(s).toLowerCase().replace(/['’]/g,"")
-    .replace(/[.,!?;:"“”]/g," ").replace(/\s+/g," ").trim();
-}
-function same(a,b){ return norm(a)===norm(b); }
+function zenhan(s){ return C.zenhan(s); }
+function norm(s){ return C.norm(s); }
+function same(a,b){ return C.same(a,b); }
 
 /* ================= えらぶモードの選択肢 =================
    その項目の5文から、同じ箱の答えを集めて候補にする。
    足りないぶんは data 側の extra から足す。並びは文ごとに固定
    （見るたびに入れかわると、選び直すときに混乱するため）。 */
-function poolOf(item, slotKey){
-  var seen={}, out=[];
-  item.sents.forEach(function(s){
-    var v=(s.fill[slotKey]||{}).en||"";
-    if(v && !seen[v.toLowerCase()]){ seen[v.toLowerCase()]=1; out.push(v); }
-  });
-  ((item.extra||{})[slotKey]||[]).forEach(function(v){
-    if(v && !seen[v.toLowerCase()]){ seen[v.toLowerCase()]=1; out.push(v); }
-  });
-  return out;
-}
-function hash(str){ var h=2166136261; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=(h*16777619)>>>0; } return h; }
-function choicesFor(item, si, slotKey, answer){
-  var pool=poolOf(item, slotKey).filter(function(v){ return !same(v,answer); });
-  var seed=hash(item.key+"|"+si+"|"+slotKey), out=[answer];
-  // 種から順に取り出す＝同じ問題なら毎回同じ並び
-  var idx=[]; pool.forEach(function(_,i){ idx.push(i); });
-  while(out.length<5 && idx.length){
-    seed=(seed*1103515245+12345)>>>0;
-    out.push(pool[idx.splice(seed%idx.length,1)[0]]);
-  }
-  // 並べかえも種で決める
-  for(var i=out.length-1;i>0;i--){
-    seed=(seed*1103515245+12345)>>>0;
-    var j=seed%(i+1), t=out[i]; out[i]=out[j]; out[j]=t;
-  }
-  return out;
-}
+function poolOf(item, slotKey){ return C.poolOf(item, slotKey); }
+function choicesFor(item, si, slotKey, answer){ return C.choicesFor(item, si, slotKey, answer); }
 
 /* ================= ホーム ================= */
 var MODE="easy";
