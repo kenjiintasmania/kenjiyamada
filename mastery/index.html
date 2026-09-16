@@ -10,14 +10,20 @@
   mastery/index.html ─ 到達度テスト（2000語）
 
    ねらい：時間制限のない到達度評価（完全習得学習）。
-     ・100語×20セット＝1周。ノンストップで、どこまで行けたかを見る
-     ・1コマで終わらなくてよい。次にゲートが開いたら「続きのセット」から再開する
-     ・分からない語はアッサリ捨てる（空Enter＝パス）。速く何周もして潰していく
+     ・100語×20セット。ノンストップで、どこまで行けたかを見る
+     ・1コマで終わらなくてよい。次にゲートが開いたら続きから
+     ・分からない語はアッサリ捨てる（空Enter＝パス）。速く何度もやって潰していく
+     ・★セットは生徒が自分で選べる（1をもう一度、20だけ、が自由）。
+       基本は1→2→3の順にすすめるが、それは「いちばん回数の少ないセット」を
+       おすすめとして出しているだけで、強制ではない。
 
    指標は CPM（Correct Per Minute＝1分あたりの正解語数）。
    ★時間だけでは測れない：全部パスすれば誰でも最速になるため、正解数が主、CPMが従。
    ★CPMはセット間で比べない：セット1は平均4.3字、セット20は11.4字で打鍵量が3倍ちがう。
      比べるのは「同じセットの前の周と今の周」。百ますが同じ100問を繰り返すのと同じ理屈。
+
+   ★記録の「周回」は全体の周ではなく **そのセットの何回目か**。セットを自由に選べる以上、
+     全体の周という数えかたが成り立たないため。セット1の2回目は「周回2・セット1」として残る。
 
    続きの位置の正はサーバー（スプレッドシート）。端末の記録は保険でしかない
    （端末を変えても、キャッシュを消しても続きから戻れるようにするため）。
@@ -62,10 +68,13 @@
 
   /* セットの進み具合 */
   .sets{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0 4px}
-  .sets i{display:block;height:26px;border-radius:6px;background:#e7eeec;border:1px solid var(--line);
-    font-style:normal;font-size:11px;line-height:24px;text-align:center;color:var(--muted)}
-  .sets i.done{background:#cdebdc;border-color:#a5d8bf;color:#2c7a52;font-weight:bold}
-  .sets i.now{background:var(--c1);border-color:var(--c1d);color:#fff;font-weight:bold}
+  .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#e7eeec;
+    border:1px solid var(--line);font-family:inherit;font-size:12px;line-height:1.1;
+    text-align:center;color:var(--gray);cursor:pointer;padding:3px 0}
+  .sets button em{display:block;font-style:normal;font-size:10px;opacity:.85}
+  .sets button:hover{border-color:var(--c1)}
+  .sets button.done{background:#cdebdc;border-color:#a5d8bf;color:#2c7a52;font-weight:bold}
+  .sets button.now{background:var(--c1);border-color:var(--c1d);color:#fff;font-weight:bold}
 
   /* 一覧（おぼえてからテスト） */
   .list{max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 10px;margin:8px 0}
@@ -102,7 +111,7 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="../index.html">← トップ</a></div>
   <h1>2000語 到達度テスト <span class="en">Mastery</span></h1>
-  <p>100語 × 20セット ＝ 1周。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。</p>
+  <p>100語 × 20セット。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。セットは自分でえらべます。</p>
 </div></div>
 
 <div class="wrap">
@@ -122,12 +131,14 @@
     </div>
     <div class="sets" id="setBar"></div>
     <div class="note" id="progMsg">　</div>
+    <div class="note" style="margin-top:4px">数字を押すと、そのセットに移れます。
+      ふつうは 1→2→3 と進みますが、<b>「1をもう一度」も自由</b>です。数字の下は、そのセットの最高点。</div>
   </div>
 
   <!-- 一覧 -->
   <div class="card hide" id="listCard">
     <h2 id="listTitle">セット1の100語</h2>
-    <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次の周でまた当たります。</p>
+    <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
     <div class="list" id="listBody"></div>
     <button class="btn" id="startSet">▶ このセットを始める</button>
     <button class="btn sub" id="backHome">もどる</button>
@@ -160,7 +171,8 @@
     <div class="note" id="sendMsg" style="margin-top:6px">　</div>
     <div style="margin-top:10px">
       <button class="btn" id="nextSet">次のセットへ →</button>
-      <button class="btn sub" id="toHome">今日はここまで</button>
+      <button class="btn sub" id="againSet" data-set="1">このセットをもう一度</button>
+      <button class="btn sub" id="toHome">セットをえらぶ</button>
     </div>
     <div id="missWrap" class="hide">
       <h2 style="margin-top:14px;font-size:15px">取れなかった語</h2>
