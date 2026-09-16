@@ -6,7 +6,7 @@
   "scripts": {
     "check": "node tools/check_exams.mjs && node tools/make_trial_gas.mjs --check && node tools/check_gas_contract.mjs",
     "test:gas": "node tools/tests/gate.test.mjs",
-    "test:ui": "node tools/tests/mastery_live.test.mjs && node tools/tests/mastery_pick.test.mjs && node tools/tests/gram.test.mjs && node tools/tests/gojun.test.mjs && node tools/tests/admin.test.mjs"
+    "test:ui": "node tools/tests/mastery_live.test.mjs && node tools/tests/mastery_pick.test.mjs && node tools/tests/mastery_share.test.mjs && node tools/tests/gram.test.mjs && node tools/tests/gojun.test.mjs && node tools/tests/admin.test.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",

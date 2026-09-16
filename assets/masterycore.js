@@ -41,6 +41,19 @@
     function load() { try { return JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { return {}; } }
     function save(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
 
+    /* ★端末の控えは「どの子のぶんか」を添えて持つ。
+       1台を何人かで使う教室（先生の試用もこれ）で、これが無いと前の子の記録が次の子に混ざり、
+       すんだ印・おすすめのセット・「何回目」がまるごとずれる。控えはあくまで保険で、
+       正はサーバーなので、自分のぶんが無ければ空から始めればよい。 */
+    function who() { return $("f_cls").value.trim() + "-" + han($("f_num").value); }
+    function mySets() { return (((load()[EXAM] || {}).by || {})[who()] || {}).sets || {}; }
+    function saveMine(sets) {
+      var o = load(); o[EXAM] = o[EXAM] || {}; o[EXAM].by = o[EXAM].by || {};
+      o[EXAM].by[who()] = { sets: sets };
+      delete o[EXAM].sets;                 // 旧かたち（誰のか分からない控え）は捨てる
+      save(o);
+    }
+
     /* ---------- 状態 ---------- */
     var session = "", open = false;
     var pos = { set: 1 };
@@ -147,18 +160,19 @@
     /* ---------- どこまでやったか ---------- */
     function fetchProgress() {
       if (!idOK()) return;
+      if (!busy()) doneSets = mySets();        // 待っている間、前の子の記録を出さない
       post({ action: "progress", exam: EXAM, cls: $("f_cls").value.trim(), num: han($("f_num").value) })
         .then(function (r) {
           if (!r || r.result !== "ok") return;
           // サーバーの記録に端末の控えを重ねる（どちらかにしか無い回も拾う＝生徒が損しない側）
           doneSets = r.sets || {};
-          var mine = (load()[EXAM] || {}).sets || {};
+          var mine = mySets();
           for (var k in mine) if (!doneSets[k]) doneSets[k] = mine[k];
           if (!busy() && !picked) pos.set = recommendNext();
           showHome();
         }).catch(function () {
-          var st = load()[EXAM];
-          if (st && st.sets) { doneSets = st.sets; if (!busy() && !picked) pos.set = recommendNext(); }
+          doneSets = mySets();
+          if (!busy() && !picked) pos.set = recommendNext();
           showHome();
         });
     }
@@ -188,9 +202,7 @@
       var key = round + "-" + set;
       doneSets[key] = { correct: correct, sec: sec, cpm: cpm };
 
-      var st = load(); st[EXAM] = st[EXAM] || {};
-      st[EXAM].sets = st[EXAM].sets || {}; st[EXAM].sets[key] = doneSets[key];
-      save(st);
+      saveMine(doneSets);
 
       $("doneTitle").textContent = UNIT + set + "　" + round + "回目 おわり";
       $("doneScore").textContent = correct + " / " + (res.max || 0);
@@ -255,6 +267,10 @@
           localStorage.setItem("mado_num", han($("f_num").value));
           localStorage.setItem("mado_name", $("f_name").value.trim());
         } catch (e) {}
+        if (id !== "f_name") {                 // 別の子に替わったら、その場で控えを切りかえる
+          doneSets = mySets(); picked = false;
+          pos.set = recommendNext();
+        }
         setGateView();
         if (idOK()) fetchProgress();
       });
@@ -266,8 +282,8 @@
       $("f_num").value = han(localStorage.getItem("mado_num") || "");
       $("f_name").value = localStorage.getItem("mado_name") || "";
     } catch (e) {}
-    var st0 = load()[EXAM];
-    if (st0 && st0.sets) { doneSets = st0.sets; pos.set = recommendNext(); }
+    doneSets = mySets();
+    if (Object.keys(doneSets).length) pos.set = recommendNext();
     setGateView();
     poll(); setInterval(poll, 5000);
 

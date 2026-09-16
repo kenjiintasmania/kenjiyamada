@@ -19,7 +19,7 @@
   var run = null;
 
   var core = window.MasteryCore.create({
-    exam: "mgram", ver: "gram 0.1", sets: SETS, ls: "mastery_gram_v1",
+    exam: "mgram", ver: "gram 0.2", sets: SETS, ls: "mastery_gram_v1",
     unitName: "項目", unitWord: "文",
     gas: "https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec",
     tipOf: function (i) { return ITEMS[i - 1].emoji + " " + ITEMS[i - 1].title; },
