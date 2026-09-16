@@ -105,14 +105,18 @@
   var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
   // 実証（試用版）モードでは実証用GASを見る＝/admin/?site=aso で実証シート側の操作になる。
   if(window.SITE) GAS_URL = SITE.gasFor("summary", GAS_URL);
-  // GAS の UNIT_EXAMS と同じ並び
+  /* GAS の UNIT_EXAMS と同じ並び。★ここに足し忘れると、GAS に入れても
+     このページにカードが出ず、受付を開けられない（npm run check が見ている）。
+     url は生徒用の画面。到達度テストは mogi/exam.html ではなく専用の画面。 */
   var EXAMS=[
     {id:"c2u1", title:"中2 単元テスト①"},
     {id:"c2u2", title:"中2 単元テスト②"},
     {id:"c3u1", title:"中3 単元テスト①"},
     {id:"c3u2", title:"中3 単元テスト②"},
     {id:"c3u3", title:"中3 単元テスト③"},
-    {id:"c3u4", title:"中3 単元テスト④"}
+    {id:"c3u4", title:"中3 単元テスト④"},
+    {id:"m2000", title:"2000語 到達度テスト", url:"../mastery/index.html",
+     note:"100語×20セット。開けている間だけ進められる。1コマで終わらなくてよく、次に開ければ続きから。"}
   ];
 
   var $=function(i){return document.getElementById(i);};
@@ -153,7 +157,8 @@
       '<div class="btns">'+
         '<button class="start" data-r="start">▶ スタート</button>'+
         '<button class="stop" data-r="stop">■ ストップ</button></div>'+
-      '<div class="link" style="margin-top:8px"><a href="../mogi/exam.html?id='+ex.id+'" target="_blank">テスト画面を開く（生徒用）↗</a></div>';
+      (ex.note? '<div class="meta" style="color:#7a6a55">'+ex.note+'</div>' : '')+
+      '<div class="link" style="margin-top:8px"><a href="'+(ex.url||('../mogi/exam.html?id='+ex.id))+'" target="_blank">テスト画面を開く（生徒用）↗</a></div>';
     box.appendChild(c);
     var refs={badge:c.querySelector('[data-r=badge]'),subs:c.querySelector('[data-r=subs]'),
       sess:c.querySelector('[data-r=sess]'),start:c.querySelector('[data-r=start]'),stop:c.querySelector('[data-r=stop]')};
@@ -194,7 +199,7 @@
     else if(st && st.ver){ el.style.display=""; el.className="card warn";
       el.innerHTML="⚠️ サーバーの版が古いようです（いま "+st.ver+"／想定は jigaku-"+ADMIN_NEED+" 以上）。"+
         "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない・到達度テストが開かない、といったことが起きます。<br>"+STALE+
-        "<br>※ jigaku-8 を貼ったあと、GASエディタで <b>clearNewSummaryCols()</b> を1回だけ実行してください"+
+        "<br>※ jigaku-8 からの更新なら、貼ったあとに GASエディタで <b>clearNewSummaryCols()</b> を1回だけ実行してください"+
         "（末尾に足した3列に、前の「自学_◯◯」の数字が残っているため）。"; }
     else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）
     else if(st && st.result==="ok"){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版

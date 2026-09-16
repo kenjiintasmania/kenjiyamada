@@ -58,6 +58,23 @@ if (noGate.length) fail(`GAS の UNIT_EXAMS に無いので受付を開けませ
 if (ghost.length)  fail(`画面に無いのに GAS にだけある単元テスト: ${ghost.join(', ')}`);
 if (!noGate.length && !ghost.length) pass(`単元テスト ${units.length}本が画面と GAS でそろっている`);
 
+/* ---------- ③" /admin のカード ↔ GAS の UNIT_EXAMS ---------- *
+   admin の一覧は手書きなので、GAS に足してもここに足し忘れると
+   「受付を開けるボタンが出てこない」状態になる（実際に起きた）。 */
+{
+  const adm = r('admin/index.html');
+  const blk = (adm.match(/var EXAMS=\[([\s\S]*?)\n  \];/) || [])[1] || '';
+  const admIds = [...blk.matchAll(/id:"([a-z0-9_]+)"/g)].map(m => m[1]);
+  const gasIds = [...gas.matchAll(/var UNIT_EXAMS = \{([\s\S]*?)\n\};/g)]
+    .flatMap(m => [...m[1].matchAll(/"([a-z0-9_]+)"\s*:/g)].map(x => x[1]));
+  if (!admIds.length || !gasIds.length) fail('/admin か GAS の試験一覧を読めません');
+  const noCard = gasIds.filter(id => !admIds.includes(id));
+  const noGas  = admIds.filter(id => !gasIds.includes(id));
+  if (noGas.length) fail(`/admin にあるのに GAS に無い試験: ${noGas.join(', ')}`);
+  if (noCard.length) console.log(`  ⓘ gas     GAS にあって /admin にまだ出していない試験: ${noCard.join(', ')}`);
+  if (!noGas.length) pass(`/admin のカード ${admIds.length}件が GAS の試験と矛盾しない`);
+}
+
 /* ---------- ③' 到達度テスト：画面が使う試験ID ↔ GAS の MASTERY_EXAMS ---------- */
 {
   const gasM = [...gas.matchAll(/var MASTERY_EXAMS = \{([^}]*)\}/g)]
