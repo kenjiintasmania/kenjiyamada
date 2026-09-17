@@ -44,7 +44,7 @@ export function loadGas(){
   };
   const src=readFileSync(new URL("../score_gas.gs", import.meta.url), "utf8");
   const names=Object.keys(g);
-  const fn=new Function(...names, src+"\n;return {doPost:doPost, gateStatus:gateStatus, setGate:setGate, __SS:SpreadsheetApp.openById()};");
+  const fn=new Function(...names, src+"\n;return {doPost:doPost, gateStatus:gateStatus, setGate:setGate, rebuildMasteryTotals:rebuildMasteryTotals, clearMasteryTotalCols:clearMasteryTotalCols, rebuildJigakuUnits:(typeof rebuildJigakuUnits==='function'?rebuildJigakuUnits:null), __SS:SpreadsheetApp.openById()};");
   const api=fn(...names.map(k=>g[k]));
   api.call=function(obj){
     const out=api.doPost({postData:{contents:JSON.stringify(obj)}});

@@ -93,4 +93,39 @@ console.log("— 分からないときに「閉」と言わない —");
   ok(r.open===undefined, "open を返さない＝アプリはいまの状態を保つ");
 }
 
+
+/* ---------- 合計点が、あとから来るものに消されないか ---------- *
+   成績まとめは マイページの送信・自学の集計・合計点 の3つが同じ行を触る。
+   貼り直した直後に順番が入れちがうと、合計点だけ消えることがありうるので見ておく。 */
+console.log("— 合計点が、ほかの書き込みで消えないか —");
+{
+  const col = () => {
+    const sum = G.dump("成績まとめ") || [];
+    const i = (sum[0]||[]).indexOf("到達度2000語_合計");
+    const row = sum.find(r => String(r[1])==="3" && String(r[2])==="21");
+    return row ? Number(row[i]) : null;
+  };
+  ok(col()===195, "いまは195点（前の節のつづき）");
+
+  // ① マイページから送信（合計点は送らない）
+  G.call({kind:"summary", cls:"3", num:"21", name:"テスト", w_basic:100, m_best:80});
+  ok(col()===195, "★マイページ送信でも合計点は消えない（"+col()+"）");
+
+  // ② 自学ログの集計が走っても
+  G.call({kind:"jigaku", lane:"単語", cls:"3", num:"21", name:"テスト",
+          unit:"Unit 1", src:"打ち込み", listN:10, ok:8, total:10, ver:"t"});
+  try { G.rebuildJigakuUnits && G.rebuildJigakuUnits(); } catch(e){}
+  ok(col()===195, "★自学の集計のあとも合計点は残る（"+col()+"）");
+
+  // ③ 入れなおしのメニューを叩いても同じ数
+  const msg = G.rebuildMasteryTotals ? G.rebuildMasteryTotals() : "(呼べない)";
+  ok(col()===195, "★入れなおしても195点のまま（"+col()+"／"+msg+"）");
+
+  // ④ 2列を空にする関数が、その2列だけを空にする
+  const before = G.dump("成績まとめ")[0].length;
+  const r2 = G.clearMasteryTotalCols ? G.clearMasteryTotalCols() : "(呼べない)";
+  ok(col()===0 || col()===null || isNaN(col()), "clearMasteryTotalCols で空になる（"+col()+"／"+r2+"）");
+  ok(G.dump("成績まとめ")[0].length===before, "列の数は変わらない");
+}
+
 console.log(`\n${pass} pass / ${fail} fail`);
