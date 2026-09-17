@@ -10,9 +10,9 @@ await p.addInitScript(()=>{
   window.__sent=[];
   window.fetch=function(url,opt){
     const d=JSON.parse(opt.body); window.__sent.push(d);
-    let r={result:"ok", ver:"jigaku-10"};
-    if(d.action==="status") r={result:"ok", ver:"jigaku-10", open:false, exam:d.exam, session:"", submissions:0};
-    if(d.action==="gate")   r={result:"ok", ver:"jigaku-10", open:!!d.open, exam:d.exam, session:"S1", submissions:0};
+    let r={result:"ok", ver:"jigaku-11"};
+    if(d.action==="status") r={result:"ok", ver:"jigaku-11", open:false, exam:d.exam, session:"", submissions:0};
+    if(d.action==="gate")   r={result:"ok", ver:"jigaku-11", open:!!d.open, exam:d.exam, session:"S1", submissions:0};
     return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
   };
 });
@@ -37,7 +37,7 @@ ok(sent.length===1 && sent[0].exam==="m2000" && sent[0].open===true,
 // 版チェック
 const note=await p.evaluate(()=>{const e=document.getElementById("serverNote");
   return {shown:e.style.display!=="none", txt:(e.textContent||"").slice(0,40), cls:e.className};});
-ok(!/版が古い/.test(note.txt), "jigaku-10 なら版の警告が出ない（"+note.txt+"）");
+ok(!/版が古い/.test(note.txt), "jigaku-11 なら版の警告が出ない（"+note.txt+"）");
 ok(/okline/.test(note.cls), "サーバー版が緑で出る（"+note.cls+"）");
 await p.close(); await b.close();
 console.log(errs.length? "\nJSエラー:\n"+errs.slice(0,4).join("\n") : "\nJSエラーなし");

@@ -55,7 +55,9 @@ console.log("  画面が呼んだもの:", calls.map(c=>c.action||c.kind).join("
 
 /* ---- 受付が途中で閉じられても、そのセットは最後まで進められる ---- */
 console.log("先生がストップ:", JSON.stringify(G.call({action:"gate", pin:"PIN", exam:"m2000", open:false})).slice(0,60));
-await p.waitForTimeout(6000);
+/* ロックは「閉」が3回続いてから（約15秒）。一瞬の「閉」で授業が止まらないよう
+   わざと遅らせてある（gate_flap.test.mjs 参照）ので、ここも待つ。 */
+await p.waitForTimeout(17000);
 ok((await visible())==="testCard", "★受付が閉じてもテスト画面のまま（"+(await visible())+"）");
 ok(/受付していません/.test(await badge()), "バッジはロックになる");
 ok(/最後まで進められます/.test(await p.textContent("#gateMsg")), "最後までやってよいと伝える（"+(await p.textContent("#gateMsg")).slice(0,30)+"）");

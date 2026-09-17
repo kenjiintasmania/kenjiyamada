@@ -42,7 +42,7 @@ if (cols.length < 40) fail(`SUMMARY_COLS を読めません（${cols.length}列�
 const bp = me.indexOf('function buildPayload');
 const payload = me.slice(bp, me.indexOf('\n  }', bp));
 const sent = new Set([...payload.matchAll(/([a-z0-9_]+)\s*:/g)].map(m => m[1]));
-const BUILT_BY_GAS = new Set(['_ts']);                // 更新日時は handleSummary が入れる（送らない）
+const BUILT_BY_GAS = new Set(['_ts', 'mt2000', 'mtgram']);                // 更新日時は handleSummary が入れる（送らない）
 const orphan = cols.map(c => c.key).filter(k => !sent.has(k) && !BUILT_BY_GAS.has(k));
 if (orphan.length) fail(`GAS に列があるのにマイページが送っていません: ${orphan.join(', ')}`);
 else pass(`成績まとめ ${cols.length}列すべてに送信キーがある`);

@@ -273,15 +273,26 @@ var SUMMARY_COLS = [
   // --- ここから jigaku-8 で追加（341/342 と福岡①がマイページ・シートに載っていなかった） ---
   {key:"m_341",     head:"模試_341",    max:true},
   {key:"m_342",     head:"模試_342",    max:true},
-  {key:"m_fk1",     head:"模試_福岡1",  max:true}   // 福岡は60点満点。模試_最高点とは別ものとして見る
+  {key:"m_fk1",     head:"模試_福岡1",  max:true},  // 福岡は60点満点。模試_最高点とは別ものとして見る
+  /* --- ここから jigaku-11 で追加：到達度テストの合計点 ---
+     「到達度テスト」タブはクリア順に増えるので、番号がバラバラに並ぶ。
+     1人1行の成績まとめ側に合計点を出しておけば、並べかえずに見られる。
+     合計＝**セットごとの最高点の足しあげ**（同じセットを何度やっても二重に足さない）。
+       例）セット1の1回目90点／2回目89点／セット2の1回目100点 → 90+100＝190点
+     入れるのは handleMastery（1セット記録するたび）。マイページからの送信では
+     この2つを送らないので、buildRow がこれまでの値をそのまま残す。 */
+  {key:"mt2000",    head:"到達度2000語_合計", max:false},
+  {key:"mtgram",    head:"到達度文法_合計",   max:false}
 ];
 
 /* ★1回だけ実行（GASエディタで関数を選んで▶）。
    固定列を末尾に足すと、その位置には前まで「自学_◯◯」が入っていたので、
    見出しは新しくなっても数字が古い自学の値のまま残る。しかも max 列なので
    Math.max で古い大きな数が勝ちつづける。足した直後に1回だけ空にする。 */
-function clearNewSummaryCols(){
-  var names = ["模試_341","模試_342","模試_福岡1"];
+function clearNewSummaryCols(){ return clearSummaryCols_(["模試_341","模試_342","模試_福岡1"]); }
+/* jigaku-11 で足した2列ぶん。貼ったあとに1回だけ実行する。 */
+function clearMasteryTotalCols(){ return clearSummaryCols_(["到達度2000語_合計","到達度文法_合計"]); }
+function clearSummaryCols_(names){
   var sh = getSS().getSheetByName(SUMMARY_SHEET);
   if (!sh || sh.getLastRow() < 2) return "対象の行がありません";
   var head = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0]
@@ -319,7 +330,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-10";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-11";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -475,17 +486,29 @@ function findUnitRow(sh, exam){
   for (var i=0;i<v.length;i++){ if (String(v[i][0]).trim()===exam) return i+2; }
   return -1;
 }
-// 状態の読み取り（ポーリング用・書き込みなし）
+/* 状態の読み取り（ポーリング用・書き込みなし）
+ * ★「分からなかった」を open:false で返してはいけない（jigaku-11 で修正）。
+ *   以前は シートが無い／行が見つからない／読めなかった のどれでも
+ *   {result:"ok", open:false} を返していた。生徒の画面も管理画面も、これを
+ *   「先生が閉じた」と受け取ってロックするので、先生がスプレッドシートを
+ *   編集している最中などに 受付中とロック中がチカチカ入れかわり、授業が止まった。
+ *   読めなかったときは result:"error" を返す＝アプリ側はいまの状態を保つ。 */
 function gateStatus(exam){
   var title = UNIT_EXAMS[exam] || "";
-  if (!exam || !UNIT_EXAMS[exam]) return {result:"ok", open:false, exam:exam||"", title:title, session:""};
-  var sh = getSS().getSheetByName(UNIT_SHEET);
-  if (!sh) return {result:"ok", open:false, exam:exam, title:title, session:""};
-  var r = findUnitRow(sh, exam);
-  if (r < 0) return {result:"ok", open:false, exam:exam, title:title, session:""};
-  var row = sh.getRange(r,1,1,6).getValues()[0];
-  return {result:"ok", open:(String(row[2]).trim()==="開"), exam:exam, title:(row[1]||title),
-          session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0};
+  if (!exam || !UNIT_EXAMS[exam])
+    return {result:"error", message:"未知の試験IDです", exam:exam||"", title:title};
+  try{
+    var sh = getSS().getSheetByName(UNIT_SHEET);
+    if (!sh) return {result:"error", message:"「"+UNIT_SHEET+"」シートが見つかりません", exam:exam, title:title};
+    var r = findUnitRow(sh, exam);
+    // 行がまだ無い＝一度も開いたことがない。これは本当に「閉」。
+    if (r < 0) return {result:"ok", open:false, exam:exam, title:title, session:"", never:true};
+    var row = sh.getRange(r,1,1,6).getValues()[0];
+    return {result:"ok", open:(String(row[2]).trim()==="開"), exam:exam, title:(row[1]||title),
+            session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0};
+  }catch(e){
+    return {result:"error", message:"いま読めませんでした（"+e.message+"）", exam:exam, title:title};
+  }
 }
 // スタート/ストップ（PIN必須）
 function setGate(data){
@@ -558,7 +581,11 @@ function handleMastery(d){
     var cpm = sec>0 ? Math.round(correct / (sec/60) * 10)/10 : "";
     sh.appendRow([ new Date(), st.session, exam, cls, num, d.name||"",
                    round, set, correct, numOrBlank(d.asked), sec, cpm, d.ver||"" ]);
-    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm};
+    // 成績まとめの合計点を更新する。ここで失敗しても、上の記録は残す（生徒の点を落とさない）。
+    var total = null;
+    try{ total = updateMasterySummary(cls, num, d.name||""); }catch(e){}
+    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm,
+            total: total ? (total[exam]||0) : null};
   } finally { lock.releaseLock(); }
 }
 /* 続きの位置を返す。端末ではなくここが正。 */
@@ -581,6 +608,84 @@ function masteryProgress(d){
   }
   if (maxR){ out.round = maxR; out.set = maxS + 1; }   // 次にやるセット
   return out;
+}
+
+
+/* ===================== 到達度テスト：合計点を成績まとめへ ===================== *
+ * 「到達度テスト」タブはクリア順に増えるので、番号がバラバラに並ぶ（先生が手で並べかえ
+ * たくなるのはこのため。※ただし授業中の並べかえはおすすめしない → gateStatus の注を参照）。
+ * 1人1行の成績まとめ側に合計点を出しておけば、並べかえずにその場で読める。
+ *
+ * 合計＝**セットごとの最高点の足しあげ**。同じセットを何度やっても二重に足さない。
+ *   例）セット1の1回目90点／セット1の2回目89点／セット2の1回目100点 → 90 + 100 ＝ 190点
+ * アプリの画面に出ている「最高点の合計」と同じ数になる。 */
+var MASTERY_SUM_COL = [ {exam:"m2000", key:"mt2000"}, {exam:"mgram", key:"mtgram"} ];
+function summaryColIndex_(key){
+  for (var i=0;i<SUMMARY_COLS.length;i++) if (SUMMARY_COLS[i].key === key) return i;
+  return -1;
+}
+function masteryTotals(cls, num){
+  var out = {}; for (var k in MASTERY_EXAMS) out[k] = 0;
+  var sh = getSS().getSheetByName(MASTERY_LOG);
+  if (!sh || sh.getLastRow() < 2) return out;
+  // C=試験 D=学年 E=番号 F=名前 G=何回目 H=セット I=正解数
+  var v = sh.getRange(2,3,sh.getLastRow()-1,7).getValues();
+  var best = {};
+  for (var i=0;i<v.length;i++){
+    if (String(v[i][1]).trim() !== String(cls).trim()) continue;
+    if (String(v[i][2]).trim() !== String(num).trim()) continue;
+    var ex = String(v[i][0]).trim(), set = Number(v[i][5])||0, c = Number(v[i][6])||0;
+    if (!MASTERY_EXAMS[ex] || !set) continue;
+    var k = ex + "\u0000" + set;
+    if (best[k] == null || c > best[k]) best[k] = c;      // 同じセットは最高点だけ
+  }
+  for (var k2 in best) out[k2.split("\u0000")[0]] += best[k2];
+  return out;
+}
+/* その子の合計点を書きなおす。成績まとめに行が無ければ作る
+   （マイページから一度も送っていない＝到達度テストしかやっていない子のため）。 */
+function updateMasterySummary(cls, num, name){
+  var header = SUMMARY_COLS.map(function(c){return c.head;});
+  var sh = getSheet(SUMMARY_SHEET, header);
+  sh.getRange(1,1,1,header.length).setValues([header]);
+  var key = String(cls).trim() + " / " + String(num).trim();
+  var last = sh.getLastRow(), rowIndex = -1;
+  if (last >= 2){
+    var ids = sh.getRange(2,2,last-1,2).getValues();
+    for (var i=0;i<ids.length;i++)
+      if (String(ids[i][0]).trim() + " / " + String(ids[i][1]).trim() === key){ rowIndex = i+2; break; }
+  }
+  if (rowIndex < 0){
+    var blank = SUMMARY_COLS.map(function(){ return ""; });
+    blank[0] = new Date(); blank[1] = String(cls).trim(); blank[2] = String(num).trim(); blank[3] = name || "";
+    sh.appendRow(blank);
+    rowIndex = sh.getLastRow();
+  }
+  var t = masteryTotals(cls, num);
+  MASTERY_SUM_COL.forEach(function(m){
+    var i = summaryColIndex_(m.key);
+    if (i >= 0) sh.getRange(rowIndex, i+1).setValue(t[m.exam] || 0);
+  });
+  return t;
+}
+/* 全員ぶん入れなおす（メニューから。行を消した・手で直した あとの立て直し用）。 */
+function rebuildMasteryTotals(){
+  var sh = getSS().getSheetByName(MASTERY_LOG);
+  if (!sh || sh.getLastRow() < 2) return "到達度テストの記録がありません";
+  var v = sh.getRange(2,4,sh.getLastRow()-1,3).getValues();   // 学年,番号,名前
+  var seen = {}, n = 0;
+  for (var i=0;i<v.length;i++){
+    var cls = String(v[i][0]).trim(), num = String(v[i][1]).trim();
+    if (!cls || !num) continue;
+    var k = cls + " / " + num;
+    if (seen[k]) continue;
+    seen[k] = 1;
+    updateMasterySummary(cls, num, v[i][2]);
+    n++;
+  }
+  var msg = n + "人ぶんの合計点を入れなおしました";
+  try{ SpreadsheetApp.getActive().toast(msg); }catch(e){}
+  return msg;
 }
 
 /* ===================== 単元テスト：提出（開いてる時のみ・1人1回） ===================== */
@@ -675,6 +780,7 @@ function onOpen(){
     .addSeparator()
     .addItem("🔗 AI×成績 相関タブを作成/更新", "buildCorrelationTab")
     .addItem("🔤 自学ログ▶ユニット別クリア語数を更新", "rebuildJigakuUnitsMenu")
+    .addItem("🎯 到達度テスト▶合計点を入れなおす", "rebuildMasteryTotals")
     .addSeparator()
     .addSubMenu(unitMenu)
     .addToUi();

@@ -50,4 +50,47 @@ console.log("— シートの中身 —");
 console.log("  タブ:", G.sheets().join(" / "));
 const u=G.dump("単元管理")||[];
 u.forEach(row=>console.log("   単元管理:", JSON.stringify(row.slice(0,4))));
+
+/* ---------- 到達度テストの合計点（jigaku-11） ---------- */
+console.log("— 合計点：セットごとの最高点の足しあげ —");
+G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+// 先生の例：セット1の1回目90点／2回目89点／セット2の1回目100点 → 190点
+const put=(round,set,correct)=>G.call({kind:"mastery", exam:"m2000", cls:"3", num:"21", name:"テスト",
+  round, set, correct, asked:100, sec:60, ver:"t"});
+put(1,1,90); put(2,1,89); put(1,2,100);
+{
+  const sum=G.dump("成績まとめ")||[];
+  const head=sum[0]||[];
+  const col=head.indexOf("到達度2000語_合計");
+  const row=sum.find(r=>String(r[1])==="3"&&String(r[2])==="21");
+  ok(col>=0, "成績まとめに「到達度2000語_合計」の列がある");
+  ok(row && Number(row[col])===190,
+     "★90/89/100 → 190点（2回目の89は足さない）："+(row?row[col]:"行なし"));
+}
+// 3回目でセット1が95点なら 95+100＝195
+put(3,1,95);
+{
+  const sum=G.dump("成績まとめ")||[];
+  const col=(sum[0]||[]).indexOf("到達度2000語_合計");
+  const row=sum.find(r=>String(r[1])==="3"&&String(r[2])==="21");
+  ok(row && Number(row[col])===195, "★セット1が95に伸びたら195点："+(row?row[col]:"行なし"));
+}
+// 文法は別の列
+G.call({action:"gate", pin:"PIN", exam:"mgram", open:true});
+G.call({kind:"mastery", exam:"mgram", cls:"3", num:"21", name:"テスト", round:1, set:1, correct:5, asked:5, sec:30, ver:"t"});
+{
+  const sum=G.dump("成績まとめ")||[];
+  const head=sum[0]||[];
+  const row=sum.find(r=>String(r[1])==="3"&&String(r[2])==="21");
+  ok(Number(row[head.indexOf("到達度文法_合計")])===5, "文法は別の列に5点");
+  ok(Number(row[head.indexOf("到達度2000語_合計")])===195, "2000語の列は195のまま");
+}
+// 読めなかったときに「閉」と言わないこと
+console.log("— 分からないときに「閉」と言わない —");
+{
+  const r=G.call({action:"status", exam:"nosuch"});
+  ok(r.result==="error", "★未知の試験IDは error（open:false ではない）："+JSON.stringify(r).slice(0,60));
+  ok(r.open===undefined, "open を返さない＝アプリはいまの状態を保つ");
+}
+
 console.log(`\n${pass} pass / ${fail} fail`);
