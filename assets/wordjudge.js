@@ -108,50 +108,82 @@
 
 
   /* ---------- 同じ訳が何語もあるときの手がかり ---------- *
-   * 「すばらしい」＝ wonderful / fantastic / great のように、同じ訳の語が2つ以上あると、
-   * 生徒はどれを打てばよいか決めようがない（2026-09 先生報告）。2000語中 21の訳・44語がこれ。
-   * 品詞は出題画面に出ているので、**品詞まで見ても分かれないときだけ**手がかりを出す。
-   *   ① 頭文字でわかれる          → 「wではじまる」
-   *   ② 頭文字が同じで長さがちがう → 「mではじまる・長いほう」（mother と mom）
-   *   ③ それでも決められない       → 手がかりは出さず、**相手の綴りも正解にする**
-   *      （have to / has to、would like to / would love to。主語も文脈も無いのだから、
-   *        どちらを書いても生徒の落ち度ではない）
+   * 「話す」は talk / speak / tell、「すばらしい」は wonderful / fantastic / great / golden。
+   * 生徒はどれを打てばよいか決めようがない（2026-09 先生報告）。2000語中70語がこれ。
+   *
+   * ★訳の文字列が同じものだけを見ていては足りない（最初そうして取りこぼした）。
+   *   「話す」と「話す、教える、伝える」は別の文字列だが、生徒から見れば同じ意味を含む。
+   *   訳を「、」「・」などで意味に割り、意味の重なりで見る。
+   *     ・（　）の中は残す … 「…です（Iのとき）」「（3人称単数が）…」は生徒が読む手がかり
+   *     ・「…を」「…に」は落とす … talk と speak を別ものにしてしまうため
+   *
+   * ★相手は「その出題を見たとき答えになりうる語」＝**Aの意味をぜんぶ含む**同じ品詞の語。
+   *   talk「話す」 の相手は speak と tell。
+   *   逆に tell「話す、教える、伝える」 には手がかりを出さない。3つぜんぶを含む語が
+   *   他に無い＝訳を読めば tell だと分かるため。よけいな手がかりでやさしくしない。
+   *
+   * 手がかりは、その語が相手と区別できる**いちばん軽いもの**を選ぶ：
+   *   ① 頭1字        →「w ではじまる」
+   *   ② 頭1字＋文字数 →「g ではじまる・5文字」（great と golden）
+   *   ③ 頭2字        →「ta ではじまる」（talk と tell）
+   *   ④ どれもだめ    → 手がかりを出さず、**相手の綴りも正解にする**
+   * ★文字数は1語のときだけ使う（連語だと空白を数えるのか分からないため）。
    * ★手がかりは訳の前に（　）で足すだけで、データ（words.js）はさわらない。
-   *   語が増えても自動でつき直る。
    */
   var HINT = null, TWIN = null;
-  var LONG_ENOUGH = 2;                 // 「長い／短い」と言えるだけの字数差
 
-  function letters(s) { return String(s).replace(/[^A-Za-z]/g, "").length; }
-  function allDifferent(a) {
-    var seen = {};
-    for (var i = 0; i < a.length; i++) { if (seen[a[i]]) return false; seen[a[i]] = 1; }
-    return true;
+  /* ★区切りで切るのは（　）の外だけ。中は意味の並びではなく説明なので切ってはいけない。
+     例）accessory「（車・カメラ・機械類の）付属品」を切ると "カメラ" が意味になってしまい、
+         camera と同じ意味を持つことになる（実際に誤検出した）。 */
+  function senses(j) {
+    var src = String(j == null ? "" : j), out = [], cur = "", depth = 0;
+    for (var i = 0; i < src.length; i++) {
+      var c = src.charAt(i);
+      if (c === "（" || c === "(" || c === "［" || c === "[") depth++;
+      else if (c === "）" || c === ")" || c === "］" || c === "]") depth = Math.max(0, depth - 1);
+      if (depth === 0 && "、，,・/／".indexOf(c) >= 0) { out.push(cur); cur = ""; continue; }
+      cur += c;
+    }
+    out.push(cur);
+    return out.map(function (t) {
+      return t.replace(/^[…．.～〜\s]*/, "").replace(/[…．.～〜\s]*$/, "")
+              .replace(/^[をにがへと]/, "").trim();
+    }).filter(function (t) { return t.length > 0; });
   }
+  function letters(s) { return String(s).replace(/[^A-Za-z]/g, "").length; }
+  function oneWord(s) { return !/\s/.test(String(s).trim()); }
+
   function buildHints(list) {
     HINT = {}; TWIN = {};
-    var g = {};
+    var S = {}, byPos = {};                 // byPos[品詞][意味] = [語…]
+    (list || []).forEach(function (w) { if (w && w.id != null) S[w.id] = senses(w.j); });
     (list || []).forEach(function (w) {
-      if (w && w.id != null) (g[w.j + "\u0000" + w.p] = g[w.j + "\u0000" + w.p] || []).push(w);
+      if (!S[w.id]) return;
+      var m = byPos[w.p] = byPos[w.p] || {};
+      S[w.id].forEach(function (t) { (m[t] = m[t] || []).push(w); });
     });
-    Object.keys(g).forEach(function (k) {
-      var a = g[k];
-      if (a.length < 2) return;
-      var head = a.map(function (w) { return String(w.w).charAt(0); });
-      if (allDifferent(head.map(function (c) { return c.toLowerCase(); }))) {
-        a.forEach(function (w, i) { HINT[w.id] = head[i] + " ではじまる"; });
-        return;
-      }
-      var len = a.map(function (w) { return letters(w.w); });
-      if (a.length === 2 && Math.abs(len[0] - len[1]) >= LONG_ENOUGH) {
-        a.forEach(function (w, i) {
-          HINT[w.id] = head[i] + " ではじまる・" + (len[i] < len[1 - i] ? "短いほう" : "長いほう");
-        });
-        return;
-      }
-      a.forEach(function (w) {
-        TWIN[w.id] = a.filter(function (x) { return x !== w; }).map(function (x) { return x.w; });
+    (list || []).forEach(function (a) {
+      var sa = S[a.id]; if (!sa || !sa.length) return;
+      // 相手＝aの意味をぜんぶ持つ同じ品詞の語。ひとつめの意味で絞ってから確かめる。
+      var pool = (byPos[a.p] || {})[sa[0]] || [];
+      var others = pool.filter(function (b) {
+        return b.id !== a.id && sa.every(function (t) { return S[b.id].indexOf(t) >= 0; });
       });
+      if (!others.length) return;
+      // その語だけを言いあてられる、いちばん軽い手がかりをえらぶ
+      function tells(f) {
+        var v = f(a);
+        return others.every(function (b) { return f(b) !== v; });
+      }
+      var pre  = function (n) { return function (w) { return String(w.w).slice(0, n).toLowerCase(); }; };
+      var preL = function (n) { return function (w) { return pre(n)(w) + " " + letters(w.w); }; };
+      var head = function (n) { return String(a.w).slice(0, n); };
+      var solo = oneWord(a.w);
+      if (tells(pre(1)))                  HINT[a.id] = head(1) + " ではじまる";
+      else if (solo && tells(preL(1)))    HINT[a.id] = head(1) + " ではじまる・" + letters(a.w) + "文字";
+      else if (tells(pre(2)))             HINT[a.id] = head(2) + " ではじまる";
+      else if (solo && tells(preL(2)))    HINT[a.id] = head(2) + " ではじまる・" + letters(a.w) + "文字";
+      else TWIN[a.id] = others.map(function (b) { return b.w; });
     });
     return { hint: HINT, twin: TWIN };
   }
@@ -183,6 +215,6 @@
   }
 
   global.WordJudge = { normalizeAnswer: normalizeAnswer, acceptable: acceptable, judge: judge,
-                       buildHints: buildHints, hintOf: hintOf, promptOf: promptOf,
+                       buildHints: buildHints, hintOf: hintOf, promptOf: promptOf, senses: senses,
                        twinsOf: function (w) { ready(); return (w && w.id != null && TWIN[w.id]) || []; } };
 })(typeof window !== "undefined" ? window : globalThis);

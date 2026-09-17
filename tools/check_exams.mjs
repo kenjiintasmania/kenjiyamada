@@ -249,18 +249,38 @@ function checkJudge(){
   if (dead.length) fail('words', `答えを打っても○にならない語 ${dead.length}語: ${dead.slice(0,6).map(x=>x.w).join(', ')}`);
   else pass('judge', `${W.length}語すべて、答えを打てば○になる`);
 
-  const grp = {};
-  W.forEach(w => { const k = w.j + '\u0000' + w.p; (grp[k] = grp[k] || []).push(w); });
-  const bad = [];
-  Object.values(grp).filter(a => a.length > 1).forEach(a => {
-    const hints = a.map(w => J.hintOf(w));
-    const distinct = hints.every(Boolean) && new Set(hints).size === hints.length;
-    const twinned = a.every(w => J.twinsOf(w).length === a.length - 1);
-    if (!distinct && !twinned) bad.push(a[0].j + '（' + a.map(w=>w.w).join('/') + '）');
+  /* 訳の文字列が同じものだけ見ていては足りない（最初そうして「話す」を取りこぼした）。
+     訳を意味に割り、Aの意味をぜんぶ含む同じ品詞の語＝その出題の答えになりうる語 とみなす。 */
+  const S = {}; W.forEach(w => { S[w.id] = J.senses(w.j); });
+  const byPos = {};
+  W.forEach(w => { const m = byPos[w.p] = byPos[w.p] || {};
+    S[w.id].forEach(t => { (m[t] = m[t] || []).push(w); }); });
+  const rivalsOf = (a) => {
+    const sa = S[a.id]; if (!sa.length) return [];
+    return ((byPos[a.p] || {})[sa[0]] || [])
+      .filter(b => b.id !== a.id && sa.every(t => S[b.id].indexOf(t) >= 0));
+  };
+  const bad = []; let amb = 0;
+  W.forEach(a => {
+    const rv = rivalsOf(a); if (!rv.length) return;
+    amb++;
+    const h = J.hintOf(a);
+    // 手がかりが、相手のだれとも同じでないこと（同じなら見分けられていない）
+    const distinct = h && rv.every(b => J.hintOf(b) !== h);
+    const twinned = J.twinsOf(a).length === rv.length;
+    if (!distinct && !twinned)
+      bad.push(`${a.w}「${a.j}」↔ ${rv.map(b=>b.w).join('/')}`);
   });
-  const n = Object.values(grp).filter(a => a.length > 1).length;
-  if (bad.length) fail('words', `同じ訳なのに見分けがつかない: ${bad.join('、')}`);
-  else pass('judge', `同じ訳・同じ品詞 ${n}組は、手がかりか別解で必ず見分けがつく`);
+  if (bad.length) fail('words', `同じ意味なのに見分けがつかない ${bad.length}語: ${bad.slice(0,4).join('、')}`);
+  else pass('judge', `意味がかぶる ${amb}語は、手がかりか別解で必ず見分けがつく`);
+
+  /* 先生の報告そのものを名指しで見張る（2026-09）。訳の完全一致だけを見ていたころは、
+     「話す」と「話す、教える、伝える」が別ものになり、ここが素通りしていた。 */
+  const SAY = ['talk', 'speak', 'tell'];
+  const hs = SAY.map(x => { const w = W.find(y => y.w === x); return w ? (J.hintOf(w) || '(手がかりなし)') : '(語がない)'; });
+  if (new Set(hs).size !== hs.length)
+    fail('words', `「話す」の3語を見分けられません: ${SAY.map((x,i)=>x+'='+hs[i]).join(', ')}`);
+  else pass('judge', `「話す」は ${SAY.map((x,i)=>x+'→'+hs[i]).join('／')}`);
 
   /* 正規化の中身（カーリー引用符の変換表）は本物にしか無い印。
      これを持っている画面は、委譲ではなく自前で判定している＝いずれ食いちがう。 */
