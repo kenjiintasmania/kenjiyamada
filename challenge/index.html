@@ -234,6 +234,7 @@
 </div>
 
 <script src="../assets/site.js"></script>
+<script src="../assets/wordjudge.js"></script>
 <script src="../words/data/words.js"></script>
 <script src="data/compose.js"></script>
 <script>
@@ -263,21 +264,13 @@
     var on=seg.querySelector("button.on"); return on?on.getAttribute("data-v"):null;
   }
 
-  /* ---------- 正誤判定（単語アプリと同じ正規化・別表記対応） ---------- */
-  function normalizeAnswer(s){
-    if(s==null) return "";
-    var t=String(s).replace(/[‘’ʼ′]/g,"'").replace(/[“”]/g,'"').replace(/[‐-―−]/g,"-").replace(/　/g," ");
-    t=t.trim().toLowerCase().replace(/-/g," ").replace(/\s+/g," ").trim();
-    t=t.replace(/^[\s.,!?;:"'()\[\]{}…~～、。･・]+/,"").replace(/[\s.,!?;:"'()\[\]{}…~～、。･・]+$/,"");
-    return t;
-  }
-  function acceptableSet(w){
-    var set={};
-    function add(str){ var n=normalizeAnswer(str); if(n) set[n]=1; }
-    function addP(s){ add(s); if(/[()]/.test(s)){ add(s.replace(/\([^)]*\)/g," ")); add(s.replace(/[()]/g," ")); } }
-    addP(w.w); (w.alt||[]).forEach(addP); return set;
-  }
-  function judge(input,w){ var n=normalizeAnswer(input); return n?!!acceptableSet(w)[n]:false; }
+  /* ---------- 正誤判定 ---------- *
+     ★ここには単語アプリの判定を写した古いものが置いてあった。写しは丸カッコしか見ておらず、
+       there is［are］ や cheer ... up のような書きかたを解釈できないので、
+       そういう語は**誰が何を打っても不正解**になっていた（単語アプリ側は2026-09に直したが、
+       写しのこちらは取り残されていた）。共通の ../assets/wordjudge.js に寄せる。 */
+  function normalizeAnswer(s){ return window.WordJudge.normalizeAnswer(s); }
+  function judge(input,w){ return window.WordJudge.judge(input,w); }
   function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
 
   /* ================= 1) 単語50問 ================= */
@@ -303,7 +296,7 @@
     $("w_count").textContent=(wIdx+1)+" / "+wQueue.length;
     $("w_bar").style.width=Math.round(wIdx/wQueue.length*100)+"%";
     $("w_score").textContent="○"+wScore;
-    $("w_j").textContent=w.j||w.w; $("w_p").textContent=w.p||"";
+    $("w_j").textContent=window.WordJudge.promptOf(w)||w.w; $("w_p").textContent=w.p||"";
     var inp=$("w_ans"); inp.value=""; inp.disabled=false; inp.className="ans";
     $("w_fb").className="fb"; $("w_fb").innerHTML="";
     $("w_actSubmit").classList.remove("hide"); $("w_actNext").classList.add("hide");

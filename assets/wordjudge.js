@@ -106,14 +106,83 @@
     return { set: set, res: res };
   }
 
-  function judge(input, w) {
-    var n = normalizeAnswer(input);
-    if (!n) return false;
+
+  /* ---------- 同じ訳が何語もあるときの手がかり ---------- *
+   * 「すばらしい」＝ wonderful / fantastic / great のように、同じ訳の語が2つ以上あると、
+   * 生徒はどれを打てばよいか決めようがない（2026-09 先生報告）。2000語中 21の訳・44語がこれ。
+   * 品詞は出題画面に出ているので、**品詞まで見ても分かれないときだけ**手がかりを出す。
+   *   ① 頭文字でわかれる          → 「wではじまる」
+   *   ② 頭文字が同じで長さがちがう → 「mではじまる・長いほう」（mother と mom）
+   *   ③ それでも決められない       → 手がかりは出さず、**相手の綴りも正解にする**
+   *      （have to / has to、would like to / would love to。主語も文脈も無いのだから、
+   *        どちらを書いても生徒の落ち度ではない）
+   * ★手がかりは訳の前に（　）で足すだけで、データ（words.js）はさわらない。
+   *   語が増えても自動でつき直る。
+   */
+  var HINT = null, TWIN = null;
+  var LONG_ENOUGH = 2;                 // 「長い／短い」と言えるだけの字数差
+
+  function letters(s) { return String(s).replace(/[^A-Za-z]/g, "").length; }
+  function allDifferent(a) {
+    var seen = {};
+    for (var i = 0; i < a.length; i++) { if (seen[a[i]]) return false; seen[a[i]] = 1; }
+    return true;
+  }
+  function buildHints(list) {
+    HINT = {}; TWIN = {};
+    var g = {};
+    (list || []).forEach(function (w) {
+      if (w && w.id != null) (g[w.j + "\u0000" + w.p] = g[w.j + "\u0000" + w.p] || []).push(w);
+    });
+    Object.keys(g).forEach(function (k) {
+      var a = g[k];
+      if (a.length < 2) return;
+      var head = a.map(function (w) { return String(w.w).charAt(0); });
+      if (allDifferent(head.map(function (c) { return c.toLowerCase(); }))) {
+        a.forEach(function (w, i) { HINT[w.id] = head[i] + " ではじまる"; });
+        return;
+      }
+      var len = a.map(function (w) { return letters(w.w); });
+      if (a.length === 2 && Math.abs(len[0] - len[1]) >= LONG_ENOUGH) {
+        a.forEach(function (w, i) {
+          HINT[w.id] = head[i] + " ではじまる・" + (len[i] < len[1 - i] ? "短いほう" : "長いほう");
+        });
+        return;
+      }
+      a.forEach(function (w) {
+        TWIN[w.id] = a.filter(function (x) { return x !== w; }).map(function (x) { return x.w; });
+      });
+    });
+    return { hint: HINT, twin: TWIN };
+  }
+  /* WORDS はこのファイルより後に読みこまれるので、最初に使うときに組み立てる。 */
+  function ready() { if (!HINT) buildHints(global.WORDS || []); }
+  function hintOf(w) { ready(); return (w && w.id != null && HINT[w.id]) || ""; }
+  /* 出題に出す日本語。手がかりがあるときだけ（　）を前につける。 */
+  function promptOf(w) {
+    if (!w) return "";
+    var h = hintOf(w);
+    return (h ? "（" + h + "）" : "") + (w.j || w.w || "");
+  }
+
+  function hit(n, w) {
     var a = acceptable(w);
     if (a.set[n]) return true;
     for (var i = 0; i < a.res.length; i++) if (a.res[i].test(n)) return true;
     return false;
   }
+  function judge(input, w) {
+    var n = normalizeAnswer(input);
+    if (!n) return false;
+    if (hit(n, w)) return true;
+    // 見分けようのない相手（have to / has to など）は、相手の綴りも正解にする
+    ready();
+    var tw = (w && w.id != null && TWIN[w.id]) || [];
+    for (var k = 0; k < tw.length; k++) if (hit(n, tw[k])) return true;
+    return false;
+  }
 
-  global.WordJudge = { normalizeAnswer: normalizeAnswer, acceptable: acceptable, judge: judge };
+  global.WordJudge = { normalizeAnswer: normalizeAnswer, acceptable: acceptable, judge: judge,
+                       buildHints: buildHints, hintOf: hintOf, promptOf: promptOf,
+                       twinsOf: function (w) { ready(); return (w && w.id != null && TWIN[w.id]) || []; } };
 })(typeof window !== "undefined" ? window : globalThis);

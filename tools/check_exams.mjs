@@ -229,8 +229,55 @@ for(const id of EXAMS){
     for(let ci=1; ci<n; ci++) gradeExam(id, ci, `(${ci+1}コース目)`);
   }catch(e){ fail(id, `例外: ${e.message}`); }
 }
+
+/* ---------- 単語の判定と「同じ訳」の見分け ----------
+   ① 2000語のどれもが「答えを打てば○になる」こと。
+      challenge/ が判定を写し持っていたせいで、there is［are］や cheer ... up のような
+      書きかたの27語が、あちらでは誰が何を打っても不正解になっていた（2026-09に発見）。
+   ② 同じ訳・同じ品詞の語が2つ以上あるなら、必ず見分けがつくこと。
+      手がかり（「wではじまる」）がつくか、つかないならおたがいの綴りを正解にするか。
+      どちらも無いと、生徒は当てずっぽうでしか答えられない。
+   ③ 判定の写しを作らないこと。写しは必ず古くなる（このリポジトリで3回起きている）。 */
+function checkJudge(){
+  const g = {};
+  new Function('window', readFileSync(resolve(ROOT,'assets/wordjudge.js'),'utf8'))(g);
+  new Function('window', readFileSync(resolve(ROOT,'words/data/words.js'),'utf8'))(g);
+  const J = g.WordJudge, W = g.WORDS;
+  J.buildHints(W);
+
+  const dead = W.filter(w => !Object.keys(J.acceptable(w).set).some(c => J.judge(c, w)));
+  if (dead.length) fail('words', `答えを打っても○にならない語 ${dead.length}語: ${dead.slice(0,6).map(x=>x.w).join(', ')}`);
+  else pass('judge', `${W.length}語すべて、答えを打てば○になる`);
+
+  const grp = {};
+  W.forEach(w => { const k = w.j + '\u0000' + w.p; (grp[k] = grp[k] || []).push(w); });
+  const bad = [];
+  Object.values(grp).filter(a => a.length > 1).forEach(a => {
+    const hints = a.map(w => J.hintOf(w));
+    const distinct = hints.every(Boolean) && new Set(hints).size === hints.length;
+    const twinned = a.every(w => J.twinsOf(w).length === a.length - 1);
+    if (!distinct && !twinned) bad.push(a[0].j + '（' + a.map(w=>w.w).join('/') + '）');
+  });
+  const n = Object.values(grp).filter(a => a.length > 1).length;
+  if (bad.length) fail('words', `同じ訳なのに見分けがつかない: ${bad.join('、')}`);
+  else pass('judge', `同じ訳・同じ品詞 ${n}組は、手がかりか別解で必ず見分けがつく`);
+
+  /* 正規化の中身（カーリー引用符の変換表）は本物にしか無い印。
+     これを持っている画面は、委譲ではなく自前で判定している＝いずれ食いちがう。 */
+  const COPY = ['challenge/index.html', 'words/js/app.js', 'mastery/mastery.js', 'mastery/gram.js'];
+  const copied = COPY.filter(f => {
+    const t = readFileSync(resolve(ROOT, f), 'utf8');
+    return /\u2018\u2019\u02bc\u2032/.test(t) && !/WordJudge/.test(t);
+  });
+  const uses = COPY.filter(f => /WordJudge/.test(readFileSync(resolve(ROOT, f), 'utf8')));
+  if (copied.length) fail('words', `判定を写し持っている画面: ${copied.join(', ')}（assets/wordjudge.js を読むこと）`);
+  else pass('judge', `判定は assets/wordjudge.js 1本（${uses.length}画面がここを読んでいる）`);
+}
+
 console.log('— 単語データ —');
 checkWords();
+console.log('— 単語の判定・同じ訳の見分け —');
+checkJudge();
 console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
 console.log('— 活用編（動詞の変化形／形容詞の比較） —');

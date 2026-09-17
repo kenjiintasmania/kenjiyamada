@@ -286,7 +286,8 @@
   function renderCard(it) {
     var w = it.w;
     // 出題：日本語の意味（訳）
-    $("cardFront").textContent = w.j || w.w;
+    // 同じ訳の語が複数あるときは「（wではじまる）」の手がかりがつく（wordjudge.js）
+    $("cardFront").textContent = window.WordJudge.promptOf(w) || w.w;
     $("cardFront").className = "card-front jp";
     $("cardPos").textContent = w.slotLabel || w.p;   // 活用編は「原形/過去形/過去分詞形」等の語形を表示
     $("card").className = "card flip pos-" + w.p;

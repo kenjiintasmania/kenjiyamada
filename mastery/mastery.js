@@ -55,7 +55,7 @@
     var it = cur();
     if (!it) return done();
     $("qPos").textContent = it.w.p + (it.retry ? "　🔄 もう一度" : "");
-    $("qJa").textContent = it.w.j;
+    $("qJa").textContent = window.WordJudge.promptOf(it.w);   // 同じ訳が複数あれば手がかりつき
     $("ansIn").value = "";
     $("mLeft").textContent = run.queue.length - run.i;
     $("mOk").textContent = Object.keys(run.ok).length;
