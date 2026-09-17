@@ -169,9 +169,16 @@
     refs.stop.addEventListener("click",function(){ setGate(ex,false); });
   });
 
+  /* ★1回の「閉」は信じない（生徒の画面と同じ理屈）。
+     GAS はシートや行が見つからなかっただけのときも {result:"ok", open:false} を返すので、
+     生徒が一斉に記録を送っていると、受付中とロック中がチカチカ入れかわって見える
+     （2026-09 授業中に発生）。開くのは1回、閉じるのは続けて3回見えてから。 */
+  var CLOSE_STREAK=3, closedSeen={};
   function paint(ex, st){
     var r=cards[ex.id]; if(!r) return;
     if(st && st.result==="ok"){
+      if(st.open){ closedSeen[ex.id]=0; }
+      else if((closedSeen[ex.id]=(closedSeen[ex.id]||0)+1) < CLOSE_STREAK){ return; }
       if(st.open){ r.badge.textContent="✅ 受付中"; r.badge.className="badge open"; }
       else{ r.badge.textContent="🔒 ロック中"; r.badge.className="badge lock"; }
       r.subs.textContent=(st.submissions!=null?st.submissions:0);
@@ -218,6 +225,7 @@
         msg.className="err"; msg.textContent="サーバーが旧バージョン（ゲート非対応）です。上の案内のとおり再デプロイしてください。";
       }else if(res && res.result==="ok" && (open ? res.open===true : true)){
         msg.className="ok"; msg.textContent=(open?"受付を開始しました ▶（新しいセッション）":"受付を終了しました ■");
+        closedSeen[ex.id]=CLOSE_STREAK;   // 自分で押したぶんは、待たずに反映する
         pollOne(ex);
       }else{
         msg.className="err"; msg.textContent="できませんでした："+((res&&res.message)||"不明なエラー");

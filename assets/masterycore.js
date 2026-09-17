@@ -143,12 +143,25 @@
       if (open && idOK()) showList();
     }
 
-    /* ---------- 受付の見はり ---------- */
+    /* ---------- 受付の見はり ---------- *
+     * ★1回の「閉」は信じない。
+     *   GAS は、シートや行が見つからなかっただけのときも {result:"ok", open:false} を返す
+     *   （「分からない」と「閉じている」の区別を持っていない）。生徒が一斉に記録を送っている
+     *   最中はこれがときどき起き、授業中に受付が開いたり閉じたりして見えた（2026-09 授業中に発生）。
+     *   開けるのは1回で、閉じるのは続けて3回（約15秒）見えてから＝**開ける側に倒す**。
+     *   先生が本当にストップを押したときも、15秒あとに閉じるだけで困らない。 */
+    var CLOSE_STREAK = 3, closedSeen = 0;
     function poll() {
       post({ action: "status", exam: EXAM }).then(function (st) {
-        if (!st || st.result !== "ok") return;
+        if (!st || st.result !== "ok") return;          // 取れなかった＝いまの状態を保つ
         var was = open;
-        session = st.session || ""; open = !!st.open;
+        if (st.open) {
+          closedSeen = 0; session = st.session || ""; open = true;
+        } else if (++closedSeen >= CLOSE_STREAK) {
+          open = false;                                  // セッションは消さない（たまった記録に添えるため）
+        } else {
+          return;                                        // 1回きりの「閉」は様子を見る
+        }
         setGateView();
         if (open && !was) {
           fetchProgress();
