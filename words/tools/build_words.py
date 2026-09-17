@@ -13,6 +13,15 @@
              （あふれた＝マイナー過ぎる語は除外）
   - 品詞は細分化。代名詞と疑問詞は必ず分離する。
 実行 : python3 tools/build_words.py
+
+⚠ このスクリプトをそのまま流すと data/words.js を **上書きして壊す**（2026-09 確認）。
+   生成後に手で直したところが 40か所あり、流し直すと全部もとに戻る：
+     ・pencil case が pencase（xlsx側の打ちまちがい）に戻る＝出題の並びがずれる
+     ・feet の訳が「↑の複数」に、Sunday が「日」に戻る（相対参照・短すぎる訳）
+     ・much / fish / would など29語の訳に英単語が露出し、答えがバレる
+   `npm run check` がこの30件を検出して止めるので、うっかり push はできないが、
+   **流すなら xlsx 側を直してから**。どうしても流したいときは、いまの words.js を
+   控えてから実行し、上の40か所を当て直すこと。
 """
 import openpyxl, re, json, os
 from collections import Counter, OrderedDict
