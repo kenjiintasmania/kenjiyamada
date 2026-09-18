@@ -143,6 +143,34 @@ def build(spec, path, test=False):
     return path, len(pages), sum(len(p["rows"]) for p in pages)
 
 
+def style_check(spec):
+    """日本語と英語のそろい方を見る。
+       ・文には句点「。」、句や語にはつけない（英語の . ? ! とそろえる）
+       ・英語に he / she / we などの主語があるなら、日本語にも対応する語が要る
+         （「とても寒く感じた」に he felt very cold を当てると、he が浮く）"""
+    bad = []
+    SUBJ = {"he": ("彼", "かれ"), "she": ("彼女", "かのじょ"), "they": ("彼ら", "かれら", "они"),
+            "we": ("わたし", "私", "ぼく", "僕"), "i": ("わたし", "私", "ぼく", "僕"),
+            "you": ("あなた", "きみ", "君")}
+    for pi, pg in enumerate(spec["pages"], 1):
+        for ja, en in pg["rows"]:
+            e_sent = en.rstrip().endswith((".", "?", "!"))
+            j_sent = ja.rstrip().endswith(("。", "？", "！"))
+            if e_sent != j_sent:
+                bad.append(f"p{pi} 「{ja}」/ {en} … " +
+                           ("英語は文なのに日本語に句点がない" if e_sent else "日本語に句点があるのに英語が文でない"))
+            head = en.split()[0].lower().strip(".,?!") if en.split() else ""
+            if head in SUBJ and not any(k in ja for k in SUBJ[head]):
+                bad.append(f"p{pi} 「{ja}」/ {en} … 英語の {head} に当たる語が日本語にない")
+    if bad:
+        print("  ✗ 日本語と英語のそろい方:")
+        for x in bad:
+            print("     " + x)
+    else:
+        print("  ✓ 文には句点・句にはなし／主語も日本語と対応している")
+    return not bad
+
+
 def cover_check(spec, exam_ids):
     """答えがシートに入っているか確かめる。混ぜて並べるぶん、抜けに気づきにくいため。"""
     import re, subprocess
@@ -164,6 +192,25 @@ def cover_check(spec, exam_ids):
             print("     " + x)
     else:
         print("  ✓ 空所補充の答えは、ぜんぶシートのどこかに入っている")
+
+    # 答えとつながっていない行＝「ほんとうに解答欄に書くのか？」を先生が見直すため。
+    # 消すかどうかは先生の判断なので、止めずに並べるだけにする。
+    ans_words = set()
+    for eid in exam_ids:
+        src = open(os.path.join(root, "mogi", "data", eid + ".js"), encoding="utf-8").read()
+        for m in re.finditer(r'answers"?\s*:\s*\[\s*"([^"]+)"', src):
+            ans_words.update(w for w in re.findall(r"[A-Za-z]+", m.group(1).lower()))
+    loose = []
+    for pi, pg in enumerate(spec["pages"], 1):
+        for ja, en in pg["rows"]:
+            ws = [w for w in re.findall(r"[A-Za-z]+", en.lower()) if w not in
+                  ("a", "an", "the", "of", "in", "on", "at", "to", "with", "it", "we", "is", "are", "very")]
+            if ws and not any(w in ans_words for w in ws):
+                loose.append(f"p{pi} 「{ja}」/ {en}")
+    if loose:
+        print(f"  ⓘ 答えに直接つながっていない行 {len(loose)}件（仲間としては要るが、多すぎないか確かめる）:")
+        for x in loose:
+            print("     " + x)
     return not missing
 
 
@@ -180,8 +227,10 @@ def main():
     if "--test" in sys.argv:
         b, _, _ = build(spec, os.path.join(out, f"{name}_テスト.docx"), test=True)
         print(f"✓ {b}（同じ並びの空欄版）")
+    style_check(spec)                      # 日本語と英語のそろい方は毎回みる
     if "--cover" in sys.argv:
-        cover_check(spec, sys.argv[sys.argv.index("--cover") + 1:])
+        ids = [a for a in sys.argv[sys.argv.index("--cover") + 1:] if not a.startswith("--")]
+        cover_check(spec, ids)
 
 
 if __name__ == "__main__":

@@ -1,65 +1,231 @@
 {
-  "_note": "なぞり書きシートの中身。★答えだけを並べない。答えは同じ仲間の語にまぎれさせる（並べると生徒は左列しか練習せず、答えを先に教えることになる）。1ページ27行。",
+  "_note": "なぞり書きシートの中身。★答えだけを並べない。答えは同じ仲間の語にまぎれさせる（並べると生徒は左列しか練習せず、答えを先に教えることになる）。1ページ27行。★日本語と英語は必ず1対1で対応させる（英語に he があるなら日本語にも「彼は」が要る）。★文には句点「。」をつけ、句や語にはつけない（英語の . ? ! とそろえる）。",
   "name": "中3第4回_なぞり書き",
   "title": "中3 第4回 習熟度テスト対策（341・342）",
   "pages": [
-    { "rows": [
-      ["日曜日", "Sunday"],
-      ["月曜日", "Monday"],
-      ["火曜日", "Tuesday"],
-      ["水曜日", "Wednesday"],
-      ["木曜日", "Thursday"],
-      ["金曜日", "Friday"],
-      ["土曜日", "Saturday"],
-      ["朝市", "a morning market"],
-      ["農場", "a farm"],
-      ["農家の人たち", "farmers"],
-      ["野菜を育てる", "grow vegetables"],
-      ["地元の食べ物", "local food"],
-      ["新鮮な野菜", "fresh vegetables"],
-      ["トマト", "tomatoes"],
-      ["にんじん", "carrots"],
-      ["じゃがいも", "potatoes"],
-      ["駅でトマトを売る", "sell our tomatoes"],
-      ["野菜を買う", "buy vegetables"],
-      ["何度も買ったことがある", "have bought it many times"],
-      ["値段のカードを作る", "make price cards"],
-      ["安い", "cheap"],
-      ["（値段が）高い", "expensive"],
-      ["ずっと売られ続けている", "has been sold"],
-      ["重い箱を運んだ", "carried heavy boxes"],
-      ["軽い箱", "a light box"],
-      ["トラック", "a truck"],
-      ["笑顔", "a smile"]
-    ] },
-    { "rows": [
-      ["春", "spring"],
-      ["夏", "summer"],
-      ["秋", "fall"],
-      ["冬", "winter"],
-      ["季節", "a season"],
-      ["天気", "weather"],
-      ["晴れた日", "a sunny day"],
-      ["くもりの日", "a cloudy day"],
-      ["澄んだ夜に", "on a clear night"],
-      ["空がとても澄んでいる", "The sky is very clear."],
-      ["月", "the moon"],
-      ["太陽", "the sun"],
-      ["星", "stars"],
-      ["夜空", "the night sky"],
-      ["望遠鏡", "a telescope"],
-      ["天文台", "an observatory"],
-      ["カメラ", "a camera"],
-      ["月の写真を撮る", "take moon photos"],
-      ["月の写真を見せる", "show our moon photos"],
-      ["ホールで", "in the hall"],
-      ["とても寒く感じた", "he felt very cold"],
-      ["わたしたちは生徒です", "We are students."],
-      ["中学校", "junior high school"],
-      ["ほこり", "dust"],
-      ["ほこりでおおわれていた", "was covered with dust"],
-      ["きたない", "dirty"],
-      ["いっしょに星を見ませんか", "Shall we watch the stars?"]
-    ] }
+    {
+      "rows": [
+        [
+          "日曜日",
+          "Sunday"
+        ],
+        [
+          "月曜日",
+          "Monday"
+        ],
+        [
+          "火曜日",
+          "Tuesday"
+        ],
+        [
+          "水曜日",
+          "Wednesday"
+        ],
+        [
+          "木曜日",
+          "Thursday"
+        ],
+        [
+          "金曜日",
+          "Friday"
+        ],
+        [
+          "土曜日",
+          "Saturday"
+        ],
+        [
+          "朝市",
+          "a morning market"
+        ],
+        [
+          "農場",
+          "a farm"
+        ],
+        [
+          "農家の人たち",
+          "farmers"
+        ],
+        [
+          "野菜を育てる",
+          "grow vegetables"
+        ],
+        [
+          "地元の食べ物",
+          "local food"
+        ],
+        [
+          "新鮮な野菜",
+          "fresh vegetables"
+        ],
+        [
+          "トマト",
+          "tomatoes"
+        ],
+        [
+          "にんじん",
+          "carrots"
+        ],
+        [
+          "じゃがいも",
+          "potatoes"
+        ],
+        [
+          "駅でトマトを売る",
+          "sell our tomatoes"
+        ],
+        [
+          "野菜を買う",
+          "buy vegetables"
+        ],
+        [
+          "何度も買ったことがある",
+          "have bought it many times"
+        ],
+        [
+          "値段のカードを作る",
+          "make price cards"
+        ],
+        [
+          "安い",
+          "cheap"
+        ],
+        [
+          "（値段が）高い",
+          "expensive"
+        ],
+        [
+          "ずっと売られ続けている",
+          "has been sold"
+        ],
+        [
+          "重い箱を運んだ",
+          "carried heavy boxes"
+        ],
+        [
+          "軽い箱",
+          "a light box"
+        ],
+        [
+          "トラック",
+          "a truck"
+        ],
+        [
+          "笑顔",
+          "a smile"
+        ]
+      ]
+    },
+    {
+      "rows": [
+        [
+          "春",
+          "spring"
+        ],
+        [
+          "夏",
+          "summer"
+        ],
+        [
+          "秋",
+          "fall"
+        ],
+        [
+          "冬",
+          "winter"
+        ],
+        [
+          "季節",
+          "a season"
+        ],
+        [
+          "天気",
+          "weather"
+        ],
+        [
+          "晴れた日",
+          "a sunny day"
+        ],
+        [
+          "くもりの日",
+          "a cloudy day"
+        ],
+        [
+          "澄んだ夜に",
+          "on a clear night"
+        ],
+        [
+          "空がとても澄んでいる。",
+          "The sky is very clear."
+        ],
+        [
+          "月",
+          "the moon"
+        ],
+        [
+          "太陽",
+          "the sun"
+        ],
+        [
+          "星",
+          "stars"
+        ],
+        [
+          "夜空",
+          "the night sky"
+        ],
+        [
+          "望遠鏡",
+          "a telescope"
+        ],
+        [
+          "カメラ",
+          "a camera"
+        ],
+        [
+          "月の写真を撮る",
+          "take moon photos"
+        ],
+        [
+          "月の写真を見せる",
+          "show our moon photos"
+        ],
+        [
+          "ホール内で",
+          "in the hall"
+        ],
+        [
+          "とても寒く感じた",
+          "felt very cold"
+        ],
+        [
+          "わたしたちは生徒です。",
+          "We are students."
+        ],
+        [
+          "中学校",
+          "junior high school"
+        ],
+        [
+          "ほこり",
+          "dust"
+        ],
+        [
+          "ほこりでおおわれていた",
+          "was covered with dust"
+        ],
+        [
+          "雪でおおわれていた",
+          "was covered with snow"
+        ],
+        [
+          "きたない",
+          "dirty"
+        ],
+        [
+          "いっしょに星を見ませんか。",
+          "Shall we watch the stars?"
+        ]
+      ]
+    }
   ]
 }
