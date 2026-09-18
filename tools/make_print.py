@@ -300,6 +300,54 @@ def build_trace(spec, path):
     return path, len(pages), breakdown
 
 
+
+def build_answer_list(spec, path):
+    """解答欄に書く語の一覧（どの問いで何を書くか＋類語）。答えが載っているので学習用。"""
+    doc = Document()
+    setup(doc, spec["title"])
+    heading(doc, f'{spec["title"]}　解答欄に書く語 一覧',
+            "空所補充の答えと、取りちがえやすい類語。★答えが載っています（テスト用紙ではありません）")
+
+    rows = spec.get("answerList", [])
+    heads = [("模試", Cm(2.2)), ("大問", Cm(1.6)), ("問", Cm(1.6)), ("種類", Cm(1.7)),
+             ("解答欄に書くもの", Cm(5.6)), ("類語・いっしょに覚える語", Cm(6.5))]
+    t = doc.add_table(rows=len(rows) + 1, cols=len(heads))
+    t.style = "Table Grid"
+    for j, (txt, w) in enumerate(heads):
+        cell_text(t.cell(0, j), txt, 8.5, bold=True, align="c")
+        shade(t.cell(0, j), "E8E8E8")
+        for r in range(len(rows) + 1):
+            t.cell(r, j).width = w
+    for i, q in enumerate(rows, 1):
+        cell_text(t.cell(i, 0), q.get("id", ""), 8)
+        cell_text(t.cell(i, 1), q.get("sec", ""), 8, align="c")
+        cell_text(t.cell(i, 2), q.get("q", ""), 8, align="c")
+        cell_text(t.cell(i, 3), q.get("kind", ""), 8, align="c")
+        cell_text(t.cell(i, 4), q.get("ans", ""), 9.5, en=True, bold=True)
+        cell_text(t.cell(i, 5), q.get("kingo", ""), 8, en=True)
+        if q.get("kind") == "並べかえ":
+            for j in range(len(heads)):
+                shade(t.cell(i, j), "F4F4F4")      # 語が問題に並ぶので、覚える対象ではない
+
+    cj = spec.get("conjugations", [])
+    if cj:
+        para(doc, "", after=6)
+        heading(doc, "形が変わる動詞（原形 — 過去形 — 過去分詞）",
+                "空所補充はここから出ます。3つセットで声に出して覚える。", size=12)
+        t2 = doc.add_table(rows=len(cj) + 1, cols=2)
+        t2.style = "Table Grid"
+        for j, (txt, w) in enumerate([("変化", Cm(9.0)), ("意味", Cm(9.0))]):
+            cell_text(t2.cell(0, j), txt, 8.5, bold=True, align="c")
+            shade(t2.cell(0, j), "E8E8E8")
+            for r in range(len(cj) + 1):
+                t2.cell(r, j).width = w
+        for i, c in enumerate(cj, 1):
+            cell_text(t2.cell(i, 0), c["en"], 10, en=True)
+            cell_text(t2.cell(i, 1), c["ja"], 9)
+    doc.save(path)
+    return path, len(rows), len(cj)
+
+
 def main():
     if len(sys.argv) < 3:
         print(__doc__)
@@ -308,6 +356,18 @@ def main():
     out = sys.argv[2]
     os.makedirs(out, exist_ok=True)
     name = spec.get("name", "print")
+
+    # --answers … 解答欄に書く語の一覧＋その語のなぞり書きテスト
+    if "--answers" in sys.argv:
+        d, nq, ncj = build_answer_list(spec, os.path.join(out, f"{name}_一覧.docx"))
+        c, npage, bd = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
+        print(f"✓ {d}")
+        print(f"  設問 {nq}／形が変わる動詞 {ncj}")
+        print(f"✓ {c}")
+        print(f"  {npage}枚ぶん（両面{npage * 2}ページ）")
+        for nm, a1, b1, n in bd:
+            print(f"    {nm}… {n}語　ページ {a1}〜{b1}")
+        return
 
     # --trace … なぞり書きテストだけ作る（問題集の材料が無い仕様でも回せる）
     if "--trace" in sys.argv:

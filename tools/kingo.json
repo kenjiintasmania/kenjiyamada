@@ -1,0 +1,150 @@
+{
+  "_note": "解答欄に書く語の「類語・いっしょに覚える語」。tools/answer_sheet.mjs が使う。先生が自由に足し引きしてよい。空配列なら類語なし。",
+  "Friday": [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Saturday",
+    "Sunday"
+  ],
+  "smile": [
+    "laugh",
+    "cry",
+    "happy"
+  ],
+  "farmer": [
+    "farm",
+    "grow",
+    "vegetable"
+  ],
+  "make": [
+    "build",
+    "create",
+    "cook"
+  ],
+  "price": [
+    "cheap",
+    "expensive",
+    "pay",
+    "money"
+  ],
+  "card": [
+    "poster",
+    "sign",
+    "letter"
+  ],
+  "fresh": [
+    "new",
+    "old",
+    "delicious"
+  ],
+  "has": [
+    "have",
+    "had",
+    "been"
+  ],
+  "been": [
+    "be",
+    "was",
+    "were"
+  ],
+  "bought": [
+    "buy",
+    "sell",
+    "sold",
+    "shop"
+  ],
+  "sell": [
+    "sold",
+    "buy",
+    "bought",
+    "shop"
+  ],
+  "tomato": [
+    "vegetable",
+    "carrot",
+    "potato",
+    "fruit"
+  ],
+  "carried": [
+    "carry",
+    "bring",
+    "take",
+    "hold"
+  ],
+  "heavy": [
+    "light",
+    "hard",
+    "big"
+  ],
+  "box": [
+    "bag",
+    "basket",
+    "bottle"
+  ],
+  "winter": [
+    "spring",
+    "summer",
+    "fall",
+    "autumn",
+    "season"
+  ],
+  "weather": [
+    "rain",
+    "snow",
+    "cloudy",
+    "sunny",
+    "wind"
+  ],
+  "take": [
+    "took",
+    "taken",
+    "picture",
+    "photo"
+  ],
+  "moon": [
+    "sun",
+    "star",
+    "sky",
+    "night"
+  ],
+  "photo": [
+    "photograph",
+    "picture",
+    "camera"
+  ],
+  "clear": [
+    "cloudy",
+    "clean",
+    "bright",
+    "dark"
+  ],
+  "felt": [
+    "feel",
+    "feeling",
+    "think"
+  ],
+  "student": [
+    "teacher",
+    "school",
+    "class",
+    "junior"
+  ],
+  "show": [
+    "see",
+    "watch",
+    "look",
+    "tell"
+  ],
+  "was": [
+    "is",
+    "were",
+    "been"
+  ],
+  "covered": [
+    "cover",
+    "wrap",
+    "fill"
+  ]
+}
