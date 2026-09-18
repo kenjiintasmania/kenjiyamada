@@ -241,7 +241,7 @@ def _trace_table(doc, rows, start, test=False):
             t.cell(r, j).width = w
     for i, row in enumerate(rows, 1):
         cell_text(t.cell(i, 0), str(start + i - 1), 8.5, align="c")
-        cell_text(t.cell(i, 1), row["ja"], 9)
+        cell_text(t.cell(i, 1), row.get("jaTest", row["ja"]) if test else row["ja"], 9)
         if test:
             cell_text(t.cell(i, 2), "", 13, en=True)
         else:
@@ -287,8 +287,17 @@ def build_trace(spec, path):
         para(doc, "　　なまえ　＿＿＿＿＿＿＿＿＿＿　　　　　　　　　/ {}".format(len(rows)),
              9.5, after=4)
         _trace_table(doc, rows, start, test=True)
+    # どの見出しが何ページ目にあたるか（必要なところだけ印刷できるように）
+    breakdown, page = [], 1
+    for name, rows, start in pages:
+        if not breakdown or breakdown[-1][0] != name:
+            breakdown.append([name, page, page + 1, len(rows)])
+        else:
+            breakdown[-1][2] = page + 1
+            breakdown[-1][3] += len(rows)
+        page += 2
     doc.save(path)
-    return path, len(pages)
+    return path, len(pages), breakdown
 
 
 def main():
@@ -299,9 +308,20 @@ def main():
     out = sys.argv[2]
     os.makedirs(out, exist_ok=True)
     name = spec.get("name", "print")
+
+    # --trace … なぞり書きテストだけ作る（問題集の材料が無い仕様でも回せる）
+    if "--trace" in sys.argv:
+        c, npage, bd = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
+        print(f"✓ {c}")
+        print(f"  {npage}枚ぶん（両面{npage * 2}ページ・おもて なぞり書き／うら テスト）")
+        print("  どこを刷ればよいか:")
+        for nm, a1, b1, n in bd:
+            print(f"    {nm}… {n}語　ページ {a1}〜{b1}")
+        return
+
     a = build_words(spec, os.path.join(out, f"{name}_単語熟語集.docx"))
     b = build_drills(spec, os.path.join(out, f"{name}_問題集.docx"))
-    c, npage = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
+    c, npage, _bd = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
     nw = sum(len(s.get("rows", [])) for s in spec["wordSections"])
     nd = sum(len(s["items"]) for s in spec["drills"])
     print(f"✓ {a}")
