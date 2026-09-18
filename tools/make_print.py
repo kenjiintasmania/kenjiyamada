@@ -357,16 +357,15 @@ def main():
     os.makedirs(out, exist_ok=True)
     name = spec.get("name", "print")
 
-    # --answers … 解答欄に書く語の一覧＋その語のなぞり書きテスト
+    # --answers … 解答欄に書く語の一覧（先生の下ごしらえ用）。
+    # ★なぞり書きはここでは作らない。答えと類語を別の見出しに並べると、
+    #   生徒は答えの列しか練習せず、どれが答えかを先に教えることにもなる。
+    #   なぞり書きは tools/make_trace.py で、答えを仲間の語にまぜて作ること。
     if "--answers" in sys.argv:
         d, nq, ncj = build_answer_list(spec, os.path.join(out, f"{name}_一覧.docx"))
-        c, npage, bd = build_trace(spec, os.path.join(out, f"{name}_なぞり書きテスト.docx"))
         print(f"✓ {d}")
         print(f"  設問 {nq}／形が変わる動詞 {ncj}")
-        print(f"✓ {c}")
-        print(f"  {npage}枚ぶん（両面{npage * 2}ページ）")
-        for nm, a1, b1, n in bd:
-            print(f"    {nm}… {n}語　ページ {a1}〜{b1}")
+        print("  なぞり書きは tools/make_trace.py を使う（答えを仲間の語にまぜるため）")
         return
 
     # --trace … なぞり書きテストだけ作る（問題集の材料が無い仕様でも回せる）
