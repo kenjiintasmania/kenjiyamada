@@ -324,6 +324,7 @@ var JIGAKU_SHEET = "自学ログ";      // 自学マイページ（jigaku/）か
 var UNIT_EXAMS = {
   "c2u1": "中2 単元テスト①",
   "c2u2": "中2 単元テスト②",
+  "c2u3": "中2 単元テスト③",
   "c3u1": "中3 単元テスト①",
   "c3u2": "中3 単元テスト②",
   "c3u3": "中3 単元テスト③",
@@ -336,7 +337,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-13";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-14";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){

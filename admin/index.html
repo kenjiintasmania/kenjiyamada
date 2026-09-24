@@ -111,6 +111,7 @@
   var EXAMS=[
     {id:"c2u1", title:"中2 単元テスト①"},
     {id:"c2u2", title:"中2 単元テスト②"},
+    {id:"c2u3", title:"中2 単元テスト③"},
     {id:"c3u1", title:"中3 単元テスト①"},
     {id:"c3u2", title:"中3 単元テスト②"},
     {id:"c3u3", title:"中3 単元テスト③"},
@@ -196,7 +197,7 @@
   /* いま置いてある tools/score_gas.gs の版。これ未満だと、
      単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
      模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
-  var ADMIN_NEED = 13;
+  var ADMIN_NEED = 14;
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   function updateServerNote(st){
