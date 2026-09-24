@@ -31,6 +31,8 @@ EN_FONT, JP_FONT = "Comic Sans MS", "游ゴシック"
 TRACE_GRAY = RGBColor(0xC0, 0xC0, 0xC0)
 RULE_GRAY = "AAAAAA"
 PER_PAGE = 27
+MAX_EN = 28        # 英語の欄に1行で収まる目安（6.70cm・16pt）
+MAX_JA = 15        # 日本語の欄に1行で収まる目安（4.76cm・10.5pt）
 COLS = [Cm(4.7625), Cm(6.7028), Cm(6.3606)]
 
 
@@ -162,6 +164,11 @@ def style_check(spec):
             head = en.split()[0].lower().strip(".,?!") if en.split() else ""
             if head in SUBJ and not any(k in ja for k in SUBJ[head]):
                 bad.append(f"p{pi} 「{ja}」/ {en} … 英語の {head} に当たる語が日本語にない")
+            # 英語の欄は 6.70cm・16pt。長すぎると折り返して1ページ27行に収まらない
+            if len(en) > MAX_EN:
+                bad.append(f"p{pi} 「{ja}」/ {en} … 英語が長い（{len(en)}字・目安{MAX_EN}字まで）")
+            if len(ja) > MAX_JA:
+                bad.append(f"p{pi} 「{ja}」/ {en} … 日本語が長い（{len(ja)}字・目安{MAX_JA}字まで）")
     if bad:
         print("  ✗ 日本語と英語のそろい方:")
         for x in bad:
@@ -214,6 +221,31 @@ def cover_check(spec, exam_ids):
     return not missing
 
 
+def verify_print(path, want):
+    """★実際に刷って、ページ数が思ったとおりか確かめる。
+       1行ずつは収まっていても、27行ぶんの高さが少し超えて2枚に割れることがある
+       （文字数では測れない。字の幅がちがうため）。LibreOffice で PDF にして数える。"""
+    import subprocess, re, tempfile, os as _os
+    out = tempfile.mkdtemp()
+    try:
+        subprocess.run(["libreoffice", "--headless", "--convert-to", "pdf", path, "--outdir", out],
+                       capture_output=True, timeout=240)
+        pdf = _os.path.join(out, _os.path.splitext(_os.path.basename(path))[0] + ".pdf")
+        if not _os.path.exists(pdf):
+            print("  ⓘ 刷って確かめられませんでした（LibreOffice なし）")
+            return True
+        n = len(re.findall(rb"/Type\s*/Page[^s]", open(pdf, "rb").read()))
+        if n == want:
+            print(f"  ✓ 刷ると{n}枚（思ったとおり）")
+            return True
+        print(f"  ✗ 刷ると{n}枚になる（{want}枚のはず）。どこかの行が折り返して次の紙へあふれている。"
+              f"行を減らすか、その行を短くすること")
+        return False
+    except Exception as e:
+        print("  ⓘ 刷って確かめられませんでした（" + str(e)[:40] + "）")
+        return True
+
+
 def main():
     if len(sys.argv) < 3:
         print(__doc__); sys.exit(1)
@@ -228,6 +260,8 @@ def main():
         b, _, _ = build(spec, os.path.join(out, f"{name}_テスト.docx"), test=True)
         print(f"✓ {b}（同じ並びの空欄版）")
     style_check(spec)                      # 日本語と英語のそろい方は毎回みる
+    if "--verify" in sys.argv:
+        verify_print(os.path.join(out, f"{name}.docx"), len(spec["pages"]))
     if "--cover" in sys.argv:
         ids = [a for a in sys.argv[sys.argv.index("--cover") + 1:] if not a.startswith("--")]
         cover_check(spec, ids)
