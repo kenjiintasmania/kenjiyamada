@@ -49,6 +49,9 @@
     border:none;background:var(--c1);color:#fff;cursor:pointer}
   .btn:disabled{opacity:.45;cursor:default}
   .btn.sub{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .btn{min-height:46px}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 10px}
+  @media(max-width:560px){ .btnrow .btn{flex:1 1 100%} }
 
   .gate{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
   .badge{font-weight:bold;font-size:14px;padding:5px 13px;border-radius:999px;white-space:nowrap}
@@ -144,9 +147,11 @@
       <div class="body" id="leadBody"></div>
     </details>
     <p class="note">この項目で出る5文です。日本語だけ見せています。</p>
+    <div class="btnrow">
+      <button class="btn" id="startSet">▶ この項目を始める</button>
+      <button class="btn sub" id="backHome">もどる</button>
+    </div>
     <div class="list" id="listBody"></div>
-    <button class="btn" id="startSet">▶ この項目を始める</button>
-    <button class="btn sub" id="backHome">もどる</button>
   </div>
 
   <!-- 出題 -->

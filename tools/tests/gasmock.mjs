@@ -25,6 +25,25 @@ export function loadGas(){
       setValues(m){ for(let i=0;i<nr;i++) for(let j=0;j<nc;j++) sh.v[r-1+i][c-1+j]=m[i][j]; return this; },
       setValue(x){ sh.v[r-1][c-1]=x; return this; },
       clearContent(){ for(let i=0;i<nr;i++) for(let j=0;j<nc;j++) sh.v[r-1+i][c-1+j]=""; return this; },
+      /* 本物と同じく、その範囲の行だけを並べかえる（[{column,ascending}]） */
+      sort(spec){
+        const keys=Array.isArray(spec)?spec:[spec];
+        const block=[]; for(let i=0;i<nr;i++) block.push(sh.v[r-1+i].slice(c-1, c-1+nc));
+        block.sort((A,B)=>{
+          for(const k of keys){
+            const j=(k.column||k)-c, asc=k.ascending!==false;
+            const a=A[j], b=B[j];
+            const na=Number(a), nb=Number(b);
+            let d;
+            if(!isNaN(na)&&!isNaN(nb)&&a!==""&&b!=="") d=na-nb;
+            else d=String(a).localeCompare(String(b));
+            if(d) return asc? d : -d;
+          }
+          return 0;
+        });
+        for(let i=0;i<nr;i++) for(let j=0;j<nc;j++) sh.v[r-1+i][c-1+j]=block[i][j];
+        return this;
+      },
       setNumberFormat(){return this;}, setFontWeight(){return this;}, setBackground(){return this;}
     };
   };
@@ -44,7 +63,7 @@ export function loadGas(){
   };
   const src=readFileSync(new URL("../score_gas.gs", import.meta.url), "utf8");
   const names=Object.keys(g);
-  const fn=new Function(...names, src+"\n;return {doPost:doPost, gateStatus:gateStatus, setGate:setGate, rebuildMasteryTotals:rebuildMasteryTotals, clearMasteryTotalCols:clearMasteryTotalCols, rebuildJigakuUnits:(typeof rebuildJigakuUnits==='function'?rebuildJigakuUnits:null), __SS:SpreadsheetApp.openById()};");
+  const fn=new Function(...names, src+"\n;return {doPost:doPost, gateStatus:gateStatus, setGate:setGate, rebuildMasteryTotals:rebuildMasteryTotals, rebuildMasteryBoard:rebuildMasteryBoard, clearMasteryTotalCols:clearMasteryTotalCols, rebuildJigakuUnits:(typeof rebuildJigakuUnits==='function'?rebuildJigakuUnits:null), __SS:SpreadsheetApp.openById()};");
   const api=fn(...names.map(k=>g[k]));
   api.call=function(obj){
     const out=api.doPost({postData:{contents:JSON.stringify(obj)}});

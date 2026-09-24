@@ -128,4 +128,38 @@ console.log("— 合計点が、ほかの書き込みで消えないか —");
   ok(G.dump("成績まとめ")[0].length===before, "列の数は変わらない");
 }
 
+
+/* ---------- 到達度まとめ（1人1行・名簿順） ---------- */
+console.log("— 到達度まとめ：1人1行・名簿順 —");
+{
+  G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  const put=(cls,num,name,round,set,correct,sec)=>G.call({kind:"mastery", exam:"m2000",
+    cls, num, name, round, set, correct, asked:100, sec, ver:"t"});
+  // わざと名簿順でない順に入れる（3年5番 → 2年10番 → 3年2番）
+  put("3","5","ごばん",1,1,80,60);    // CPM 80
+  put("3","5","ごばん",2,1,90,90);    // CPM 60  → セット1の最高は90
+  put("3","5","ごばん",1,2,70,60);    // CPM 70  → 合計 90+70=160
+  put("2","10","じゅう",1,1,50,60);   // CPM 50
+  put("3","2","にばん",1,1,60,30);    // CPM 120
+
+  const bd=G.dump("到達度まとめ")||[];
+  const head=bd[0]||[];
+  ok(head[0]==="学年" && head[1]==="番号" && head[3]==="2000語 合計点",
+     "見出しが 学年／番号／…／合計点（"+head.slice(0,6).join(",")+"）");
+  const body=bd.slice(1).filter(r=>String(r[0]).trim()!=="");
+  const keys=body.map(r=>r[0]+"-"+r[1]);
+  ok(new Set(keys).size===keys.length, "★1人1行＝同じ子が2度出ない（"+keys.join(" ")+"）");
+  const nums=body.map(r=>Number(r[0])*1000+Number(r[1]));
+  ok(nums.every((x,i)=>i===0||nums[i-1]<=x), "★名簿順（学年▶番号）に並ぶ（"+keys.join(" ")+"）");
+  const go=body.find(r=>String(r[0])==="3"&&String(r[1])==="5");
+  ok(Number(go[3])===160, "★合計点はセットごとの最高の足しあげ 90+70=160（"+go[3]+"）");
+  ok(Number(go[4])===80,  "★最高CPMは80（"+go[4]+"）");
+  ok(Number(go[5])===70,  "★平均CPMは (80+60+70)/3=70（"+go[5]+"）");
+  // 作りなおしても同じ
+  const msg=G.rebuildMasteryBoard ? G.rebuildMasteryBoard() : "(呼べない)";
+  const again=(G.dump("到達度まとめ")||[]).slice(1).filter(r=>String(r[0]).trim()!=="");
+  ok(again.length===body.length && Number(again.find(r=>String(r[0])==="3"&&String(r[1])==="5")[3])===160,
+     "★作りなおしても同じ（"+msg+"）");
+}
+
 console.log(`\n${pass} pass / ${fail} fail`);

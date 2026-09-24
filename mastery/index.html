@@ -55,6 +55,10 @@
     border:none;background:var(--c1);color:#fff;cursor:pointer}
   .btn:disabled{opacity:.45;cursor:default}
   .btn.sub{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  /* 指で押す前提の大きさ。小さいボタンはタッチだと外しやすい。 */
+  .btn{min-height:46px}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 10px}
+  @media(max-width:560px){ .btnrow .btn{flex:1 1 100%} }
 
   /* 受付（ロック） */
   .gate{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
@@ -139,9 +143,13 @@
   <div class="card hide" id="listCard">
     <h2 id="listTitle">セット1の100語</h2>
     <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
+    <!-- ★開始ボタンは一覧より前に置く。100語の一覧は画面いっぱいになるので、
+         あとに置くと画面の外へ出てしまい、タブレットでは指がとどかない（2026-09 先生報告）。 -->
+    <div class="btnrow">
+      <button class="btn" id="startSet">▶ このセットを始める</button>
+      <button class="btn sub" id="backHome">もどる</button>
+    </div>
     <div class="list" id="listBody"></div>
-    <button class="btn" id="startSet">▶ このセットを始める</button>
-    <button class="btn sub" id="backHome">もどる</button>
   </div>
 
   <!-- 出題 -->

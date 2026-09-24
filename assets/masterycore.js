@@ -139,8 +139,10 @@
     function showHome() {
       renderBar();
       if (busy()) return;
-      show(null);
+      /* 出ている一覧をいったん消してから出しなおすと、その隙に指のタップが吸われる。
+         出すべきならそのまま出し、出すべきでないときだけ消す。 */
       if (open && idOK()) showList();
+      else show(null);
     }
 
     /* ---------- 受付の見はり ---------- *
@@ -241,51 +243,103 @@
       show("doneCard");
     }
 
+
+    /* ---------- 押したことを確実に受けとる ---------- *
+     * Chromebook のタッチ画面で「スタートを押しても反応しない」と報告があった
+     * （2026-09。画面サイズの再現では出ず、マウスでは押せる）。
+     * タッチだと click が出ないことがあるので、click だけに頼らず pointerup でも動かす。
+     *   ・マウスは これまでどおり click にまかせる
+     *   ・指が12pxより動いていたらスクロールとみなして無視する
+     *   ・click と pointerup で二重に走らないよう、500ms は次を受けつけない
+     */
+    function onTap(el, fn) {
+      var byFinger = 0, sx = 0, sy = 0, tracking = false;
+      /* 指で処理したときだけ、そのすぐあとに来る click を1回ぶん捨てる。
+         「◯ミリ秒は受けつけない」にすると、続けて押す操作（帯のセットを次々えらぶ等）
+         まで飲んでしまうので、押さえるのは同じ指1回ぶんだけにする。 */
+      el.addEventListener("click", function (e) {
+        if (Date.now() - byFinger < 700) return;
+        fn.call(el, e);
+      });
+      el.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse") return;
+        tracking = true; sx = e.clientX; sy = e.clientY;
+      });
+      el.addEventListener("pointerup", function (e) {
+        if (e.pointerType === "mouse" || !tracking) return;
+        tracking = false;
+        if (Math.abs(e.clientX - sx) > 12 || Math.abs(e.clientY - sy) > 12) return;  // スクロール
+        byFinger = Date.now();
+        fn.call(el, e);
+      });
+      el.addEventListener("pointercancel", function () { tracking = false; });
+    }
+
     /* ---------- つなぎ ---------- */
     function goSet(n, byStudent) {
       pos.set = n; picked = !!byStudent;
       show(null); renderBar(); showList();
     }
-    $("startSet").addEventListener("click", function () {
+    onTap($("startSet"), function () {
       if (pending().length && idOK()) flush();
       running = true;
       show("testCard");
       cfg.startRun(pos.set, attemptsOf(pos.set) + 1);
     });
-    $("backHome").addEventListener("click", function () { show(null); });
-    $("quitSet").addEventListener("click", function () {
+    onTap($("backHome"), function () { show(null); });
+    onTap($("quitSet"), function () {
       if (!confirm("この" + UNIT + "をやめると、ここまでの答えは記録されません。やめますか？")) return;
       running = false;
       if (cfg.abortRun) cfg.abortRun();
       show(null);
     });
-    $("nextSet").addEventListener("click", function () { goSet(pos.set, false); });
-    $("againSet").addEventListener("click", function () {
+    onTap($("nextSet"), function () { goSet(pos.set, false); });
+    onTap($("againSet"), function () {
       goSet(Number(this.getAttribute("data-set")) || pos.set, true);
     });
     /* 帯を押すと、そのセットに移る。答えている途中は動かさない。 */
-    $("setBar").addEventListener("click", function (e) {
+    onTap($("setBar"), function (e) {
       var b = e.target.closest ? e.target.closest("[data-set]") : null;
       if (!b || !open || !idOK()) return;
       if (!$("testCard").classList.contains("hide")) return;
       goSet(Number(b.getAttribute("data-set")), true);
     });
-    $("toHome").addEventListener("click", function () { show(null); renderBar(); });
+    onTap($("toHome"), function () { show(null); renderBar(); });
 
+    /* ★「変わっていない change」で状態を壊さない。
+       タッチの端末では、番号を打ったあと**最初にどこかを触った指**が
+       ①入力欄のフォーカスを外して change を起こし ②そのままボタンを押す、という二役になる。
+       以前はその change が pos.set と picked を初期化し、続けて走る fetchProgress が
+       画面を出しなおすので、押したはずのボタンが効かなかった
+       （Chromebook で「スタートが反応しない」2026-09 先生報告）。 */
+    var lastId = $("f_cls").value.trim() + "/" + han($("f_num").value);
+    function idChanged(isName) {
+      var sig = $("f_cls").value.trim() + "/" + han($("f_num").value);
+      if (!isName && sig === lastId) return;              // 中身が同じなら何もしない
+      lastId = sig;
+      try {
+        localStorage.setItem("mado_year", $("f_cls").value);
+        localStorage.setItem("mado_num", han($("f_num").value));
+        localStorage.setItem("mado_name", $("f_name").value.trim());
+      } catch (e) {}
+      if (!isName) {                           // 別の子に替わったら、その場で控えを切りかえる
+        doneSets = mySets(); picked = false;
+        pos.set = recommendNext();
+      }
+      setGateView();
+      if (idOK()) fetchProgress();
+    }
+    /* change だけを見ていると、番号を打ったまま指を動かさない子には一覧が出ない
+       （change は入力欄から離れたときに出るため）。打っている途中でも拾う。 */
+    var typing = null;
     ["f_cls", "f_num", "f_name"].forEach(function (id) {
       $(id).addEventListener("change", function () {
         if (id === "f_num") this.value = han(this.value);
-        try {
-          localStorage.setItem("mado_year", $("f_cls").value);
-          localStorage.setItem("mado_num", han($("f_num").value));
-          localStorage.setItem("mado_name", $("f_name").value.trim());
-        } catch (e) {}
-        if (id !== "f_name") {                 // 別の子に替わったら、その場で控えを切りかえる
-          doneSets = mySets(); picked = false;
-          pos.set = recommendNext();
-        }
-        setGateView();
-        if (idOK()) fetchProgress();
+        idChanged(id === "f_name");
+      });
+      $(id).addEventListener("input", function () {
+        clearTimeout(typing);
+        typing = setTimeout(function () { idChanged(id === "f_name"); }, 400);
       });
     });
 
