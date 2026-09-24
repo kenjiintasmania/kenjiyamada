@@ -126,9 +126,23 @@
       }
       var done = 0, bestSum = 0;
       for (var j = 1; j <= SETS; j++) if (attemptsOf(j)) { done++; bestSum += bestOf(j); }
+      /* ★覚えた数は、受付が閉じていても出す。自分の記録なので隠す理由がない
+         （閉じているあいだ何も出ず、どこまで行ったか分からなかった。2026-09 先生指摘）。
+         分母は2つ出す：
+           ・全体   … 2000語のうち何語おぼえたか＝ゴールまでの距離
+           ・さわったぶん … いま手をつけた13セット＝1300語のうち1050語
+             1セットも二重に数えない（同じセットを何度やっても最高点だけ）。 */
+      var per = cfg.perSet || 0, all = per * SETS, touched = per * done;
+      if ($("learned")) {
+        $("learned").innerHTML = per
+          ? ('<b class="big">' + bestSum + '</b> / ' + all + THING +
+             (done ? '　<span class="sub">さわった' + done + UNIT + '（' + touched + THING +
+                     '）のうち ' + bestSum + ' / ' + touched + '</span>'
+                   : '　<span class="sub">まだ1' + UNIT + 'も終わっていません</span>'))
+          : "";
+      }
       $("progMsg").innerHTML = open
-        ? ("さわった" + UNIT + " " + done + " / " + SETS + "　／　最高点の合計 " + bestSum + THING +
-           "　／　<b>いまは " + UNIT + pos.set + "（" + (attemptsOf(pos.set) + 1) + "回目）</b>")
+        ? ("<b>いまは " + UNIT + pos.set + "（" + (attemptsOf(pos.set) + 1) + "回目）</b>")
         : "　";
     }
 

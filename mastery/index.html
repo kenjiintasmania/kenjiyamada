@@ -70,6 +70,13 @@
     border:1px solid var(--line);border-radius:8px}
   .idrow input{width:110px}
 
+  /* 覚えた数（受付が閉じていても出す） */
+  .learned{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:12px 0 2px;
+    padding:9px 13px;border-radius:12px;background:#eef6f4;border:1px solid var(--line)}
+  .learned .ttl{font-size:13px;color:var(--gray);font-weight:bold;white-space:nowrap}
+  .learned .big{font-size:26px;color:var(--c1d)}
+  .learned .sub{font-size:12.5px;color:var(--gray)}
+
   /* セットの進み具合 */
   .sets{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0 4px}
   .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#e7eeec;
@@ -133,6 +140,7 @@
       <label>番号 <input id="f_num" inputmode="numeric" autocomplete="off"></label>
       <label>名前 <input id="f_name" autocomplete="off" style="width:130px"></label>
     </div>
+    <div class="learned"><span class="ttl">覚えた単語</span> <span id="learned">　</span></div>
     <div class="sets" id="setBar"></div>
     <div class="note" id="progMsg">　</div>
     <div class="note" style="margin-top:4px">数字を押すと、そのセットに移れます。

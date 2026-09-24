@@ -34,7 +34,7 @@ async function login(num){
 }
 const view = () => p.evaluate(()=>({
   done:[...document.querySelectorAll("#setBar button.done")].map(x=>x.getAttribute("data-set")),
-  prog:document.getElementById("progMsg").textContent.replace(/\s+/g," ").trim(),
+  prog:document.getElementById("learned").textContent.replace(/\s+/g," ").trim(),
   title:(document.getElementById("listTitle").textContent||"").replace(/\s+/g," ").trim() }));
 
 // ── Aさん（3年7番）がセット1を10語で終える ──
@@ -47,7 +47,7 @@ await p.click("#toHome");
 await login("8");
 const vb=await view();
 ok(vb.done.length===0, "★Bさんの帯にすんだ印が無い（"+(vb.done.join(",")||"なし")+"）");
-ok(/さわったセット 0 \/ 20/.test(vb.prog), "★Bさんの進捗は0から（"+vb.prog+"）");
+ok(/^0 \/ 2000語/.test(vb.prog), "★Bさんの覚えた単語は0から（"+vb.prog+"）");
 ok(/セット1（1〜100語目）/.test(vb.title) && /はじめて/.test(vb.title),
    "★Bさんのおすすめはセット1・はじめて（"+vb.title+"）");
 
@@ -66,7 +66,7 @@ ok(mine[0] && Number(mine[0][8])===3, "Bさんの正解は3（"+((mine[0]||[])[8
 await p.click("#toHome"); await login("7");
 const va=await view();
 ok(va.done.join(",")==="1", "★Aさんに戻るとAさんの記録が出る（"+(va.done.join(",")||"なし")+"）");
-ok(/最高点の合計 10語/.test(va.prog), "Aさんの最高点はAさんのまま（"+va.prog+"）");
+ok(/^10 \/ 2000語/.test(va.prog), "Aさんの記録はAさんのまま（"+va.prog+"）");
 
 // ── サーバーが落ちていても、自分の控えで続きが出る ──
 dead=true;
