@@ -282,7 +282,11 @@ var SUMMARY_COLS = [
      入れるのは handleMastery（1セット記録するたび）。マイページからの送信では
      この2つを送らないので、buildRow がこれまでの値をそのまま残す。 */
   {key:"mt2000",    head:"到達度2000語_合計", max:false},
-  {key:"mtgram",    head:"到達度文法_合計",   max:false}
+  {key:"mtgram",    head:"到達度文法_合計",   max:false},
+  /* --- jigaku-13 で追加：中2 231（2学期末）。
+     ★必ず末尾に足すこと。途中に入れると、先に足した列が1つずつ右へずれて
+       いままでの数字が別の見出しの下に入ってしまう。 */
+  {key:"m_c2_231",  head:"模試_231",        max:true}
 ];
 
 /* ★1回だけ実行（GASエディタで関数を選んで▶）。
@@ -292,6 +296,8 @@ var SUMMARY_COLS = [
 function clearNewSummaryCols(){ return clearSummaryCols_(["模試_341","模試_342","模試_福岡1"]); }
 /* jigaku-11 で足した2列ぶん。貼ったあとに1回だけ実行する。 */
 function clearMasteryTotalCols(){ return clearSummaryCols_(["到達度2000語_合計","到達度文法_合計"]); }
+/* jigaku-13 で足した1列ぶん。貼ったあとに1回だけ実行する。 */
+function clearNewMockCol231(){ return clearSummaryCols_(["模試_231"]); }
 function clearSummaryCols_(names){
   var sh = getSS().getSheetByName(SUMMARY_SHEET);
   if (!sh || sh.getLastRow() < 2) return "対象の行がありません";
@@ -330,7 +336,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-12";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-13";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
