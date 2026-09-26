@@ -56,6 +56,69 @@ const gt = (await q.textContent("#learned")).replace(/\s+/g," ").trim();
 ok(/^4 \/ 155文/.test(gt), `★全文法は 4 / 155文（${gt}）`);
 ok(/さわった1項目（5文）のうち 4 \/ 5/.test(gt), `★さわったぶんは 4 / 5（${gt}）`);
 
+
+/* ★受付が閉じたまま開いても、サーバーの記録が出ること（先生報告「まだ出てこない」）。
+   以前は受付が開いた瞬間にしか記録を取りにいかず、授業のあとに開くと 0 に見えていた。 */
+{
+  const G2 = loadGas();
+  G2.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  [[1,1,95],[1,2,87],[1,3,95]].forEach(([r,s,c])=>G2.call({kind:"mastery",exam:"m2000",cls:"2",num:"5",
+    name:"t",round:r,set:s,correct:c,asked:100,sec:300,ver:"t"}));
+  G2.call({action:"gate", pin:"PIN", exam:"m2000", open:false});
+  const r = await b.newPage();
+  await r.exposeFunction("__gas2", (x)=>JSON.stringify(G2.call(JSON.parse(x))));
+  await r.addInitScript(()=>{ localStorage.setItem("mado_year","2"); localStorage.setItem("mado_num","5");
+    window.fetch=(u,o)=>window.__gas2(o.body)
+      .then(t=>({status:200,ok:true,text:()=>Promise.resolve(t),json:()=>Promise.resolve(JSON.parse(t))})); });
+  await r.goto(new URL("../../mastery/index.html", import.meta.url).href);
+  await r.waitForTimeout(1500);
+  const t = (await r.textContent("#learned")).replace(/\s+/g," ").trim();
+  ok(/受付していません/.test(await r.textContent("#gateBadge")), "受付は閉じている");
+  ok(/^277 \/ 2000語/.test(t), `★閉じたまま開いても、サーバーの記録が出る（${t}）`);
+
+  /* 単語データが読めていないときは始めず、記録もしない（0問・0秒の回を作らない） */
+  const before = (G2.dump("到達度テスト")||[]).length;
+  G2.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  await r.evaluate(()=>{ window.WORDS_SAVE = window.WORDS; });
+  const e = await b.newPage();
+  await e.exposeFunction("__gas3", (x)=>JSON.stringify(G2.call(JSON.parse(x))));
+  await e.route("**/words/data/words.js", route=>route.fulfill({status:404, body:""}));
+  await e.addInitScript(()=>{ window.fetch=(u,o)=>window.__gas3(o.body)
+    .then(t=>({status:200,ok:true,text:()=>Promise.resolve(t),json:()=>Promise.resolve(JSON.parse(t))})); });
+  await e.goto(new URL("../../mastery/index.html", import.meta.url).href);
+  await e.waitForTimeout(700);
+  await e.fill("#f_num","6"); await e.selectOption("#f_cls","2"); await e.waitForTimeout(900);
+  await e.click("#startSet"); await e.waitForTimeout(500);
+  const after = (G2.dump("到達度テスト")||[]).length;
+  ok(after === before, `★単語が読めないときは記録しない（行数 ${before}→${after}）`);
+  ok(/読みこめませんでした/.test(await e.textContent("#qJa")), "開きなおすよう伝える");
+  await r.close(); await e.close();
+}
+
+
+/* Enter の押しっぱなし（キーリピート）ではパスしない。1回ずつ押せばパスできる。 */
+{
+  const G3 = loadGas();
+  G3.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  const k = await b.newPage();
+  await k.exposeFunction("__gas4", (x)=>JSON.stringify(G3.call(JSON.parse(x))));
+  await k.addInitScript(()=>{ window.fetch=(u,o)=>window.__gas4(o.body)
+    .then(t=>({status:200,ok:true,text:()=>Promise.resolve(t),json:()=>Promise.resolve(JSON.parse(t))})); });
+  await k.goto(new URL("../../mastery/index.html", import.meta.url).href);
+  await k.waitForTimeout(600);
+  await k.fill("#f_num","7"); await k.selectOption("#f_cls","2"); await k.waitForTimeout(900);
+  await k.click("#startSet"); await k.waitForTimeout(300);
+  const left0 = Number(await k.textContent("#mLeft"));
+  await k.evaluate(()=>{ const el=document.getElementById("ansIn");
+    for (let i=0;i<30;i++) el.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",repeat:true,bubbles:true})); });
+  const left1 = Number(await k.textContent("#mLeft"));
+  ok(left1 === left0, `★押しっぱなしの Enter では進まない（のこり ${left0}→${left1}）`);
+  await k.press("#ansIn","Enter"); await k.press("#ansIn","Enter");
+  const left2 = Number(await k.textContent("#mLeft"));
+  ok(left2 === left0-2, `1回ずつ押せばパスできる（のこり ${left0}→${left2}）`);
+  await k.close();
+}
+
 console.log(errs.length? "\nJSエラー:\n"+errs.slice(0,3).join("\n") : "\nJSエラーなし");
 await b.close();
 console.log(`\n${pass} pass / ${fail} fail`);

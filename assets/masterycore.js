@@ -225,6 +225,10 @@
     /* res: {correct, asked, sec, max, note}  note は結果画面の末尾に足す文字列 */
     function finish(set, round, res) {
       running = false;
+      /* 1問も答えていない回（0問・0秒）は記録しない。出題データが読めずに
+         始めた瞬間に終わった回が、実データに「0 0 0」で6件残っていた。
+         それが1回目として数えられ、何回目がずれる。 */
+      if (!(res.asked > 0)) { show(null); renderBar(); return; }
       var sec = res.sec || 0, correct = res.correct || 0;
       var cpm = sec > 0 ? Math.round(correct / (sec / 60) * 10) / 10 : 0;
       var prev = round > 1 ? doneSets[(round - 1) + "-" + set] : null;
@@ -366,6 +370,12 @@
     doneSets = mySets();
     if (Object.keys(doneSets).length) pos.set = recommendNext();
     setGateView();
+    /* ★受付が閉じていても、自分の記録はサーバーから取ってくる。
+       以前は「受付が開いた瞬間」にしか取りにいかなかったので、授業のあと（閉じている）に
+       開くと「覚えた単語 0 / 2000語」に見えていた（2026-09 先生報告「まだ出てこない」）。
+       端末の控えは学年-番号ごとに分けなおしたばかりで空のことが多く、それだけでは足りない。
+       progress は読むだけで、受付の状態には関係しない。 */
+    if (idOK()) fetchProgress();
     poll(); setInterval(poll, 5000);
 
     return { finish: finish, show: show, renderBar: renderBar, esc: esc,

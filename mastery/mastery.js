@@ -26,7 +26,7 @@
   var run = null;
 
   var core = window.MasteryCore.create({
-    exam: "m2000", ver: "mastery 0.4", sets: SETS, ls: "mastery_v1", perSet: SET_SIZE,
+    exam: "m2000", ver: "mastery 0.5", sets: SETS, ls: "mastery_v1", perSet: SET_SIZE,
     unitName: "セット", unitWord: "語",
     gas: "https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec",
     tipOf: function (i) { return "セット" + i + "（" + range(i) + "）"; },
@@ -40,6 +40,16 @@
     },
 
     startRun: function (set, round) {
+      /* 単語データ（words.js）が読みこめていないと、100語のはずが0語になり、
+         始めた瞬間に「0 / 100」で記録されてしまう（実データに 0問・0秒 の回が6件）。
+         記録せずに止めて、ページを開きなおしてもらう。 */
+      if (!setWords(set).length) {
+        run = null;
+        $("qPos").textContent = "";
+        $("qJa").textContent = "単語が読みこめませんでした。ページを開きなおしてください。";
+        $("ansIn").disabled = true;
+        return;
+      }
       run = { set: set, round: round,
               queue: setWords(set).map(function (w) { return { w: w, retry: false }; }),
               i: 0, ok: {}, missed: [], passed: [], asked: 0, t0: 0, retried: false };
@@ -106,6 +116,10 @@
   $("ansIn").addEventListener("keydown", function (e) {
     if (e.key !== "Enter") return;
     e.preventDefault();
+    /* 押しっぱなしの Enter（キーリピート）は数えない。実データに「100問を2秒・0点」の回が
+       いくつもあった＝Enter を押しっぱなしにしてセットを丸ごと飛ばしている。
+       それでも1回として数えられ、何回目が進んでしまう。1回ずつ押すパスはこれまでどおり。 */
+    if (e.repeat) return;
     answer(this.value);
   });
 })();
