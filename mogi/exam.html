@@ -179,7 +179,10 @@
                                   : "先生が「スタート」すると問題が出て、解けるようになります。";
       }
     }
+    /* ★緊急（2026-09-27 授業中・先生指示）：受付を聞かず常に開ける。もとに戻すときは false。 */
+    const FORCE_OPEN = true;
     function poll(){
+      if(FORCE_OPEN){ setOpen(true); return; }
       post({action:"status", exam:id}).then(st=>{
         if(st && st.result==="ok"){ session=st.session||""; setOpen(!!st.open); }
       }).catch(()=>{});

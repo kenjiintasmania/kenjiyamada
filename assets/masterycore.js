@@ -167,7 +167,20 @@
      *   開けるのは1回で、閉じるのは続けて3回（約15秒）見えてから＝**開ける側に倒す**。
      *   先生が本当にストップを押したときも、15秒あとに閉じるだけで困らない。 */
     var CLOSE_STREAK = 3, closedSeen = 0;
+    /* ★緊急（2026-09-27 授業中・先生指示「いったん完全解除でもいいからはずして」）：
+       受付の状態をサーバーに聞かず、常に開いているものとして扱う。
+       サーバー側の受付が閉じていると記録は "locked" で返るが、端末にためておき
+       あとで送りなおす（pending）ので、生徒の答えは消えない。
+       もとに戻すときは false にする。 */
+    var FORCE_OPEN = true;
     function poll() {
+      if (FORCE_OPEN) {
+        var was0 = open;
+        open = true; closedSeen = 0;
+        setGateView();
+        if (!was0) { fetchProgress(); if (pending().length && idOK()) flush(); }
+        return;
+      }
       post({ action: "status", exam: EXAM }).then(function (st) {
         if (!st || st.result !== "ok") return;          // 取れなかった＝いまの状態を保つ
         var was = open;
