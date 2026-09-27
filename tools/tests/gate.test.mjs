@@ -58,6 +58,7 @@ G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
 const put=(round,set,correct)=>G.call({kind:"mastery", exam:"m2000", cls:"3", num:"21", name:"テスト",
   round, set, correct, asked:100, sec:60, ver:"t"});
 put(1,1,90); put(2,1,89); put(1,2,100);
+G.rebuildMasteryBoard();   // jigaku-15〜：まとめは記録のたびではなく、作りなおしで入る
 {
   const sum=G.dump("成績まとめ")||[];
   const head=sum[0]||[];
@@ -69,6 +70,7 @@ put(1,1,90); put(2,1,89); put(1,2,100);
 }
 // 3回目でセット1が95点なら 95+100＝195
 put(3,1,95);
+G.rebuildMasteryBoard();
 {
   const sum=G.dump("成績まとめ")||[];
   const col=(sum[0]||[]).indexOf("到達度2000語_合計");
@@ -78,6 +80,7 @@ put(3,1,95);
 // 文法は別の列
 G.call({action:"gate", pin:"PIN", exam:"mgram", open:true});
 G.call({kind:"mastery", exam:"mgram", cls:"3", num:"21", name:"テスト", round:1, set:1, correct:5, asked:5, sec:30, ver:"t"});
+G.rebuildMasteryBoard();
 {
   const sum=G.dump("成績まとめ")||[];
   const head=sum[0]||[];
@@ -141,6 +144,7 @@ console.log("— 到達度まとめ：1人1行・名簿順 —");
   put("3","5","ごばん",1,2,70,60);    // CPM 70  → 合計 90+70=160
   put("2","10","じゅう",1,1,50,60);   // CPM 50
   put("3","2","にばん",1,1,60,30);    // CPM 120
+  G.rebuildMasteryBoard();
 
   const bd=G.dump("到達度まとめ")||[];
   const head=bd[0]||[];

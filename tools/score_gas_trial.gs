@@ -349,7 +349,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-14";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-15";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 
 function doGet(e){
@@ -610,12 +610,14 @@ function handleMastery(d){
     var cpm = sec>0 ? Math.round(correct / (sec/60) * 10)/10 : "";
     sh.appendRow([ new Date(), st.session, exam, cls, num, d.name||"",
                    round, set, correct, numOrBlank(d.asked), sec, cpm, d.ver||"" ]);
-    // 成績まとめの合計点を更新する。ここで失敗しても、上の記録は残す（生徒の点を落とさない）。
-    var total = null;
-    try{ total = updateMasterySummary(cls, num, d.name||""); }catch(e){}
-    try{ updateMasteryBoard(cls, num, d.name||""); }catch(e){}
-    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm,
-            total: total ? (total[exam]||0) : null};
+    /* ★成績まとめ・到達度まとめの書きなおしは、ここではしない（jigaku-15）。
+       1セットごとに記録全体を3回読み・並べかえまでしていたので、そのあいだロックを
+       数秒ずつ握りつづけ、40人が一斉に記録すると順番待ちがあふれた。
+       その結果、先生の「スタート」（setGate もロックが要る）が入れず、
+       管理画面が動かなくなった（2026-09-27 授業中）。
+       まとめはメニュー「🏅 到達度まとめ…を作りなおす」でまとめて作る。
+       生徒の画面は自分の合計を自分で計算して出すので、ここで書かなくても困らない。 */
+    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm};
   } finally { lock.releaseLock(); }
 }
 /* 続きの位置を返す。端末ではなくここが正。 */
@@ -814,7 +816,9 @@ function rebuildMasteryBoard(){
     if (rows.length > 1) bd.getRange(2,1,rows.length,head.length)
                            .sort([{column:1, ascending:true}, {column:2, ascending:true}]);
   }
-  var msg = rows.length + "人ぶんを名簿順に並べました（" + MASTERY_BOARD + "）";
+  // 成績まとめの合計点の列も、ここでいっしょに入れなおす（記録のたびには書かなくなったため）
+  try{ rebuildMasteryTotals(); }catch(e){}
+  var msg = rows.length + "人ぶんを名簿順に並べました（" + MASTERY_BOARD + "・成績まとめの合計点も更新）";
   try{ SpreadsheetApp.getActive().toast(msg); }catch(e){}
   return msg;
 }
