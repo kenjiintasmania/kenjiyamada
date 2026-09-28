@@ -605,7 +605,7 @@
     fetch(SUMMARY_GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
       .then(function(r){ return r.json(); })
       .then(function(j){
-        if(j&&j.result==="ok"){
+        if(j&&j.result==="ok"&&j.exams&&j.key){   // 返事のかたちまで見る（古いGASの空返事を成功にしない）
           var whoKey=cls+"-"+num, n=0;
           (j.exams||[]).forEach(function(ex){
             n+=window.MasteryCore.applyResets(ex, whoKey, [{from:j.from||1, to:(spec.all?1e9:(j.to||10)), key:j.key}]);
@@ -615,7 +615,7 @@
             "到達度テストの画面を開いていたら、いったん閉じて開きなおしてください。";
         }else if(j&&j.result==="busy"){
           msg.className="err"; msg.textContent="混みあっています。10秒ほどおいて、もう一度押してください。";
-        }else if(j&&/未知の kind/.test(j.message||"")){
+        }else if(j&&(/未知の kind/.test(j.message||"")||j.result==="ok")){
           msg.className="err"; msg.textContent="先生へ：GAS が古いためリセットできません（jigaku-16 以上を〔新バージョン〕でデプロイしてください）。";
         }else{
           msg.className="err"; msg.textContent="リセットできませんでした："+((j&&j.message)||"不明なエラー");

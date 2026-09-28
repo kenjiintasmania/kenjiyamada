@@ -102,6 +102,31 @@ ok(/okline/.test(note.cls) && /jigaku-\d+ ✓/.test(note.txt), "サーバー版�
   ok(badges.every(t=>/ロック中/.test(t)), "旧版でも1試験ずつ聞いてカードは描ける（"+badges[0]+"）");
   await q.close();
 }
+// ずっと busy なら 3回でやめて、そう言い、ボタンを解放する
+{
+  const q=await b.newPage();
+  await q.addInitScript((VER)=>{
+    window.__gate=0;
+    window.fetch=function(url,opt){
+      const d=JSON.parse(opt.body);
+      let r={result:"ok", ver:VER, exams:{}};
+      if(d.action==="status_all"){ ["c2u1","c2u2","c2u3","c3u1","c3u2","c3u3","c3u4","m2000","mgram"].forEach(ex=>r.exams[ex]={result:"ok",open:false,exam:ex,session:"",submissions:0}); }
+      if(d.action==="gate"){ window.__gate++; r={result:"error", busy:true, ver:VER, message:"混みあい"}; }
+      return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
+    };
+  }, VER);
+  await q.goto(new URL("../../admin/index.html", import.meta.url).href); await q.waitForTimeout(600);
+  await q.fill("#pin","TESTPIN");
+  const card=(await q.$$("#exams .card"))[ADM_IDS.indexOf("m2000")];
+  await (await card.$(".start")).click();
+  await q.waitForTimeout(6500);   // 2.5秒×2回の押しなおし
+  const n=await q.evaluate(()=>window.__gate);
+  ok(n===3, "★押しなおしは3回まで（"+n+"回）");
+  const st=await card.evaluate(c=>({s:c.querySelector(".start").disabled, t:c.querySelector(".stop").disabled, m:c.querySelector(".cmsg").textContent}));
+  ok(/できませんでした/.test(st.m) && /混みあ/.test(st.m), "3回だめなら理由をカードの下に出す（"+st.m+"）");
+  ok(!st.s, "★スタートを押しなおせる（ボタンが止まったままにならない）");
+  await q.close();
+}
 await p.close(); await b.close();
 console.log(errs.length? "\nJSエラー:\n"+errs.slice(0,4).join("\n") : "\nJSエラーなし");
 console.log(`\n${pass} pass / ${fail} fail`);

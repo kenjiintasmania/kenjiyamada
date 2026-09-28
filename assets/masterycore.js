@@ -215,7 +215,7 @@
         var was0 = open;
         open = true; closedSeen = 0;
         setGateView();
-        if (!was0) { fetchProgress(); if (pending().length && idOK()) flush(); }
+        if (!was0) fetchProgress();           // 送るのは progress を当てたあと（fetchProgress の中）
         return;
       }
       post({ action: "status", exam: EXAM }).then(function (st) {
@@ -229,34 +229,45 @@
           return;                                        // 1回きりの「閉」は様子を見る
         }
         setGateView();
-        if (open && !was) {
-          fetchProgress();
-          if (pending().length && idOK()) flush();
-        }
+        if (open && !was) fetchProgress();     // 送るのは progress を当てたあと
       }).catch(function () {});
     }
 
     /* ---------- どこまでやったか ---------- */
+    /* ★ためていた記録を送るのは、その子の progress（リセットの有無）を当てたあとだけ。
+       先に送ると、リセット前にためた記録がリセット行より新しい日時で書かれ、消したはずの点が
+       復活する（別の端末でリセットしたときに起きる）。synced は「どの子のぶんを当てたか」。 */
+    var synced = "";
+    function canSend() { return pending().length && idOK() && synced === who(); }
     function fetchProgress() {
       if (!idOK()) return;
       if (!busy()) doneSets = mySets();        // 待っている間、前の子の記録を出さない
+      var w = who();                           // 返事が来るまでに番号が変わっていたら、その返事は捨てる
       post({ action: "progress", exam: EXAM, cls: $("f_cls").value.trim(), num: han($("f_num").value) })
         .then(function (r) {
+          if (w !== who()) return;             // 打っている途中の番号への返事（前の子の記録を混ぜない）
           if (!r || r.result !== "ok") return;
           // 先生の指示でリセットされていたら、端末の控えも同じところまで消してから重ねる
-          if (r.resets && r.resets.length) applyResets(EXAM, who(), r.resets);
+          if (r.resets && r.resets.length) applyResets(EXAM, w, r.resets);
           // サーバーの記録に端末の控えを重ねる（どちらかにしか無い回も拾う＝生徒が損しない側）
           doneSets = r.sets || {};
           var mine = mySets();
           for (var k in mine) if (!doneSets[k]) doneSets[k] = mine[k];
           if (!busy() && !picked) pos.set = recommendNext();
           showHome();
+          synced = w;
+          if (canSend()) flush();              // 当てたあとに、ためていた記録を送る
         }).catch(function () {
+          if (w !== who()) return;
           doneSets = mySets();
           if (!busy() && !picked) pos.set = recommendNext();
           showHome();
+          // 取れなかったら10秒後に取りなおす（当てるまで記録を送らない約束なので、ここで止まると送れない）
+          clearTimeout(resyncT);
+          resyncT = setTimeout(function () { if (idOK() && synced !== who()) fetchProgress(); }, 10000);
         });
     }
+    var resyncT = null;
 
     /* ---------- 記録（届かなくても止めない） ---------- */
     function pending() { var o = load(); return o.__pending || []; }
@@ -264,12 +275,18 @@
     var retryT = null;
     function retryLater() {                 // 混みあい（busy）は数秒おいて自分で送りなおす
       clearTimeout(retryT);
-      retryT = setTimeout(function () { if (pending().length && idOK()) flush(); }, 6000 + Math.random() * 6000);
+      retryT = setTimeout(function () { if (canSend()) flush(); }, 6000 + Math.random() * 6000);
     }
+    /* ★送るのは同時に1本だけ。2本走ると、両方が「先頭を1つ消す」ので、送っていない記録が1件消える
+       （セット終わり・スタート・送りなおしのタイマーが重なったとき）。 */
+    var flushing = false;
     function flush() {
+      if (flushing) return;
       var q = pending();
       if (!q.length) { $("sendMsg").textContent = "記録しました ✓"; return; }
+      flushing = true;
       post(q[0]).then(function (r) {
+        flushing = false;
         if (r && (r.result === "ok" || r.result === "dup")) { setPending(pending().slice(1)); flush(); }
         else if (r && r.result === "busy") {
           $("sendMsg").textContent = "混みあっています。少しあとに送りなおします（記録は端末に残してあります）。";
@@ -278,6 +295,7 @@
         else $("sendMsg").textContent = "まだ届いていません（" + ((r && r.message) || "?") +
           "）。次の" + UNIT + "のときに送り直します。";
       }).catch(function () {
+        flushing = false;
         $("sendMsg").textContent = "いま送れませんでした。記録は端末に残してあるので、次の" + UNIT + "のときに送り直します。";
       });
     }
@@ -314,7 +332,8 @@
         round: round, set: set, correct: correct, asked: res.asked || 0, sec: sec };
       setPending(pending().concat([body]));
       $("sendMsg").textContent = "記録を送っています…";
-      flush();
+      if (synced === who()) flush();
+      else { $("sendMsg").textContent = "記録は端末に残しました。次に開いたときに送ります。"; }
 
       pos.set = recommendNext();
       picked = false;
@@ -363,7 +382,7 @@
       show(null); renderBar(); showList();
     }
     onTap($("startSet"), function () {
-      if (pending().length && idOK()) flush();
+      if (canSend()) flush();
       running = true;
       show("testCard");
       cfg.startRun(pos.set, attemptsOf(pos.set) + 1);

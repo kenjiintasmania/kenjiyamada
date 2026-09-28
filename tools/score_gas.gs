@@ -351,12 +351,19 @@ function teacherPin_(){
     if (sh && sh.getLastRow() >= 2){
       var v = sh.getRange(2,1,sh.getLastRow()-1,2).getValues();
       for (var i=0;i<v.length;i++)
-        if (String(v[i][0]).trim() === "合言葉" && String(v[i][1]).trim()) return String(v[i][1]).trim();
+        if (String(v[i][0]).trim() === "合言葉" && String(v[i][1]).trim() !== "") return v[i][1];
     }
   }catch(e){}
   return TEACHER_PIN;
 }
-function pinOK_(data){ return String(data.pin||"") === teacherPin_(); }
+/* 合言葉の突き合わせ。★セルに "0123" と打つとシートが数 123 にしてしまうので、
+   セルが数のときは数としても比べる（"0123" と打った先生を締め出さない）。 */
+function pinOK_(data){
+  var pin = String(data.pin||"").trim(), cell = teacherPin_();
+  if (pin === "") return false;
+  if (typeof cell === "number") return Number(pin) === cell || pin === String(cell);
+  return pin === String(cell).trim();
+}
 
 function doGet(e){
   return ContentService
@@ -655,6 +662,7 @@ function handleMastery(d){
 /* ===================== 到達度テスト：記録の読みかた（リセット対応・jigaku-16） ===================== *
  * 「到達度テスト」タブは追記しかしない（行を消さない＝あとから調べられる・戻せる）。
  * やり直しは**リセット行**を足して表す：何回目=0、セット="1〜10"（範囲）か "全"、版="reset"。
+ *   手で足すときは セット欄に「1〜10」（波線）か「全」と書く。「1-10」と打つとシートが日付にしてしまい、効かない。
  * その行より**前の日時**の、その範囲のセットの記録は、無かったものとして読む。
  *   ・先生の指示で前半をやり直させたいとき（最初の100語の一覧を別画面に出したまま受けていた等）に
  *     生徒のマイページ「設定」から足す（2026-09 先生指示）
@@ -676,6 +684,9 @@ function masteryTime_(x){
   var t = (x instanceof Date) ? x.getTime() : new Date(x).getTime();
   return isNaN(t) ? 0 : t;
 }
+/* a は b より後か。日時が両方読めればそれで、読めない行があればシートの行順で比べる
+   （日時の列を文字で打ちなおした行があっても、リセットが効かなくならないように）。 */
+function masteryAfter_(a, b){ return (a.at && b.at) ? a.at > b.at : a.row > b.row; }
 function masteryLog_(){
   if (_mlog) return _mlog;
   var out = { rows:[], resets:{} };   // resets["試験|学年|番号"] = [{from,to,at}]
@@ -691,17 +702,17 @@ function masteryLog_(){
     var key = exam + "|" + cls + "|" + num, at = masteryTime_(r[0]);
     if (String(r[12]).trim() === MASTERY_RESET_VER){
       var rg = masteryResetRange_(r[7]);
-      if (rg) (out.resets[key] = out.resets[key] || []).push({from:rg.from, to:rg.to, at:at});
+      if (rg) (out.resets[key] = out.resets[key] || []).push({from:rg.from, to:rg.to, at:at, row:i+2});
       continue;
     }
-    recs.push({key:key, exam:exam, cls:cls, num:num, name:String(r[5]||""), at:at, session:String(r[1]||""),
+    recs.push({key:key, exam:exam, cls:cls, num:num, name:String(r[5]||""), at:at, row:i+2, session:String(r[1]||""),
                round:Number(r[6])||0, set:Number(r[7])||0, correct:Number(r[8])||0,
                asked:r[9], sec:Number(r[10])||0, cpm:Number(r[11])||0});
   }
   for (var j=0;j<recs.length;j++){
     var rc = recs[j], rs = out.resets[rc.key], dead = false;
     if (rs) for (var k=0;k<rs.length;k++)
-      if (rs[k].at > rc.at && rc.set >= rs[k].from && rc.set <= rs[k].to){ dead = true; break; }
+      if (masteryAfter_(rs[k], rc) && rc.set >= rs[k].from && rc.set <= rs[k].to){ dead = true; break; }
     if (!dead) out.rows.push(rc);
   }
   return (_mlog = out);
@@ -728,6 +739,9 @@ function masteryReset(d){
     _mlog = null;
     // 端末に返す key は、シートから読みなおした日時にする（書いた値と読んだ値がmsで食いちがうことがある）
     var key = masteryTime_(sh.getRange(sh.getLastRow(),1).getValue()) || now.getTime();
+    // この子の合計点・到達度まとめは、その場で入れなおす（先生がシートを開いて確かめるため。
+    // 記録のたびにはやめた重い処理だが、リセットは1人にまれにしか起きない）
+    try{ updateMasterySummary(cls, num, d.name||""); updateMasteryBoard(cls, num, d.name||""); }catch(e){}
     return {result:"ok", key:key, exams:exams, from:from, to:(d.all ? 1e9 : to), range:range,
             message:"リセットしました"};
   } finally { lock.releaseLock(); }
@@ -980,17 +994,29 @@ function resetSheet(ss, name, header){
 }
 
 /* ===================== 学習方針（マイページのコメント用） ===================== *
- * 「設定」シートの B2 に方針コードを保存。管理ページ(/admin)から設定します。 */
+ * 「設定」シートの A列「学習方針」の行の B列に方針コードを保存。管理ページ(/admin)から設定します。
+ * ★行番号を決め打ちしない（jigaku-16）：以前は A2/B2 に直書きしていたので、先生が「合言葉」の行を
+ *   2行目に書くと、方針を保存したとたんに上書きされて合言葉が既定に戻った。項目名で行を探す。 */
+function settingRow_(sh, name){
+  var last = sh.getLastRow();
+  if (last >= 2){
+    var v = sh.getRange(2,1,last-1,1).getValues();
+    for (var i=0;i<v.length;i++) if (String(v[i][0]).trim() === name) return i+2;
+  }
+  return -1;
+}
 function getPolicy(){
   var sh = getSS().getSheetByName(SETTINGS_SHEET);
   if (!sh) return "";
-  return String(sh.getRange("B2").getValue() || "");
+  var r = settingRow_(sh, "学習方針");
+  return r > 0 ? String(sh.getRange(r,2).getValue() || "") : "";
 }
 function setPolicy(data){
   if (!pinOK_(data)) return {result:"error", message:"合言葉(PIN)が違います"};
   var sh = getSheet(SETTINGS_SHEET, ["設定項目","値"]);
-  sh.getRange("A2").setValue("学習方針");
-  sh.getRange("B2").setValue(String(data.policy||""));
+  var r = settingRow_(sh, "学習方針");
+  if (r < 0){ sh.appendRow(["学習方針", String(data.policy||"")]); }
+  else sh.getRange(r,2).setValue(String(data.policy||""));
   return {result:"ok", policy:String(data.policy||"")};
 }
 

@@ -185,6 +185,7 @@
   function paint(ex, st){
     var r=cards[ex.id]; if(!r) return;
     if(st && st.result==="ok"){
+      lastSt[ex.id]=st;
       if(st.open){ closedSeen[ex.id]=0; }
       // まだ一度も描いていない（確認中…）なら、閉でもすぐ描く。3回待つのは「開→閉」のブレ対策だけ。
       else if(!r.badge.classList.contains("unknown") &&
@@ -236,7 +237,7 @@
        ・送信中は両方のボタンを止める（二重押し防止・押せたことが分かる）
        ・GAS が busy（生徒の記録と取り合い）なら 2.5 秒おいて 3 回まで自分で押しなおす
        ・25 秒返ってこなければ、そう言って解放する */
-  var inflight={};
+  var inflight={}, gateAt={}, lastSt={};
   function cardMsg(ex, cls, text){ var r=cards[ex.id]; if(!r) return; r.cmsg.className="cmsg "+(cls||""); r.cmsg.textContent=text||""; }
   function withTimeout(p, ms){
     return new Promise(function(res, rej){
@@ -262,6 +263,7 @@
       }else if(res && res.result==="ok" && (open ? res.open===true : true)){
         cardMsg(ex,"ok",(open?"✓ 受付を開始しました（新しいセッション）":"✓ 受付を終了しました"));
         closedSeen[ex.id]=CLOSE_STREAK;   // 自分で押したぶんは、待たずに反映する
+        gateAt[ex.id]=Date.now();         // これより前に聞いた状態の答えは、あとから来ても捨てる
         inflight[ex.id]=false;
         paint(ex,res);                    // 返事そのものに状態が入っているので、その場でカードを描く
       }else if(res && res.busy && tryN<3){
@@ -271,14 +273,27 @@
       }else{
         cardMsg(ex,"err","✗ できませんでした："+((res&&res.message)||"不明なエラー"));
       }
-      inflight[ex.id]=false; pollOne(ex);
+      inflight[ex.id]=false; release(ex); pollOne(ex);
     }).catch(function(e){
       inflight[ex.id]=false;
       cardMsg(ex,"err","✗ "+((e&&e.timeout)?"サーバーの応答がありません（25秒）。もう一度押してください。":"通信エラー。電波を確認してね。"));
-      pollOne(ex);
+      release(ex); pollOne(ex);
     });
   }
-  function pollOne(ex){ post({action:"status", exam:ex.id}).then(function(st){ updateServerNote(st); paint(ex,st); }).catch(function(){}); }
+  /* 失敗したあとボタンを止めたままにしない：分かっている最後の状態で描きなおす（無ければ両方押せるように） */
+  function release(ex){
+    var r=cards[ex.id]; if(!r) return;
+    if(lastSt[ex.id]){ r.start.disabled=!!lastSt[ex.id].open; r.stop.disabled=!lastSt[ex.id].open; }
+    else { r.start.disabled=false; r.stop.disabled=false; }
+  }
+  function pollOne(ex){
+    var sentAt=Date.now();
+    post({action:"status", exam:ex.id}).then(function(st){
+      updateServerNote(st);
+      if(sentAt < (gateAt[ex.id]||0)) return;   // スタート/ストップより前に聞いた古い答えは捨てる
+      paint(ex,st);
+    }).catch(function(){});
+  }
   /* 状態は全試験を1回で聞く（9試験×5秒＝毎分108回の呼び出しが、生徒の記録送信と同じ入口に
      並んで混みあいの一因だった）。status_all を知らない旧版なら、従来どおり1試験ずつ聞く。
      ★kind:"admin" を添えるのは、旧版が action を知らないとき「未知の kind」で止めるため
@@ -286,15 +301,19 @@
   var perExam=false;
   function pollAll(){
     if(perExam){ EXAMS.forEach(pollOne); return; }
+    var sentAt=Date.now();
     post({action:"status_all", kind:"admin"}).then(function(r){
       if(r && r.result==="ok" && r.exams && typeof r.exams==="object"){
         updateServerNote(r);
-        EXAMS.forEach(function(ex){ var st=r.exams[ex.id]; if(st){ st.ver=r.ver; paint(ex,st); } else paint(ex,null); });
-      }else if(r && r.result==="error" && r.ver && !/未知の kind/.test(r.message||"")){
+        EXAMS.forEach(function(ex){
+          if(sentAt < (gateAt[ex.id]||0)) return;   // スタート/ストップより前に聞いた古い答えは捨てる
+          var st=r.exams[ex.id]; if(st){ st.ver=r.ver; paint(ex,st); } else paint(ex,null); });
+      }else if(r && /未知の kind/.test((r&&r.message)||"")){
+        perExam=true; EXAMS.forEach(pollOne);   // 旧版（status_all を知らない）だけ、1試験ずつに切りかえる
+      }else if(r && r.result==="error" && r.ver){
         updateServerNote(r);              // 新版だがいま読めない＝いまの表示を保つ
-      }else{
-        perExam=true; EXAMS.forEach(pollOne);   // 旧版
       }
+      // それ以外（JSONでない応答・一時的なエラー）は何もしない＝次の5秒でまた聞く
     }).catch(function(){});
   }
   pollAll(); setInterval(pollAll, 5000);
