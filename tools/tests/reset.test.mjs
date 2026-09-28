@@ -45,9 +45,23 @@ p.once("dialog", d=>d.dismiss());
 await p.click("#resetHalf"); await p.waitForTimeout(300);
 ok(/やめました/.test(await p.textContent("#resetMsg")), "確認で「キャンセル」ならリセットしない");
 ok(G.call({action:"progress", exam:"m2000", cls:"1", num:"8"}).done===12, "サーバーの記録もそのまま（12回）");
-spin(3);
-p.once("dialog", d=>d.accept());
+// 確認は OK、合言葉がまちがい → サーバーが断る・端末も消さない
+let dlg=0; const onDlg=(d)=>{ dlg++; if(d.type()==="prompt") d.accept("xxx"); else d.accept(); };
+p.on("dialog", onDlg);
 await p.click("#resetHalf"); await p.waitForTimeout(600);
+p.off("dialog", onDlg);
+ok(dlg===2, "確認のあとに合言葉を聞く（ダイアログ2つ："+dlg+"）");
+ok(/合言葉/.test(await p.textContent("#resetMsg")), "★合言葉がちがえばリセットしない（"+(await p.textContent("#resetMsg")).slice(0,30)+"）");
+ok(G.call({action:"progress", exam:"m2000", cls:"1", num:"8"}).done===12, "サーバーの記録はそのまま");
+{
+  const ls=await p.evaluate(()=>JSON.parse(localStorage.getItem("mastery_v1")));
+  ok(Object.keys(ls.m2000.by["1-8"].sets).length===12 && ls.__pending.length===2, "端末の控えも送り待ちもそのまま");
+}
+spin(3);
+const okDlg=(d)=>{ if(d.type()==="prompt") d.accept("PIN"); else d.accept(); };
+p.on("dialog", okDlg);
+await p.click("#resetHalf"); await p.waitForTimeout(600);
+p.off("dialog", okDlg);
 const m1=await p.textContent("#resetMsg");
 ok(/リセットしました/.test(m1) && /開きなおして/.test(m1), "★前半リセットできた（"+m1.slice(0,40)+"）");
 {

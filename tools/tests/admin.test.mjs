@@ -102,6 +102,24 @@ ok(/okline/.test(note.cls) && /jigaku-\d+ ✓/.test(note.txt), "サーバー版�
   ok(badges.every(t=>/ロック中/.test(t)), "旧版でも1試験ずつ聞いてカードは描ける（"+badges[0]+"）");
   await q.close();
 }
+// 1つ前の版（jigaku-16）なら「少し古い・足りないものはこれ」と具体的に言う（大げさな定型文を出さない）
+{
+  const q=await b.newPage();
+  await q.addInitScript(()=>{
+    window.fetch=function(url,opt){
+      const d=JSON.parse(opt.body);
+      let r={result:"ok", ver:"jigaku-16", exams:{}};
+      if(d.action==="status_all"){ ["c2u1","c2u2","c2u3","c3u1","c3u2","c3u3","c3u4","m2000","mgram"].forEach(ex=>r.exams[ex]={result:"ok",open:false,exam:ex,session:"",submissions:0}); }
+      return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
+    };
+  });
+  await q.goto(new URL("../../admin/index.html", import.meta.url).href); await q.waitForTimeout(800);
+  const w=await q.evaluate(()=>{const e=document.getElementById("serverNote");
+    return {shown:getComputedStyle(e).display!=="none", txt:(e.textContent||""), cls:e.className};});
+  ok(w.shown && /少し古い/.test(w.txt) && /合言葉/.test(w.txt) && !/単元テスト③④が開かない/.test(w.txt),
+     "★1つ前の版なら「少し古い」＋足りないものだけ（"+w.txt.slice(0,50)+"）");
+  await q.close();
+}
 // ずっと busy なら 3回でやめて、そう言い、ボタンを解放する
 {
   const q=await b.newPage();

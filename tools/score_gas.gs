@@ -342,7 +342,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-16";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-17";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -721,6 +721,9 @@ function masteryLog_(){
    d: {exam:"m2000"|"mgram"|"all", from, to} か {all:true}。返す key は足した行の日時（ms）で、
    端末はこれを控えて「同じリセットを二度当てない」。 */
 function masteryReset(d){
+  /* ★先生の合言葉が要る（jigaku-17）。マイページは誰でも開けて学年・番号も自己申告なので、
+     合言葉なしだと他の子の記録を消せてしまう（先生「ゆくゆくはパスワード設定しないと他人に消されちゃう」）。 */
+  if (!pinOK_(d)) return {result:"error", message:"合言葉(PIN)が違います（先生が入力してください）"};
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
   var exams = (d.exam === "all") ? Object.keys(MASTERY_EXAMS) : [String(d.exam||"")];

@@ -207,7 +207,17 @@
   /* いま置いてある tools/score_gas.gs の版。これ未満だと、
      単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
      模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
-  var ADMIN_NEED = 16;
+  var ADMIN_NEED = 17;
+  /* 版ごとに「その版で足したもの」。サーバーがそれより古いときは、足りないものだけを言う
+     （以前は差が1つでも「単元テスト③④が開かない…」と古い定型文を出していて、大げさだった）。 */
+  var SINCE = {
+    16: "管理画面のスタート/ストップが混みあいに強くなる・マイページの「設定」からリセットできる",
+    17: "マイページのリセットに先生の合言葉が要るようになる（他の子の記録を消せない）"
+  };
+  function missingSince(vn){
+    var out=[]; for(var v in SINCE) if(Number(v) > vn) out.push("jigaku-"+v+"：" + SINCE[v]);
+    return out;
+  }
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
   /* ★出すときは display を "block" と明示する。以前は "" にしていたが、それは「インラインの指定を消す」
@@ -219,6 +229,10 @@
     // 単元テスト③④を知らない古いサーバーでも最新に見えていた。
     var vn=st&&st.ver ? (String(st.ver).match(/jigaku-(\d+)/)||[])[1] : null;
     if(vn && Number(vn) >= ADMIN_NEED){ el.style.display="block"; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
+    else if(st && st.ver && Number(vn) >= 15){ el.style.display="block"; el.className="card warn";
+      // 少し古いだけ：動くが、足りないものを具体的に言う
+      el.innerHTML="⚠️ サーバーの版が少し古いです（いま "+st.ver+"／最新は jigaku-"+ADMIN_NEED+"）。いまの機能は動きます。"+
+        "次に GAS を開いたときに貼りかえてください。足りないもの：<br>・"+missingSince(Number(vn)).join("<br>・")+"<br>"+STALE; }
     else if(st && st.ver){ el.style.display="block"; el.className="card warn";
       el.innerHTML="⚠️ サーバーの版が古いようです（いま "+st.ver+"／想定は jigaku-"+ADMIN_NEED+" 以上）。"+
         "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない・到達度テストが開かない、といったことが起きます。<br>"+STALE+

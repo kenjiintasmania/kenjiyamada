@@ -226,7 +226,7 @@
     <div class="body hide" id="settingsBody">
       <p class="hint" style="margin:0 0 8px">
         <b>先生の指示があったときだけ</b>押してください。到達度テストの記録を <b>0 に戻します（元に戻せません）</b>。
-        対象は上の「あなたの情報」の学年・番号です。</p>
+        対象は上の「あなたの情報」の学年・番号で、<b>先生の合言葉</b>が要ります。</p>
       <div class="sendrow">
         <button class="btn danger small" id="resetHalf" type="button">2000単語 前半リセット（セット1〜10）</button>
         <button class="btn danger small" id="resetAll" type="button">全データリセット（2000語・全文法）</button>
@@ -245,7 +245,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VER="me 0.2";
+  var APP_VER="me 0.3";
   // 送信先：成績まとめ用GAS（score_gas.gs をデプロイしたウェブアプリ）。
   // kind:"summary" を、指定スプレッドシートの新タブ「成績まとめ」に1人1行で集約します。
   // 空文字なら送信オフ。
@@ -590,16 +590,16 @@
     if(!cls||!num){ msg.className="err"; msg.textContent="上の「あなたの情報」に学年と番号を入れてください。"; return; }
     if(!SUMMARY_GAS_URL){ msg.className="err"; msg.textContent="送信先(GAS)が未設定です。"; return; }
     var who="学年"+cls+" 番号"+num+(name?"（"+name+"）":"");
-    if(spec.all){
-      var typed=prompt("2000語・全文法 到達度テストの記録を すべて 0 に戻します。\n"+who+"\n元に戻せません。よければ「リセット」と入力してください。");
-      if(typed!=="リセット"){ msg.textContent="やめました。"; return; }
-    }else{
-      if(!confirm("2000語 到達度テストの セット1〜10 の記録を 0 に戻します。\n"+who+"\n先生の指示がありましたか？")){ msg.textContent="やめました。"; return; }
-    }
+    var what=spec.all ? "2000語・全文法 到達度テストの記録を すべて 0 に戻します。" : "2000語 到達度テストの セット1〜10 の記録を 0 に戻します。";
+    if(!confirm(what+"\n"+who+"\n元に戻せません。先生の指示がありましたか？")){ msg.textContent="やめました。"; return; }
+    /* 先生の合言葉（/admin と同じ）。生徒が自分で押しても、他の子の記録を消せないように。
+       端末には残さない（生徒の端末なので）。 */
+    var pin=prompt("先生の合言葉を入れてください（先生が入力します）");
+    if(pin==null || !String(pin).trim()){ msg.textContent="やめました（合言葉が入っていません）。"; return; }
     if(resetting) return; resetting=true;
     var btns=[$("resetHalf"),$("resetAll")]; btns.forEach(function(b){ b.disabled=true; });
     msg.textContent="リセットしています…";
-    var payload={action:"mastery_reset", kind:"mastery_reset", cls:cls, num:num, name:name,
+    var payload={action:"mastery_reset", kind:"mastery_reset", pin:String(pin).trim(), cls:cls, num:num, name:name,
                  exam:(spec.all?"all":"m2000"), all:!!spec.all, from:1, to:(spec.all?0:10)};
     if(window.SITE) SITE.tag(payload);
     fetch(SUMMARY_GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
