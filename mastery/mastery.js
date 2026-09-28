@@ -26,7 +26,7 @@
   var run = null;
 
   var core = window.MasteryCore.create({
-    exam: "m2000", ver: "mastery 0.5", sets: SETS, ls: "mastery_v1", perSet: SET_SIZE,
+    exam: "m2000", ver: "mastery 0.6", sets: SETS, perSet: SET_SIZE,
     unitName: "セット", unitWord: "語",
     gas: "https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec",
     tipOf: function (i) { return "セット" + i + "（" + range(i) + "）"; },

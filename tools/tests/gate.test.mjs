@@ -166,4 +166,136 @@ console.log("— 到達度まとめ：1人1行・名簿順 —");
      "★作りなおしても同じ（"+msg+"）");
 }
 
+
+
+/* ===================== jigaku-16 ===================== */
+
+/* ---------- 合言葉：コードは "PIN" のまま、「設定」タブの「合言葉」行が優先 ---------- *
+   貼るたびに TEACHER_PIN を直す約束は、直し忘れで /admin が「合言葉が違います」になった
+   （2026-09）。以後は既定値のまま。学校ごとに変えるなら設定タブに書く。 */
+console.log("— 合言葉：設定タブが優先 —");
+{
+  let r=G.call({action:"gate", pin:"PIN", exam:"c2u1", open:true});
+  ok(r.result==="ok", "既定の合言葉で開けられる");
+  // 設定タブに「合言葉」行を足す（学習方針は B2。行はどこでもよい）
+  G.call({action:"setpolicy", pin:"PIN", policy:"kihon"});
+  const st=G.__SS.getSheetByName("設定");
+  st.appendRow(["合言葉","himitsu"]);
+  r=G.call({action:"gate", pin:"PIN", exam:"c2u1", open:false});
+  ok(r.result==="error" && /合言葉/.test(r.message), "★設定タブに書いたら、既定の PIN では開けない（"+r.message+"）");
+  r=G.call({action:"gate", pin:"himitsu", exam:"c2u1", open:false});
+  ok(r.result==="ok" && r.open===false, "設定タブの合言葉で閉じられる");
+  r=G.call({action:"setpolicy", pin:"himitsu", policy:"moshi"});
+  ok(r.result==="ok", "学習方針の保存も同じ合言葉");
+  ok(String(st.getRange(2,1).getValue())==="学習方針", "学習方針の行（A2）は壊れていない");
+  // B列を空にすれば既定に戻る
+  st.getRange(st.getLastRow(),2).setValue("");
+  r=G.call({action:"gate", pin:"PIN", exam:"c2u1", open:true});
+  ok(r.result==="ok", "B列が空なら既定の PIN に戻る");
+  G.call({action:"gate", pin:"PIN", exam:"c2u1", open:false});
+}
+
+/* ---------- ロックが取れないとき：例外ではなく busy ---------- *
+   先生のスタートが生徒の記録送信に押し負けて「Exception: Lock timeout」で止まっていた。 */
+console.log("— ロック待ち：busy を返す —");
+{
+  G.setBusy(true);
+  let r=G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  ok(r.result==="error" && r.busy===true && /混みあ/.test(r.message), "★スタートは busy つきの error（管理画面が押しなおす）："+r.message);
+  r=G.call({kind:"mastery", exam:"m2000", cls:"3", num:"7", name:"テスト", round:9, set:1, correct:1, asked:1, sec:1, ver:"t"});
+  ok(r.result==="busy", "★生徒の記録は busy（端末にためて送りなおす）："+JSON.stringify(r));
+  r=G.call({kind:"unittest", exam:"c2u1", cls:"3", num:"7", name:"テスト", score:1, total:1, pct:100, ver:"t"});
+  ok(r.result==="busy", "単元テストの提出も busy："+JSON.stringify(r));
+  G.setBusy(false);
+  r=G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  ok(r.result==="ok", "ロックが空けば通る");
+  const log=(G.dump("到達度テスト")||[]).filter(x=>String(x[2])==="m2000"&&String(x[4])==="7"&&Number(x[6])===9);
+  ok(log.length===0, "busy のとき記録は書かれていない");
+}
+
+/* ---------- 全試験を1回で ---------- */
+console.log("— status_all —");
+{
+  const r=G.call({action:"status_all", kind:"admin"});
+  ok(r.result==="ok" && r.exams && r.exams.m2000 && r.exams.c3u4, "全試験の状態が1回で返る");
+  ok(r.exams.m2000.open===true && typeof r.exams.m2000.session==="string", "m2000 は開いていてセッションつき");
+  ok(r.exams.c3u4.open===false, "c3u4 は閉");
+  ok(/jigaku-\d+/.test(r.ver), "版がついている："+r.ver);
+  const one=G.call({action:"status", exam:"m2000"});
+  ok(one.session===r.exams.m2000.session && one.submissions===r.exams.m2000.submissions, "1試験ずつ聞いた答えと同じ");
+}
+
+/* ---------- リセット：行を消さず「リセット行」で前の記録を無かったことにする ---------- *
+   先生の指示（2026-09-28）：カンニングが分かった子のセット1〜10を0点に。その子には
+   「11〜20だけやりなさい」と指示ずみ。 */
+console.log("— リセット（前半）—");
+{
+  const put=(round,set,correct)=>G.call({kind:"mastery", exam:"m2000", cls:"2", num:"18", name:"テスト",
+    round, set, correct, asked:100, sec:60, ver:"t"});
+  put(1,1,90); put(2,1,95); put(1,2,80); put(1,11,70); put(1,12,60);
+  let p=G.call({action:"progress", exam:"m2000", cls:"2", num:"18"});
+  ok(p.done===5 && p.resets.length===0, "リセット前：5回ぶん（"+p.done+"）・resets 空");
+  // リセット行は必ず後の時刻にする（模型は速いので、同じmsに並ばないよう少し待つ）
+  const t0=Date.now(); while(Date.now()-t0<3){}
+  let r=G.call({action:"mastery_reset", kind:"mastery_reset", exam:"m2000", from:1, to:10, cls:"2", num:"18", name:"テスト"});
+  ok(r.result==="ok" && r.exams.length===1 && r.exams[0]==="m2000" && r.range==="1〜10", "★リセットできる："+JSON.stringify(r));
+  ok(typeof r.key==="number" && r.key>0, "端末が控える key（行の日時ms）が返る");
+  const rows=G.dump("到達度テスト");
+  const mark=rows.filter(x=>String(x[12])==="reset");
+  ok(mark.length===1 && String(mark[0][7])==="1〜10" && Number(mark[0][6])===0, "★シートにはリセット行が1行足されるだけ（記録は消さない）");
+  ok(rows.length>=6, "元の記録行は残っている（"+rows.length+"行）");
+  p=G.call({action:"progress", exam:"m2000", cls:"2", num:"18"});
+  ok(p.done===2 && !p.sets["1-1"] && !p.sets["2-1"] && !p.sets["1-2"] && p.sets["1-11"] && p.sets["1-12"],
+     "★続きの位置：1〜10 は無かったことに、11・12 は残る（"+Object.keys(p.sets).join(" ")+"）");
+  ok(p.resets.length===1 && p.resets[0].from===1 && p.resets[0].to===10 && p.resets[0].key===r.key,
+     "★progress が端末に resets を返す（key が一致）："+JSON.stringify(p.resets));
+  ok(p.round===1 && p.set===13, "次は 1周目セット13（"+p.round+"-"+p.set+"）");
+  G.rebuildMasteryBoard();
+  const bd=(G.dump("到達度まとめ")||[]).find(x=>String(x[0])==="2"&&String(x[1])==="18");
+  ok(bd && Number(bd[3])===130, "★到達度まとめの合計は 70+60=130（"+(bd&&bd[3])+"）");
+  const sum=G.dump("成績まとめ"); const col=sum[0].indexOf("到達度2000語_合計");
+  const srow=sum.find(x=>String(x[1])==="2"&&String(x[2])==="18");
+  ok(srow && Number(srow[col])===130, "★成績まとめの合計も 130（"+(srow&&srow[col])+"）");
+  // やり直しの1回目が「記録ずみ」で弾かれない
+  const t1=Date.now(); while(Date.now()-t1<3){}
+  r=put(1,1,50);
+  ok(r.result==="ok", "★リセット後のセット1・1回目は dup にならない："+JSON.stringify(r));
+  p=G.call({action:"progress", exam:"m2000", cls:"2", num:"18"});
+  ok(p.sets["1-1"] && p.sets["1-1"].correct===50 && p.done===3, "やり直した記録は数える（"+JSON.stringify(p.sets["1-1"])+"）");
+  G.rebuildMasteryBoard();
+  const bd2=(G.dump("到達度まとめ")||[]).find(x=>String(x[0])==="2"&&String(x[1])==="18");
+  ok(bd2 && Number(bd2[3])===180, "合計 50+70+60=180（"+(bd2&&bd2[3])+"）");
+}
+console.log("— リセット（全部）—");
+{
+  G.call({action:"gate", pin:"PIN", exam:"mgram", open:true});
+  G.call({kind:"mastery", exam:"mgram", cls:"2", num:"18", name:"テスト", round:1, set:3, correct:4, asked:5, sec:30, ver:"t"});
+  const t0=Date.now(); while(Date.now()-t0<3){}
+  const r=G.call({action:"mastery_reset", kind:"mastery_reset", exam:"all", all:true, cls:"2", num:"18", name:"テスト"});
+  ok(r.result==="ok" && r.exams.length===2 && r.range==="全", "★全データ：2000語と全文法の両方にリセット行："+JSON.stringify(r.exams));
+  const p1=G.call({action:"progress", exam:"m2000", cls:"2", num:"18"});
+  const p2=G.call({action:"progress", exam:"mgram", cls:"2", num:"18"});
+  ok(p1.done===0 && p2.done===0, "★両方とも 0 から（"+p1.done+"/"+p2.done+"）");
+  ok(p1.resets.length===2 && p1.resets[1].to>=1e9, "resets は2件（前半＋全）で、全は to が大きい");
+  ok(p2.resets.length===1, "全文法の resets は1件");
+  // ほかの子は影響なし
+  const p3=G.call({action:"progress", exam:"m2000", cls:"3", num:"21"});
+  ok(p3.done>0 && p3.resets.length===0, "★ほかの子の記録は変わらない");
+  // 入力のおかしいリセットは弾く
+  let e=G.call({action:"mastery_reset", kind:"mastery_reset", exam:"m2000", from:10, to:1, cls:"2", num:"18"});
+  ok(e.result==="error", "範囲が逆なら error");
+  e=G.call({action:"mastery_reset", kind:"mastery_reset", exam:"nosuch", from:1, to:10, cls:"2", num:"18"});
+  ok(e.result==="error", "未知の試験IDは error");
+  e=G.call({action:"mastery_reset", kind:"mastery_reset", exam:"m2000", from:1, to:10, cls:"", num:""});
+  ok(e.result==="error", "学年・番号なしは error");
+}
+console.log("— 到達度テスト以外の記録が英検タブに落ちない —");
+{
+  const before=(G.dump("英検テスト履歴")||[]).length;
+  G.call({action:"status_all", kind:"admin"});
+  G.call({action:"mastery_reset", kind:"mastery_reset", exam:"m2000", from:1, to:10, cls:"2", num:"18"});
+  const after=(G.dump("英検テスト履歴")||[]).length;
+  ok(before===after, "status_all / mastery_reset は英検タブに行を作らない（"+before+"→"+after+"）");
+}
+
 console.log(`\n${pass} pass / ${fail} fail`);

@@ -17,7 +17,8 @@
 ## GAS（Google Apps Script）— 手動デプロイ
 コードはリポジトリに置くが、**反映は先生が GAS エディタに貼って「新バージョン」で再デプロイ**する手動作業。
 - `tools/score_gas.gs`：成績・単元テスト・学習方針・AI×成績相関。`SPREADSHEET_ID` は直書き済み
-  （`1x3jpH6…dXNJs`）。`TEACHER_PIN` は先生の秘密値に変更し、`/admin` の PIN と一致させる。
+  （`1x3jpH6…dXNJs`）。`TEACHER_PIN` は既定 `"PIN"` のまま（貼るたびに直さない・jigaku-16〜）。
+  変えたいときはコードではなくスプレッドシート「設定」タブに A「合言葉」／B「値」の行を足す。
   版番号 `GAS_VERSION` を上げると `/admin` 上部に表示され反映確認できる。
 - `log_gas.gs`（**別スレ＝プロンプト設計が所有**・別プロジェクト/別URL）：AI練習ログを
   **同一ブックのタブ「AImodeログ」**へ追記。`score_gas` 側はタブ名ではなく列見出し

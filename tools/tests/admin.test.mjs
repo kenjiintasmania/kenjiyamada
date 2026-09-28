@@ -11,17 +11,32 @@ let pass=0,fail=0; const ok=(c,m)=>{ c?pass++:(fail++,console.log("  ✗ "+m)); 
 const b=await chromium.launch({executablePath:process.env.CHROME_PATH||"/opt/pw-browsers/chromium-1194/chrome-linux/chrome",args:["--no-sandbox"]});
 const p=await b.newPage(); const errs=[];
 p.on("pageerror",e=>errs.push(String(e)));
+/* 模型サーバー：新版（status_all を知っている）。gate は最初の1回だけ busy を返し、
+   管理画面が自分で押しなおすかを見る（ロック待ちで「Exception」が末尾に出るだけ、をなくした） */
 await p.addInitScript((VER)=>{
-  window.__sent=[];
+  window.__sent=[]; window.__open={}; let busyOnce=true;
   window.fetch=function(url,opt){
     const d=JSON.parse(opt.body); window.__sent.push(d);
     let r={result:"ok", ver:VER};
-    if(d.action==="status") r={result:"ok", ver:VER, open:false, exam:d.exam, session:"", submissions:0};
-    if(d.action==="gate")   r={result:"ok", ver:VER, open:!!d.open, exam:d.exam, session:"S1", submissions:0};
+    const st=(ex)=>({result:"ok", open:!!window.__open[ex], exam:ex, session:window.__open[ex]?"S1":"", submissions:0});
+    if(d.action==="status") r={...st(d.exam), ver:VER};
+    if(d.action==="status_all"){ r={result:"ok", ver:VER, exams:{}};
+      ["c2u1","c2u2","c2u3","c3u1","c3u2","c3u3","c3u4","m2000","mgram"].forEach(ex=>r.exams[ex]=st(ex)); }
+    if(d.action==="gate"){
+      if(busyOnce){ busyOnce=false; r={result:"error", busy:true, ver:VER, message:"いま生徒の記録が混みあっていて…"}; }
+      else { window.__open[d.exam]=!!d.open; r={result:"ok", ver:VER, open:!!d.open, exam:d.exam, session:"S1", submissions:0}; }
+    }
     return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
   };
 }, VER);
 await p.goto(new URL("../../admin/index.html", import.meta.url).href); await p.waitForTimeout(800);
+{ // 状態は全試験を1回で聞く（旧来の9回ではなく）
+  const kinds=await p.evaluate(()=>window.__sent.map(x=>x.action));
+  ok(kinds.filter(a=>a==="status_all").length>=1 && !kinds.includes("status"),
+     "★状態は status_all で1回に（"+kinds.join(",")+"）");
+  const sa=await p.evaluate(()=>window.__sent.find(x=>x.action==="status_all"));
+  ok(sa && sa.kind==="admin", "status_all には kind:admin がつく（旧版で英検タブに落ちないため）");
+}
 
 /* 枚数も本数も直書きしない。/admin の EXAMS を数えて、それと画面が合うかを見る
    （試験を足すたびにこのテストだけが落ちるのを避ける）。 */
@@ -42,10 +57,24 @@ ok(/100語×20セット/.test(await p.textContent("#exams")), "使いかたの�
 await p.fill("#pin","TESTPIN");
 // m2000 のカードの位置は増減するので、並び順ではなく EXAMS の中の位置で探す
 const btns=await p.$$("#exams .start");
-await btns[ADM_IDS.indexOf("m2000")].click(); await p.waitForTimeout(400);
+const card=(await p.$$("#exams .card"))[ADM_IDS.indexOf("m2000")];
+await btns[ADM_IDS.indexOf("m2000")].click(); await p.waitForTimeout(300);
+{ // 押した直後：両方のボタンが止まり、カードの下に「スタートしています…」
+  const st=await card.evaluate(c=>({s:c.querySelector(".start").disabled, t:c.querySelector(".stop").disabled, m:c.querySelector(".cmsg").textContent}));
+  ok(st.s && st.t, "送信中は両方のボタンが止まる");
+  ok(/スタートしています|混みあっています/.test(st.m), "★結果はカードのすぐ下に出る（"+st.m+"）");
+}
+await p.waitForTimeout(3200);   // busy → 2.5秒後に押しなおす
 const sent=await p.evaluate(()=>window.__sent.filter(x=>x.action==="gate"));
-ok(sent.length===1 && sent[0].exam==="m2000" && sent[0].open===true,
-   "スタートで m2000 のゲートを開ける（"+JSON.stringify(sent[0]||{})+"）");
+ok(sent.length===2 && sent.every(x=>x.exam==="m2000" && x.open===true),
+   "★busy なら自分で押しなおす（gate "+sent.length+"回）");
+{
+  const st=await card.evaluate(c=>({s:c.querySelector(".start").disabled, t:c.querySelector(".stop").disabled,
+    m:c.querySelector(".cmsg").textContent, b:c.querySelector(".badge").textContent}));
+  ok(/受付を開始しました/.test(st.m), "★押しなおしが通って「✓ 受付を開始しました」（"+st.m+"）");
+  ok(/受付中/.test(st.b), "カードのバッジが受付中になる（"+st.b+"）");
+  ok(st.s && !st.t, "スタートは止まり、ストップが押せる");
+}
 // 版チェック
 const note=await p.evaluate(()=>{const e=document.getElementById("serverNote");
   return {shown:e.style.display!=="none", txt:(e.textContent||"").slice(0,40), cls:e.className};});

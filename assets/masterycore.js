@@ -18,9 +18,44 @@
 (function (global) {
   "use strict";
 
+  /* 端末の控えの置き場所（試験ID → localStorage のキー）。
+     マイページの「設定」（リセット）もここを見るので、2本の画面とここの3か所で写さない。 */
+  var LS_OF = { m2000: "mastery_v1", mgram: "mastery_gram_v1" };
+  function readLS(key) { try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) { return {}; } }
+  function writeLS(key, o) { try { localStorage.setItem(key, JSON.stringify(o)); } catch (e) {} }
+
+  /* ---------- リセット（先生の指示でやり直すとき） ---------- *
+   * 正はサーバーの「リセット行」（score_gas.gs の masteryLog_ 参照）。端末の控えは、
+   * そのリセットを**一度だけ**当てて消す：
+   *   resets: [{from, to, key}]  key はサーバーの行の日時（ms）。当てた最大の key を控えに残し、
+   *   次からは key がそれより新しいものだけ当てる（同じリセットで、やり直した記録まで消さないため）。
+   * 消すもの：その子の from〜to のセットの控え と、まだ送っていない同じセットの記録（送ると復活するため）。
+   * 戻り値は消した控えの数。マイページからも、progress の返事からも同じこれを通す。 */
+  function applyResets(exam, who, resets) {
+    var ls = LS_OF[exam]; if (!ls || !resets || !resets.length) return 0;
+    var o = readLS(ls), ex = o[exam] = o[exam] || {}, by = ex.by = ex.by || {};
+    var me = by[who] = by[who] || { sets: {} };
+    var applied = Number(me.resetKey) || 0, maxKey = applied, n = 0;
+    function inRange(r, set) { return set >= r.from && set <= r.to; }
+    resets.forEach(function (r) {
+      var key = Number(r.key) || 0;
+      if (key <= applied) return;                      // もう当てたぶん
+      if (key > maxKey) maxKey = key;
+      var sets = me.sets || {};
+      for (var k in sets) if (inRange(r, Number(k.split("-")[1]))) { delete sets[k]; n++; }
+      me.sets = sets;
+      o.__pending = (o.__pending || []).filter(function (p) {
+        return !(p && p.exam === exam && (p.cls + "-" + p.num) === who && inRange(r, Number(p.set)));
+      });
+    });
+    me.resetKey = maxKey;
+    writeLS(ls, o);
+    return n;
+  }
+
   function create(cfg) {
     var EXAM = cfg.exam, VER = cfg.ver, SETS = cfg.sets;
-    var LS = cfg.ls || "mastery_v1";
+    var LS = cfg.ls || LS_OF[EXAM] || "mastery_v1";
     var UNIT = cfg.unitName || "セット";      // 「セット」／「項目」
     var THING = cfg.unitWord || "語";         // 「語」／「文」
 
@@ -38,8 +73,8 @@
         body: JSON.stringify(obj) }).then(function (r) { return r.json(); });
     }
 
-    function load() { try { return JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { return {}; } }
-    function save(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
+    function load() { return readLS(LS); }
+    function save(o) { writeLS(LS, o); }
 
     /* ★端末の控えは「どの子のぶんか」を添えて持つ。
        1台を何人かで使う教室（先生の試用もこれ）で、これが無いと前の子の記録が次の子に混ざり、
@@ -49,7 +84,9 @@
     function mySets() { return (((load()[EXAM] || {}).by || {})[who()] || {}).sets || {}; }
     function saveMine(sets) {
       var o = load(); o[EXAM] = o[EXAM] || {}; o[EXAM].by = o[EXAM].by || {};
-      o[EXAM].by[who()] = { sets: sets };
+      var me = o[EXAM].by[who()] || {};
+      me.sets = sets;                      // resetKey など、控えのほかの項目は残す
+      o[EXAM].by[who()] = me;
       delete o[EXAM].sets;                 // 旧かたち（誰のか分からない控え）は捨てる
       save(o);
     }
@@ -206,6 +243,8 @@
       post({ action: "progress", exam: EXAM, cls: $("f_cls").value.trim(), num: han($("f_num").value) })
         .then(function (r) {
           if (!r || r.result !== "ok") return;
+          // 先生の指示でリセットされていたら、端末の控えも同じところまで消してから重ねる
+          if (r.resets && r.resets.length) applyResets(EXAM, who(), r.resets);
           // サーバーの記録に端末の控えを重ねる（どちらかにしか無い回も拾う＝生徒が損しない側）
           doneSets = r.sets || {};
           var mine = mySets();
@@ -222,11 +261,20 @@
     /* ---------- 記録（届かなくても止めない） ---------- */
     function pending() { var o = load(); return o.__pending || []; }
     function setPending(a) { var o = load(); o.__pending = a; save(o); }
+    var retryT = null;
+    function retryLater() {                 // 混みあい（busy）は数秒おいて自分で送りなおす
+      clearTimeout(retryT);
+      retryT = setTimeout(function () { if (pending().length && idOK()) flush(); }, 6000 + Math.random() * 6000);
+    }
     function flush() {
       var q = pending();
       if (!q.length) { $("sendMsg").textContent = "記録しました ✓"; return; }
       post(q[0]).then(function (r) {
         if (r && (r.result === "ok" || r.result === "dup")) { setPending(pending().slice(1)); flush(); }
+        else if (r && r.result === "busy") {
+          $("sendMsg").textContent = "混みあっています。少しあとに送りなおします（記録は端末に残してあります）。";
+          retryLater();
+        }
         else $("sendMsg").textContent = "まだ届いていません（" + ((r && r.message) || "?") +
           "）。次の" + UNIT + "のときに送り直します。";
       }).catch(function () {
@@ -248,7 +296,10 @@
       var key = round + "-" + set;
       doneSets[key] = { correct: correct, sec: sec, cpm: cpm };
 
-      saveMine(doneSets);
+      /* 控えには**この回だけ**を足す（画面が持っている doneSets を丸ごと書かない）。
+         丸ごと書くと、別のタブやマイページでリセットされたあとに、この画面が覚えていた
+         古いセットの控えが書き戻され、消したはずの点が復活する。 */
+      var mine = mySets(); mine[key] = doneSets[key]; saveMine(mine);
 
       $("doneTitle").textContent = UNIT + set + "　" + round + "回目 おわり";
       $("doneScore").textContent = correct + " / " + (res.max || 0);
@@ -396,5 +447,5 @@
              isOpen: function () { return open; }, isRunning: function () { return running; } };
   }
 
-  global.MasteryCore = { create: create };
+  global.MasteryCore = { create: create, applyResets: applyResets, LS: LS_OF };
 })(typeof window !== "undefined" ? window : globalThis);

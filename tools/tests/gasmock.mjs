@@ -17,7 +17,12 @@ export function loadGas(){
   Sheet.prototype.appendRow=function(arr){ this.v.push(arr.slice()); };
   const self=Sheet.prototype;
   self.getRange=function(r,c,nr,nc){
-    const sh=this; nr=nr||1; nc=nc||1; sh._ensure(r+nr-1, c+nc-1);
+    const sh=this;
+    /* "A2" のような書きかたも受ける（setPolicy が使う） */
+    if(typeof r==="string"){ const m=r.match(/^([A-Z]+)(\d+)$/); if(!m) throw new Error("range: "+r);
+      let col=0; for(const ch of m[1]) col=col*26+(ch.charCodeAt(0)-64);
+      r=Number(m[2]); c=col; nr=1; nc=1; }
+    nr=nr||1; nc=nc||1; sh._ensure(r+nr-1, c+nc-1);
     return {
       getValues(){ const o=[]; for(let i=0;i<nr;i++){ const row=[];
         for(let j=0;j<nc;j++) row.push(sh.v[r-1+i][c-1+j]); o.push(row);} return o; },
@@ -54,7 +59,11 @@ export function loadGas(){
     toast(){}, getName(){ return "mock"; } };
   const g={
     SpreadsheetApp:{ openById(){ return SS; }, getActiveSpreadsheet(){ return SS; } },
-    LockService:{ getScriptLock(){ return { waitLock(){return true;}, tryLock(){return true;}, releaseLock(){} }; } },
+    /* 本物のロックは、生徒の記録送信が握っていると先生の切りかえが取れない。
+       模型では busy を立てると tryLock が取れない（waitLock は本物と同じく例外）。 */
+    LockService:{ _busy:false, getScriptLock(){ const L=g.LockService; return {
+      waitLock(){ if(L._busy) throw new Error("Lock timeout: another process was holding the lock for too long."); return true; },
+      tryLock(){ return !L._busy; }, releaseLock(){} }; } },
     /* 本物は日時から作る。模型では呼ばれるたびに1つ進める（同じ秒に2回押しても
        別のセッションになる／固定値だと「開け直したのに同じ」を見落とすため）。 */
     Utilities:{ _n:0, formatDate(d,tz,f){ this._n++; return "20260916-0000" + String(this._n).padStart(2,"0"); } },
@@ -71,5 +80,6 @@ export function loadGas(){
   };
   api.dump=function(name){ const s=SS.getSheetByName(name); return s? s.v.map(r=>r.slice()) : null; };
   api.sheets=function(){ return Object.keys(SS.sheets); };
+  api.setBusy=function(on){ g.LockService._busy=!!on; };
   return api;
 }

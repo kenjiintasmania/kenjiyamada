@@ -314,8 +314,13 @@ function clearSummaryCols_(names){
 }
 
 /* ===== 単元テスト（先生がゲートを開けた時だけ受験・記録） ===== *
- * ★先生へ：下の TEACHER_PIN を必ず自分だけが知る合言葉に変更してください。
- *   管理ページ（/admin/）でスタート/ストップを押すときに使います。            */
+ * 合言葉（PIN）：管理ページ（/admin/）でスタート/ストップを押すときに使います。
+ * ★下の TEACHER_PIN は書きかえなくてよい（jigaku-16〜）。
+ *   以前は「貼るたびに自分の合言葉へ直す」約束だったが、直し忘れると /admin に記憶した
+ *   合言葉と食いちがい、スタートが「合言葉が違います」で止まる（2026-09 授業中）。
+ *   学校ごとに変えたいときは、コードではなくスプレッドシートの「設定」タブに
+ *     A列「合言葉」／B列「その値」 の行を足す（行はどこでもよい・空なら既定値のまま）。
+ *   実証先（別ブック・別GAS）も、自分の「設定」タブに書けば自分の合言葉になる。      */
 var TEACHER_PIN = "PIN";
 var UNIT_SHEET = "単元管理";        // ゲート状態（開/閉・セッション）。先生が見える化用も兼ねる
 var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
@@ -337,8 +342,21 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-15";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-16";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
+/* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
+function teacherPin_(){
+  try{
+    var sh = getSS().getSheetByName(SETTINGS_SHEET);
+    if (sh && sh.getLastRow() >= 2){
+      var v = sh.getRange(2,1,sh.getLastRow()-1,2).getValues();
+      for (var i=0;i<v.length;i++)
+        if (String(v[i][0]).trim() === "合言葉" && String(v[i][1]).trim()) return String(v[i][1]).trim();
+    }
+  }catch(e){}
+  return TEACHER_PIN;
+}
+function pinOK_(data){ return String(data.pin||"") === teacherPin_(); }
 
 function doGet(e){
   return ContentService
@@ -348,16 +366,21 @@ function doGet(e){
 
 function doPost(e){
   try{
+    _mlog = null;   // 到達度テストの記録の控えは1回の実行のあいだだけ（masteryLog_ 参照）
     var data = {};
     if (e && e.postData && e.postData.contents){
       data = JSON.parse(e.postData.contents);
     }
     if (data.action === "status"){ var st=gateStatus(data.exam); st.ver=GAS_VERSION; return json(st); }
+    /* 管理画面：全試験を1回で。★kind:"admin" を添えて送らせるのは、この action を知らない
+       旧版に届いたとき「未知の kind」で止まるようにするため（kind 無しだと英検タブに空行が入る）。 */
+    if (data.action === "status_all") return json(gateStatusAll());
+    if (data.action === "mastery_reset") return json(masteryReset(data));
     if (data.action === "gate"){ var gs=setGate(data); gs.ver=GAS_VERSION; return json(gs); }
     if (data.action === "policy")    return json({result:"ok", policy:getPolicy(), ver:GAS_VERSION});
     if (data.action === "setpolicy"){ var ps=setPolicy(data); ps.ver=GAS_VERSION; return json(ps); }
     if (data.action === "buildcorr"){
-      if (String(data.pin||"") !== TEACHER_PIN) return json({result:"error", message:"合言葉(PIN)が違います", ver:GAS_VERSION});
+      if (!pinOK_(data)) return json({result:"error", message:"合言葉(PIN)が違います", ver:GAS_VERSION});
       return json({result:"ok", message:buildCorrelationTab(), ver:GAS_VERSION});
     }
     if (data.action === "progress") return json(masteryProgress(data));
@@ -517,12 +540,41 @@ function gateStatus(exam){
     return {result:"error", message:"いま読めませんでした（"+e.message+"）", exam:exam, title:title};
   }
 }
+/* 全試験の状態を1回で返す（管理画面用）。以前は9試験×5秒ごと＝9回の呼び出しで、
+   生徒の記録送信と同じ入口に並ぶので、それだけで混みあいの一因になっていた。 */
+function gateStatusAll(){
+  var out = {result:"ok", ver:GAS_VERSION, exams:{}};
+  try{
+    var sh = getSS().getSheetByName(UNIT_SHEET);
+    if (!sh) return {result:"error", ver:GAS_VERSION, message:"「"+UNIT_SHEET+"」シートが見つかりません"};
+    var rows = {};
+    if (sh.getLastRow() >= 2){
+      var v = sh.getRange(2,1,sh.getLastRow()-1,6).getValues();
+      for (var i=0;i<v.length;i++) rows[String(v[i][0]).trim()] = v[i];
+    }
+    for (var ex in UNIT_EXAMS){
+      var row = rows[ex];
+      out.exams[ex] = row
+        ? {result:"ok", open:(String(row[2]).trim()==="開"), exam:ex, title:(row[1]||UNIT_EXAMS[ex]),
+           session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0}
+        : {result:"ok", open:false, exam:ex, title:UNIT_EXAMS[ex], session:"", never:true};
+    }
+  }catch(e){
+    return {result:"error", ver:GAS_VERSION, message:"いま読めませんでした（"+e.message+"）"};
+  }
+  return out;
+}
 // スタート/ストップ（PIN必須）
 function setGate(data){
-  if (String(data.pin||"") !== TEACHER_PIN) return {result:"error", message:"合言葉(PIN)が違います"};
+  if (!pinOK_(data)) return {result:"error", message:"合言葉(PIN)が違います"};
   var exam = data.exam;
   if (!exam || !UNIT_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
-  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  /* ★waitLock は取れないと例外を投げ、管理画面には「Exception: Lock timeout…」の生の文だけが
+     届いていた（しかも画面のいちばん下に）。取れなければ busy を返し、管理画面が自分で押しなおす。 */
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(12000))
+    return {result:"error", busy:true,
+            message:"いま生徒の記録が混みあっていて、切りかえが入れませんでした。数秒おいてもう一度押してください"};
   try{
     var sh = unitSheetEnsured();
     var r = findUnitRow(sh, exam);
@@ -567,27 +619,29 @@ function handleMastery(d){
   if (!exam || !MASTERY_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
-  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  /* ★ロックは短く待って、だめなら busy（生徒の画面は記録を端末にためて送りなおす）。
+     15秒ずつ順番待ちをさせると、待っている実行が積み上がって先生の切りかえまで入れなくなる。 */
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return {result:"busy", message:"いま混みあっています。あとで送りなおします"};
   try{
     var st = gateStatus(exam);
     if (!st.open) return {result:"locked", message:"いまは受付していません"};
     var sh = getSheet(MASTERY_LOG, masteryHeader());
     sh.getRange(1,1,1,masteryHeader().length).setValues([masteryHeader()]);
     var round = Math.max(1, Number(d.round)||1), set = Math.max(1, Number(d.set)||1);
-    // 同じ周・同じセットの二重送信だけは弾く（通信のやり直しで2行になるのを防ぐ）
-    var last = sh.getLastRow();
-    if (last >= 2){
-      var v = sh.getRange(2,3,last-1,6).getValues();   // 試験,学年,番号,名前,周回,セット
-      for (var i=0;i<v.length;i++){
-        if (String(v[i][0])===exam && String(v[i][1]).trim()===cls &&
-            String(v[i][2]).trim()===num && Number(v[i][4])===round && Number(v[i][5])===set)
-          return {result:"dup", message:"このセットは記録ずみです", round:round, set:set};
-      }
+    // 同じ周・同じセットの二重送信だけは弾く（通信のやり直しで2行になるのを防ぐ）。
+    // ★リセット行より前の記録は見ない＝リセット後の「1回目」を弾かない。
+    var rows = masteryLog_().rows;
+    for (var i=0;i<rows.length;i++){
+      if (rows[i].exam===exam && rows[i].cls===cls && rows[i].num===num &&
+          rows[i].round===round && rows[i].set===set)
+        return {result:"dup", message:"このセットは記録ずみです", round:round, set:set};
     }
     var sec = Number(d.sec)||0, correct = Number(d.correct)||0;
     var cpm = sec>0 ? Math.round(correct / (sec/60) * 10)/10 : "";
     sh.appendRow([ new Date(), st.session, exam, cls, num, d.name||"",
                    round, set, correct, numOrBlank(d.asked), sec, cpm, d.ver||"" ]);
+    _mlog = null;
     /* ★成績まとめ・到達度まとめの書きなおしは、ここではしない（jigaku-15）。
        1セットごとに記録全体を3回読み・並べかえまでしていたので、そのあいだロックを
        数秒ずつ握りつづけ、40人が一斉に記録すると順番待ちがあふれた。
@@ -598,23 +652,102 @@ function handleMastery(d){
     return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm};
   } finally { lock.releaseLock(); }
 }
-/* 続きの位置を返す。端末ではなくここが正。 */
+/* ===================== 到達度テスト：記録の読みかた（リセット対応・jigaku-16） ===================== *
+ * 「到達度テスト」タブは追記しかしない（行を消さない＝あとから調べられる・戻せる）。
+ * やり直しは**リセット行**を足して表す：何回目=0、セット="1〜10"（範囲）か "全"、版="reset"。
+ * その行より**前の日時**の、その範囲のセットの記録は、無かったものとして読む。
+ *   ・先生の指示で前半をやり直させたいとき（最初の100語の一覧を別画面に出したまま受けていた等）に
+ *     生徒のマイページ「設定」から足す（2026-09 先生指示）
+ *   ・もとに戻したいときは、リセット行を消して 🏅 を押すだけ
+ * ★端末の控えを消すだけでは戻ってしまう（画面はサーバーと端末の「どちらかにあれば」拾う）ので、
+ *   正はここ。読みかたは1本にして、続きの位置／二重送信の判定／合計点／到達度まとめ の全部が通る。
+ * 列：A=日時 B=セッション C=試験 D=学年 E=番号 F=名前 G=何回目 H=セット I=正解数 J=問題数 K=経過秒 L=CPM M=版 */
+var MASTERY_RESET_VER = "reset";
+var _mlog = null;   // 1回の実行のあいだだけの控え（作りなおしで40人ぶん読みなおさないため）
+function masteryResetRange_(s){
+  s = String(s||"").trim();
+  if (s === "全" || s === "all") return {from:1, to:1e9};
+  var m = s.match(/^(\d+)\s*[-〜~～]\s*(\d+)$/);
+  if (m) return {from:Number(m[1]), to:Number(m[2])};
+  var n = Number(s); if (n > 0) return {from:n, to:n};
+  return null;
+}
+function masteryTime_(x){
+  var t = (x instanceof Date) ? x.getTime() : new Date(x).getTime();
+  return isNaN(t) ? 0 : t;
+}
+function masteryLog_(){
+  if (_mlog) return _mlog;
+  var out = { rows:[], resets:{} };   // resets["試験|学年|番号"] = [{from,to,at}]
+  var sh = getSS().getSheetByName(MASTERY_LOG);
+  if (!sh || sh.getLastRow() < 2) return (_mlog = out);
+  var v = sh.getRange(2,1,sh.getLastRow()-1,13).getValues();
+  var recs = [];
+  for (var i=0;i<v.length;i++){
+    var r = v[i], exam = String(r[2]).trim();
+    if (!MASTERY_EXAMS[exam]) continue;
+    var cls = String(r[3]).trim(), num = String(r[4]).trim();
+    if (!cls || !num) continue;
+    var key = exam + "|" + cls + "|" + num, at = masteryTime_(r[0]);
+    if (String(r[12]).trim() === MASTERY_RESET_VER){
+      var rg = masteryResetRange_(r[7]);
+      if (rg) (out.resets[key] = out.resets[key] || []).push({from:rg.from, to:rg.to, at:at});
+      continue;
+    }
+    recs.push({key:key, exam:exam, cls:cls, num:num, name:String(r[5]||""), at:at, session:String(r[1]||""),
+               round:Number(r[6])||0, set:Number(r[7])||0, correct:Number(r[8])||0,
+               asked:r[9], sec:Number(r[10])||0, cpm:Number(r[11])||0});
+  }
+  for (var j=0;j<recs.length;j++){
+    var rc = recs[j], rs = out.resets[rc.key], dead = false;
+    if (rs) for (var k=0;k<rs.length;k++)
+      if (rs[k].at > rc.at && rc.set >= rs[k].from && rc.set <= rs[k].to){ dead = true; break; }
+    if (!dead) out.rows.push(rc);
+  }
+  return (_mlog = out);
+}
+/* マイページ「設定」から：行を消さずにリセット行を足す（上の注のとおり）。
+   d: {exam:"m2000"|"mgram"|"all", from, to} か {all:true}。返す key は足した行の日時（ms）で、
+   端末はこれを控えて「同じリセットを二度当てない」。 */
+function masteryReset(d){
+  var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+  if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
+  var exams = (d.exam === "all") ? Object.keys(MASTERY_EXAMS) : [String(d.exam||"")];
+  for (var i=0;i<exams.length;i++) if (!MASTERY_EXAMS[exams[i]]) return {result:"error", message:"未知の試験IDです"};
+  var from = Math.max(1, Number(d.from)||1), to = Number(d.to)||0;
+  if (!d.all && (!to || to < from)) return {result:"error", message:"リセットする範囲がおかしいです"};
+  var range = d.all ? "全" : (from + "〜" + to);   // ★"1-10" は日付に化けることがあるので波線で書く
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return {result:"busy", message:"いま混みあっています。10秒ほどおいて、もう一度押してください"};
+  try{
+    var sh = getSheet(MASTERY_LOG, masteryHeader());
+    sh.getRange(1,1,1,masteryHeader().length).setValues([masteryHeader()]);
+    var now = new Date();
+    for (var j=0;j<exams.length;j++)
+      sh.appendRow([now, "", exams[j], cls, num, d.name||"", 0, range, "", "", "", "", MASTERY_RESET_VER]);
+    _mlog = null;
+    // 端末に返す key は、シートから読みなおした日時にする（書いた値と読んだ値がmsで食いちがうことがある）
+    var key = masteryTime_(sh.getRange(sh.getLastRow(),1).getValue()) || now.getTime();
+    return {result:"ok", key:key, exams:exams, from:from, to:(d.all ? 1e9 : to), range:range,
+            message:"リセットしました"};
+  } finally { lock.releaseLock(); }
+}
+/* 続きの位置を返す。端末ではなくここが正。resets は端末の控えを同じところまで消すため。 */
 function masteryProgress(d){
   var exam = d.exam;
   if (!exam || !MASTERY_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
-  var out = {result:"ok", exam:exam, round:1, set:1, done:0, correct:0, sets:{}};
+  var out = {result:"ok", exam:exam, round:1, set:1, done:0, correct:0, sets:{}, resets:[]};
   if (!cls || !num) return out;
-  var sh = getSS().getSheetByName(MASTERY_LOG);
-  if (!sh || sh.getLastRow() < 2) return out;
-  var v = sh.getRange(2,3,sh.getLastRow()-1,10).getValues(); // 試験…CPM
+  var log = masteryLog_(), key = exam + "|" + cls + "|" + num;
+  out.resets = (log.resets[key] || []).map(function(r){ return {from:r.from, to:r.to, key:r.at}; });
   var maxR = 0, maxS = 0;
-  for (var i=0;i<v.length;i++){
-    if (String(v[i][0])!==exam || String(v[i][1]).trim()!==cls || String(v[i][2]).trim()!==num) continue;
-    var r = Number(v[i][4])||0, st2 = Number(v[i][5])||0;
-    out.done++; out.correct += Number(v[i][6])||0;
-    out.sets[r+"-"+st2] = {correct:Number(v[i][6])||0, sec:Number(v[i][8])||0, cpm:Number(v[i][9])||0};
-    if (r > maxR || (r === maxR && st2 > maxS)){ maxR = r; maxS = st2; }
+  for (var i=0;i<log.rows.length;i++){
+    var rc = log.rows[i];
+    if (rc.key !== key) continue;
+    out.done++; out.correct += rc.correct;
+    out.sets[rc.round+"-"+rc.set] = {correct:rc.correct, sec:rc.sec, cpm:rc.cpm};
+    if (rc.round > maxR || (rc.round === maxR && rc.set > maxS)){ maxR = rc.round; maxS = rc.set; }
   }
   if (maxR){ out.round = maxR; out.set = maxS + 1; }   // 次にやるセット
   return out;
@@ -636,20 +769,8 @@ function summaryColIndex_(key){
 }
 function masteryTotals(cls, num){
   var out = {}; for (var k in MASTERY_EXAMS) out[k] = 0;
-  var sh = getSS().getSheetByName(MASTERY_LOG);
-  if (!sh || sh.getLastRow() < 2) return out;
-  // C=試験 D=学年 E=番号 F=名前 G=何回目 H=セット I=正解数
-  var v = sh.getRange(2,3,sh.getLastRow()-1,7).getValues();
-  var best = {};
-  for (var i=0;i<v.length;i++){
-    if (String(v[i][1]).trim() !== String(cls).trim()) continue;
-    if (String(v[i][2]).trim() !== String(num).trim()) continue;
-    var ex = String(v[i][0]).trim(), set = Number(v[i][5])||0, c = Number(v[i][6])||0;
-    if (!MASTERY_EXAMS[ex] || !set) continue;
-    var k = ex + "\u0000" + set;
-    if (best[k] == null || c > best[k]) best[k] = c;      // 同じセットは最高点だけ
-  }
-  for (var k2 in best) out[k2.split("\u0000")[0]] += best[k2];
+  var st = masteryStats(cls, num);
+  for (var ex in st){ var b = st[ex].best; for (var s in b) out[ex] += b[s]; }
   return out;
 }
 /* その子の合計点を書きなおす。成績まとめに行が無ければ作る
@@ -680,6 +801,7 @@ function updateMasterySummary(cls, num, name){
 }
 /* 全員ぶん入れなおす（メニューから。行を消した・手で直した あとの立て直し用）。 */
 function rebuildMasteryTotals(){
+  _mlog = null;
   var sh = getSS().getSheetByName(MASTERY_LOG);
   if (!sh || sh.getLastRow() < 2) return "到達度テストの記録がありません";
   var v = sh.getRange(2,4,sh.getLastRow()-1,3).getValues();   // 学年,番号,名前
@@ -716,17 +838,14 @@ function masteryBoardHeader(){
 function masteryStats(cls, num){
   var out = {};
   for (var k in MASTERY_EXAMS) out[k] = { best:{}, cpm:[] };
-  var sh = getSS().getSheetByName(MASTERY_LOG);
-  if (!sh || sh.getLastRow() < 2) return out;
-  // C=試験 D=学年 E=番号 F=名前 G=何回目 H=セット I=正解数 J=問題数 K=経過秒 L=CPM
-  var v = sh.getRange(2,3,sh.getLastRow()-1,10).getValues();
-  for (var i=0;i<v.length;i++){
-    if (String(v[i][1]).trim() !== String(cls).trim()) continue;
-    if (String(v[i][2]).trim() !== String(num).trim()) continue;
-    var ex = String(v[i][0]).trim(); if (!out[ex]) continue;
-    var set = Number(v[i][5])||0, c = Number(v[i][6])||0, cpm = Number(v[i][9])||0;
-    if (set && (out[ex].best[set] == null || c > out[ex].best[set])) out[ex].best[set] = c;
-    if (cpm > 0) out[ex].cpm.push(cpm);
+  var rows = masteryLog_().rows;   // リセット行より前の記録は入っていない
+  cls = String(cls).trim(); num = String(num).trim();
+  for (var i=0;i<rows.length;i++){
+    var rc = rows[i];
+    if (rc.cls !== cls || rc.num !== num || !out[rc.exam]) continue;
+    if (rc.set && (out[rc.exam].best[rc.set] == null || rc.correct > out[rc.exam].best[rc.set]))
+      out[rc.exam].best[rc.set] = rc.correct;
+    if (rc.cpm > 0) out[rc.exam].cpm.push(rc.cpm);
   }
   return out;
 }
@@ -770,6 +889,7 @@ function updateMasteryBoard(cls, num, name){
 }
 /* 全員ぶん作りなおす（メニューから）。行を消した・手で直した あとの立て直し用。 */
 function rebuildMasteryBoard(){
+  _mlog = null;
   var sh = getSS().getSheetByName(MASTERY_LOG);
   if (!sh || sh.getLastRow() < 2) return "到達度テストの記録がありません";
   var v = sh.getRange(2,4,sh.getLastRow()-1,3).getValues();   // 学年,番号,名前
@@ -805,7 +925,8 @@ function rebuildMasteryBoard(){
 function handleUnitTest(d){
   var exam = d.exam;
   if (!exam || !UNIT_EXAMS[exam]) return {result:"error", message:"未知の試験IDです"};
-  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return {result:"busy", message:"いま混みあっています。もう一度「提出」を押してね"};
   try{
     var st = gateStatus(exam);
     if (!st.open) return {result:"locked", message:"いまは受付していません"};
@@ -866,7 +987,7 @@ function getPolicy(){
   return String(sh.getRange("B2").getValue() || "");
 }
 function setPolicy(data){
-  if (String(data.pin||"") !== TEACHER_PIN) return {result:"error", message:"合言葉(PIN)が違います"};
+  if (!pinOK_(data)) return {result:"error", message:"合言葉(PIN)が違います"};
   var sh = getSheet(SETTINGS_SHEET, ["設定項目","値"]);
   sh.getRange("A2").setValue("学習方針");
   sh.getRange("B2").setValue(String(data.policy||""));

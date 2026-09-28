@@ -103,6 +103,15 @@
   .card.comment .guide{font-size:15px;color:var(--ink);margin:0;background:#fff6e6;
     border-radius:10px;padding:9px 12px}
   .card.shuku{border-color:#ffd9cc}
+  .card.settings{border-color:#e6dcc6;background:#fffcf5}
+  .card.settings .body{margin-top:12px;border-top:1px dashed #e7e0cf;padding-top:10px}
+  .card.settings .hide{display:none}
+  .btn.danger{background:#d9603e;box-shadow:0 4px 0 #a8452a}
+  .btn.danger:active{box-shadow:0 2px 0 #a8452a}
+  .btn.small{font-size:14px;padding:8px 14px}
+  #resetMsg{font-size:13px;color:#7a7363;margin-top:8px;min-height:18px}
+  #resetMsg.ok{color:#2e9e57;font-weight:bold}
+  #resetMsg.err{color:#d9603e;font-weight:bold}
   footer{text-align:center;color:#b3ab98;font-size:12px;margin-top:24px}
 </style>
 </head>
@@ -211,16 +220,32 @@
     <div class="teacher" id="teacherNote"></div>
   </div>
 
+  <!-- 設定：到達度テストのリセット（先生の指示があったときだけ使う） -->
+  <div class="card settings" id="settingsCard">
+    <button class="btn ghost small" id="settingsBtn" type="button">⚙ 設定</button>
+    <div class="body hide" id="settingsBody">
+      <p class="hint" style="margin:0 0 8px">
+        <b>先生の指示があったときだけ</b>押してください。到達度テストの記録を <b>0 に戻します（元に戻せません）</b>。
+        対象は上の「あなたの情報」の学年・番号です。</p>
+      <div class="sendrow">
+        <button class="btn danger small" id="resetHalf" type="button">2000単語 前半リセット（セット1〜10）</button>
+        <button class="btn danger small" id="resetAll" type="button">全データリセット（2000語・全文法）</button>
+      </div>
+      <div id="resetMsg"></div>
+    </div>
+  </div>
+
   <footer>マイページ ／ 単語・模擬テスト・英検の最新記録をまとめて表示・送信</footer>
 </div>
 
 <script src="../words/data/words.js"></script>
 <script src="../words/data/katsuyo.js"></script>
 <script src="../assets/site.js"></script>
+<script src="../assets/masterycore.js?v=0928a"></script>
 <script>
 (function(){
   "use strict";
-  var APP_VER="me 0.1";
+  var APP_VER="me 0.2";
   // 送信先：成績まとめ用GAS（score_gas.gs をデプロイしたウェブアプリ）。
   // kind:"summary" を、指定スプレッドシートの新タブ「成績まとめ」に1人1行で集約します。
   // 空文字なら送信オフ。
@@ -543,6 +568,64 @@
   $("sendBtn").addEventListener("click",function(){ send(false); });
   $("reloadBtn").addEventListener("click",function(){ renderAll();
     $("sendmsg").className=""; $("sendmsg").textContent="記録を読みなおしました。"; });
+
+  /* ---------- 設定：到達度テストのリセット ---------- *
+   * 先生の指示でやり直させるとき（例：最初の100語の一覧を別画面に出したまま受けていた子に
+   * 「11〜20だけやりなさい」→ 1〜10 を 0 点に。2026-09 先生指示）。
+   * ★端末の控えを消すだけでは戻ってしまう：到達度テストの画面はサーバーの記録と端末の控えを
+   *   「どちらかにあれば」拾うので、正であるサーバー側に「リセット行」を足してもらい、その返事
+   *   （key＝行の日時）で端末の控えも同じところまで消す（MasteryCore.applyResets＝画面側と同じ1本）。
+   *   行は消さないので、先生はスプレッドシートで いつ・誰が リセットしたか分かり、行を消せば元に戻る。
+   * ★kind を添えるのは、この action を知らない旧版GASに届いたとき「未知の kind」で止めるため
+   *   （kind 無しだと旧版は英検タブに空行を書く）。 */
+  $("settingsBtn").addEventListener("click",function(){
+    var b=$("settingsBody"), open=b.classList.contains("hide");
+    b.classList.toggle("hide", !open);
+    this.textContent = open ? "⚙ 設定をとじる" : "⚙ 設定";
+  });
+  var resetting=false;
+  function resetMastery(spec){
+    var msg=$("resetMsg"); msg.className="";
+    var cls=$("f_cls").value.trim(), num=han($("f_num").value), name=$("f_name").value.trim();
+    if(!cls||!num){ msg.className="err"; msg.textContent="上の「あなたの情報」に学年と番号を入れてください。"; return; }
+    if(!SUMMARY_GAS_URL){ msg.className="err"; msg.textContent="送信先(GAS)が未設定です。"; return; }
+    var who="学年"+cls+" 番号"+num+(name?"（"+name+"）":"");
+    if(spec.all){
+      var typed=prompt("2000語・全文法 到達度テストの記録を すべて 0 に戻します。\n"+who+"\n元に戻せません。よければ「リセット」と入力してください。");
+      if(typed!=="リセット"){ msg.textContent="やめました。"; return; }
+    }else{
+      if(!confirm("2000語 到達度テストの セット1〜10 の記録を 0 に戻します。\n"+who+"\n先生の指示がありましたか？")){ msg.textContent="やめました。"; return; }
+    }
+    if(resetting) return; resetting=true;
+    var btns=[$("resetHalf"),$("resetAll")]; btns.forEach(function(b){ b.disabled=true; });
+    msg.textContent="リセットしています…";
+    var payload={action:"mastery_reset", kind:"mastery_reset", cls:cls, num:num, name:name,
+                 exam:(spec.all?"all":"m2000"), all:!!spec.all, from:1, to:(spec.all?0:10)};
+    if(window.SITE) SITE.tag(payload);
+    fetch(SUMMARY_GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(j&&j.result==="ok"){
+          var whoKey=cls+"-"+num, n=0;
+          (j.exams||[]).forEach(function(ex){
+            n+=window.MasteryCore.applyResets(ex, whoKey, [{from:j.from||1, to:(spec.all?1e9:(j.to||10)), key:j.key}]);
+          });
+          msg.className="ok";
+          msg.textContent="リセットしました ✓（"+(spec.all?"2000語・全文法のすべて":"2000語 セット1〜10")+"）。"+
+            "到達度テストの画面を開いていたら、いったん閉じて開きなおしてください。";
+        }else if(j&&j.result==="busy"){
+          msg.className="err"; msg.textContent="混みあっています。10秒ほどおいて、もう一度押してください。";
+        }else if(j&&/未知の kind/.test(j.message||"")){
+          msg.className="err"; msg.textContent="先生へ：GAS が古いためリセットできません（jigaku-16 以上を〔新バージョン〕でデプロイしてください）。";
+        }else{
+          msg.className="err"; msg.textContent="リセットできませんでした："+((j&&j.message)||"不明なエラー");
+        }
+      })
+      .catch(function(){ msg.className="err"; msg.textContent="通信エラー。電波を確認してもう一度押してください。"; })
+      .then(function(){ resetting=false; btns.forEach(function(b){ b.disabled=false; }); });
+  }
+  $("resetHalf").addEventListener("click",function(){ resetMastery({all:false}); });
+  $("resetAll").addEventListener("click",function(){ resetMastery({all:true}); });
 
   /* ---------- 起動 ---------- */
   fillIdentity();

@@ -41,7 +41,7 @@ https://docs.google.com/spreadsheets/d/【ここがシートID】/edit
 
 ```js
 var TRIAL_SPREADSHEET_ID = "【手順1でコピーしたシートID】";
-var TEACHER_PIN = "【実証用の合言葉。生徒用とは別の値に】";
+var TEACHER_PIN = "TRIALPIN";   // 既定のままでよい。変えるなら実証用ブックの「設定」タブに A「合言葉」／B「値」の行を足す
 ```
 
 > **安全弁**：`TRIAL_SPREADSHEET_ID` が空のとき、または生徒用ブックのIDと同じときは、
