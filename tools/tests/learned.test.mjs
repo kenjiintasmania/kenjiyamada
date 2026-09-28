@@ -82,7 +82,7 @@ ok(/さわった1項目（5文）のうち 4 \/ 5/.test(gt), `★さわったぶ
   await r.evaluate(()=>{ window.WORDS_SAVE = window.WORDS; });
   const e = await b.newPage();
   await e.exposeFunction("__gas3", (x)=>JSON.stringify(G2.call(JSON.parse(x))));
-  await e.route("**/words/data/words.js", route=>route.fulfill({status:404, body:""}));
+  await e.route("**/words/data/words.js*", route=>route.fulfill({status:404, body:""}));
   await e.addInitScript(()=>{ window.fetch=(u,o)=>window.__gas3(o.body)
     .then(t=>({status:200,ok:true,text:()=>Promise.resolve(t),json:()=>Promise.resolve(JSON.parse(t))})); });
   await e.goto(new URL("../../mastery/index.html", import.meta.url).href);
