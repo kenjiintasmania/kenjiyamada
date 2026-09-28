@@ -209,20 +209,23 @@
   var ADMIN_NEED = 16;
   // ゲート対応のサーバーか（open/session/exam いずれかを返せば対応版）
   function gateOK(r){ return r && (typeof r.open==="boolean" || typeof r.session==="string" || typeof r.exam!=="undefined"); }
+  /* ★出すときは display を "block" と明示する。以前は "" にしていたが、それは「インラインの指定を消す」
+     だけで、スタイルシートの #serverNote{display:none} が効いたまま＝版の表示も「古い」の警告も
+     一度も出ていなかった（先生「合言葉の下に15とか16とか出てきたことがない」2026-09-28）。 */
   function updateServerNote(st){
     var el=document.getElementById("serverNote");
     // 版番号は数で見る。以前は ver があるだけで「✓（最新）」と緑にしていたので、
     // 単元テスト③④を知らない古いサーバーでも最新に見えていた。
     var vn=st&&st.ver ? (String(st.ver).match(/jigaku-(\d+)/)||[])[1] : null;
-    if(vn && Number(vn) >= ADMIN_NEED){ el.style.display=""; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
-    else if(st && st.ver){ el.style.display=""; el.className="card warn";
+    if(vn && Number(vn) >= ADMIN_NEED){ el.style.display="block"; el.className="card okline"; el.textContent="サーバー："+st.ver+" ✓（最新）"; }
+    else if(st && st.ver){ el.style.display="block"; el.className="card warn";
       el.innerHTML="⚠️ サーバーの版が古いようです（いま "+st.ver+"／想定は jigaku-"+ADMIN_NEED+" 以上）。"+
         "このままだと 単元テスト③④が開かない・模試341/342・福岡①の列が出ない・到達度テストが開かない、といったことが起きます。<br>"+STALE+
         "<br>※ jigaku-8 からの更新なら、貼ったあとに GASエディタで <b>clearNewSummaryCols()</b> を1回だけ実行してください"+
         "（末尾に足した3列に、前の「自学_◯◯」の数字が残っているため）。"; }
     else if(st && st.result==="ok" && gateOK(st)){ el.style.display="none"; }      // 動作OK（旧版でもゲート対応なら警告しない）
-    else if(st && st.result==="ok"){ el.style.display=""; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版
-    else if(st && st.result==="error" && st.message){ el.style.display=""; el.className="card warn"; el.textContent="⚠️ サーバーからのエラー：「"+st.message+"」"; } // 真因をそのまま表示（例：スプレッドシートが見つかりません＝score_gasにIDを直書き＋新バージョンで再デプロイ）
+    else if(st && st.result==="ok"){ el.style.display="block"; el.className="card warn"; el.innerHTML=STALE; } // ゲート非対応＝本当に旧版
+    else if(st && st.result==="error" && st.message){ el.style.display="block"; el.className="card warn"; el.textContent="⚠️ サーバーからのエラー：「"+st.message+"」"; } // 真因をそのまま表示（例：スプレッドシートが見つかりません＝score_gasにIDを直書き＋新バージョンで再デプロイ）
     else { el.style.display="none"; }
   }
 

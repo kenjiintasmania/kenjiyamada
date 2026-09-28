@@ -76,10 +76,32 @@ ok(sent.length===2 && sent.every(x=>x.exam==="m2000" && x.open===true),
   ok(st.s && !st.t, "スタートは止まり、ストップが押せる");
 }
 // 版チェック
+// ★見えているかは計算後のスタイルで見る（インラインの display だけ見ていて、スタイルシートの
+//   display:none に負けて「一度も出ていない」のを見逃していた）
 const note=await p.evaluate(()=>{const e=document.getElementById("serverNote");
-  return {shown:e.style.display!=="none", txt:(e.textContent||"").slice(0,40), cls:e.className};});
+  return {shown:getComputedStyle(e).display!=="none", txt:(e.textContent||"").slice(0,40), cls:e.className};});
+ok(note.shown, "★版の表示が実際に見えている（display="+(note.shown?"見える":"none")+"）");
 ok(!/版が古い/.test(note.txt), VER+" なら版の警告が出ない（"+note.txt+"）");
-ok(/okline/.test(note.cls), "サーバー版が緑で出る（"+note.cls+"）");
+ok(/okline/.test(note.cls) && /jigaku-\d+ ✓/.test(note.txt), "サーバー版が緑で出る（"+note.txt+"）");
+// 旧版のサーバー（版が足りない）なら、赤い警告が実際に見える
+{
+  const q=await b.newPage();
+  await q.addInitScript(()=>{
+    window.fetch=function(url,opt){
+      const d=JSON.parse(opt.body);
+      let r={result:"error", ver:"jigaku-3", message:"未知の kind: admin"};   // 旧版は status_all を知らない
+      if(d.action==="status") r={result:"ok", ver:"jigaku-3", open:false, exam:d.exam, session:"", submissions:0};
+      return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
+    };
+  });
+  await q.goto(new URL("../../admin/index.html", import.meta.url).href); await q.waitForTimeout(800);
+  const w=await q.evaluate(()=>{const e=document.getElementById("serverNote");
+    return {shown:getComputedStyle(e).display!=="none", txt:(e.textContent||"").slice(0,60), cls:e.className};});
+  ok(w.shown && /warn/.test(w.cls) && /版が古い/.test(w.txt), "★旧版なら「版が古い」の警告が見える（"+w.txt+"）");
+  const badges=await q.$$eval("#exams .badge", ns=>ns.map(n=>n.textContent.trim()));
+  ok(badges.every(t=>/ロック中/.test(t)), "旧版でも1試験ずつ聞いてカードは描ける（"+badges[0]+"）");
+  await q.close();
+}
 await p.close(); await b.close();
 console.log(errs.length? "\nJSエラー:\n"+errs.slice(0,4).join("\n") : "\nJSエラーなし");
 console.log(`\n${pass} pass / ${fail} fail`);
