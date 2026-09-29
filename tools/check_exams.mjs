@@ -12,10 +12,10 @@ import { dirname, resolve } from 'node:path';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4',
+const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4','c3u5','c3u6','c3u7','c3u8','c3u9',
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
-  'chu3_341','chu3_342',
-  'fukuoka1'];
+  'chu3_341','chu3_342','chu3_351','chu3_352',
+  'fukuoka1','fukuoka2','fukuoka3','fukuoka4','fukuoka5','fukuoka6','fukuoka7','fukuoka8','fukuoka9','fukuoka10'];
 /* 引数にIDを並べると、そのIDだけを（まだ EXAMS に登録していないファイルでも）検査する。
    例: node tools/check_exams.mjs fukuoka2 c3u5
    作問中に自分の1本だけを何度も回すため。横断重複は登録ずみの新作ぶんとも突き合わせる。

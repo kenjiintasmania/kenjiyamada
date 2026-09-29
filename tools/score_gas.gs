@@ -286,7 +286,18 @@ var SUMMARY_COLS = [
   /* --- jigaku-13 で追加：中2 231（2学期末）。
      ★必ず末尾に足すこと。途中に入れると、先に足した列が1つずつ右へずれて
        いままでの数字が別の見出しの下に入ってしまう。 */
-  {key:"m_c2_231",  head:"模試_231",        max:true}
+  {key:"m_c2_231",  head:"模試_231",        max:true},
+  {key:"m_351",     head:"模試_351",        max:true},
+  {key:"m_352",     head:"模試_352",        max:true},
+  {key:"m_fk2",     head:"模試_福岡2",  max:true},
+  {key:"m_fk3",     head:"模試_福岡3",  max:true},
+  {key:"m_fk4",     head:"模試_福岡4",  max:true},
+  {key:"m_fk5",     head:"模試_福岡5",  max:true},
+  {key:"m_fk6",     head:"模試_福岡6",  max:true},
+  {key:"m_fk7",     head:"模試_福岡7",  max:true},
+  {key:"m_fk8",     head:"模試_福岡8",  max:true},
+  {key:"m_fk9",     head:"模試_福岡9",  max:true},
+  {key:"m_fk10",     head:"模試_福岡10",  max:true}
 ];
 
 /* ★1回だけ実行（GASエディタで関数を選んで▶）。
@@ -334,6 +345,11 @@ var UNIT_EXAMS = {
   "c3u2": "中3 単元テスト②",
   "c3u3": "中3 単元テスト③",
   "c3u4": "中3 単元テスト④",
+  "c3u5": "中3 単元テスト⑤",
+  "c3u6": "中3 単元テスト⑥",
+  "c3u7": "中3 単元テスト⑦",
+  "c3u8": "中3 単元テスト⑧",
+  "c3u9": "中3 単元テスト⑨",
   // 到達度テスト（ノンストップ・時間制限なし・何周でも）。1回で終わらせず、
   // 次のコマでロックを開け直せば続きから再開する。記録は「到達度テスト」タブへ。
   "m2000": "2000語 到達度テスト",
@@ -342,7 +358,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-18";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-19";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){

@@ -336,11 +336,11 @@
   var MOGI=[["chu2","中2 211"],["chu2_2","中2 212"],["chu2_3","中2 213"],["chu2_a1","中2 214"],["chu2_231","中2 231"],
             ["chu3_1","中3 321"],["chu3_2","中3 322"],["chu3_4","中3 323"],["chu3_3","中3 324"],
             ["m332","中3 331"],["mock332","中3 332"],
-            ["chu3_341","中3 341"],["chu3_342","中3 342"],
+            ["chu3_341","中3 341"],["chu3_342","中3 342"],["chu3_351","中3 351"],["chu3_352","中3 352"],
             ["okayama1","岡山①"],["okayama2","岡山②"],["okayama3","岡山③"],["okayama4","岡山④"],
             ["okayama5","岡山⑤"],["okayama6","岡山⑥"],["okayama7","岡山⑦"],["okayama8","岡山⑧"],
             ["okayama9","岡山⑨"],["okayama10","岡山⑩"],
-            ["fukuoka1","福岡①"]];
+            ["fukuoka1","福岡①"],["fukuoka2","福岡②"],["fukuoka3","福岡③"],["fukuoka4","福岡④"],["fukuoka5","福岡⑤"],["fukuoka6","福岡⑥"],["fukuoka7","福岡⑦"],["fukuoka8","福岡⑧"],["fukuoka9","福岡⑨"],["fukuoka10","福岡⑩"]];
   function readMogi(){
     var mb=lsJSON("mogi_best_v1")||{}, rows=[], best=0, done=0;
     MOGI.forEach(function(p){
@@ -521,6 +521,8 @@
       m_ok1:ms("okayama1"), m_ok2:ms("okayama2"), m_ok3:ms("okayama3"), m_ok4:ms("okayama4"),
       m_ok5:ms("okayama5"), m_ok6:ms("okayama6"), m_ok7:ms("okayama7"), m_ok8:ms("okayama8"),
       m_ok9:ms("okayama9"), m_ok10:ms("okayama10"), m_fk1:ms("fukuoka1"),
+      m_351:ms("chu3_351"), m_352:ms("chu3_352"),
+      m_fk2:ms("fukuoka2"), m_fk3:ms("fukuoka3"), m_fk4:ms("fukuoka4"), m_fk5:ms("fukuoka5"), m_fk6:ms("fukuoka6"), m_fk7:ms("fukuoka7"), m_fk8:ms("fukuoka8"), m_fk9:ms("fukuoka9"), m_fk10:ms("fukuoka10"),
       m_best:m.done?m.best:"", m_done:m.done,
       // 英検（レベル座標0〜8と目安ラベル）
       e_full:r2(e.full), e_full_label:(e.full!=null?levelLabel(e.full):""),
