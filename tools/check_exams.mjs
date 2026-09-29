@@ -16,6 +16,12 @@ const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu3_1','chu3_2','
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
   'chu3_341','chu3_342',
   'fukuoka1'];
+/* 引数にIDを並べると、そのIDだけを（まだ EXAMS に登録していないファイルでも）検査する。
+   例: node tools/check_exams.mjs fukuoka2 c3u5
+   作問中に自分の1本だけを何度も回すため。横断重複は登録ずみの新作ぶんとも突き合わせる。
+   単語・活用編の検査は飛ばす（そこは変えないので）。 */
+const ONLY = process.argv.slice(2).filter(a => /^[a-z0-9_]+$/.test(a));
+const RUN = ONLY.length ? ONLY : EXAMS;
 const ENGINE = r('mogi/assets/engine.js');
 
 let fails = 0;
@@ -93,6 +99,42 @@ function memoFormat(id, EXAM){
   });
 }
 
+/* 答えバレ（2026-09-29 先生指示「リスニングの答えが資料にまるまる載ってるなどのミス」）。
+   メモ以外の資料（passage/flyer）にも広げる：
+   ① リスニング大問の資料に、fill の答えがそのまま書かれていない
+   ② リスニング大問の資料に、mcq の正解の選択肢だけがそのまま書かれていない
+      （表から選ぶ型＝全選択肢が資料にある のは設計どおりなので通す）
+   ③ どの大問でも、設問文（stem）に fill の答えがそのまま書かれていない
+   既存ファイルで引っかかったものは据え置き（LEAK_GRANDFATHER）。新作には足さないこと。 */
+const LEAK_GRANDFATHER = new Set(['mock332','okayama6']);   // 完成メモ型（MEMO_GRANDFATHER と同じ据え置き）
+function leakCheck(id, EXAM){
+  if(LEAK_GRANDFATHER.has(id)) return;
+  const strip = s => String(s==null?'':s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  const norm  = s => strip(s).toLowerCase().replace(/[.,!?;:"'’“”]/g,'').replace(/\s+/g,' ').trim();
+  const has = (hay, needle) => { const n=norm(needle); return n.length>=3 && norm(hay).includes(n); };
+  (EXAM.sections||[]).forEach(sec=>{
+    const listening = (sec.groups||[]).some(g=>g.script);
+    (sec.groups||[]).forEach(g=>{
+      const material = String(g.passage||'') + ' ' + String(g.flyer||'');
+      (g.items||[]).forEach(it=>{
+        if(it.type==='fill'){
+          (it.answers||[]).forEach(a=>{
+            if(listening && has(material, a)) fail(id, `大問${sec.no} ${it.label||''} リスニングの資料に答え「${a}」がそのまま載っている`);
+            if(has(it.stem||'', a) && !/抜き出し|最も適当な形に変えて/.test(String(it.stem||'')))
+              fail(id, `大問${sec.no} ${it.label||''} 設問文に答え「${a}」がそのまま書かれている`);
+          });
+        }
+        if(listening && (it.type==='mcq') && Array.isArray(it.choices) && typeof it.answer==='number'){
+          const ch = it.choices.map(c=>strip(c));
+          const inMat = ch.map(c=>/[a-zA-Z]{3,}/.test(c) && has(material, c));
+          if(inMat[it.answer] && !inMat.every(Boolean))
+            fail(id, `大問${sec.no} ${it.label||''} リスニングの資料に正解の選択肢「${ch[it.answer]}」だけがそのまま載っている`);
+        }
+      });
+    });
+  });
+}
+
 /* 「下線部の内容になるように…」と書いてあるのに、その大問の本文に <u> が無い設問。
    生徒はどこを言いかえるのか分からないまま抜き出すことになる。10本で起きていた。 */
 function underlineRef(id, EXAM){
@@ -146,6 +188,7 @@ function gradeExam(id, ci=0, label=''){
   speakerContinuity(id, EXAM);
   underlineRef(id, EXAM);
   memoFormat(id, EXAM);
+  leakCheck(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   // 採点するコースを選びなおす（既定は先頭＝Xコースだけ）
   (EXAM.sections||[]).forEach(sec=>{
@@ -200,9 +243,9 @@ function checkWords(){
 // 新規創作ぶんの横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか。
 // 対象は okayama*（県立入試スタイル）と、同じ型で書き下ろした chu3_34x・c3u3/c3u4。
 // 既存の chu2*/chu3_1〜4 等は正進社の過去問ベースで言い回しが元から近いので含めない。
-const NEW_STYLE = /^(okayama\d+|fukuoka\d+|chu3_34\d|c3u[34])$/;
+const NEW_STYLE = /^(okayama\d+|fukuoka\d+|chu3_3[45]\d|c3u[3-9])$/;
 function okayamaDupCheck(){
-  const set = EXAMS.filter(id=>NEW_STYLE.test(id));
+  const set = [...new Set([...EXAMS, ...ONLY])].filter(id=>NEW_STYLE.test(id));
   if(set.length<2) return;
   const strip = s => String(s==null?'':s).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
   const norm  = s => strip(s).toLowerCase().replace(/[.,!?;:"'’“”]/g,'').replace(/\s+/g,' ').trim();
@@ -222,7 +265,7 @@ function okayamaDupCheck(){
 }
 
 console.log('— 模試データ 自動採点＆構造チェック —');
-for(const id of EXAMS){
+for(const id of RUN){
   try{
     const n = gradeExam(id);
     // コースがあるなら、残りのコースも同じように満点で解けるか見る
@@ -294,14 +337,18 @@ function checkJudge(){
   else pass('judge', `判定は assets/wordjudge.js 1本（${uses.length}画面がここを読んでいる）`);
 }
 
-console.log('— 単語データ —');
-checkWords();
-console.log('— 単語の判定・同じ訳の見分け —');
-checkJudge();
+if(!ONLY.length){
+  console.log('— 単語データ —');
+  checkWords();
+  console.log('— 単語の判定・同じ訳の見分け —');
+  checkJudge();
+}
 console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
-console.log('— 活用編（動詞の変化形／形容詞の比較） —');
-checkKatsuyo();
+if(!ONLY.length){
+  console.log('— 活用編（動詞の変化形／形容詞の比較） —');
+  checkKatsuyo();
+}
 console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK・活用編OK）');
 process.exit(fails ? 1 : 0);
 

@@ -52,7 +52,7 @@ sections: [
             '— the best season to watch stars here is （　い　）<br>'+
             '— tells visitors to check the （　う　） on the website first',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）2009年", answers:["2009"], hint:"数字4けた" },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）バーカーさんが天文台で働き始めた年", answers:["2009"], hint:"数字4けた（西暦）" },
     { type:"fill", label:"い", pt:2, stem:"（い）冬", answers:["winter"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）天気", answers:["weather"], hint:"英語1語" } ] },
 
