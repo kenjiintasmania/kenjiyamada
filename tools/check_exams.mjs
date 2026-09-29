@@ -250,7 +250,9 @@ function okayamaDupCheck(){
   const strip = s => String(s==null?'':s).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
   const norm  = s => strip(s).toLowerCase().replace(/[.,!?;:"'’“”]/g,'').replace(/\s+/g,' ').trim();
   const map = {};
-  const addS = (str,id,min)=>{ const k=norm(str); if(k.length<min) return; (map[k]=map[k]||{ids:new Set(),raw:strip(str)}).ids.add(id); };
+  // 「Saturday, 9:00 a.m.」のような曜日＋時刻だけの選択肢は中身ではないので、本をまたいで同じでもよい
+  const TIMEONLY = /^[a-z]+day,? \d{1,2}(:\d{2})? ?[ap]m$/;
+  const addS = (str,id,min)=>{ const k=norm(str); if(k.length<min || TIMEONLY.test(k)) return; (map[k]=map[k]||{ids:new Set(),raw:strip(str)}).ids.add(id); };
   for(const id of set){
     const w={}; try{ new Function('window', r(`mogi/data/${id}.js`))(w); }catch(e){ continue; }
     itemsOf(w.EXAM).forEach(it=>{
