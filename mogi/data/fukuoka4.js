@@ -38,7 +38,7 @@ sections: [
       '<tr><td>Saturday</td><td>1:00 p.m.</td><td>Water test</td></tr>'+
       '<tr><td>Sunday</td><td>9:00 a.m.</td><td>Water test</td></tr>'+
       '<tr><td>Sunday</td><td>1:00 p.m.</td><td>Fish watching</td></tr></table>',
-    script:'(1) Yui wants to join the water test with her brother. They are busy on Saturday, so they can go only on Sunday. Which one should they choose?',
+    script:'(1) Yui wants to join the water test with her younger brother. They are busy on Saturday, so they can go only on Sunday. Which one should they choose?',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"ユイと弟が選ぶのはどれですか。",
       choices:[ E("Saturday, 9:00 a.m."), E("Saturday, 1:00 p.m."),
@@ -81,7 +81,7 @@ sections: [
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
 { no:2, title:"次の(1)〜(4)の対話について、それぞれの問いに答えなさい。", groups:[
-  { note:"語注：net あみ／insect 昆虫",
+  { note:"語注：insect 昆虫",
     items:[
     { type:"mcq", label:"(1)", pt:2,
       stem:"（　　）に入れるのに最も適当なのは、ア〜エのどれですか。<br>"+
@@ -95,12 +95,12 @@ sections: [
                 E("Yes, he is."), E("She is our new English teacher.") ], answer:0 },
     { type:"fill", label:"(3)", pt:2,
       stem:"（　）内の語を、最も適当な形に変えて1語で書きなさい。<br>"+
-           E("The water of the Sawaki River is much ( clean ) in winter than in summer."),
-      answers:["cleaner"], hint:"than の前・1語" },
+           E("The Sawaki River is much ( dirty ) in summer than in winter."),
+      answers:["dirtier"], hint:"than の前・1語" },
     { type:"wordorder", label:"(4)", pt:2,
       stem:"次の語を正しく並べかえて、対話を完成させなさい。<br>"+
            E("A: What is this picture?<br>B: It is （　　）."),
-      words:["a","picture","of","insects","living","in the river"], answer:"a picture of insects living in the river" } ]}
+      words:["a","picture","of","the insects","that live","in the river"], answer:"a picture of the insects that live in the river" } ]}
 ]},
 
 /* ===== 大問3 対話文読解（10点5問） ===== */
@@ -121,7 +121,7 @@ sections: [
     '<span class="sp"><span class="who">Haruki:</span> River Study Day? What can we do there?</span>'+
     '<span class="sp"><span class="who">Yui:</span> We will （　あ　） the water at nine, and then catch small living things in the river at ten.</span>'+
     '<span class="sp"><span class="who">Haruki:</span> That sounds perfect for our science project. Let\'s go together. How much is it?</span>'+
-    '<span class="sp"><span class="who">Yui:</span> It is one hundred yen for junior high school students. Ms. King said she wants to come with us, too.</span>'+
+    '<span class="sp"><span class="who">Yui:</span> It is one hundred yen for junior high school students. Ms. King, our ALT, said she wants to come with us, too.</span>'+
     '<span class="sp"><span class="who">Haruki:</span> Great. Oh, Mr. Nagai! Are you the guide of the River Study Day?</span>'+
     '<span class="sp"><span class="who">Mr. Nagai:</span> Yes, I am. I have studied this river for twenty years. Do you have any questions?</span>'+
     '<span class="sp"><span class="who">Yui:</span> Yes. Is the water of the Sawaki River clean? Last week, I saw some cans in the water near the bridge.</span>'+
@@ -137,8 +137,8 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"2か所の（あ）に共通して入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("check"), E("drink"), E("carry"), E("paint") ], answer:0 },
-    { type:"mcq", label:"(2)", pt:2, stem:"ユイ、ハルキ、キング先生の3人が「川の調査の日」に参加するとき、3人が払う金額の合計として最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("200 yen"), E("300 yen"), E("400 yen"), E("500 yen") ], answer:2 },
+    { type:"mcq", label:"(2)", pt:2, stem:"ユイとキング先生の2人が「川の調査の日」に参加するとき、2人が払う金額の合計として最も適当なのは、ア〜エのどれですか。",
+      choices:[ E("200 yen"), E("300 yen"), E("400 yen"), E("500 yen") ], answer:1 },
     { type:"mcq", label:"(3)", pt:2, stem:"案内や会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("Mr. Nagai has studied the Sawaki River for twenty years."), E("There were many fish in the river when Mr. Nagai was a child."),
                 E("Ms. King doesn't want to go to the River Study Day."), E("The River Study Day will be canceled if it rains.") ], answer:0 },
@@ -227,7 +227,7 @@ sections: [
       display:"I think we should have a river cleaning day once a month." },
     { type:"wordorder", label:"(2)", pt:2,
       stem:"②「それは、川に残されたごみをすばやく拾うことができるからです。」という文になるように、次の語句を正しく並べかえなさい。",
-      words:["because","we can","pick up","quickly","the trash","left in the river"],
+      words:["because","we can","quickly pick up","the trash","left in the river"],
       answer:"because we can quickly pick up the trash left in the river",
       display:"because we can quickly pick up the trash left in the river." },
     { type:"fill", label:"(3)", pt:4,

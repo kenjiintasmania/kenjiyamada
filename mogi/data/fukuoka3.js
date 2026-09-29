@@ -133,8 +133,8 @@ sections: [
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"2か所の（あ）に共通して入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("join"), E("close"), E("build"), E("miss") ], answer:0 },
-    { type:"mcq", label:"(2)", pt:2, stem:"リン、タイガ、ホール先生の3人が「石橋の日」に参加するとき、3人が払う金額の合計として最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("300 yen"), E("400 yen"), E("500 yen"), E("600 yen") ], answer:1 },
+    { type:"mcq", label:"(2)", pt:2, stem:"リンとホール先生の2人が「石橋の日」に参加するとき、2人が払う金額の合計として最も適当なのは、ア〜エのどれですか。",
+      choices:[ E("200 yen"), E("300 yen"), E("400 yen"), E("600 yen") ], answer:1 },
     { type:"mcq", label:"(3)", pt:2, stem:"案内や会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("Mr. Hall walks across the bridge every morning."), E("The bridge walk starts at one in the afternoon."),
                 E("Junior high school students must pay two hundred yen."), E("Mr. Hall doesn't like taking pictures.") ], answer:0 },
@@ -222,10 +222,10 @@ sections: [
       answer:"I think we should keep the old stone bridge",
       display:"I think we should keep the old stone bridge." },
     { type:"wordorder", label:"(2)", pt:2,
-      stem:"②「それは町の多くの人に毎日使われている橋だからです。」という文になるように、次の語句を正しく並べかえなさい。",
-      words:["because","it is","a bridge","used by","many people","every day"],
-      answer:"because it is a bridge used by many people every day",
-      display:"because it is a bridge used by many people every day." },
+      stem:"②「それは町の多くの人に使われている橋だからです。」という文になるように、次の語句を正しく並べかえなさい。",
+      words:["because","it is","a bridge","used by","many people"],
+      answer:"because it is a bridge used by many people",
+      display:"because it is a bridge used by many people." },
     { type:"fill", label:"(3)", pt:4,
       stem:"③「わたしは町の人々に、この橋を大切にしてほしい。」という文にします。<br>"+
            "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+

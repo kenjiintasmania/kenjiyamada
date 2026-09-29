@@ -59,17 +59,17 @@ sections: [
 
   { intro:"問題4　祭りの会長のカイさん(Mr. Kai)が、祭りを手伝う生徒たちに説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, everyone. I\'m Kai, the leader of the Kagura Light Festival. Thank you for coming today. Our festival is more than one hundred years old. Every year, we carry two hundred lanterns through the town at night.</span>'+
+      '<span class="sp">Hello, everyone. I\'m Kai, the leader of the Kagura Light Festival. Thank you for coming today. Our festival is more than one hundred years old. This year, we will carry two hundred lanterns through the town at night.</span>'+
       '<span class="sp">But now we have a problem. Many of the people who carry the lanterns are over sixty, and we don\'t have enough young people. So this year, we asked your school for help.</span>'+
       '<span class="sp">You can choose one of three jobs. The first group will make lanterns with old paper. The second group will carry the lanterns in the parade. The third group will play music in front of the parade.</span>'+
       '<span class="sp">Hinata has already chosen the first group. She said, "I want to learn old skills, so this is a good job for me."</span>'+
-      '<span class="sp">Please come to the town hall by five on the festival day. Don\'t forget to bring gloves.</span>',
+      '<span class="sp">Please come to the town hall by three thirty on the festival day. Don\'t forget to bring gloves.</span>',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["祭りは100年以上前から続いている。","祭りは今年で10年目になる。",
                "ちょうちんは毎年20個運ばれる。","手伝う生徒は3つの仕事をすべてする。"], answer:0 },
     { type:"mcq", label:"(2)", pt:2, stem:"カイさんが祭りについて困っていることとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("Many of the lantern carriers are over sixty."), E("The festival has too many young people."),
+      choices:[ E("Many of the people who carry the lanterns are over sixty."), E("The festival has too many young people."),
                 E("Nobody wants to make lanterns."), E("The festival is only ten years old.") ], answer:0 },
     { type:"fill", label:"(3)", pt:4,
       stem:"ヒナタが1つ目のグループを選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
@@ -84,13 +84,13 @@ sections: [
     { type:"mcq", label:"(1)", pt:2,
       stem:"（　　）に入れるのに最も適当なのは、ア〜エのどれですか。<br>"+
            E("A: Did you go to the Kagura Light Festival last night?<br>B: Yes. （　　）<br>A: That sounds beautiful."),
-      choices:[ E("I saw hundreds of lanterns in the street."), E("I stayed home and watched TV."),
-                E("I will go there next year."), E("It was too noisy for me.") ], answer:0 },
+      choices:[ E("I stayed home and watched TV."), E("I will go there next year."),
+                E("I saw hundreds of lanterns in the street."), E("It was too noisy for me.") ], answer:2 },
     { type:"mcq", label:"(2)", pt:2,
       stem:"（　　）に入れるのに最も適当なのは、ア〜エのどれですか。<br>"+
            E("A: Who is that man wearing a blue jacket?<br>B: （　　）<br>A: Oh, I want to talk to him."),
-      choices:[ E("He is the man who leads the festival."), E("I like his jacket, too."),
-                E("He is not here now."), E("I don't need a jacket.") ], answer:0 },
+      choices:[ E("I like his jacket, too."), E("He is not here now."),
+                E("I don't need a jacket."), E("He is the man who leads the festival.") ], answer:3 },
     { type:"fill", label:"(3)", pt:2,
       stem:"（　）内の語を、最も適当な形に変えて1語で書きなさい。<br>"+
            E("The festival is much ( old ) than our school."),
@@ -115,7 +115,7 @@ sections: [
     '<div class="note">Anyone over twelve can join.<br>'+
     'If it rains, the parade will be held on October 11.</div>',
     passage:
-    '<span class="sp"><span class="who">Yuma:</span> Hinata, look at this poster. The Kagura Light Festival needs volunteers this year.</span>'+
+    '<span class="sp"><span class="who">Yuma:</span> Hinata, look at this flyer. The Kagura Light Festival needs volunteers this year.</span>'+
     '<span class="sp"><span class="who">Hinata:</span> Really? My grandfather has carried a lantern in the parade for forty years. He says the number of （　あ　） people is getting smaller every year.</span>'+
     '<span class="sp"><span class="who">Yuma:</span> That\'s why they need us. Look, students can carry lanterns, too.</span>'+
     '<span class="sp"><span class="who">Ms. Lane:</span> What is the Kagura Light Festival? I have never heard of it.</span>'+
@@ -129,20 +129,20 @@ sections: [
     '<span class="sp"><span class="who">Ms. Lane:</span> I\'m a teacher, so I\'ll pay five hundred yen. What will we do if it rains?</span>'+
     '<span class="sp"><span class="who">Yuma:</span> Don\'t worry. The parade will be held on the next day.</span>'+
     '<span class="sp"><span class="who">Ms. Lane:</span> I see. I\'m excited. Let\'s make our town bright together!</span>',
-    note:'語注：lantern ちょうちん／parade 行列／volunteer ボランティア／town hall 町役場',
+    note:'語注：lantern ちょうちん／parade 行列／volunteer ボランティア／town hall 町役場／flyer ちらし／by hand 手作業で',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"2か所の（あ）に共通して入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("young"), E("old"), E("busy"), E("famous") ], answer:0 },
     { type:"mcq", label:"(2)", pt:2, stem:"ちらしと会話から読み取れることとして最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("Students pay three hundred yen for dinner."), E("The parade starts at eight in the evening."),
-                E("Ms. Lane will pay three hundred yen for dinner."), E("The parade will be canceled if it rains.") ], answer:0 },
+      choices:[ E("The parade starts at eight in the evening."), E("Students pay three hundred yen for dinner."),
+                E("Ms. Lane will pay three hundred yen for dinner."), E("The parade will be canceled if it rains.") ], answer:1 },
     { type:"mcq", label:"(3)", pt:2, stem:"ちらしや会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("Ms. Lane didn't know about the festival before."), E("Hinata's grandfather has carried a lantern for four years."),
-                E("Yuma doesn't want to help the festival."), E("Each person carries four lanterns in the parade.") ], answer:0 },
+      choices:[ E("Hinata's grandfather has carried a lantern for four years."), E("Yuma doesn't want to help the festival."),
+                E("Ms. Lane didn't know about the festival before."), E("Each person carries four lanterns in the parade.") ], answer:2 },
     { type:"fill", label:"(4)", pt:2,
       stem:"次の文の（　）に入れるのに最も適当な英語4語を、会話の中から抜き出して書きなさい。<br>"+
-           E("Hinata's grandfather （　　） in the parade for forty years."),
-      answers:["has carried a lantern"], hint:"英語4語" },
+           E("The lanterns are （　　） old paper."),
+      answers:["made by hand with"], hint:"英語4語" },
     { type:"wordorder", label:"(5)", pt:2, stem:"下線部(い)の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["the","who","leads","man","our festival"], answer:"the man who leads our festival",
       display:"The man who leads our festival" } ]}
@@ -201,7 +201,7 @@ sections: [
       answers:["a lack of information"], hint:"第4段落の語・英語4語" },
     { type:"mcqMulti", label:"(5)", pt:4, stem:"本文の内容と合っているものを、ア〜オのうちから二つ選びなさい。",
       choices:[ E("Hinata's grandfather has carried a lantern for forty years."),
-                E("Mr. Kai gave Hinata two lists of lantern carriers."),
+                E("Mr. Kai gave Hinata two lists of people who carried lanterns."),
                 E("Last year, more than one hundred forty people carried lanterns."),
                 E("Only five students said they didn't know about the festival."),
                 E("Hinata wants to stop helping the festival.") ], answer:[0,1] } ]}
@@ -232,7 +232,7 @@ sections: [
       stem:"③「わたしは若い人たちに、祭りに参加してほしい。」という文にします。<br>"+
            "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
            E("I want young people （　　） in the festival."),
-      answers:["to take part"], hint:"英語3語（want＋人＋to 〜 の形。あとに in が続く）" } ]}
+      answers:["to take part","to join us"], hint:"英語3語（want＋人＋to 〜 の形。あとに in が続く）" } ]}
 ]}
 
 ]};

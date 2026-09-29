@@ -52,9 +52,9 @@ sections: [
     script:
       '<span class="sp">Hi, everyone. I\'m Diego. I came from Brazil last month.</span>'+
       '<span class="sp">At my school in Brazil, classes started at seven and finished at noon. We didn\'t have school lunch, so we ate lunch at <b>home</b>.</span>'+
-      '<span class="sp">Our long vacation was in <b>July</b>, because it is winter in Brazil then. I was surprised that your long vacation is in summer.</span>',
+      '<span class="sp">We had a short winter vacation in <b>July</b>, because it is winter in Brazil then. Our long vacation was in December and January.</span>',
     passage:'<b>アヤカのメモ</b><br>Diego の国の学校<br>— classes: 7:00 → noon, no school lunch → ate lunch at （　あ　）<br>'+
-            '— long vacation: in （　い　）, because it is winter there then',
+            '— winter vacation: in （　い　）, because it is winter there then',
     items:[
     { type:"fill", label:"あ", pt:2, stem:"（あ）家", answers:["home"], hint:"英語1語" },
     { type:"fill", label:"い", pt:2, stem:"（い）7月", answers:["July"], hint:"英語1語" } ] },
@@ -99,7 +99,7 @@ sections: [
     { type:"wordorder", label:"(4)", pt:2,
       stem:"次の語を正しく並べかえて、対話を完成させなさい。<br>"+
            E("A: Who is that woman?<br>B: She is （　　）."),
-      words:["teaches","the","who","teacher","us","English"], answer:"the teacher who teaches us English" } ]}
+      words:["teaches","the","who","teacher","us English"], answer:"the teacher who teaches us English" } ]}
 ]},
 
 /* ===== 大問3 対話文読解（10点5問） ===== */
@@ -167,10 +167,10 @@ sections: [
     'a lunch mat, a cup, and our school shoes. Under each picture, we wrote the word in Japanese, English, and Portuguese. '+
     'We gave the book to Diego, and we also gave one to every student in our class. '+
     'After that, more students started to talk with him. <u>③ ( helped / the book / us / we / made )</u> a lot.<br><br>'+
-    '<b>④</b> In May, I asked my classmates another question: "Do you talk with Diego every day?" '+
-    'In April, only eight students said yes. In May, the number went up to twenty-five. '+
-    'Diego also changed. Now he talks about soccer with his friends at lunch time, and he says "itadakimasu" before eating. '+
-    'He told me, "I felt lonely in April, but now I feel that I am one of you."<br><br>'+
+    '<b>④</b> Diego also changed. Now he talks about soccer with his friends at lunch time, and he says "itadakimasu" before eating. '+
+    'He told me, "I felt lonely in April, but now I feel that I am one of you." '+
+    'I asked my classmates another question in April and again in May: "Do you talk with Diego every day?" '+
+    'In April, only eight students said yes. In May, the number went up to twenty-five.<br><br>'+
     '<b>⑤</b> From this study, I learned two things. First, language is not the only way to communicate. '+
     'Pictures and gestures can open the door. Second, the most important thing is to try. '+
     'Diego said, "When someone tries to talk with me, I feel happy, even if the English is not perfect." '+

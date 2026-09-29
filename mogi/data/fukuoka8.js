@@ -149,7 +149,7 @@ sections: [
 { no:4, title:"次の英文は、砂浜中学校のエミ(Emi)が、探究学習の発表で話した内容です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<b>①</b> Hello, everyone. I\'m Emi. After lunch every day, I help carry the food left on the trays to the kitchen. '+
-    'One day, Ms. Kaneko, our nutrition teacher, told me that about ten kilograms of food is thrown away every day at our school. '+
+    'One day, Ms. Kaneko, our nutrition teacher, told me that about eight kilograms of food is thrown away every day at our school. '+
     'I was shocked. Why do we leave so much food? '+
     'I wanted to know the answer, so I decided to study school lunch at Sunahama Junior High School.<br><br>'+
     '<b>②</b> First, I asked all three hundred students in our school, "Which lunch menu do you like the best?" '+
@@ -159,7 +159,7 @@ sections: [
     '<b>③</b> Look at the graph. Curry and rice was the most popular menu. '+
     'One hundred and twenty students chose it, and only three kilograms of food were left on that day. '+
     'Grilled fish got the fewest votes, and twelve kilograms were left. '+
-    'The more votes a menu got, the less food was left. '+
+    'When a menu got more votes, less food was left. '+
     'From this, I thought that students leave the food they don\'t like.<br><br>'+
     '<b>④</b> However, when I asked the students who left food, "Why did you leave it?", I found something surprising. '+
     'I thought most of them would say, "I don\'t like it." '+
@@ -189,7 +189,7 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"グラフと本文から読み取れることとして最も適当なのは、ア〜エのどれですか。",
       choices:["焼き魚は投票数が最も多かった。","カレーライスは投票数が最も多く、食べ残しは3kgだった。",
                "からあげの食べ残しは野菜シチューより多かった。","野菜シチューの投票数は焼き魚より少なかった。"], answer:1 },
-    { type:"wordorder", label:"(3)", pt:2, stem:"下線部③の語句をすべて用いて、意味が通るように並べかえなさい。",
+    { type:"wordorder", label:"(3)", pt:2, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["the food","the cooks","made","for","us"],
       answer:"the food the cooks made for us",
       display:"the food the cooks made for us" },
@@ -198,7 +198,7 @@ sections: [
            E("Emi found that the most common reason for leaving food was that the students （　　）."),
       answers:["didn't have enough time","did not have enough time"], hint:"第4段落の語・英語4語" },
     { type:"mcqMulti", label:"(5)", pt:4, stem:"本文の内容と合っているものを、ア〜オのうちから二つ選びなさい。",
-      choices:[ E("About ten kilograms of food is thrown away every day at Emi's school."),
+      choices:[ E("About eight kilograms of food is thrown away every day at Emi's school."),
                 E("Emi asked one hundred students about their favorite menu."),
                 E("Only three kilograms of food were left on the curry and rice day."),
                 E("Most students left food because they didn't like it."),

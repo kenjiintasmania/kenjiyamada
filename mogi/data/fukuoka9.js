@@ -98,7 +98,7 @@ sections: [
     { type:"wordorder", label:"(4)", pt:2,
       stem:"次の語を正しく並べかえて、対話を完成させなさい。<br>"+
            E("A: What are you looking at?<br>B: This is （　　）."),
-      words:["showing","the","graph","our","sleep","time"], answer:"the graph showing our sleep time" } ]}
+      words:["showing","the graph","our","sleep","time"], answer:"the graph showing our sleep time" } ]}
 ]},
 
 /* ===== 大問3 対話文読解（10点5問） ===== */
@@ -110,7 +110,7 @@ sections: [
     '<tr><td>Talk</td><td>"Sleep and Your Phone" by Dr. Sano<br>October 12, 3:30 p.m., in the gym</td></tr>'+
     '<tr><td>Challenge</td><td>Put your phone away by 9:00 p.m.<br>Go to bed by 10:30 p.m.</td></tr>'+
     '<tr><td>Sleep record sheet</td><td>Write down your sleep time every morning.<br>Give it to your homeroom teacher on October 19 (Mon).</td></tr>'+
-    '<tr><td>Prize</td><td>Students who keep the challenge for five days get a "Good Sleeper" card.</td></tr></table>',
+    '<tr><td>Prize</td><td>Students who do the challenge for five days get a "Good Sleeper" card.</td></tr></table>',
     passage:
     '<span class="sp"><span class="who">Riku:</span> Look at this, Nanako. Our school will have Good Sleep Week next month.</span>'+
     '<span class="sp"><span class="who">Nanako:</span> Good Sleep Week? What will we do?</span>'+
@@ -124,7 +124,7 @@ sections: [
     '<span class="sp"><span class="who">Nanako:</span> That sounds nice. I\'ll try it too.</span>'+
     '<span class="sp"><span class="who">Mr. Dean:</span> In my country, many students have the same problem. Some of my friends put their phones in the kitchen at night.</span>'+
     '<span class="sp"><span class="who">Riku:</span> And look, we have to write down our sleep time every morning. We give the sheet to our homeroom teacher on October nineteenth.</span>'+
-    '<span class="sp"><span class="who">Nanako:</span> Every morning? That\'s a lot of work. But if I keep the challenge for five days, I\'ll get a Good Sleeper card.</span>'+
+    '<span class="sp"><span class="who">Nanako:</span> Every morning? That\'s a lot of work. But if I do the challenge for five days, I\'ll get a Good Sleeper card.</span>'+
     '<span class="sp"><span class="who">Mr. Dean:</span> That sounds fun. I\'ll try the challenge with you. Let\'s sleep well together!</span>'+
     '<span class="sp"><span class="who">Nanako:</span> Thank you, Mr. Dean. I want to get the card.</span>',
     note:'語注：challenge 挑戦／gym 体育館／homeroom teacher 担任の先生／prize 賞',
@@ -154,7 +154,7 @@ sections: [
     'I wanted to know if this was true, so I asked the third-year students in our school about their phones and their sleep.<br><br>'+
     '<b>②</b> In June, I gave a survey to one hundred twenty students. '+
     'I asked two questions: "How long do you use your phone every day?" and "How many hours do you sleep?" '+
-    'Dr. Sano, our school nurse, helped me make the questions. '+
+    'Dr. Sano, our school doctor, helped me make the questions. '+
     'Then I put the students into four groups by their phone time. '+
     'The graph shows the number of students in each group as bars, and their average sleep time as a line.<br><br>'+
     '<b>③</b> Look at the graph. The largest group was the students who use their phones for one to two hours a day. '+
@@ -167,10 +167,10 @@ sections: [
     'In the group of more than three hours, fifteen out of twenty-five said yes. '+
     'Riku was in this group. He said, "I have used my phone in bed for two years. I often check it again and again before I sleep." '+
     'From these answers, I understood that <u>④ our phones take our sleep time away</u>.<br><br>'+
-    '<b>⑤</b> After the survey, our class started a rule. <u>③ ( the rule / that / made / we / is )</u> simple: no phones in bed. '+
+    '<b>⑤</b> After the survey, our class started a rule. <u>③ ( the rule / made / by / our class / is )</u> simple: no phones in bed. '+
     'I have followed the rule for three months, and now I sleep more than seven hours. I don\'t feel sleepy in class anymore. '+
     'At first, it was hard for some of us, but now many of my classmates say that they feel better in the morning. '+
-    'Riku also said, "I put my phone in the living room at night. Now I get up early and eat breakfast." '+
+    'Riku also said, "I put my phone in the living room at night. Now I don\'t check it before I sleep, and I sleep well." '+
     'Next, I want to ask the first-year and second-year students, too. '+
     'Let\'s sleep well and enjoy our school life together!',
     passageEn:true,
@@ -178,9 +178,8 @@ sections: [
     '<h4>グラフ：橘中学校3年生120人　1日のスマホ使用時間ごとの人数（棒）と平均睡眠時間（折れ線）</h4>'+
     '<table><tr><th>1日のスマホ使用時間</th><th>1時間未満</th><th>1〜2時間</th><th>2〜3時間</th><th>3時間より長い</th></tr>'+
     '<tr><td>人数（人）</td><td>10</td><td>45</td><td>40</td><td>25</td></tr>'+
-    '<tr><td>平均睡眠時間（時間）</td><td>7.9</td><td>7.5</td><td>7.0</td><td>6.2</td></tr>'+
-    '<tr><td>授業中にねむいと答えた人数（人）</td><td>2</td><td>9</td><td>12</td><td>15</td></tr></table>',
-    note:'語注：sleepy ねむい／survey アンケート／average 平均の／nurse 看護師（保健の先生）／daytime 昼間／fall asleep ねむりにつく／rule ルール／anymore もう（〜ない）',
+    '<tr><td>平均睡眠時間（時間）</td><td>7.9</td><td>7.5</td><td>7.0</td><td>6.2</td></tr></table>',
+    note:'語注：sleepy ねむい／survey アンケート／average 平均の／school doctor 学校医（保健の先生）／daytime 昼間／fall asleep ねむりにつく／rule ルール／anymore もう（〜ない）',
     items:[
     { type:"mcq", label:"(1)", pt:2,
       stem:"次の1文は、①〜⑤のどの段落の直後に入れるのが最も適当ですか。<br>"+
@@ -189,10 +188,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"グラフと本文から読み取れることとして最も適当なのは、ア〜エのどれですか。",
       choices:["スマホを1日1〜2時間使う生徒が最も多く、45人だった。","スマホを3時間より長く使う生徒の平均睡眠時間は7時間より長かった。",
                "スマホを1時間未満使う生徒の平均睡眠時間が最も短かった。","スマホを2〜3時間使う生徒は10人だった。"], answer:0 },
-    { type:"wordorder", label:"(3)", pt:2, stem:"下線部③の語句をすべて用いて、意味が通るように並べかえなさい。",
-      words:["the rule","that","made","we","is"],
-      answer:"the rule that we made is",
-      display:"the rule that we made is" },
+    { type:"wordorder", label:"(3)", pt:2, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
+      words:["the rule","made","by","our class","is"],
+      answer:"the rule made by our class is",
+      display:"the rule made by our class is" },
     { type:"fill", label:"(4)", pt:4,
       stem:"次の文の（　）に入れるのに最も適当な英語4語を、第3段落から抜き出して書きなさい。<br>"+
            E("Dr. Sano said that the light from a phone tells our body that （　　）."),
@@ -200,7 +199,7 @@ sections: [
     { type:"mcqMulti", label:"(5)", pt:4, stem:"本文の内容と合っているものを、ア〜オのうちから二つ選びなさい。",
       choices:[ E("Nanako gave the survey to one hundred twenty students in June."),
                 E("Nanako asked the first-year students about their sleep."),
-                E("Riku has used his phone in bed for two years."),
+                E("Riku used his phone in bed for two years before the rule started."),
                 E("The students who use their phones the most slept the longest."),
                 E("Nanako still feels sleepy in class after the rule.") ], answer:[0,2] } ]}
 ]},
@@ -230,7 +229,7 @@ sections: [
       stem:"③「わたしはみんなに、ベッドでスマホを使うのをやめてほしい。」という文にします。<br>"+
            "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
            E("I want everyone （　　） their phones in bed."),
-      answers:["to stop using"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      answers:["to stop using","not to use"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
 ]}
 
 ]};

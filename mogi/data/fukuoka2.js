@@ -65,11 +65,11 @@ sections: [
       '<span class="sp">Hello, everyone. I\'m Ueno. I work at Hanamiya Park. Next Saturday, you will plant flowers in the park with us. There are three groups, and you can choose one of them.</span>'+
       '<span class="sp">The first group will plant cosmos near the gate. The second group will plant sunflowers by the pond. The third group will water the flowers and clean the garden.</span>'+
       '<span class="sp">Sana has already chosen the second group. She said, "I want to see tall flowers, so sunflowers are the best for me."</span>'+
-      '<span class="sp">Please wear old clothes and bring your gloves. We will start at nine and finish at eleven thirty.</span>',
+      '<span class="sp">Please wear old clothes and bring a towel. We will start at ten and finish at twelve.</span>',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["グループは3つあり、その中から1つ選ぶ。","グループは3つあり、その中から2つ選ぶ。",
-               "作業は9時に始まり、11時に終わる。","手ぶくろは公園で貸してもらえる。"], answer:0 },
+               "作業は10時に始まり、12時30分に終わる。","タオルは公園で貸してもらえる。"], answer:0 },
     { type:"mcq", label:"(2)", pt:2, stem:"池のそばですることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("plant cosmos near the gate"), E("plant sunflowers by the pond"),
                 E("water the flowers and clean the garden"), E("clean the pond and pick the flowers") ], answer:1 },
@@ -81,7 +81,7 @@ sections: [
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
 { no:2, title:"次の(1)〜(4)の対話について、それぞれの問いに答えなさい。", groups:[
-  { note:"語注：tulip チューリップ／garden club 園芸部",
+  { note:"語注：tulip チューリップ／pansy パンジー／bloom（花が）さく／garden club 園芸部",
     items:[
     { type:"mcq", label:"(1)", pt:2,
       stem:"（　　）に入れるのに最も適当なのは、ア〜エのどれですか。<br>"+
@@ -100,7 +100,7 @@ sections: [
     { type:"wordorder", label:"(4)", pt:2,
       stem:"次の語を正しく並べかえて、対話を完成させなさい。<br>"+
            E("A: Look at those red flowers by the gate. They're beautiful!<br>B: Thank you. Those are （　　）."),
-      words:["the","flowers","planted","by","our","class"], answer:"the flowers planted by our class" } ]}
+      words:["by","planted","our","the flowers","class"], answer:"the flowers planted by our class" } ]}
 ]},
 
 /* ===== 大問3 対話文読解（10点5問） ===== */
@@ -125,14 +125,14 @@ sections: [
     '<span class="sp"><span class="who">Mr. Ueno:</span> Tulips are beautiful, but they bloom for only two weeks. Pansies are （　あ　）. They can keep blooming from autumn to spring.</span>'+
     '<span class="sp"><span class="who">Kota:</span> That\'s a long time! So the road will be colorful for many months.</span>'+
     '<span class="sp"><span class="who">Mr. Ueno:</span> That\'s right. The winter wind in the park is （　あ　）, but pansies are fine in cold weather.</span>'+
-    '<span class="sp"><span class="who">Sana:</span> I see. I\'m doing a project about flowers at school. In our school garden, I want to plant <u>(い) ( flowers / that / bloom / for / a long time )</u>, too.</span>'+
+    '<span class="sp"><span class="who">Sana:</span> I see. I\'m doing a project about flowers at school. In our school garden, I want to plant <u>(い) ( a long time / bloom / flowers / for / that )</u>, too.</span>'+
     '<span class="sp"><span class="who">Mr. Ueno:</span> Then pansies are a good choice. Please come at nine. We will meet at the east gate.</span>'+
     '<span class="sp"><span class="who">Kota:</span> OK. Do we need to bring anything?</span>'+
     '<span class="sp"><span class="who">Mr. Ueno:</span> Yes. Bring gloves and old clothes because your clothes will get dirty. And bring something to drink. You will get thirsty after planting.</span>'+
     '<span class="sp"><span class="who">Sana:</span> What will happen if it rains?</span>'+
     '<span class="sp"><span class="who">Mr. Ueno:</span> We will plant on the next day, Sunday. I hope it will be sunny.</span>'+
     '<span class="sp"><span class="who">Kota:</span> Me too. We\'ll see you on Saturday!</span>',
-    note:'語注：pansy パンジー／bloom（花が）さく／gloves 手ぶくろ／thirsty のどがかわいた',
+    note:'語注：flyer ちらし／pansy パンジー／bloom（花が）さく／gloves 手ぶくろ／thirsty のどがかわいた',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"2か所の（あ）に共通して入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("strong"), E("weak"), E("small"), E("quiet") ], answer:0 },
@@ -147,7 +147,7 @@ sections: [
            E("Mr. Ueno chose pansies because they can keep blooming （　　）."),
       answers:["from autumn to spring"], hint:"英語4語" },
     { type:"wordorder", label:"(5)", pt:2, stem:"下線部(い)の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["flowers","that","bloom","for","a long time"], answer:"flowers that bloom for a long time",
+      words:["a long time","bloom","flowers","for","that"], answer:"flowers that bloom for a long time",
       display:"flowers that bloom for a long time" } ]}
 ]},
 
@@ -156,11 +156,11 @@ sections: [
   { passage:
     '<b>①</b> Hello, everyone. I\'m Sana. Our school is in Hanamiya Town, and many flowers are grown in the parks of our town. '+
     'Last spring, our class made a flower garden in front of the school. '+
-    'When we were choosing the flowers, Kota said, "Let\'s plant flowers that bloom for a long time. Then everyone can enjoy them until autumn." '+
+    'When we were choosing the flowers, Kota said, "Let\'s plant flowers that keep blooming until autumn. Then everyone can enjoy them for many months." '+
     'But nobody knew which flowers bloom the longest. So I decided to find out.<br><br>'+
     '<b>②</b> In May, I planted four kinds of flowers in the garden: sunflowers, morning glories, cosmos, and marigolds. '+
-    'I took care of all of them in the same way. I watered them every morning, and I wrote down the day when the first flower opened '+
-    'and the day when the last flower fell. I also counted the flowers that opened on one plant. '+
+    'I took care of all of them in the same way. I watered them every morning, and I wrote down when the first flower opened '+
+    'and when the last one fell. I also counted the flowers that opened on one plant. '+
     'At the end of October, I put everything on one graph. '+
     'The bars show the number of days each flower bloomed, and the line shows the number of flowers on one plant.<br><br>'+
     '<b>③</b> Look at the graph. Sunflowers bloomed for only twenty days, and each plant had just one big flower. '+
@@ -172,7 +172,7 @@ sections: [
     'Mr. Ueno, a man working there, told me that marigolds are strong in hot weather.<br><br>'+
     '<b>⑤</b> Now we know what to plant. This spring, our class will plant marigolds and cosmos together in the garden. '+
     'Mr. Ueno also asked us to plant some marigolds in Hanamiya Park, and we are going to help him in April. '+
-    '<u>③ ( the / garden / that / our class / made )</u> is small, but I hope it will make many people happy. '+
+    '<u>③ ( made / that / garden / our class / the )</u> is small, but I hope it will make many people happy. '+
     'Thank you for listening.',
     passageEn:true,
     flyer:
@@ -190,7 +190,7 @@ sections: [
       choices:["マリーゴールドは最も長くさき、一株の花の数は80だった。","ヒマワリは4種類の中で最も長くさいた。",
                "アサガオはコスモスより長くさいた。","コスモスの一株の花の数は、アサガオより少なかった。"], answer:0 },
     { type:"wordorder", label:"(3)", pt:2, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["the","garden","that","our class","made"],
+      words:["made","that","garden","our class","the"],
       answer:"the garden that our class made",
       display:"The garden that our class made" },
     { type:"fill", label:"(4)", pt:4,
@@ -223,7 +223,7 @@ sections: [
       display:"I think we should plant more flowers in the park." },
     { type:"wordorder", label:"(2)", pt:2,
       stem:"②「なぜなら、花は公園を訪れる人々を幸せにするからです。」という文になるように、次の語句を正しく並べかえなさい。",
-      words:["because","flowers","make","the people","visiting the park","happy"],
+      words:["make","because","happy","the people","flowers","visiting the park"],
       answer:"because flowers make the people visiting the park happy",
       display:"because flowers make the people visiting the park happy." },
     { type:"fill", label:"(3)", pt:4,

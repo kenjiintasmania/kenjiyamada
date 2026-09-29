@@ -4,7 +4,7 @@
    本文・設問・選択肢はすべて新規創作。
 
    ★題材：無人になった駅とボランティア駅員（探究：駅の利用者数の変化）。
-   ★舞台：北野町（Kitano Town・架空）・北野駅（Kitano Station・架空）。
+   ★舞台：桐野町（Kirino Town・架空）・桐野駅（Kirino Station・架空）。
      登場人物：ミユ(Miyu)・リョウタ(Ryota)・コール先生(Mr. Cole・ALT)・
      ババさん(Mr. Baba・ボランティア駅員)。地名・施設・人名・行事はすべて架空。
    ★骨格は fukuoka1 と同一：大問1〜5・26問・配点 20-8-10-14-8。
@@ -21,11 +21,11 @@ sections: [
 { no:1, title:"リスニングテスト", lead:"放送文を読んで、内容に合うものを選びましょう（実際の試験では音声が流れます。福岡県は問題1だけが1回読み、問題2〜4は2回読まれます）。", groups:[
 
   { intro:"問題1　放送を聞いて、内容に合うものをア〜エから1つ選びなさい。英文は1回だけ読まれます。",
-    script:'(1) Look at the board at Kitano Station. The next train for Minato City leaves at eight twenty from Platform 2.',
+    script:'(1) Look at the board at Kirino Station. The next train for Sumino City leaves at eight twenty from Platform 2.',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"放送に合うものはどれですか。",
-      choices:["湊市行きの次の電車は8時20分に2番ホームから出る。","湊市行きの次の電車は8時12分に2番ホームから出る。",
-               "湊市行きの次の電車は8時20分に1番ホームから出る。","湊市行きの次の電車は8時2分に2番ホームから出る。"], answer:0 } ] },
+      choices:["澄野市行きの次の電車は8時20分に2番ホームから出る。","澄野市行きの次の電車は8時12分に2番ホームから出る。",
+               "澄野市行きの次の電車は8時20分に1番ホームから出る。","澄野市行きの次の電車は8時2分に2番ホームから出る。"], answer:0 } ] },
   { script:'(2) Look at the picture. Ryota is watering the flowers in front of the station, and Miyu is cleaning the window.',
     items:[
     { type:"mcq", label:"(2)", pt:2, stem:"放送に合う絵はどれですか。",
@@ -33,7 +33,7 @@ sections: [
                "リョウタが駅前の花に水をやり、ミユがベンチにすわっている。","リョウタがベンチにペンキをぬり、ミユが窓をふいている。"], answer:0 } ] },
 
   { intro:"問題2　ミユ(Miyu)とリョウタ(Ryota)が、下の案内を見ています。放送を聞いて、それぞれの問いに答えなさい。英文は2回読まれます。",
-    passage:'<b>北野駅ボランティアの日</b>'+
+    passage:'<b>桐野駅ボランティアの日</b>'+
       '<table><tr><th>日</th><th>時こく</th><th>活動</th></tr>'+
       '<tr><td>Saturday</td><td>9:00 a.m.</td><td>Cleaning the waiting room</td></tr>'+
       '<tr><td>Saturday</td><td>2:00 p.m.</td><td>Painting the bench</td></tr>'+
@@ -62,14 +62,14 @@ sections: [
 
   { intro:"問題4　ボランティア駅員のババさん(Mr. Baba)が、駅に来た中学生に話をしています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Welcome to Kitano Station. My name is Baba. Four years ago, the station staff left, and this station became an unmanned station. Nobody cleaned the waiting room, and it became dark and dirty. So the next year, I started working here as a volunteer with five friends.</span>'+
+      '<span class="sp">Welcome to Kirino Station. My name is Baba. Four years ago, the station staff left, and nobody worked here after that. Nobody cleaned the waiting room, and it became dark and dirty. So the next year, I started working here as a volunteer with five friends.</span>'+
       '<span class="sp">We do three things. We clean the waiting room every morning, we help people who don\'t know how to buy a ticket from the machine, and we take care of the flowers in front of the station.</span>'+
       '<span class="sp">Ryota asked me, "Why do you do this?" I answered, "I want to make people smile." When people say thank you to us, we feel happy, too.</span>'+
-      '<span class="sp">Today, please help us plant flowers. Please wear gloves. We will start at ten.</span>',
+      '<span class="sp">Today, please help us plant flowers. Please wear gloves. We will start at nine.</span>',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
-      choices:["駅は4年前に無人になり、ババさんはその次の年からボランティアを始めた。","駅は4年前に無人になり、ババさんはすぐに駅員として働き始めた。",
-               "ババさんは1人でボランティアをしている。","今日の作業は9時に始まる。"], answer:0 },
+      choices:["ババさんは5人の友人といっしょにボランティアを始めた。","駅は4年前に無人になり、ババさんはすぐに駅員として働き始めた。",
+               "ババさんは1人でボランティアをしている。","今日の作業は10時に始まる。"], answer:0 },
     { type:"mcq", label:"(2)", pt:2, stem:"ボランティアが毎朝することとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("clean the waiting room"), E("sell tickets at the window"),
                 E("drive the train to the city"), E("paint the bench in the park") ], answer:0 },
@@ -90,7 +90,7 @@ sections: [
                 E("He was not there today."), E("I don't know who he is.") ], answer:0 },
     { type:"mcq", label:"(2)", pt:2,
       stem:"（　　）に入れるのに最も適当なのは、ア〜エのどれですか。<br>"+
-           E("A: Excuse me. Which train goes to Minato City?<br>B: （　　）<br>A: Platform 1? Thank you very much."),
+           E("A: Excuse me. Which train goes to Sumino City?<br>B: （　　）<br>A: Platform 1? Thank you very much."),
       choices:[ E("The one waiting at Platform 1."), E("I have taken it many times."),
                 E("It is a very long train."), E("No, that is not my train.") ], answer:0 },
     { type:"fill", label:"(3)", pt:2,
@@ -104,27 +104,27 @@ sections: [
 ]},
 
 /* ===== 大問3 対話文読解（10点5問） ===== */
-{ no:3, title:"中学生のミユ(Miyu)とリョウタ(Ryota)が、北野駅のボランティア駅員のババさん(Mr. Baba)に、駅の開放日の案内を見ながら話を聞いています。次は、その案内と会話です。(1)〜(5)に答えなさい。", groups:[
+{ no:3, title:"中学生のミユ(Miyu)とリョウタ(Ryota)が、桐野駅のボランティア駅員のババさん(Mr. Baba)に、駅の開放日の案内を見ながら話を聞いています。次は、その案内と会話です。(1)〜(5)に答えなさい。", groups:[
   { flyer:
-    '<h4>Kitano Station Open Day</h4>'+
+    '<h4>Kirino Station Open Day</h4>'+
     '<div class="note">Come and learn about our station with the volunteers!</div>'+
     '<table><tr><td>Date</td><td>October 10 (Sat)</td></tr>'+
     '<tr><td>Time</td><td>10:00 a.m. – 3:00 p.m.</td></tr>'+
-    '<tr><td>Meeting place</td><td>The waiting room of Kitano Station</td></tr>'+
+    '<tr><td>Meeting place</td><td>The waiting room of Kirino Station</td></tr>'+
     '<tr><td>Programs</td><td>10:00 a.m. Station tour<br>11:00 a.m. Old photos of the station<br>1:00 p.m. Flower planting</td></tr>'+
     '<tr><td>Fee</td><td>200 yen　(students: 100 yen)</td></tr></table>'+
     '<div class="note">Bring … gloves and a drink.<br>'+
     'If it rains, we will not plant flowers. Mr. Baba will talk about the history of the station in the waiting room.</div>',
     passage:
-    '<span class="sp"><span class="who">Miyu:</span> Mr. Baba, we are studying about Kitano Station for our class. May we ask you some questions?</span>'+
+    '<span class="sp"><span class="who">Miyu:</span> Mr. Baba, we are studying about Kirino Station for our class. May we ask you some questions?</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> Of course. What do you want to know?</span>'+
     '<span class="sp"><span class="who">Ryota:</span> First, why did you start working here as a volunteer?</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> Four years ago, the station became unmanned. Nobody cleaned the waiting room, and some people stopped （　あ　） the station. I didn\'t want to see that, so the next year I started with my friends.</span>'+
     '<span class="sp"><span class="who">Miyu:</span> How many volunteers are there now?</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> Twelve. Some of us are over seventy, but we are all healthy!</span>'+
     '<span class="sp"><span class="who">Ryota:</span> Do you come here every day?</span>'+
-    '<span class="sp"><span class="who">Mr. Baba:</span> Yes. I open the waiting room at six every morning and clean it. Then I water the flowers.</span>'+
-    '<span class="sp"><span class="who">Miyu:</span> That\'s great. Look at this flyer, Ryota. There will be an open day on October tenth. The station tour starts at ten, and the flower planting is in the afternoon. Mr. Baba, how much is the fee for students?</span>'+
+    '<span class="sp"><span class="who">Mr. Baba:</span> Yes. I open the waiting room at six every morning. Then I water the flowers.</span>'+
+    '<span class="sp"><span class="who">Miyu:</span> That\'s great. Look at this, Ryota. There will be an open day on October tenth. The station tour starts at ten, and the flower planting is in the afternoon. Mr. Baba, how much is the fee for students?</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> One hundred yen. Adults pay two hundred yen. The money is used to buy new flowers.</span>'+
     '<span class="sp"><span class="who">Ryota:</span> That\'s not expensive. Miyu, let\'s join together. Mr. Baba, is there <u>(い) ( anything / need / we / to / bring )</u>?</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> Gloves and a drink. Your hands will get dirty when you plant flowers.</span>'+
@@ -132,7 +132,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Baba:</span> We will not plant flowers. Instead, I will talk about the history of the station in the waiting room.</span>'+
     '<span class="sp"><span class="who">Ryota:</span> That sounds interesting, too. We are looking forward to the open day.</span>'+
     '<span class="sp"><span class="who">Mr. Baba:</span> Thank you. I hope young people will start （　あ　） the station again.</span>',
-    note:'語注：unmanned 無人の／fee 料金／glove 手ぶくろ／instead そのかわりに',
+    note:'語注：unmanned 無人の／fee 料金／glove 手ぶくろ／adult おとな／instead そのかわりに',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"2か所の（あ）に共通して入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("using"), E("building"), E("closing"), E("painting") ], answer:0 },
@@ -140,7 +140,7 @@ sections: [
       choices:[ E("Students pay one hundred yen, and adults pay two hundred yen."), E("Students pay two hundred yen, and adults pay one hundred yen."),
                 E("Everyone can join the open day for free."), E("The money is used to clean the waiting room.") ], answer:0 },
     { type:"mcq", label:"(3)", pt:2, stem:"案内や会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("Mr. Baba started the volunteer work the year after the station became unmanned."), E("There are twenty volunteers at Kitano Station now."),
+      choices:[ E("Mr. Baba started the volunteer work the year after the station became unmanned."), E("There are twenty volunteers at Kirino Station now."),
                 E("The station tour starts in the afternoon."), E("Miyu will not join the open day.") ], answer:0 },
     { type:"fill", label:"(4)", pt:2,
       stem:"次の文の（　）に入れるのに最も適当な英語4語を、会話の中から抜き出して書きなさい。<br>"+
@@ -152,10 +152,10 @@ sections: [
 ]},
 
 /* ===== 大問4 長文読解（14点5問・グラフつき） ===== */
-{ no:4, title:"次の英文は、北野中学校のリョウタ(Ryota)が、探究学習の発表で話した内容です。(1)〜(5)に答えなさい。", groups:[
+{ no:4, title:"次の英文は、桐野中学校のリョウタ(Ryota)が、探究学習の発表で話した内容です。(1)〜(5)に答えなさい。", groups:[
   { passage:
-    '<b>①</b> Hello, everyone. I\'m Ryota. Every morning I go to school from Kitano Station. '+
-    'Many people in Kitano Town used it to go to work or school. '+
+    '<b>①</b> Hello, everyone. I\'m Ryota. Every morning I go to school from Kirino Station. '+
+    'Many people in Kirino Town used it to go to work or school. '+
     'Four years ago, the station staff left, and the station became unmanned. '+
     'My grandmother said, "The station was so quiet and sad after that." '+
     'I wanted to know how the station has changed, so I studied the number of people who use it.<br><br>'+
@@ -174,15 +174,15 @@ sections: [
     'One woman said, "The flowers planted by the volunteers make me happy every morning." '+
     'Three people said that they can ask the volunteers when they don\'t know how to buy a ticket. '+
     'Some students said that they feel safe because someone is always there. '+
-    'From these answers, I understood that <u>④ the volunteers changed the station</u>.<br><br>'+
+    'From these answers, I understood that the volunteers changed the station.<br><br>'+
     '<b>⑤</b> Now I know that a station is not just a place to take a train. '+
     'It is a place where people meet and talk. Mr. Baba is seventy-two years old. '+
     'He said, "I hope young people will keep this station in the future." '+
     'My grandmother goes to the station to see the flowers now, and she talks with Mr. Baba every week. '+
-    'I want to join the volunteers next spring and tell more people about Kitano Station.',
+    'I want to join the volunteers next spring and tell more people about Kirino Station.',
     passageEn:true,
     flyer:
-    '<h4>グラフ：北野駅　1日の平均利用者数（棒）とボランティアの人数（折れ線）</h4>'+
+    '<h4>グラフ：桐野駅　1日の平均利用者数（棒）とボランティアの人数（折れ線）</h4>'+
     '<table><tr><th>年</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr>'+
     '<tr><td>1日の平均利用者数（人）</td><td>200</td><td>160</td><td>150</td><td>170</td><td>185</td></tr>'+
     '<tr><td>ボランティアの人数（人）</td><td>0</td><td>0</td><td>6</td><td>10</td><td>12</td></tr></table>',
@@ -204,7 +204,7 @@ sections: [
            E("Fifteen of the twenty passengers said that the station （　　）."),
       answers:["became clean and bright"], hint:"第4段落の語・英語4語" },
     { type:"mcqMulti", label:"(5)", pt:4, stem:"本文の内容と合っているものを、ア〜オのうちから二つ選びなさい。",
-      choices:[ E("Ryota goes to school from Kitano Station every morning."),
+      choices:[ E("Ryota goes to school from Kirino Station every morning."),
                 E("Ryota got the number of passengers from Mr. Baba."),
                 E("The number of passengers went up as soon as the volunteers started."),
                 E("Some students feel safe because someone is always at the station."),
@@ -212,7 +212,7 @@ sections: [
 ]},
 
 /* ===== 大問5 条件英作文（8点3問・骨組みを作る形） ===== */
-{ no:5, title:"無人になった北野駅を守るために、中学生としてできることを次のA〜Cから1つ選び、その案とその理由を伝える英文を作ります。ここでは B を選んだものとして、(1)〜(3)に答えなさい。", groups:[
+{ no:5, title:"無人になった桐野駅を守るために、中学生としてできることを次のA〜Cから1つ選び、その案とその理由を伝える英文を作ります。ここでは B を選んだものとして、(1)〜(3)に答えなさい。", groups:[
   { passage:
     '<b>3つの案</b><br>'+
     'A： 駅のそうじを手伝う　'+E("help clean the station")+'<br>'+

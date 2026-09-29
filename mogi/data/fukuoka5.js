@@ -27,11 +27,11 @@ sections: [
     { type:"mcq", label:"(1)", pt:2, stem:"放送に合うものはどれですか。",
       choices:["昔の道具についての話は2時15分に始まる。","昔の道具についての話は2時50分に始まる。",
                "昔の道具についての話は3時15分に始まる。","昔の写真についての話は2時15分に始まる。"], answer:0 } ] },
-  { script:'(2) Look at the picture. Mao is washing clothes by hand, and Sota is carrying two buckets of water.',
+  { script:'(2) Look at the picture. Mao is washing clothes by hand, and Sota is carrying two bottles of water.',
     items:[
     { type:"mcq", label:"(2)", pt:2, stem:"放送に合う絵はどれですか。",
-      choices:["マオが手で服を洗い、ソウタが水の入ったバケツを2つ運んでいる。","マオが手で服を洗い、ソウタが水の入ったバケツを1つ運んでいる。",
-               "マオが水の入ったバケツを2つ運び、ソウタが手で服を洗っている。","マオが手で皿を洗い、ソウタが水の入ったバケツを2つ運んでいる。"], answer:0 } ] },
+      choices:["マオが手で服を洗い、ソウタが水の入ったボトルを2本運んでいる。","マオが手で服を洗い、ソウタが水の入ったボトルを1本運んでいる。",
+               "マオが水の入ったボトルを2本運び、ソウタが手で服を洗っている。","マオが手で皿を洗い、ソウタが水の入ったボトルを2本運んでいる。"], answer:0 } ] },
 
   { intro:"問題2　マオ(Mao)とソウタ(Sota)が、下の案内を見ています。放送を聞いて、それぞれの問いに答えなさい。英文は2回読まれます。",
     passage:'<b>くすのき公民館　昔のくらし体験教室</b>'+
@@ -63,9 +63,9 @@ sections: [
 
   { intro:"問題4　太田さん(Ms. Ota)が、公民館で中学生に昔のくらしについて話しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, everyone. I\'m Ota Yoshiko. I was born in Kusunoki Town seventy years ago.</span>'+
-      '<span class="sp">When I was a child, my mother did all the housework by hand. Every morning, she got up at five and made a fire to cook rice. Washing clothes was the hardest work. She carried water from the well and washed everything with her hands. It took about two hours.</span>'+
-      '<span class="sp">When I was fifteen, my family bought a washing machine. My mother was very happy because she could use the time for other things. She started to read books in the afternoon.</span>'+
+      '<span class="sp">Hello, everyone. I\'m Ota Yoshiko. I was born in Kusunoki Town seventy-five years ago.</span>'+
+      '<span class="sp">When I was a child, my mother did all the housework by hand. Every morning, she got up at five and made a fire to cook rice. Washing clothes was the hardest work. She carried water from the river and washed everything with her hands. It took about two hours.</span>'+
+      '<span class="sp">When I was twenty-five, my family bought a washing machine. My mother was very happy because she could use the time for other things. She started to read books in the afternoon.</span>'+
       '<span class="sp">Today I want to show you three old tools. Please touch them and think about the people who used them.</span>',
     items:[
     { type:"mcq", label:"(1)", pt:2, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
@@ -99,7 +99,7 @@ sections: [
            E("My grandmother has ( use ) this pot for fifty years."),
       answers:["used"], hint:"has のうしろ・1語" },
     { type:"wordorder", label:"(4)", pt:2,
-      stem:"次の語を正しく並べかえて、対話を完成させなさい。<br>"+
+      stem:"次の語を正しく並べかえて、『それは服を洗うのに使われる道具です。』という対話を完成させなさい。<br>"+
            E("A: What is this?<br>B: It is （　　）."),
       words:["used","a","tool","for","washing","clothes"], answer:"a tool used for washing clothes" } ]}
 ]},
@@ -113,7 +113,7 @@ sections: [
     '<tr><td>Time</td><td>1:30 p.m. – 3:00 p.m.</td></tr>'+
     '<tr><td>Place</td><td>Kusunoki Community Center, Room 2</td></tr>'+
     '<tr><td>Speaker</td><td>Ms. Ota — housework and old tools</td></tr>'+
-    '<tr><td>Students</td><td>20 students (first come, first served)</td></tr>'+
+    '<tr><td>Students</td><td>The first 20 students</td></tr>'+
     '<tr><td>Sign-up</td><td>By November 10, at the teachers\' room</td></tr></table>'+
     '<div class="note">Bring … a notebook and a pencil. You can touch the old tools!</div>',
     passage:

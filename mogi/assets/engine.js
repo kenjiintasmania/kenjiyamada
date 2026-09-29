@@ -272,6 +272,17 @@ function renderItem(it, ctx){
     const build=el("div","wo-build");
     const bank=el("div","wo-bank");
     let seq=[];
+    /* ★語群は正解順のまま並べない。データが答えの順で words を書いていると、
+       生徒には答えが左から右に見えてしまう（2026-09-29 の査読で発覚）。
+       毎回ちがう並びだと開きなおすたびに変わって混乱するので、語群の中身から決まる
+       固定の並びにする（同じ問題ならいつも同じ並び）。 */
+    const bankOrder=(()=>{ let h=0; const key=it.words.join("|");
+      for(let i=0;i<key.length;i++) h=(h*31+key.charCodeAt(i))>>>0;
+      const idx=it.words.map((_,i)=>i);
+      for(let i=idx.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+      // 偶然そのまま正解順になったら1つずらす
+      if(idx.length>1 && idx.every((v,i)=>v===i)){ idx.push(idx.shift()); }
+      return idx; })();
     function draw(){
       build.innerHTML=""; bank.innerHTML="";
       if(seq.length===0) build.appendChild(el("span","wo-empty","ここに語がならびます →"));
@@ -280,7 +291,7 @@ function renderItem(it, ctx){
         c.addEventListener("click",()=>{ seq.splice(pos,1); draw(); });
         build.appendChild(c);
       });
-      it.words.forEach((wd,wi)=>{
+      bankOrder.forEach((wi)=>{ const wd=it.words[wi];
         if(seq.indexOf(wi)>=0) return;
         const c=el("button","wo-chip"); c.type="button"; c.innerHTML='<span class="en">'+wd+'</span>';
         c.addEventListener("click",()=>{ seq.push(wi); draw(); });
