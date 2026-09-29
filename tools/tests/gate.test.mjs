@@ -325,8 +325,9 @@ console.log("— リセットのつづき：二度目・やり直し後の dup�
   ok(p2.sets["1-1"] && p2.sets["1-1"].correct===60, "2000語のほうは触らない");
   // 日時の列が読めない行があっても、行の順でリセットが効く
   const sh=G.__SS.getSheetByName("到達度テスト");
-  sh.appendRow(["2026.9.28 10:00", "", "m2000", "1", "9", "テスト", 1, 3, 77, 100, 60, 77, "t"]);   // 読めない日時の記録
-  sh.appendRow(["2026.9.28 10:01", "", "m2000", "1", "9", "テスト", 0, "1〜10", "", "", "", "", "reset"]);  // 読めない日時のリセット行
+  // ★"2026.9.28 10:00" は V8 が日付として読めてしまう（日付順で比べられ、日付に左右される）ので、本当に読めない文字にする
+  sh.appendRow(["2026年9月28日 10時", "", "m2000", "1", "9", "テスト", 1, 3, 77, 100, 60, 77, "t"]);   // 読めない日時の記録
+  sh.appendRow(["2026年9月28日 10時1分", "", "m2000", "1", "9", "テスト", 0, "1〜10", "", "", "", "", "reset"]);  // 読めない日時のリセット行
   const p3=G.call({action:"progress", exam:"m2000", cls:"1", num:"9"});
   ok(!p3.sets["1-3"] && !p3.sets["1-1"], "★日時が読めなくても、行の順で「前」の記録は消える（"+Object.keys(p3.sets).join(",")+"）");
   // 成績まとめ・到達度まとめは、リセット（最後は文法の項目1〜5）のその場で入れなおされている：
@@ -337,6 +338,46 @@ console.log("— リセットのつづき：二度目・やり直し後の dup�
      "★リセット直後に成績まとめの合計が入れなおる（2000語 "+(srow&&srow[head.indexOf("到達度2000語_合計")])+"／文法 "+(srow&&srow[head.indexOf("到達度文法_合計")])+"）");
   const bd=(G.dump("到達度まとめ")||[]).find(x=>String(x[0])==="1"&&String(x[1])==="9");
   ok(bd && Number(bd[3])===60 && Number(bd[6])===5, "到達度まとめも同じ（"+(bd&&bd[3])+"／"+(bd&&bd[6])+"）");
+}
+/* ---------- 試験×学年の受付（jigaku-18） ---------- */
+console.log("— 試験×学年の受付 —");
+{
+  G.call({action:"gate", pin:"PIN", exam:"m2000", open:false});
+  let r=G.call({action:"gate", pin:"PIN", exam:"m2000", cls:"2", open:true});
+  ok(r.result==="ok" && r.open===true && r.cls==="2" && /-2$/.test(r.session), "★2年だけ開けられる（セッションに学年つき）："+r.session);
+  ok(G.call({action:"status", exam:"m2000", cls:"2"}).open===true, "2年から見ると受付中");
+  ok(G.call({action:"status", exam:"m2000", cls:"3"}).open===false, "★3年から見ると閉");
+  ok(G.call({action:"status", exam:"m2000"}).open===false, "学年なし（旧ページ）は全学年の行＝閉");
+  let m=G.call({kind:"mastery", exam:"m2000", cls:"3", num:"30", name:"t", round:1, set:1, correct:10, asked:100, sec:60, ver:"t"});
+  ok(m.result==="ok" && m.late===true, "★閉じている学年の記録も受け取り、「受付外」と返す："+JSON.stringify(m).slice(0,60));
+  m=G.call({kind:"mastery", exam:"m2000", cls:"2", num:"30", name:"t", round:1, set:1, correct:10, asked:100, sec:60, ver:"t"});
+  ok(m.result==="ok" && !m.late, "開いている学年の記録は受付中として届く");
+  const rows=(G.dump("到達度テスト")||[]).filter(x=>String(x[4])==="30");
+  const r3=rows.find(x=>String(x[3])==="3"), r2=rows.find(x=>String(x[3])==="2");
+  ok(rows.length===2 && r3 && String(r3[1])==="受付外" && r2 && /-2$/.test(String(r2[1])), "★セッション欄：3年は「受付外」・2年は学年つきセッション（"+(r3&&r3[1])+"／"+(r2&&r2[1])+"）");
+  const sa=G.call({action:"status_all", kind:"admin"});
+  ok(sa.exams.m2000.open===false && sa.exams.m2000.by["2"] && sa.exams.m2000.by["2"].open===true && sa.exams.m2000.by["2"].ownOpen===true,
+     "status_all：全学年は閉・2年は開（"+JSON.stringify(sa.exams.m2000.by)+"）");
+  r=G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
+  ok(r.result==="ok" && r.open===true, "全学年で開ける");
+  ok(G.call({action:"status", exam:"m2000", cls:"3"}).open===true, "★全学年が開けば3年も受付中");
+  r=G.call({action:"gate", pin:"PIN", exam:"m2000", cls:"3", open:true});
+  ok(r.result==="error" && /全学年/.test(r.message), "全学年が開いているあいだは学年ごとの操作を断る："+r.message);
+  const sa2=G.call({action:"status_all", kind:"admin"});
+  ok(sa2.exams.m2000.by["2"].scope==="all", "status_all：学年の行は「全学年で開いている」と分かる");
+  G.call({action:"gate", pin:"PIN", exam:"m2000", open:false});
+  ok(G.call({action:"status", exam:"m2000", cls:"2"}).open===false, "★全学年ストップで2年の行も閉じる");
+  // 単元テスト：学年ごとの受付。提出数はその行に
+  G.call({action:"gate", pin:"PIN", exam:"c3u1", cls:"3", open:true});
+  let u=G.call({kind:"unittest", exam:"c3u1", cls:"2", num:"5", name:"t", score:50, total:100, pct:50, ver:"t"});
+  ok(u.result==="locked", "単元テスト：開いていない学年は提出できない");
+  u=G.call({kind:"unittest", exam:"c3u1", cls:"3", num:"5", name:"t", score:50, total:100, pct:50, ver:"t"});
+  ok(u.result==="ok", "開いている学年は提出できる："+JSON.stringify(u));
+  ok(G.call({action:"status", exam:"c3u1", cls:"3"}).submissions===1, "★提出数は3年の行に入る");
+  ok(G.call({action:"status", exam:"c3u1"}).submissions===0, "全学年の行の提出数は0のまま");
+  G.call({action:"gate", pin:"PIN", exam:"c3u1", open:false});
+  const um=(G.dump("単元管理")||[]);
+  ok(String(um[0][6])==="学年" && um.some(x=>String(x[0])==="m2000"&&String(x[6])==="2"), "単元管理にG列「学年」と m2000×2年 の行がある");
 }
 console.log("— 到達度テスト以外の記録が英検タブに落ちない —");
 {

@@ -82,7 +82,7 @@
 </div>
 
 <script src="assets/engine.js?v=0927b"></script>
-<script src="../assets/site.js?v=0927b"></script>
+<script src="../assets/site.js?v=0929a"></script>
 <script>
 (function(){
   // 成績集約GAS（マイページと同じデプロイ）。単元テストのゲート確認・提出に使用。
@@ -181,11 +181,21 @@
     }
     /* 緊急用の強制解除（2026-09-27 授業中に true にした）。ふだんは false（jigaku-16 で原因を直して戻した）。 */
     const FORCE_OPEN = false;
+    /* 受付は「試験 × 学年」（jigaku-18）。学年を添えて聞く。学年が空なら聞かない。 */
     function poll(){
       if(FORCE_OPEN){ setOpen(true); return; }
-      post({action:"status", exam:id}).then(st=>{
+      const cls=elc.value.trim();
+      if(!cls){ badge.textContent="🔒 学年を選んでね"; badge.className="unit-badge lock"; btn.disabled=true;
+        msg.textContent="学年を選ぶと、受付の状態が出ます。"; return; }
+      post({action:"status", exam:id, cls:cls}).then(st=>{
         if(st && st.result==="ok"){ session=st.session||""; setOpen(!!st.open); }
       }).catch(()=>{});
+    }
+    elc.addEventListener("change", poll);
+    if(window.SITE && Array.isArray(SITE.classes) && SITE.classes.length){
+      const keep=elc.value;
+      elc.innerHTML='<option value="">学年</option>'+SITE.classes.map(c=>'<option value="'+String(c).replace(/"/g,"&quot;")+'">'+String(c).replace(/</g,"&lt;")+(/^\d+$/.test(String(c))?"年":"")+'</option>').join("");
+      elc.value=keep;
     }
     if(!GAS_URL){   // 実証モードで送信先が未設定：黙って永久ロックに見えないよう明示する
       badge.textContent="⚙ 未設定"; badge.className="unit-badge lock"; btn.disabled=true;

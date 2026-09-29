@@ -8,10 +8,11 @@ const b=await chromium.launch({executablePath:process.env.CHROME_PATH||"/opt/pw-
 const p=await b.newPage(); const errs=[]; p.on("pageerror",e=>errs.push(String(e)));
 
 let mode="open";           // open / blip（1回だけ閉）/ closed（本当に閉）
-let blips=0;
+let blips=0, lastStatus=null;
 await p.exposeFunction("__gas",(body)=>{
   const d=JSON.parse(body);
   if(d.action==="status"){
+    lastStatus=d;
     let isOpen = true;
     if(mode==="closed") isOpen=false;
     else if(mode==="blip"){ blips++; isOpen = (blips!==1); }   // 最初の1回だけ閉を返す
@@ -52,6 +53,12 @@ await p.waitForTimeout(6000);
 ok(/受付中/.test(await badge()), "閉が2回目まではまだ受付中（"+(await badge())+"）");
 await p.waitForTimeout(12000);
 ok(/受付していません/.test(await badge()), "★閉が続けば、ちゃんとロックされる（"+(await badge())+"）");
+{ // 一覧を見ているだけの子は、一覧が消えて始められない（jigaku-18）
+  const vis2=await p.evaluate(()=>["listCard","testCard","doneCard"].filter(id=>!document.getElementById(id).classList.contains("hide")).join(",")||"（なし）");
+  ok(vis2==="（なし）", "★閉じたら一覧は消える（"+vis2+"）");
+}
+// 学年を添えて聞いている（試験×学年）
+ok(lastStatus && lastStatus.cls==="3", "★受付の問い合わせに学年がつく（"+JSON.stringify(lastStatus)+"）");
 
 console.log(errs.length? "\nJSエラー:\n"+errs.slice(0,3).join("\n") : "\nJSエラーなし");
 await p.close(); await b.close();

@@ -34,9 +34,12 @@
     aimode:  ""
   };
 
+  /* classes … 生徒が画面で選ぶ「学年」の選択肢＝受付（ロック）と記録の単位。
+     1学年1クラスの学校は学年の数字、複数組の学校は "2-1" のような組の値にする（値は文字列ならなんでもよい）。
+     到達度テスト・単元テストの画面と /admin の学年ごとの行は、ここから出る。 */
   var SITES = {
-    school: { label:"", trial:false },
-    aso:    { label:"麻生情報システム 実証", trial:true }
+    school: { label:"", trial:false, classes:["1","2","3"] },
+    aso:    { label:"麻生情報システム 実証", trial:true, classes:["1","2","3"] }
   };
 
   function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -68,6 +71,7 @@
     id: id,
     label: conf.label,
     isTrial: !!conf.trial,
+    classes: conf.classes || ["1","2","3"],
 
     /* 送信先の解決。通常モードでは既定URLをそのまま返す（＝無改変）。 */
     gasFor: function(kind, defaultUrl){

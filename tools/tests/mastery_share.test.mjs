@@ -41,7 +41,7 @@ const view = () => p.evaluate(()=>({
 await p.selectOption("#f_cls","3"); await login("7");
 await runSet(10);
 ok((await p.textContent("#doneScore"))==="10 / 100", "Aさんは 10 / 100");
-await p.click("#toHome");
+await p.click("#sendNext"); await p.waitForTimeout(700);
 
 // ── Bさん（3年8番）が同じ端末で入る ──
 await login("8");
@@ -63,7 +63,7 @@ ok(mine[0] && Number(mine[0][6])===1,
 ok(mine[0] && Number(mine[0][8])===3, "Bさんの正解は3（"+((mine[0]||[])[8])+"）");
 
 // ── Aさんに戻ると、Aさんの記録は残っている ──
-await p.click("#toHome"); await login("7");
+await p.click("#sendNext"); await p.waitForTimeout(700); await login("7");
 const va=await view();
 ok(va.done.join(",")==="1", "★Aさんに戻るとAさんの記録が出る（"+(va.done.join(",")||"なし")+"）");
 ok(/^10 \/ 2000語/.test(va.prog), "Aさんの記録はAさんのまま（"+va.prog+"）");

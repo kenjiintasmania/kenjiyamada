@@ -72,18 +72,32 @@ await p.evaluate(()=>{
 });
 await p.waitForTimeout(600);
 ok((await visible())==="doneCard", "閉じていてもセットは終えられる（"+(await visible())+"）");
+await p.waitForTimeout(800);
+/* ★閉じていても記録は届く。セッション欄に「受付外」と印がつく（jigaku-18）。
+   断って端末にためると、別の端末で開いた子の記録が取り残される（2026-09-29）。 */
 const before=G.call({action:"progress", exam:"m2000", cls:"3", num:"7"});
-ok(before.done===0, "閉じている間はシートに入らない（done="+before.done+"）");
-const pend=await p.evaluate(()=>JSON.parse(localStorage.getItem("mastery_v1")||"{}").__pending||[]);
-ok(pend.length===1, "端末に1件ひかえてある（"+pend.length+"）");
+ok(before.done===1, "★閉じていても記録は届く（done="+before.done+"）");
+{
+  const rows=(G.dump("到達度テスト")||[]).filter(r=>String(r[4])==="7");
+  ok(rows.length===1 && String(rows[0][1])==="受付外", "★セッション欄が「受付外」（"+(rows[0]||[])[1]+"）");
+  ok(/受付時間外/.test(await p.textContent("#sendMsg")), "画面にも受付時間外と出る（"+(await p.textContent("#sendMsg"))+"）");
+  const pend=await p.evaluate(()=>JSON.parse(localStorage.getItem("mastery_v1")||"{}").__pending||[]);
+  ok(pend.length===0, "端末には残っていない（"+pend.length+"）");
+}
+// 「送信して次へ」：閉じているので帯は出ず、閉じたと伝える
+await p.click("#sendNext"); await p.waitForTimeout(900);
+ok((await visible())==="（なし）", "★閉じていれば次のセットは始められない（"+(await visible())+"）");
+ok(/受付が閉じました/.test(await p.textContent("#gateMsg")), "閉じたと伝える（"+(await p.textContent("#gateMsg")).slice(0,30)+"）");
+await p.click('#setBar button[data-set="2"]').catch(()=>{}); await p.waitForTimeout(300);
+ok((await visible())==="（なし）", "★帯を押しても一覧は出ない（"+(await visible())+"）");
 
 console.log("先生がもう一度スタート");
 G.call({action:"gate", pin:"PIN", exam:"m2000", open:true});
 await p.waitForTimeout(6500);
-await p.click("#nextSet").catch(()=>{});
-await p.waitForTimeout(1500);
+ok(/受付中/.test(await badge()), "受付中にもどる");
+await p.click('#setBar button[data-set="2"]'); await p.waitForTimeout(400);
+ok((await visible())==="listCard", "帯を押すと一覧が出る");
 const after=G.call({action:"progress", exam:"m2000", cls:"3", num:"7"});
-ok(after.done===1, "★開き直すと、ひかえていた記録が届く（done="+after.done+"）");
 ok(after.round===1 && after.set===2, "続きはセット2（"+after.round+"-"+after.set+"）");
 
 await p.close(); await b.close();

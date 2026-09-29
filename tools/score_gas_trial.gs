@@ -356,7 +356,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-17";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-18";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -402,7 +402,7 @@ function doPost(e){
                    sheet:name, message: ready ? "実証用シートに接続できました" :
                    "TRIAL_SPREADSHEET_ID を確認してください（未設定／生徒用と同じ／権限なし）"});
     }
-    if (data.action === "status"){ var st=gateStatus(data.exam); st.ver=GAS_VERSION; return json(st); }
+    if (data.action === "status"){ var st=gateStatus(data.exam, data.cls); st.ver=GAS_VERSION; return json(st); }
     /* 管理画面：全試験を1回で。★kind:"admin" を添えて送らせるのは、この action を知らない
        旧版に届いたとき「未知の kind」で止まるようにするため（kind 無しだと英検タブに空行が入る）。 */
     if (data.action === "status_all") return json(gateStatusAll());
@@ -531,21 +531,65 @@ function numOrBlank(v){ var n=toNum(v); return n==null? "" : n; }
 
 /* ===================== 単元テスト：ゲート制御 ===================== *
  * 単元管理シート列：A=試験ID B=タイトル C=状態(開/閉) D=セッション E=開始時刻 F=提出数 */
+/* ★受付の単位は「試験 × 学年」（jigaku-18・先生指示「他校でも使うなら学年ごとにロックを外す方法が必要」）。
+   G列「学年」が空の行＝**全学年**（旧来の行そのまま）。学年ごとの行は、その学年で初めてスタートしたときに増える。
+   生徒の受付判定：その学年の行が「開」**または**全学年の行が「開」。全学年はマスタースイッチで、
+   全学年が開いているあいだは学年ごとの操作を断る（どちらが効いているか迷わないため）。
+   学年の値は生徒画面の「学年」の選択肢そのもの（他校では「2-1」のような組の値でもよい）。 */
+var UNIT_HEADER = ["試験ID","タイトル","状態","セッション","開始時刻","提出数","学年"];
 function unitSheetEnsured(){
-  var sh = getSheet(UNIT_SHEET, ["試験ID","タイトル","状態","セッション","開始時刻","提出数"]);
+  var sh = getSheet(UNIT_SHEET, UNIT_HEADER);
+  if (sh.getMaxColumns() < UNIT_HEADER.length) sh.insertColumnsAfter(sh.getMaxColumns(), UNIT_HEADER.length - sh.getMaxColumns());
+  sh.getRange(1,1,1,UNIT_HEADER.length).setValues([UNIT_HEADER]);
   var last = sh.getLastRow(), have = {};
   if (last >= 2){
-    var v = sh.getRange(2,1,last-1,1).getValues();
-    for (var i=0;i<v.length;i++) have[String(v[i][0]).trim()] = true;
+    var v = sh.getRange(2,1,last-1,7).getValues();
+    for (var i=0;i<v.length;i++) if (String(v[i][6]||"").trim()==="") have[String(v[i][0]).trim()] = true;
   }
-  for (var ex in UNIT_EXAMS){ if (!have[ex]) sh.appendRow([ex, UNIT_EXAMS[ex], "閉", "", "", 0]); }
+  for (var ex in UNIT_EXAMS){ if (!have[ex]) sh.appendRow([ex, UNIT_EXAMS[ex], "閉", "", "", 0, ""]); }
   return sh;
 }
-function findUnitRow(sh, exam){
+/* 行を探す。cls="" が全学年の行。 */
+function findUnitRow(sh, exam, cls){
+  cls = String(cls||"").trim();
   var last = sh.getLastRow(); if (last < 2) return -1;
-  var v = sh.getRange(2,1,last-1,1).getValues();
-  for (var i=0;i<v.length;i++){ if (String(v[i][0]).trim()===exam) return i+2; }
+  var v = sh.getRange(2,1,last-1,7).getValues();
+  for (var i=0;i<v.length;i++){
+    if (String(v[i][0]).trim()===exam && String(v[i][6]||"").trim()===cls) return i+2;
+  }
   return -1;
+}
+function unitRowState_(row){
+  return {open:(String(row[2]).trim()==="開"), session:String(row[3]||""), opened_at:row[4]||"",
+          submissions:Number(row[5])||0, cls:String(row[6]||"").trim()};
+}
+/* 全行を読んで、試験ごとに {all:行, by:{学年:行}} にまとめる（status_all と gateStatus が共用） */
+function unitRowsMap_(sh){
+  var map = {};
+  if (sh.getLastRow() >= 2){
+    var v = sh.getRange(2,1,sh.getLastRow()-1,7).getValues();
+    for (var i=0;i<v.length;i++){
+      var ex = String(v[i][0]).trim(); if (!ex) continue;
+      var st = unitRowState_(v[i]); st.row = i+2;
+      var m = map[ex] = map[ex] || {all:null, by:{}};
+      if (st.cls === "") m.all = st; else m.by[st.cls] = st;
+    }
+  }
+  return map;
+}
+/* ある学年から見た実効の状態。全学年が開ならそれ（scope:"all"）、でなければその学年の行（scope:"cls"）。 */
+function effectiveGate_(m, cls, exam){
+  var title = UNIT_EXAMS[exam] || "";
+  if (!m || (!m.all && !m.by[cls])) return {result:"ok", open:false, exam:exam, title:title, session:"", never:true};
+  var all = m.all, own = cls ? m.by[cls] : null;
+  if (all && all.open)
+    return {result:"ok", open:true, scope:"all", exam:exam, title:title, session:all.session, opened_at:all.opened_at,
+            submissions:all.submissions, row:all.row, ownOpen:!!(own && own.open)};
+  if (own)
+    return {result:"ok", open:own.open, scope:"cls", exam:exam, title:title, session:own.session, opened_at:own.opened_at,
+            submissions:own.submissions, row:own.row, ownOpen:own.open};
+  return {result:"ok", open:false, scope:"all", exam:exam, title:title, session:(all?all.session:""),
+          submissions:(all?all.submissions:0), row:(all?all.row:-1), ownOpen:false, never:!all};
 }
 /* 状態の読み取り（ポーリング用・書き込みなし）
  * ★「分からなかった」を open:false で返してはいけない（jigaku-11 で修正）。
@@ -554,19 +598,18 @@ function findUnitRow(sh, exam){
  *   「先生が閉じた」と受け取ってロックするので、先生がスプレッドシートを
  *   編集している最中などに 受付中とロック中がチカチカ入れかわり、授業が止まった。
  *   読めなかったときは result:"error" を返す＝アプリ側はいまの状態を保つ。 */
-function gateStatus(exam){
+function gateStatus(exam, cls){
   var title = UNIT_EXAMS[exam] || "";
+  cls = String(cls||"").trim();
   if (!exam || !UNIT_EXAMS[exam])
     return {result:"error", message:"未知の試験IDです", exam:exam||"", title:title};
   try{
     var sh = getSS().getSheetByName(UNIT_SHEET);
     if (!sh) return {result:"error", message:"「"+UNIT_SHEET+"」シートが見つかりません", exam:exam, title:title};
-    var r = findUnitRow(sh, exam);
-    // 行がまだ無い＝一度も開いたことがない。これは本当に「閉」。
-    if (r < 0) return {result:"ok", open:false, exam:exam, title:title, session:"", never:true};
-    var row = sh.getRange(r,1,1,6).getValues()[0];
-    return {result:"ok", open:(String(row[2]).trim()==="開"), exam:exam, title:(row[1]||title),
-            session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0};
+    // 行がまだ無い＝一度も開いたことがない。これは本当に「閉」（never）。cls 無し＝旧ページ＝全学年の行で判定。
+    var st = effectiveGate_(unitRowsMap_(sh)[exam], cls, exam);
+    st.cls = cls;
+    return st;
   }catch(e){
     return {result:"error", message:"いま読めませんでした（"+e.message+"）", exam:exam, title:title};
   }
@@ -578,17 +621,15 @@ function gateStatusAll(){
   try{
     var sh = getSS().getSheetByName(UNIT_SHEET);
     if (!sh) return {result:"error", ver:GAS_VERSION, message:"「"+UNIT_SHEET+"」シートが見つかりません"};
-    var rows = {};
-    if (sh.getLastRow() >= 2){
-      var v = sh.getRange(2,1,sh.getLastRow()-1,6).getValues();
-      for (var i=0;i<v.length;i++) rows[String(v[i][0]).trim()] = v[i];
-    }
+    var map = unitRowsMap_(sh);
     for (var ex in UNIT_EXAMS){
-      var row = rows[ex];
-      out.exams[ex] = row
-        ? {result:"ok", open:(String(row[2]).trim()==="開"), exam:ex, title:(row[1]||UNIT_EXAMS[ex]),
-           session:String(row[3]||""), opened_at:row[4]||"", submissions:Number(row[5])||0}
-        : {result:"ok", open:false, exam:ex, title:UNIT_EXAMS[ex], session:"", never:true};
+      var m = map[ex], all = effectiveGate_(m, "", ex);   // 全学年（旧来と同じ意味＝open/session/submissions）
+      all.by = {};
+      if (m) for (var c in m.by){
+        var e2 = effectiveGate_(m, c, ex);
+        all.by[c] = {open:e2.open, scope:e2.scope, ownOpen:e2.ownOpen, session:e2.session, submissions:e2.submissions};
+      }
+      out.exams[ex] = all;
     }
   }catch(e){
     return {result:"error", ver:GAS_VERSION, message:"いま読めませんでした（"+e.message+"）"};
@@ -608,7 +649,13 @@ function setGate(data){
             message:"いま生徒の記録が混みあっていて、切りかえが入れませんでした。数秒おいてもう一度押してください"};
   try{
     var sh = unitSheetEnsured();
-    var r = findUnitRow(sh, exam);
+    var cls = String(data.cls||"").trim();              // "" ＝ 全学年（マスター）
+    var allR = findUnitRow(sh, exam, "");
+    var allOpen = allR > 0 && String(sh.getRange(allR,3).getValue()).trim() === "開";
+    if (cls && allOpen)
+      return {result:"error", message:"全学年で開いています。学年ごとに操作するには、先に全学年をストップしてください", exam:exam, cls:cls};
+    var r = findUnitRow(sh, exam, cls);
+    if (r < 0){ sh.appendRow([exam, UNIT_EXAMS[exam], "閉", "", "", 0, cls]); r = sh.getLastRow(); }
     if (data.open){
       /* ★すでに開いているなら、何もせずいまの状態を返す。
          先生が2台のPCで管理画面を開いて両方でスタートを押すと、押すたびに
@@ -617,16 +664,26 @@ function setGate(data){
          開け直したいときは、いったんストップしてからスタートする。 */
       var cur = sh.getRange(r,3,1,4).getValues()[0];
       if (String(cur[0]).trim() === "開" && cur[1]){
-        return {result:"ok", open:true, exam:exam, title:UNIT_EXAMS[exam],
+        return {result:"ok", open:true, exam:exam, cls:cls, title:UNIT_EXAMS[exam],
                 session:String(cur[1]), submissions:Number(cur[3])||0, already:true,
                 message:"すでに受付中です（セッションはそのまま）"};
       }
-      var session = "S" + Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd-HHmmss");
+      var session = "S" + Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd-HHmmss") + (cls ? "-" + cls : "");
       sh.getRange(r,3,1,4).setValues([["開", session, new Date(), 0]]);
-      return {result:"ok", open:true, exam:exam, title:UNIT_EXAMS[exam], session:session, submissions:0};
+      return {result:"ok", open:true, exam:exam, cls:cls, title:UNIT_EXAMS[exam], session:session, submissions:0};
     } else {
       sh.getRange(r,3).setValue("閉");
-      return {result:"ok", open:false, exam:exam, title:UNIT_EXAMS[exam], session:String(sh.getRange(r,4).getValue()||"")};
+      // 全学年のストップは、その試験の学年ごとの行もぜんぶ閉じる（「ストップ＝全部止まる」を守る）
+      if (!cls){
+        var last = sh.getLastRow();
+        if (last >= 2){
+          var v = sh.getRange(2,1,last-1,7).getValues();
+          for (var i=0;i<v.length;i++)
+            if (String(v[i][0]).trim()===exam && String(v[i][6]||"").trim()!=="" && String(v[i][2]).trim()==="開")
+              sh.getRange(i+2,3).setValue("閉");
+        }
+      }
+      return {result:"ok", open:false, exam:exam, cls:cls, title:UNIT_EXAMS[exam], session:String(sh.getRange(r,4).getValue()||"")};
     }
   } finally { lock.releaseLock(); }
 }
@@ -655,8 +712,11 @@ function handleMastery(d){
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(5000)) return {result:"busy", message:"いま混みあっています。あとで送りなおします"};
   try{
-    var st = gateStatus(exam);
-    if (!st.open) return {result:"locked", message:"いまは受付していません"};
+    var st = gateStatus(exam, cls);
+    /* ★閉じていても断らずに受け取り、セッション欄を「受付外」にする（jigaku-18）。
+       断って端末にためると、別の端末で開いた子の記録がその端末に取り残される
+       （2026-09-29 3年生1人のセット1〜8がシートに無かった）。先生はシートで印を見て判断できる。 */
+    var late = !st.open;
     var sh = getSheet(MASTERY_LOG, masteryHeader());
     sh.getRange(1,1,1,masteryHeader().length).setValues([masteryHeader()]);
     var round = Math.max(1, Number(d.round)||1), set = Math.max(1, Number(d.set)||1);
@@ -670,7 +730,7 @@ function handleMastery(d){
     }
     var sec = Number(d.sec)||0, correct = Number(d.correct)||0;
     var cpm = sec>0 ? Math.round(correct / (sec/60) * 10)/10 : "";
-    sh.appendRow([ new Date(), st.session, exam, cls, num, d.name||"",
+    sh.appendRow([ new Date(), (late ? "受付外" : st.session), exam, cls, num, d.name||"",
                    round, set, correct, numOrBlank(d.asked), sec, cpm, d.ver||"" ]);
     _mlog = null;
     /* ★成績まとめ・到達度まとめの書きなおしは、ここではしない（jigaku-15）。
@@ -680,7 +740,7 @@ function handleMastery(d){
        管理画面が動かなくなった（2026-09-27 授業中）。
        まとめはメニュー「🏅 到達度まとめ…を作りなおす」でまとめて作る。
        生徒の画面は自分の合計を自分で計算して出すので、ここで書かなくても困らない。 */
-    return {result:"ok", message:"記録しました", round:round, set:set, cpm:cpm};
+    return {result:"ok", late:late, message:(late ? "記録しました（受付時間外）" : "記録しました"), round:round, set:set, cpm:cpm};
   } finally { lock.releaseLock(); }
 }
 /* ===================== 到達度テスト：記録の読みかた（リセット対応・jigaku-16） ===================== *
@@ -969,14 +1029,14 @@ function handleUnitTest(d){
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(5000)) return {result:"busy", message:"いま混みあっています。もう一度「提出」を押してね"};
   try{
-    var st = gateStatus(exam);
+    var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+    if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
+    var st = gateStatus(exam, cls);
     if (!st.open) return {result:"locked", message:"いまは受付していません"};
     if (d.session && String(d.session) !== String(st.session))
       return {result:"locked", message:"受付が切り替わりました。もう一度ひらいてね"};
     var session = st.session;
     var log = getSheet(UNIT_LOG, ["提出日時","セッション","試験","学年","番号","名前","得点","満点","正答率(%)","版"]);
-    var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
-    if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
     // 同一セッション・同一試験で同じ生徒は1回だけ
     var last = log.getLastRow();
     if (last >= 2){
@@ -990,7 +1050,8 @@ function handleUnitTest(d){
     }
     log.appendRow([ new Date(), session, exam, cls, num, d.name||"",
       numOrBlank(d.score), numOrBlank(d.total), numOrBlank(d.pct), d.ver||"" ]);
-    var ush = unitSheetEnsured(), r = findUnitRow(ush, exam);
+    // 提出数は、いま効いている行（全学年で開いていれば全学年の行、学年ごとならその行）に足す
+    var ush = unitSheetEnsured(), r = (st.row > 0) ? st.row : findUnitRow(ush, exam, "");
     if (r > 0){ var c = ush.getRange(r,6); c.setValue((Number(c.getValue())||0)+1); }
     return {result:"ok", message:"提出しました"};
   } finally { lock.releaseLock(); }

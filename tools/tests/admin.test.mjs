@@ -18,13 +18,18 @@ await p.addInitScript((VER)=>{
   window.fetch=function(url,opt){
     const d=JSON.parse(opt.body); window.__sent.push(d);
     let r={result:"ok", ver:VER};
-    const st=(ex)=>({result:"ok", open:!!window.__open[ex], exam:ex, session:window.__open[ex]?"S1":"", submissions:0});
+    window.__own=window.__own||{};
+    const own=(ex,c)=>((window.__own[ex]||{})[c]);
+    const st=(ex)=>{ const all=!!window.__open[ex]; const by={};
+      ["1","2","3"].forEach(c=>{ by[c]={open:all||!!own(ex,c), scope:all?"all":"cls", ownOpen:!!own(ex,c), session:own(ex,c)?"S1-"+c:"", submissions:0}; });
+      return {result:"ok", open:all, exam:ex, session:all?"S1":"", submissions:0, by}; };
     if(d.action==="status") r={...st(d.exam), ver:VER};
     if(d.action==="status_all"){ r={result:"ok", ver:VER, exams:{}};
       ["c2u1","c2u2","c2u3","c3u1","c3u2","c3u3","c3u4","m2000","mgram"].forEach(ex=>r.exams[ex]=st(ex)); }
     if(d.action==="gate"){
       if(busyOnce){ busyOnce=false; r={result:"error", busy:true, ver:VER, message:"いま生徒の記録が混みあっていて…"}; }
-      else { window.__open[d.exam]=!!d.open; r={result:"ok", ver:VER, open:!!d.open, exam:d.exam, session:"S1", submissions:0}; }
+      else if(d.cls){ (window.__own[d.exam]=window.__own[d.exam]||{})[d.cls]=!!d.open; r={result:"ok", ver:VER, open:!!d.open, exam:d.exam, cls:d.cls, session:"S1-"+d.cls, submissions:0}; }
+      else { window.__open[d.exam]=!!d.open; if(!d.open) window.__own[d.exam]={}; r={result:"ok", ver:VER, open:!!d.open, exam:d.exam, session:"S1", submissions:0}; }
     }
     return Promise.resolve({status:200, text:()=>Promise.resolve(JSON.stringify(r)), json:()=>Promise.resolve(r)});
   };
@@ -56,9 +61,13 @@ ok(/100語×20セット/.test(await p.textContent("#exams")), "使いかたの�
 // スタートが押せる（PINを入れて）
 await p.fill("#pin","TESTPIN");
 // m2000 のカードの位置は増減するので、並び順ではなく EXAMS の中の位置で探す
-const btns=await p.$$("#exams .start");
+const btns=await p.$$('#exams tr[data-cls=""] .start');
 const card=(await p.$$("#exams .card"))[ADM_IDS.indexOf("m2000")];
-await btns[ADM_IDS.indexOf("m2000")].click(); await p.waitForTimeout(300);
+{ // 学年ごとの行（全学年＋1〜3年）が出る
+  const rows=await card.$$eval("tr[data-cls]", trs=>trs.map(t=>t.getAttribute("data-cls")+":"+t.querySelector("th").textContent));
+  ok(rows.join(",")===":全学年,1:1年,2:2年,3:3年", "★カードは 全学年＋学年ごとの行（"+rows.join(",")+"）");
+}
+await (await card.$('tr[data-cls=""] .start')).click(); await p.waitForTimeout(300);
 { // 押した直後：両方のボタンが止まり、カードの下に「スタートしています…」
   const st=await card.evaluate(c=>({s:c.querySelector(".start").disabled, t:c.querySelector(".stop").disabled, m:c.querySelector(".cmsg").textContent}));
   ok(st.s && st.t, "送信中は両方のボタンが止まる");
@@ -74,6 +83,19 @@ ok(sent.length===2 && sent.every(x=>x.exam==="m2000" && x.open===true),
   ok(/受付を開始しました/.test(st.m), "★押しなおしが通って「✓ 受付を開始しました」（"+st.m+"）");
   ok(/受付中/.test(st.b), "カードのバッジが受付中になる（"+st.b+"）");
   ok(st.s && !st.t, "スタートは止まり、ストップが押せる");
+  const cls2=await card.evaluate(c=>{ const tr=c.querySelector('tr[data-cls="2"]'); return {b:tr.querySelector(".badge").textContent, s:tr.querySelector(".start").disabled, t:tr.querySelector(".stop").disabled, hint:c.querySelector('[data-r=hint]').textContent}; });
+  ok(/受付中（全学年）/.test(cls2.b) && cls2.s && cls2.t, "★全学年で開いているあいだ、学年の行は「受付中（全学年）」でボタンは止まる（"+cls2.b+"）");
+  ok(/先に全学年をストップ/.test(cls2.hint), "その理由がカードに出る");
+}
+// 全学年をストップ → 2年だけスタート
+await (await card.$('tr[data-cls=""] .stop')).click(); await p.waitForTimeout(600);
+await (await card.$('tr[data-cls="2"] .start')).click(); await p.waitForTimeout(600);
+{
+  const g=await p.evaluate(()=>window.__sent.filter(x=>x.action==="gate").slice(-1)[0]);
+  ok(g && g.cls==="2" && g.open===true, "★2年の行のスタートは cls:2 で送る（"+JSON.stringify(g)+"）");
+  const v=await card.evaluate(c=>({m:c.querySelector('tr[data-cls=""] .badge').textContent, c2:c.querySelector('tr[data-cls="2"] .badge').textContent, c3:c.querySelector('tr[data-cls="3"] .badge').textContent}));
+  ok(/ロック中/.test(v.m) && /受付中/.test(v.c2) && !/（全学年）/.test(v.c2) && /ロック中/.test(v.c3), "★全学年は閉・2年だけ受付中・3年は閉（"+v.m+"／"+v.c2+"／"+v.c3+"）");
+  ok(/2年：✓ 受付を開始/.test(await card.$eval(".cmsg", n=>n.textContent)), "結果に学年がつく（"+(await card.$eval(".cmsg", n=>n.textContent))+"）");
 }
 // 版チェック
 // ★見えているかは計算後のスタイルで見る（インラインの display だけ見ていて、スタイルシートの
@@ -98,8 +120,10 @@ ok(/okline/.test(note.cls) && /jigaku-\d+ ✓/.test(note.txt), "サーバー版�
   const w=await q.evaluate(()=>{const e=document.getElementById("serverNote");
     return {shown:getComputedStyle(e).display!=="none", txt:(e.textContent||"").slice(0,60), cls:e.className};});
   ok(w.shown && /warn/.test(w.cls) && /版が古い/.test(w.txt), "★旧版なら「版が古い」の警告が見える（"+w.txt+"）");
-  const badges=await q.$$eval("#exams .badge", ns=>ns.map(n=>n.textContent.trim()));
+  const badges=await q.$$eval('#exams tr[data-cls=""] .badge', ns=>ns.map(n=>n.textContent.trim()));
   ok(badges.every(t=>/ロック中/.test(t)), "旧版でも1試験ずつ聞いてカードは描ける（"+badges[0]+"）");
+  const hidden=await q.$$eval('#exams tr[data-cls="1"]', trs=>trs.every(t=>getComputedStyle(t).display==="none"));
+  ok(hidden, "★旧版なら学年の行は隠れる（全学年だけ）");
   await q.close();
 }
 // 1つ前の版（jigaku-16）なら「少し古い・足りないものはこれ」と具体的に言う（大げさな定型文を出さない）

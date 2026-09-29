@@ -136,7 +136,7 @@
       if (!open) {
         b.className = "badge lock"; b.textContent = "🔒 受付していません";
         m.textContent = busy()
-          ? "受付が閉じました。いまの" + UNIT + "は最後まで進められます。記録は次に開いたときに届きます。"
+          ? "受付が閉じました。いまの" + UNIT + "は最後まで進められます。終わったら「送信して次へ」を押してね。"
           : "先生が受付を開けるまで待ってね。";
       } else {
         b.className = "badge open"; b.textContent = "✅ 受付中";
@@ -211,6 +211,24 @@
        ★ふだんは false。原因（先生の切りかえがロック待ちに押し負ける）は jigaku-16 で直したので戻した
        （2026-09-28 先生「管理画面は動いたけど、反映されない」＝生徒の画面が閉じないのはこれのせいだった）。 */
     var FORCE_OPEN = false;
+    /* 受付は「試験 × 学年」ごと（jigaku-18）。学年を選ぶまでは聞けない。 */
+    function myCls() { return $("f_cls").value.trim(); }
+    function applyGate(st, trustClose) {
+      if (!st || st.result !== "ok") return;          // 取れなかった＝いまの状態を保つ
+      var was = open;
+      if (st.open) {
+        closedSeen = 0; session = st.session || ""; open = true;
+      } else if (trustClose || ++closedSeen >= CLOSE_STREAK) {
+        open = false; closedSeen = CLOSE_STREAK;       // セッションは消さない（たまった記録に添えるため）
+      } else {
+        return;                                        // 1回きりの「閉」は様子を見る
+      }
+      setGateView();
+      if (open && !was) fetchProgress();               // 送るのは progress を当てたあと
+      /* ★閉じたら、一覧（まだ始めていない）は消す。解いている途中と結果画面はそのまま。
+         以前は一覧の「▶ 始める」が閉じたあとも押せて、ロックが「流れの中の子」に効かなかった。 */
+      if (!open && was && !busy()) show(null);
+    }
     function poll() {
       if (FORCE_OPEN) {
         var was0 = open;
@@ -219,19 +237,15 @@
         if (!was0) fetchProgress();           // 送るのは progress を当てたあと（fetchProgress の中）
         return;
       }
-      post({ action: "status", exam: EXAM }).then(function (st) {
-        if (!st || st.result !== "ok") return;          // 取れなかった＝いまの状態を保つ
-        var was = open;
-        if (st.open) {
-          closedSeen = 0; session = st.session || ""; open = true;
-        } else if (++closedSeen >= CLOSE_STREAK) {
-          open = false;                                  // セッションは消さない（たまった記録に添えるため）
-        } else {
-          return;                                        // 1回きりの「閉」は様子を見る
-        }
-        setGateView();
-        if (open && !was) fetchProgress();     // 送るのは progress を当てたあと
-      }).catch(function () {});
+      // 学年がまだ無いときは全学年の状態を聞く（学年を選んだ時点で、その学年の状態に切りかわる）
+      var q = { action: "status", exam: EXAM }; if (myCls()) q.cls = myCls();
+      post(q).then(function (st) { applyGate(st, false); }).catch(function () {});
+    }
+    /* 「送信して次へ」のときは1回で信じる（サーバーは jigaku-11 から「分からない」を閉と言わない） */
+    function askGate() {
+      if (FORCE_OPEN) return Promise.resolve();
+      var q = { action: "status", exam: EXAM }; if (myCls()) q.cls = myCls();
+      return post(q).then(function (st) { applyGate(st, true); }).catch(function () {});
     }
 
     /* ---------- どこまでやったか ---------- */
@@ -241,10 +255,10 @@
     var synced = "";
     function canSend() { return pending().length && idOK() && synced === who(); }
     function fetchProgress() {
-      if (!idOK()) return;
+      if (!idOK()) return Promise.resolve();
       if (!busy()) doneSets = mySets();        // 待っている間、前の子の記録を出さない
       var w = who();                           // 返事が来るまでに番号が変わっていたら、その返事は捨てる
-      post({ action: "progress", exam: EXAM, cls: $("f_cls").value.trim(), num: han($("f_num").value) })
+      return post({ action: "progress", exam: EXAM, cls: $("f_cls").value.trim(), num: han($("f_num").value) })
         .then(function (r) {
           if (w !== who()) return;             // 打っている途中の番号への返事（前の子の記録を混ぜない）
           if (!r || r.result !== "ok") return;
@@ -280,25 +294,35 @@
     }
     /* ★送るのは同時に1本だけ。2本走ると、両方が「先頭を1つ消す」ので、送っていない記録が1件消える
        （セット終わり・スタート・送りなおしのタイマーが重なったとき）。 */
-    var flushing = false;
-    function flush() {
-      if (flushing) return;
-      var q = pending();
-      if (!q.length) { $("sendMsg").textContent = "記録しました ✓"; return; }
-      flushing = true;
-      post(q[0]).then(function (r) {
-        flushing = false;
-        if (r && (r.result === "ok" || r.result === "dup")) { setPending(pending().slice(1)); flush(); }
-        else if (r && r.result === "busy") {
-          $("sendMsg").textContent = "混みあっています。少しあとに送りなおします（記録は端末に残してあります）。";
-          retryLater();
-        }
-        else $("sendMsg").textContent = "まだ届いていません（" + ((r && r.message) || "?") +
-          "）。次の" + UNIT + "のときに送り直します。";
-      }).catch(function () {
-        flushing = false;
-        $("sendMsg").textContent = "いま送れませんでした。記録は端末に残してあるので、次の" + UNIT + "のときに送り直します。";
+    var flushP = null, lateSeen = false;
+    function flushAll() {                     // 待ち行列を先頭から順に送る。busy／失敗で止まる
+      return new Promise(function (res) {
+        (function step() {
+          var q = pending();
+          if (!q.length) {
+            $("sendMsg").textContent = lateSeen ? "記録しました ✓（受付時間外として記録）" : "記録しました ✓";
+            return res(true);
+          }
+          post(q[0]).then(function (r) {
+            if (r && (r.result === "ok" || r.result === "dup")) { if (r.late) lateSeen = true; setPending(pending().slice(1)); step(); }
+            else if (r && r.result === "busy") {
+              $("sendMsg").textContent = "混みあっています。少しあとに送りなおします（記録は端末に残してあります）。";
+              retryLater(); res(false);
+            }
+            else { $("sendMsg").textContent = "まだ届いていません（" + ((r && r.message) || "?") +
+              "）。次の" + UNIT + "のときに送り直します。"; res(false); }
+          }).catch(function () {
+            $("sendMsg").textContent = "いま送れませんでした。記録は端末に残してあるので、次の" + UNIT + "のときに送り直します。";
+            res(false);
+          });
+        })();
       });
+    }
+    function flush() {
+      if (flushP) return flushP;              // 同時に1本だけ（2本走ると先頭を2回消して1件失う）
+      lateSeen = false;
+      flushP = flushAll().then(function (x) { flushP = null; return x; }, function () { flushP = null; return false; });
+      return flushP;
     }
 
     /* ---------- 1セット終わり ---------- */
@@ -334,15 +358,33 @@
       setPending(pending().concat([body]));
       $("sendMsg").textContent = "記録を送っています…";
       if (synced === who()) flush();
-      else { $("sendMsg").textContent = "記録は端末に残しました。次に開いたときに送ります。"; }
+      else { $("sendMsg").textContent = "記録は端末に残しました。「送信して次へ」で送ります。"; }
 
       pos.set = recommendNext();
       picked = false;
-      $("nextSet").textContent = UNIT + pos.set + " へ →";
-      $("againSet").textContent = UNIT + set + " をもう一度";
-      $("againSet").setAttribute("data-set", set);
+      $("sendNext").disabled = false;
       renderBar();
       show("doneCard");
+    }
+
+    /* ---------- 送信して次へ ---------- *
+     * 先生の流れ（2026-09-29）：1セット終わる → 送信ボタン（得点と受付の開閉を同期）→ 次のセットを自分で選ぶ。
+     *   ① まだなら進み具合を取る → ためていた記録を送る（送れなくても端末に残る）
+     *   ② 受付の状態を1回聞く（ここでは「閉」を1回で信じる）
+     *   ③ 開いていれば帯（数字）のある画面へ。おすすめは色で示すだけで、自動では進まない。
+     *      閉じていれば帯を出さず「受付が閉じました」。
+     * ロックが効くのは、いま解いているセットの終わり＝ここ。 */
+    function syncAndNext() {
+      var btn = $("sendNext"); btn.disabled = true;
+      $("sendMsg").textContent = "送信しています…";
+      var p0 = (synced === who()) ? Promise.resolve() : fetchProgress();
+      return p0.then(function () { return flush(); })
+        .then(function () { return askGate(); })
+        .then(function () {
+          btn.disabled = false;
+          show(null); renderBar();
+          if (!open) $("gateMsg").textContent = "受付が閉じました。記録は" + ($("sendMsg").textContent.indexOf("✓") >= 0 ? "届いています。" : "端末に残してあります。") + "先生の合図を待ってね。";
+        });
     }
 
 
@@ -379,10 +421,12 @@
 
     /* ---------- つなぎ ---------- */
     function goSet(n, byStudent) {
+      if (!open) { show(null); renderBar(); return; }   // 閉じていたら一覧を出さない
       pos.set = n; picked = !!byStudent;
       show(null); renderBar(); showList();
     }
     onTap($("startSet"), function () {
+      if (!open) { show(null); setGateView(); return; }  // 一覧を見ているあいだに閉じた
       if (canSend()) flush();
       running = true;
       show("testCard");
@@ -395,10 +439,7 @@
       if (cfg.abortRun) cfg.abortRun();
       show(null);
     });
-    onTap($("nextSet"), function () { goSet(pos.set, false); });
-    onTap($("againSet"), function () {
-      goSet(Number(this.getAttribute("data-set")) || pos.set, true);
-    });
+    onTap($("sendNext"), function () { syncAndNext(); });
     /* 帯を押すと、そのセットに移る。答えている途中は動かさない。 */
     onTap($("setBar"), function (e) {
       var b = e.target.closest ? e.target.closest("[data-set]") : null;
@@ -406,7 +447,6 @@
       if (!$("testCard").classList.contains("hide")) return;
       goSet(Number(b.getAttribute("data-set")), true);
     });
-    onTap($("toHome"), function () { show(null); renderBar(); });
 
     /* ★「変わっていない change」で状態を壊さない。
        タッチの端末では、番号を打ったあと**最初にどこかを触った指**が
@@ -427,6 +467,7 @@
       if (!isName) {                           // 別の子に替わったら、その場で控えを切りかえる
         doneSets = mySets(); picked = false;
         pos.set = recommendNext();
+        closedSeen = 0; poll();                // 学年が変わると受付も変わる（試験×学年）
       }
       setGateView();
       if (idOK()) fetchProgress();
@@ -446,6 +487,13 @@
     });
 
     /* ---------- 起動 ---------- */
+    /* 学年の選択肢は学校ごとの設定（assets/site.js の classes）から。他校では「2-1」のような組の値でもよい。 */
+    if (window.SITE && Array.isArray(SITE.classes) && SITE.classes.length) {
+      var sel = $("f_cls"), keep = sel.value;
+      sel.innerHTML = '<option value="">－</option>' + SITE.classes.map(function (c) {
+        return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+      sel.value = keep;
+    }
     try {
       $("f_cls").value = localStorage.getItem("mado_year") || "";
       $("f_num").value = han(localStorage.getItem("mado_num") || "");

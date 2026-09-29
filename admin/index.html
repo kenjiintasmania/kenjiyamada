@@ -44,6 +44,17 @@
   #msg.ok{color:var(--ok)}#msg.err{color:var(--lock)}
   /* 押した結果はカードのすぐ下に出す（ページ末尾の #msg だけだと、カードまでスクロールした
      先生には何も起きていないように見える＝「操作を受け付けない」2026-09-28 報告） */
+  /* 学年ごとの行（jigaku-18）。1行目は全学年（マスター）。 */
+  table.gates{width:100%;border-collapse:collapse;margin-top:6px}
+  .gates th{text-align:left;font-size:13px;color:#6a7689;padding:5px 8px 5px 0;white-space:nowrap;font-weight:bold}
+  .gates td{padding:5px 4px;vertical-align:middle}
+  .gates .info{font-size:12px;color:#6a7689}
+  .gates .info b{color:var(--ink);font-size:15px}
+  .gates .btns{margin-top:0;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .gates button{font-size:13px;padding:7px 9px;border-radius:9px;white-space:nowrap}   /* 「ス／タート」と折れないように */
+  .gates tr.master th{color:var(--ink)}
+  .gates tr.master td{border-bottom:1px dashed var(--line)}
+  .gates .sub{font-size:11px;color:#9aa3b2;margin:0}
   .cmsg{font-size:13px;color:#6a7689;min-height:18px;margin-top:6px}
   .cmsg.ok{color:var(--ok);font-weight:bold}.cmsg.err{color:var(--lock);font-weight:bold}
   .note{font-size:12px;color:#9aa3b2;margin-top:18px;border-top:1px dashed var(--line);padding-top:10px}
@@ -104,7 +115,7 @@
   </div>
 </div>
 
-<script src="../assets/site.js"></script>
+<script src="../assets/site.js?v=0929a"></script>
 <script>
 (function(){
   var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
@@ -153,28 +164,39 @@
       });
   }
 
-  // 画面組み立て
+  /* 画面組み立て。受付は「試験 × 学年」（jigaku-18）：1行目＝全学年（マスター）、2行目以降＝学年ごと。
+     学年の並びは assets/site.js の classes（学校ごとに変える。他校では「2-1」のような組の値でもよい）。 */
+  var CLASSES=(window.SITE && Array.isArray(SITE.classes) && SITE.classes.length) ? SITE.classes : ["1","2","3"];
+  var clsLabel=function(c){ return /^\d+$/.test(c) ? c+"年" : c; };
   var box=$("exams"), cards={};
   EXAMS.forEach(function(ex){
     var c=document.createElement("div"); c.className="card";
+    var rowsHtml=[""].concat(CLASSES).map(function(cls){
+      return '<tr class="'+(cls===""?"master":"")+'" data-cls="'+cls.replace(/"/g,"&quot;")+'">'+
+        '<th>'+(cls===""?"全学年":clsLabel(cls))+'</th>'+
+        '<td><span class="badge unknown" data-r="badge">確認中…</span></td>'+
+        '<td class="info" data-r="info"></td>'+
+        '<td><div class="btns"><button class="start" data-r="start">▶ スタート</button>'+
+        '<button class="stop" data-r="stop">■ ストップ</button></div></td></tr>';
+    }).join("");
     c.innerHTML=
-      '<div class="exam-head"><span class="exam-title">'+ex.title+'</span>'+
-        '<span class="badge unknown" data-r="badge">確認中…</span></div>'+
-      '<div class="meta">提出した人数：<b data-r="subs">–</b> 人'+
-        '<span data-r="sess" style="margin-left:10px"></span></div>'+
-      '<div class="btns">'+
-        '<button class="start" data-r="start">▶ スタート</button>'+
-        '<button class="stop" data-r="stop">■ ストップ</button></div>'+
+      '<div class="exam-head"><span class="exam-title">'+ex.title+'</span></div>'+
+      '<table class="gates" data-r="gates">'+rowsHtml+'</table>'+
+      '<div class="sub" data-r="hint" style="font-size:12px;color:#9aa3b2;margin-top:4px"></div>'+
       '<div class="cmsg" data-r="cmsg"></div>'+
       (ex.note? '<div class="meta" style="color:#7a6a55">'+ex.note+'</div>' : '')+
       '<div class="link" style="margin-top:8px"><a href="'+(ex.url||('../mogi/exam.html?id='+ex.id))+'" target="_blank">テスト画面を開く（生徒用）↗</a></div>';
     box.appendChild(c);
-    var refs={badge:c.querySelector('[data-r=badge]'),subs:c.querySelector('[data-r=subs]'),
-      sess:c.querySelector('[data-r=sess]'),start:c.querySelector('[data-r=start]'),stop:c.querySelector('[data-r=stop]'),
-      cmsg:c.querySelector('[data-r=cmsg]')};
+    var refs={rows:{}, cmsg:c.querySelector('[data-r=cmsg]'), hint:c.querySelector('[data-r=hint]')};
+    [...c.querySelectorAll("tr[data-cls]")].forEach(function(tr){
+      var cls=tr.getAttribute("data-cls");
+      var r={tr:tr, badge:tr.querySelector('[data-r=badge]'), info:tr.querySelector('[data-r=info]'),
+             start:tr.querySelector('[data-r=start]'), stop:tr.querySelector('[data-r=stop]')};
+      refs.rows[cls]=r;
+      r.start.addEventListener("click",function(){ setGate(ex,cls,true); });
+      r.stop.addEventListener("click",function(){ setGate(ex,cls,false); });
+    });
     cards[ex.id]=refs;
-    refs.start.addEventListener("click",function(){ setGate(ex,true); });
-    refs.stop.addEventListener("click",function(){ setGate(ex,false); });
   });
 
   /* ★1回の「閉」は信じない（生徒の画面と同じ理屈）。
@@ -182,22 +204,42 @@
      生徒が一斉に記録を送っていると、受付中とロック中がチカチカ入れかわって見える
      （2026-09 授業中に発生）。開くのは1回、閉じるのは続けて3回見えてから。 */
   var CLOSE_STREAK=3, closedSeen={};
-  function paint(ex, st){
-    var r=cards[ex.id]; if(!r) return;
-    if(st && st.result==="ok"){
-      lastSt[ex.id]=st;
-      if(st.open){ closedSeen[ex.id]=0; }
-      // まだ一度も描いていない（確認中…）なら、閉でもすぐ描く。3回待つのは「開→閉」のブレ対策だけ。
-      else if(!r.badge.classList.contains("unknown") &&
-              (closedSeen[ex.id]=(closedSeen[ex.id]||0)+1) < CLOSE_STREAK){ return; }
-      if(st.open){ r.badge.textContent="✅ 受付中"; r.badge.className="badge open"; }
-      else{ r.badge.textContent="🔒 ロック中"; r.badge.className="badge lock"; }
-      r.subs.textContent=(st.submissions!=null?st.submissions:0);
-      r.sess.textContent=st.session?("セッション："+st.session):"";
-      if(!inflight[ex.id]){ r.start.disabled=!!st.open; r.stop.disabled=!st.open; }   // 送信中は両方止めたまま
-    }else{
-      r.badge.textContent="？ 取得できません"; r.badge.className="badge unknown";
+  /* 1行ぶんを描く。row=行の参照、want={open, session, submissions, byAll}。
+     閉は3回続けて見てから（開→閉のブレ対策）。まだ描いていない行は1回で描く。 */
+  function paintRow(key, row, want, disableAll){
+    if(want.open){ closedSeen[key]=0; }
+    else if(!row.badge.classList.contains("unknown") && (closedSeen[key]=(closedSeen[key]||0)+1) < CLOSE_STREAK){ return; }
+    if(want.open){ row.badge.textContent=want.byAll?"✅ 受付中（全学年）":"✅ 受付中"; row.badge.className="badge open"; }
+    else{ row.badge.textContent="🔒 ロック中"; row.badge.className="badge lock"; }
+    row.info.innerHTML=(want.submissions!=null?'提出 <b>'+want.submissions+'</b> 人':'')+(want.session?'<br>'+want.session:'');
+    if(!inflight[key]){
+      if(disableAll){ row.start.disabled=true; row.stop.disabled=true; }
+      else { row.start.disabled=!!want.ownOpen; row.stop.disabled=!want.ownOpen && !want.anyOpen; }
     }
+  }
+  function paint(ex, st){
+    var c=cards[ex.id]; if(!c) return;
+    if(!(st && st.result==="ok")){
+      c.rows[""].badge.textContent="？ 取得できません"; c.rows[""].badge.className="badge unknown"; return;
+    }
+    lastSt[ex.id]=st;
+    var hasBy = st.by && typeof st.by==="object";      // jigaku-18 以上のサーバー
+    var anyCls = hasBy && Object.keys(st.by).some(function(k){ return st.by[k] && st.by[k].ownOpen; });
+    // 全学年（マスター）の行
+    paintRow(ex.id+"/", c.rows[""], {open:!!st.open, ownOpen:!!st.open, anyOpen:anyCls, session:st.session, submissions:st.submissions}, false);
+    // 学年ごとの行
+    CLASSES.forEach(function(cls){
+      var row=c.rows[cls]; if(!row) return;
+      if(!hasBy){ row.tr.style.display="none"; return; }
+      row.tr.style.display="";
+      var b=st.by[cls];
+      var want = st.open ? {open:true, byAll:true, ownOpen:false, session:st.session, submissions:st.submissions}
+               : (b ? {open:!!b.open, ownOpen:!!b.ownOpen, session:b.session, submissions:b.submissions}
+                    : {open:false, ownOpen:false, session:"", submissions:0});
+      paintRow(ex.id+"/"+cls, row, want, !!st.open);
+    });
+    c.hint.textContent = !hasBy ? "※ 学年ごとの受付には GAS を jigaku-18 以上に貼りかえてください（いまは全学年のみ）"
+                       : (st.open ? "全学年で開いています。学年ごとに操作するには、先に全学年をストップしてください。" : "");
   }
 
   // サーバー（GAS）が新版かどうかを ver で判定して表示
@@ -207,12 +249,13 @@
   /* いま置いてある tools/score_gas.gs の版。これ未満だと、
      単元テスト③④が開けない（jigaku-7 で UNIT_EXAMS に入った）か、
      模試341/342・福岡①の列が成績まとめに出ない（jigaku-8 で追加）。 */
-  var ADMIN_NEED = 17;
+  var ADMIN_NEED = 18;
   /* 版ごとに「その版で足したもの」。サーバーがそれより古いときは、足りないものだけを言う
      （以前は差が1つでも「単元テスト③④が開かない…」と古い定型文を出していて、大げさだった）。 */
   var SINCE = {
     16: "管理画面のスタート/ストップが混みあいに強くなる・マイページの「設定」からリセットできる",
-    17: "マイページのリセットに先生の合言葉が要るようになる（他の子の記録を消せない）"
+    17: "マイページのリセットに先生の合言葉が要るようになる（他の子の記録を消せない）",
+    18: "学年ごとにスタート／ストップできる・受付時間外の記録も「受付外」の印つきで届く"
   };
   function missingSince(vn){
     var out=[]; for(var v in SINCE) if(Number(v) > vn) out.push("jigaku-"+v+"：" + SINCE[v]);
@@ -259,46 +302,50 @@
       p.then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); });
     });
   }
-  function setGate(ex, open, tryN){
+  function setGate(ex, cls, open, tryN){
     tryN=tryN||1;
+    var key=ex.id+"/"+cls, label=(cls===""?"全学年":clsLabel(cls))+"：";
     if(!pin.value.trim()){
       cardMsg(ex,"err","合言葉(PIN)を入れてください（ページ上部の欄）。");
       msg.className="err"; msg.textContent="合言葉(PIN)を入れてください。"; return;
     }
-    if(inflight[ex.id] && tryN===1) return;          // 送信中の二重押し
-    inflight[ex.id]=true;
-    var r=cards[ex.id]; r.start.disabled=true; r.stop.disabled=true;
-    cardMsg(ex,"",(open?"スタートしています…":"ストップしています…")+(tryN>1?"（"+tryN+"回目）":""));
+    if(inflight[key] && tryN===1) return;          // 送信中の二重押し
+    inflight[key]=true;
+    var r=cards[ex.id].rows[cls]; r.start.disabled=true; r.stop.disabled=true;
+    cardMsg(ex,"",label+(open?"スタートしています…":"ストップしています…")+(tryN>1?"（"+tryN+"回目）":""));
     msg.className=""; msg.textContent="";
-    withTimeout(post({action:"gate", pin:pin.value.trim(), exam:ex.id, open:open}), 25000).then(function(res){
+    var body={action:"gate", pin:pin.value.trim(), exam:ex.id, open:open};
+    if(cls!=="") body.cls=cls;                   // 旧サーバーは cls を無視して全学年として扱う
+    withTimeout(post(body), 25000).then(function(res){
       updateServerNote(res);
       if(res && res.result==="ok" && !gateOK(res)){
         cardMsg(ex,"err","✗ サーバーが旧バージョン（ゲート非対応）です。上の案内のとおり再デプロイしてください。");
       }else if(res && res.result==="ok" && (open ? res.open===true : true)){
-        cardMsg(ex,"ok",(open?"✓ 受付を開始しました（新しいセッション）":"✓ 受付を終了しました"));
-        closedSeen[ex.id]=CLOSE_STREAK;   // 自分で押したぶんは、待たずに反映する
+        cardMsg(ex,"ok",label+(open?"✓ 受付を開始しました（新しいセッション）":"✓ 受付を終了しました"));
+        closedSeen[key]=CLOSE_STREAK;     // 自分で押したぶんは、待たずに反映する
         gateAt[ex.id]=Date.now();         // これより前に聞いた状態の答えは、あとから来ても捨てる
-        inflight[ex.id]=false;
-        paint(ex,res);                    // 返事そのものに状態が入っているので、その場でカードを描く
+        inflight[key]=false;
+        pollAll();                        // 全学年ストップは学年の行も閉じるので、カード全体を描きなおす
+        return;
       }else if(res && res.busy && tryN<3){
-        cardMsg(ex,"","混みあっています。もう一度送ります（"+(tryN+1)+"/3）…");
-        setTimeout(function(){ inflight[ex.id]=false; setGate(ex, open, tryN+1); }, 2500);
+        cardMsg(ex,"",label+"混みあっています。もう一度送ります（"+(tryN+1)+"/3）…");
+        setTimeout(function(){ inflight[key]=false; setGate(ex, cls, open, tryN+1); }, 2500);
         return;
       }else{
-        cardMsg(ex,"err","✗ できませんでした："+((res&&res.message)||"不明なエラー"));
+        cardMsg(ex,"err","✗ "+label+"できませんでした："+((res&&res.message)||"不明なエラー"));
       }
-      inflight[ex.id]=false; release(ex); pollOne(ex);
+      inflight[key]=false; release(ex); pollOne(ex);
     }).catch(function(e){
-      inflight[ex.id]=false;
-      cardMsg(ex,"err","✗ "+((e&&e.timeout)?"サーバーの応答がありません（25秒）。もう一度押してください。":"通信エラー。電波を確認してね。"));
+      inflight[key]=false;
+      cardMsg(ex,"err","✗ "+label+((e&&e.timeout)?"サーバーの応答がありません（25秒）。もう一度押してください。":"通信エラー。電波を確認してね。"));
       release(ex); pollOne(ex);
     });
   }
   /* 失敗したあとボタンを止めたままにしない：分かっている最後の状態で描きなおす（無ければ両方押せるように） */
   function release(ex){
-    var r=cards[ex.id]; if(!r) return;
-    if(lastSt[ex.id]){ r.start.disabled=!!lastSt[ex.id].open; r.stop.disabled=!lastSt[ex.id].open; }
-    else { r.start.disabled=false; r.stop.disabled=false; }
+    var c=cards[ex.id]; if(!c) return;
+    if(lastSt[ex.id]){ paint(ex, lastSt[ex.id]); return; }
+    Object.keys(c.rows).forEach(function(k){ c.rows[k].start.disabled=false; c.rows[k].stop.disabled=false; });
   }
   function pollOne(ex){
     var sentAt=Date.now();

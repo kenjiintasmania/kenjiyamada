@@ -67,7 +67,8 @@ ok(rows.length===2, "シートに1行入る（"+(rows.length-1)+"行）");
 ok(rows[1] && rows[1][2]==="mgram" && Number(rows[1][8])===5, "mgram・正解5（"+JSON.stringify((rows[1]||[]).slice(2,9))+"）");
 const prog=G.call({action:"progress", exam:"mgram", cls:"3", num:"7"});
 ok(prog.done===1, "続きの位置が取れる");
-ok(/項目2 へ/.test(await p.textContent("#nextSet")), "次のおすすめは項目2（"+(await p.textContent("#nextSet"))+"）");
+await p.click("#sendNext"); await p.waitForTimeout(800);
+ok(/いまは 項目2/.test(await p.textContent("#progMsg")), "次のおすすめは項目2（"+(await p.textContent("#progMsg"))+"）");
 
 // 2000語の記録とまざっていない
 const wordProg=G.call({action:"progress", exam:"m2000", cls:"3", num:"7"});

@@ -46,13 +46,22 @@ async function runSet(){
 // ③ セット1を1回やる
 await runSet();
 ok(/セット1　1回目 おわり/.test(await p.textContent("#doneTitle")), "1回目と出る（"+(await p.textContent("#doneTitle"))+"）");
-ok(/セット2 へ/.test(await p.textContent("#nextSet")), "★次のおすすめはセット2（"+(await p.textContent("#nextSet"))+"）");
-ok(/セット1 をもう一度/.test(await p.textContent("#againSet")), "「もう一度」ボタンが出る");
+ok(await p.isVisible("#sendNext") && !(await p.$("#nextSet")), "結果画面のボタンは「送信して次へ」1つ");
 let rows=G.dump("到達度テスト")||[];
 ok(rows.length===2, "シートに1行入る（"+(rows.length-1)+"行）");
 
-// ④ セット1をもう一度 → 2回目として記録される（dupで消えない）
-await p.click("#againSet"); await p.waitForTimeout(400);
+// 「送信して次へ」→ 帯（数字）の画面にもどる。次のセットは自動で開かない＝自分でえらぶ
+await p.click("#sendNext"); await p.waitForTimeout(800);
+{
+  const vis=await p.evaluate(()=>["listCard","testCard","doneCard"].filter(id=>!document.getElementById(id).classList.contains("hide")).join(",")||"（なし）");
+  ok(vis==="（なし）", "★送信して次へ → 一覧は自動で開かない（"+vis+"）");
+  ok(/いまは セット2/.test(await p.textContent("#progMsg")), "★おすすめはセット2と出る（"+(await p.textContent("#progMsg"))+"）");
+  ok(await p.$eval('#setBar button[data-set="2"]', n=>n.classList.contains("now")), "帯のセット2が色つき");
+  ok(/記録しました ✓/.test(await p.textContent("#sendMsg")), "送信ずみと出る（"+(await p.textContent("#sendMsg"))+"）");
+}
+
+// ④ セット1をもう一度（帯の1を押す） → 2回目として記録される（dupで消えない）
+await p.click('#setBar button[data-set="1"]'); await p.waitForTimeout(400);
 ok(/セット1（1〜100語目）　2回目/.test(await title()), "★2回目と出る（"+(await title())+"）");
 await runSet();
 ok(/セット1　2回目 おわり/.test(await p.textContent("#doneTitle")), "2回目として終わる");
@@ -69,7 +78,8 @@ const tip=await p.$eval('#setBar button[data-set="1"]', n=>n.getAttribute("title
 ok(/2回・最高/.test(tip), "★ホバーで回数と最高点（"+tip+"）");
 
 // ⑥ セット中は帯を押しても動かない
-await p.click("#nextSet"); await p.waitForTimeout(300);
+await p.click("#sendNext"); await p.waitForTimeout(800);
+await p.click('#setBar button[data-set="2"]'); await p.waitForTimeout(300);
 await p.click("#startSet"); await p.waitForTimeout(250);
 await p.click('#setBar button[data-set="5"]'); await p.waitForTimeout(300);
 const vis=await p.evaluate(()=>["listCard","testCard","doneCard"]
