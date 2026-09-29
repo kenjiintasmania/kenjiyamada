@@ -1,0 +1,23 @@
+{
+  "_about": "福岡県スタイル模試の骨格（fukuoka1〜10 共通）。ブロック配点は二次情報で複数一致、小問配点はアプリの仮置き。一次資料で確定したらここと全本を一度に差しかえる。2026-09-29",
+  "fullMarks": 60, "minutes": 55, "items": 26,
+  "blocks": [
+    { "no": 1, "name": "リスニング（問題1〜4）", "points": 20, "items": 9, "confirmedPoints": true,
+      "parts": [
+        { "part": "問題1", "read": 1, "items": [ {"type":"mcq","pt":2}, {"type":"mcq","pt":2} ], "task": "1〜2文の短い放送＋絵・表の選択。情報は2要素まで" },
+        { "part": "問題2", "read": 2, "items": [ {"type":"mcq","pt":2}, {"type":"mcq","pt":2} ], "task": "案内・料金表・時刻表（passage）を見て、放送の条件で消去法。全選択肢を表に載せる" },
+        { "part": "問題3", "read": 2, "items": [ {"type":"fill","pt":2}, {"type":"fill","pt":2} ], "task": "ALT・留学生の話をメモに落とす。穴埋めメモ（passage）に英語1語×2" },
+        { "part": "問題4", "read": 2, "items": [ {"type":"mcq","pt":2}, {"type":"mcq","pt":2}, {"type":"fill","pt":4} ], "task": "まとまった説明。内容一致・因果の把握＋放送の語句を使う3語の抜き出し（英問英答の代替）" }
+      ] },
+    { "no": 2, "name": "短い対話の空所補充（筆記 大問1）", "points": 8, "items": 4, "confirmedPoints": true,
+      "items_": [ {"type":"mcq","pt":2}, {"type":"mcq","pt":2}, {"type":"fill","pt":2,"task":"語形変化1語"}, {"type":"wordorder","pt":2,"task":"後置修飾を含む語順整序"} ] },
+    { "no": 3, "name": "対話文読解（筆記 大問2）", "points": 10, "items": 5, "confirmedPoints": true, "words": "約260語＋図表1枚", "notes": "語注4語以内",
+      "items_": [ {"type":"mcq","pt":2,"task":"空所の適語・適文"}, {"type":"mcq","pt":2,"task":"図表と本文の照合"}, {"type":"mcq","pt":2,"task":"内容一致"}, {"type":"fill","pt":2,"task":"連続n語の抜き出し"}, {"type":"wordorder","pt":2,"task":"下線部の並べかえ"} ] },
+    { "no": 4, "name": "長文読解（筆記 大問3）", "points": 14, "items": 5, "confirmedPoints": true, "words": "約380語＋グラフ1枚・段落①〜⑤", "notes": "語注8語以内",
+      "items_": [ {"type":"mcq","pt":2,"task":"脱文挿入"}, {"type":"mcq","pt":2,"task":"グラフ読み取り"}, {"type":"wordorder","pt":2,"task":"下線部（関係代名詞・分詞）"}, {"type":"fill","pt":4,"task":"日本語記述の代替＝第N段落から英語n語抜き出し"}, {"type":"mcqMulti","pt":4,"task":"内容一致・ア〜オから二つ"} ] },
+    { "no": 5, "name": "条件英作文（筆記 大問4）", "points": 8, "items": 3, "confirmedPoints": true, "notes": "本番は案から1つ選び理由を含めて30語以上。自動採点のため骨組み3段に分解",
+      "items_": [ {"type":"wordorder","pt":2,"task":"立場を述べる1文"}, {"type":"wordorder","pt":2,"task":"理由の1文（because＋後置修飾）"}, {"type":"fill","pt":4,"task":"締めの1文の空所（want＋人＋to 等）"} ] }
+  ],
+  "difficulty": { "target": "得点率50〜56%", "easiest": "大問2（筆記1）約8割", "hardest": "大問3・4（読解）約5割" },
+  "grammarAxis": ["分詞の後置修飾", "関係代名詞", "不定詞の形容詞的用法", "現在完了", "受け身", "比較", "間接疑問"]
+}
