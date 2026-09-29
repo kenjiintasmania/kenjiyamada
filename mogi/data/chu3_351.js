@@ -71,7 +71,7 @@ sections: [
     { type:"fill", label:"(2)", pt:3,
       stem:"リクの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に drums を含む3語の英語を書き、英文を完成させなさい。<br>"+
            E("That's the best job for you. Let's （　　） together."),
-      answers:["play small drums"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      answers:["play small drums","play the drums"], hint:"英語3語（説明の中の言い方を使う）" } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */
@@ -79,20 +79,21 @@ sections: [
   { flyer:
     '<h4>Kaede Autumn Festival — Drum Lessons for Beginners</h4>'+
     '<div class="note">Learn the festival music and play on the stage in October!</div>'+
-    '<table><tr><th>Course</th><th>What you will do</th><th>Fee (one lesson)</th><th>Members now</th></tr>'+
-    '<tr><td>Small Drum</td><td>learn easy rhythms with small drums</td><td>free</td><td>12</td></tr>'+
-    '<tr><td>Big Drum</td><td>play the big festival drum on the stage</td><td>300 yen</td><td>8</td></tr>'+
-    '<tr><td>Flute</td><td>play the festival song on the bamboo flute</td><td>200 yen</td><td>6</td></tr>'+
-    '<tr><td>Dance</td><td>dance to the drums in a happi coat</td><td>free</td><td>15</td></tr></table>'+
+    '<table><tr><th>Course</th><th>What you will do</th><th>Time</th><th>Fee (one lesson)</th></tr>'+
+    '<tr><td>Small Drum</td><td>learn easy rhythms with small drums</td><td>10:00 – 10:40</td><td>free</td></tr>'+
+    '<tr><td>Big Drum</td><td>play the big festival drum on the stage</td><td>10:00 – 10:40</td><td>400 yen</td></tr>'+
+    '<tr><td>Flute</td><td>play the festival song on the bamboo flute</td><td>10:50 – 11:30</td><td>200 yen</td></tr>'+
+    '<tr><td>Dance</td><td>dance to the drums in a happi coat</td><td>10:50 – 11:30</td><td>free</td></tr></table>'+
     '<div class="note">Place … Kaede Community Center, Hall 2<br>'+
-    'Day … every Saturday, 10:00 a.m. – 11:30 a.m. (September 6 – October 25)<br>'+
+    'Day … every Saturday (September 6 – October 25)<br>'+
+    'You can take one course at 10:00 and another course at 10:50.<br>'+
     'Drums and flutes are lent for free. Please bring a towel and something to drink.</div>',
     passage:
     '<span class="sp"><span class="who">Riku:</span> Look at this, Mio. The community center will hold drum lessons before the autumn festival.</span>'+
     '<span class="sp"><span class="who">Mio:</span> Oh, nice. The lessons are for （　あ　）, so we can join even if we have never played the drum.</span>'+
     '<span class="sp"><span class="who">Riku:</span> Right. I want to play the big festival drum on the stage. I have <u>(う) hear</u> its sound every autumn since I was a child.</span>'+
     '<span class="sp"><span class="who">Mio:</span> Then the Big Drum course is the best for you. （　い　） is it?</span>'+
-    '<span class="sp"><span class="who">Riku:</span> Three hundred yen a lesson. I also want to learn the bamboo flute, so I\'ll take the Flute course, too.</span>'+
+    '<span class="sp"><span class="who">Riku:</span> Four hundred yen a lesson. I also want to learn the bamboo flute, so I\'ll take the Flute course at 10:50, too.</span>'+
     '<span class="sp"><span class="who">Mio:</span> That sounds hard, but you can do it. I\'ll take the Big Drum course and the Dance course. My sister is in the Dance course, and she says it\'s fun.</span>'+
     '<span class="sp"><span class="who">Riku:</span> Great. Even （　あ　） like us can play on the stage in October.</span>'+
     '<span class="sp"><span class="who">Mio:</span> Yes. The lessons start on September 6, so let\'s go to the community center this Saturday.</span>',
@@ -102,8 +103,8 @@ sections: [
       answers:["beginners"], hint:"ちらしの中にある語" },
     { type:"fill", label:"(2)い", pt:3, stem:"（い）に入れるのに最も適当な2語の英語を書きなさい。", answers:["How much"], hint:"英語2語（値段をたずねる）" },
     { type:"fill", label:"(3)う", pt:3, stem:"下線部(う)の単語を、最も適当な形に変えて1語で書きなさい。", answers:["heard"], hint:"I have 〜 its sound every autumn since I was a child." },
-    { type:"mcq", label:"(4)", pt:3, stem:"ちらしから、リクが1回のレッスンで払う金額として最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("200 yen"), E("300 yen"), E("500 yen"), E("800 yen") ], answer:2 },
+    { type:"mcq", label:"(4)", pt:3, stem:"ちらしから、リクが毎週土曜日に2つのコースに参加するとき、払う金額は全部でいくらですか。最も適当なのは、ア〜エのどれですか。",
+      choices:[ E("200 yen"), E("400 yen"), E("600 yen"), E("800 yen") ], answer:2 },
     { type:"mcq", label:"(5)", pt:4, stem:"ちらしや会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("The lessons will be held on Sunday mornings."),
                 E("Mio's sister is a member of the Flute course."),
@@ -113,21 +114,21 @@ sections: [
 
 /* ===== 大問3 会話の英作文（並べかえ2問） ===== */
 { no:3, title:"太鼓の練習を見に来たALTのヒル(Ms. Hill)先生と、中学生のリク(Riku)が会話をしています。次の①〜⑥はそのときの二人の会話です。二人が考えている内容に合うように、(1)(2)の語を正しく並べかえて、会話を完成させなさい。なお、会話は①〜⑥の順に行われています。", groups:[
-  { sceneNote:"イラスト：①ヒル先生が大きな太鼓を見て「なんて大きな太鼓！」とおどろいている。②リクが「これは私たちの町でいちばん古い太鼓です」と説明している。③ヒル先生が「本当？それがいつ作られたのか知っていますか」と考えながらたずねている。④リクが「約100年前です」と答えている。⑤ヒル先生が「すごい！たたいてみてもいいですか」とたずねている。⑥リクが「もちろん。このばちを持ってください」と答えている。",
+  { sceneNote:"イラスト：①ヒル先生が大きな太鼓を見て「なんて大きな太鼓！お祭りで使うのですか」とおどろいている。②リクが「はい。たたいてみませんか」とすすめている。③ヒル先生が「本当に？ありがとう」とばちを受け取っている。④リクが「ばちはこのように持ってください」と教えている。⑤ヒル先生がたたいたあと「楽しい！どうやってたたくのか見せてくれますか」と考えながらたずねている。⑥リクが「もちろん。次の練習に来てください」と答えている。",
     passage:
-    '<span class="sp"><span class="who">Ms. Hill:</span> ① Wow, what a big drum!</span>'+
-    '<span class="sp"><span class="who">Riku:</span> ② <u>(1)</u>.</span>'+
-    '<span class="sp"><span class="who">Ms. Hill:</span> ③ Really? <u>(2)</u>?</span>'+
-    '<span class="sp"><span class="who">Riku:</span> ④ About one hundred years ago.</span>'+
-    '<span class="sp"><span class="who">Ms. Hill:</span> ⑤ Amazing! Can I try it?</span>'+
-    '<span class="sp"><span class="who">Riku:</span> ⑥ Sure. Please hold these sticks.</span>',
+    '<span class="sp"><span class="who">Ms. Hill:</span> ① Wow, what a big drum! Do you use it at the festival?</span>'+
+    '<span class="sp"><span class="who">Riku:</span> ② Yes. <u>(1)</u>?</span>'+
+    '<span class="sp"><span class="who">Ms. Hill:</span> ③ Really? Thank you.</span>'+
+    '<span class="sp"><span class="who">Riku:</span> ④ Please hold the sticks like this.</span>'+
+    '<span class="sp"><span class="who">Ms. Hill:</span> ⑤ This is fun! <u>(2)</u>?</span>'+
+    '<span class="sp"><span class="who">Riku:</span> ⑥ Sure. Please come to our next practice.</span>',
     passageEn:true,
     note:'語注：stick ばち（太鼓をたたく棒）／hold 〜を持つ',
     items:[
-    { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：リクが「これは私たちの町でいちばん古い太鼓です」と説明する場面。次の語を正しく並べて英文を完成させなさい。",
-      words:["the","It","oldest","in","is","drum","our","town"], answer:"It is the oldest drum in our town" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：ヒル先生が「それがいつ作られたのか知っていますか」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
-      words:["know","Do","when","you","made","it","was"], answer:"Do you know when it was made" } ]}
+    { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：リクが「たたいてみませんか」とすすめる場面。次の語を正しく並べて英文を完成させなさい。",
+      words:["like","Would","try","you","to","it"], answer:"Would you like to try it" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：ヒル先生が「どうやってたたくのか見せてくれますか」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
+      words:["show","Can","how","you","me","to","play","it"], answer:"Can you show me how to play it" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋日記 ===== */
@@ -185,12 +186,12 @@ sections: [
     'After that, the drum felt heavier than before.<br><br>'+
     '<b>④</b> Some people think that the sound of the festival drum is made by a strong arm. I thought so, too. '+
     'But now I know that is not true. <u>④ The sound of the festival drum is not made by one strong player</u>. '+
-    'It is made by everyone who listens to each other. <u>③ ( been / we / practicing / have / months / for / four )</u>, '+
+    'It is made by everyone who listens to each other. <u>③ ( to / us / how / listen / Mr. Oda / taught )</u>, '+
     'and last week, our sound finally became one. On the festival day, I will hit the drum for Mr. Oda, for the little children, '+
     'and for the people who played it before us. '+
     'So please come to the community center next Saturday, and let\'s <u>(か) ___</u> the drum together!',
     passageEn:true,
-    note:'語注：fill 〜を満たす／stick ばち／toy おもちゃ／shake ふるえる／weak 弱い／miss 〜を休む／rhythm リズム／photo 写真／heavy 重い／true 本当の／player 演奏者／each other おたがい／finally ついに',
+    note:'語注：fill 〜を満たす／stick ばち／toy おもちゃ／shake ふるえる／weak 弱い／miss 〜を休む／rhythm リズム／photo 写真／heavy 重い／true 本当の／each other おたがい／finally ついに',
     items:[
     { type:"mcq", label:"(1)", pt:5, stem:"（お）・（か）に入る英語の組み合わせとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("お bored　か sell"), E("お bored　か play"),
@@ -199,8 +200,8 @@ sections: [
       choices:[ "チームは夏に、週に3回公民館で練習した。", "写真の中で、オダさんの祖父は今とはちがう太鼓をたたいていた。",
                 "小さな子どもたちは、リクより早くリズムを覚えた。", "オダさんは、ある晩に古い写真を見せた。" ], answer:1 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["been","we","practicing","have","months","for","four"], answer:"We have been practicing for four months",
-      display:"We have been practicing for four months" },
+      words:["to","us","how","listen","Mr. Oda","taught"], answer:"Mr. Oda taught us how to listen",
+      display:"Mr. Oda taught us how to listen" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("Riku （　え　） a good sound for a month, but he never missed a practice."),
       answers:["could not make"], hint:"第2段落の語・英語3語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>祭りの太鼓の（　①　）は、1人の力の強い（　②　）によって作られるのではない。<br>①に入る最も適切なものを、ア〜エから選びなさい。",

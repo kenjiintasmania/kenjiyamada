@@ -51,7 +51,7 @@ sections: [
       '<span class="sp">Next month, in <b>November</b>, we will visit a café in Nagisa City. The staff there cannot hear, so you will order your drinks in sign language.</span>'+
       '<span class="sp">Before that, please practice the signs for food and drinks. There are <b>sixteen</b> signs on the paper I gave you today.</span>'+
       '<span class="sp">On the day of the visit, please come to the <b>library</b> of the community center at ten, not to this room. We will walk to the café from there.</span>',
-    passage:'<b>ミクのメモ</b><br>Mr. Hayashi\'s talk<br>— We will visit a café in （　あ　）. The staff there cannot hear.<br>'+
+    passage:'<b>ミクのメモ</b><br>Mr. Hayashi\'s talk<br>— In （　あ　）, we will visit a café. The staff there cannot hear.<br>'+
             '— Practice the （　い　） signs for food and drinks on the paper.<br>'+
             '— On the day of the visit, go to the （　う　） at ten.',
     items:[
@@ -99,7 +99,7 @@ sections: [
     '<span class="sp"><span class="who">Sho:</span> Great. Then I\'ll take both. And look, there is a Song Class, too. I like singing, so I want to learn how to sing （　あ　） with my hands.</span>'+
     '<span class="sp"><span class="who">Miku:</span> Sounds fun! Let\'s take it together in winter. We can sing （　あ　） at the school festival next year.</span>'+
     '<span class="sp"><span class="who">Sho:</span> Good idea. I\'ll bring a notebook and a pencil on Saturday.</span>',
-    note:'語注：sign language 手話／greeting あいさつ／hobby 趣味／order 〜を注文する／fee 料金／each time 毎回／tool 道具／adult 大人／beginner 初心者／both 両方',
+    note:'語注：sign language 手話／greeting あいさつ／order 〜を注文する／fee 料金／each time 毎回／tool 道具／adult 大人／beginner 初心者',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"2か所の（あ）に共通して入れるのに最も適当な英語1語を、ちらしの中から抜き出して書きなさい。",
       answers:["songs"], hint:"ちらしの中にある語" },
@@ -186,7 +186,7 @@ sections: [
     'When the boy left with the flowers, Ms. Ono signed to me, "Thank you, Miku. You are my bridge." I will never forget that day.<br><br>'+
     '<b>④</b> Some people say that learning sign language is too hard for junior high school students. That may be true. '+
     '<u>④ A student cannot learn all the signs in a few months</u>. '+
-    'But I found something important. <u>③ ( Sign language / helped / me / make / new / friends )</u>. '+
+    'But I found something important. <u>③ ( make / helped / Sign language / friends / me / new )</u>. '+
     'Now I have many friends who cannot hear, and we talk about everything with our hands. '+
     'When we try to use the language of others, our hearts become closer. '+
     'So please come to the community center next Saturday, and let\'s <u>(か) ___</u> sign language together!',
@@ -200,7 +200,7 @@ sections: [
       choices:[ "6月に、ミクは初めてオノさんの店を訪れた。", "小さな男の子は、父親のために花を買いたかった。",
                 "オノさんはミクに小さな黄色い花をくれた。", "ミクは男の子とオノさんの間に立って、男の子の言葉を手で伝えた。" ], answer:1 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["Sign language","helped","me","make","new","friends"], answer:"Sign language helped me make new friends",
+      words:["make","helped","Sign language","friends","me","new"], answer:"Sign language helped me make new friends",
       display:"Sign language helped me make new friends" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("At first, Miku （　え　） to talk with Ms. Ono."),
       answers:["used a notebook"], hint:"第2段落の語・英語3語" },

@@ -16,6 +16,7 @@ sections: [
 
   /* 問題A：絵・表を選ぶ（英文1回読み・2問） */
   { intro:"問題A　放送を聞いて、内容に合う絵や表をア〜エから選びなさい。英文は1回読まれます。",
+    note:"語注：top こま／spin 〜を回す",
     script:'(1) Look at the picture. Hana is playing kendama, and Yuto is spinning a top on the table.',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"放送に合う絵はどれですか。",
@@ -73,7 +74,7 @@ sections: [
     { type:"fill", label:"(2)", pt:3,
       stem:"ユウトの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に tops を含む3語の英語を書き、英文を完成させなさい。<br>"+
            E("Group C is the best for you. Let's （　　） together."),
-      answers:["play with tops"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      answers:["play with tops","spin the tops","spin our tops","spin some tops"], hint:"英語3語（説明の中の言い方を使う）" } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */
@@ -129,7 +130,7 @@ sections: [
     { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：ハナが「祖父によって作られました」と説明する場面。次の語を正しく並べて英文を完成させなさい。",
       words:["was","It","by","made","my","grandfather"], answer:"It was made by my grandfather" },
     { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：ルイス先生が「どの技がいちばん難しいの」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
-      words:["trick","the","Which","is","difficult","most"], answer:"Which trick is the most difficult" } ]}
+      words:["Which trick","is","the","most","difficult"], answer:"Which trick is the most difficult" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋日記 ===== */
@@ -148,7 +149,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Lewis:</span> Good question. It was about ten years ago. I was a university student then, and I have lived in Japan since that time.</span>'+
     '<span class="sp"><span class="who">Hana:</span> Then you have been in Japan longer than we have been in junior high school!</span>'+
     '<span class="sp"><span class="who">Mr. Lewis:</span> That\'s right. That old man\'s kindness helped me love this country. I hope your kindness will help the children love these games.</span>',
-    note:'語注：explain 〜を説明する／else ほかに／slowly ゆっくりと／rule ルール／experience 経験／sign 案内板／necessary 必要な／university 大学／kindness 親切／country 国' },
+    note:'語注：explain 〜を説明する／else ほかに／slowly ゆっくりと／rule ルール／experience 経験／sign 案内板／university 大学／kindness 親切／country 国' },
   { passage:'<b>Yuto の日記</b><br>Today we talked about how to teach the games. Mr. Lewis\'s story about the kind old man was interesting. '+
             'I （　X　）, so I will draw pictures that every child can understand.', passageEn:true,
     items:[
@@ -187,7 +188,7 @@ sections: [
     'Mr. Oda smiled and said, "Old games are slow, but they wait for you."<br><br>'+
     '<b>④</b> Some people say that children today do not need old games. That may be true. '+
     '<u>④ Children today can find newer and faster games on their phones</u>. '+
-    'But I saw something different that day. <u>③ ( who / the boy / kept / trying / was / the happiest )</u>. '+
+    'But I saw something different that day. <u>③ ( was / the boy / the happiest / who kept trying )</u>. '+
     'When we play an old game together, we share the time, not just the game. That is something a phone cannot give us. '+
     'Now I practice kendama with my grandfather every evening, and we talk a lot. '+
     'So please pick up an old toy this weekend, and let\'s <u>(か) ___</u> it to someone younger than you!',
@@ -201,7 +202,7 @@ sections: [
       choices:[ "小田さんは60年間けん玉をしている。", "小田さんはコウタの横にすわり、技をゆっくり何度も見せた。",
                 "小田さんはコウタに、たくさんの言葉で説明した。", "コウタは20分後に、玉を皿にのせることができた。" ], answer:2 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["who","the boy","kept","trying","was","the happiest"], answer:"The boy who kept trying was the happiest",
+      words:["was","the boy","the happiest","who kept trying"], answer:"The boy who kept trying was the happiest",
       display:"The boy who kept trying was the happiest" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("Hana showed the children （　え　） the kendama."),
       answers:["how to hold"], hint:"第2段落の語・英語3語" },

@@ -15,17 +15,17 @@ sections: [
 { no:1, title:"リスニングテスト", lead:"放送文を読んで、内容に合うものを選びましょう（実際の試験では音声が流れます）。", groups:[
 
   /* 問題A：絵・表を選ぶ（英文1回読み・2問） */
-  { intro:"問題A　放送を聞いて、内容に合う絵や表をア〜エから選びなさい。英文は1回読まれます。",
+  { intro:"問題A　放送を聞いて、内容に合う絵やグラフをア〜エから選びなさい。英文は1回読まれます。",
     script:'(1) Look at the picture. Aoi is reading a picture book to three children, and a small dog is sleeping under the bench.',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"放送に合う絵はどれですか。",
       choices:["3人の子どもに絵本を読んでいるアオイ。ベンチの上で小さな犬がねむっている。","3人の子どもに絵本を読んでいるアオイ。ベンチの下で小さな犬がねむっている。",
                "2人の子どもと本を運んでいるアオイ。ベンチの下で小さな犬がねむっている。","3人の子どもに絵本を読んでいるアオイ。小さな犬がベンチのまわりを走っている。"], answer:1 } ] },
-  { script:'(2) Look at the table. The book bus comes to Minori Park on Tuesday morning, and to Minori Station on Saturday afternoon.',
+  { script:'(2) Look at the graph. On the book bus, picture books are the most popular. Comic books are more popular than science books.',
     items:[
-    { type:"mcq", label:"(2)", pt:3, stem:"放送に合う表（ブックバスが来る曜日と時間）はどれですか。",
-      choices:["公園：火曜日の午後／駅：土曜日の午前","公園：土曜日の午前／駅：火曜日の午後",
-               "公園：火曜日の午前／駅：土曜日の午後","公園：火曜日の午前／駅：土曜日の午前"], answer:2 } ] },
+    { type:"mcq", label:"(2)", pt:3, stem:"放送に合うグラフ（ブックバスで人気のある本）はどれですか。",
+      choices:["1位 絵本、2位 科学の本、3位 まんが","1位 まんが、2位 絵本、3位 科学の本",
+               "1位 絵本、2位 まんが、3位 科学の本","1位 科学の本、2位 絵本、3位 まんが"], answer:2 } ] },
 
   /* 問題B：チャイムの応答（対話の最後への応答・2回読み・2問） */
   { intro:"問題B　対話の最後にチャイムが鳴ります。チャイムの部分に入る応答を、ア〜エから選びなさい。英文は2回読まれます。",
@@ -47,16 +47,16 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　アオイ(Aoi)が、ブックバスを運転する図書館員のクボ(Mr. Kubo)さんにインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Kubo. I drive the book bus. The bus visits Minori Elementary School every <b>Monday</b> afternoon.</span>'+
-      '<span class="sp">At the school, we put the books in the <b>music</b> room because it is the biggest room.</span>'+
-      '<span class="sp">Each child can borrow <b>five</b> books at a time and keep them for two weeks.</span>',
-    passage:'<b>アオイのメモ</b><br>Mr. Kubo — drives the book bus to the elementary school every （　あ　） afternoon<br>'+
-            '— puts the books in the （　い　） room at the school<br>'+
-            '— each child can borrow （　う　） books at a time',
+      '<span class="sp">Hello, I\'m Mr. Kubo. I drive the book bus. The bus carries about <b>eight</b> hundred books, and half of them are picture books.</span>'+
+      '<span class="sp">I always put the new books near the <b>door</b> of the bus. Then the children can find them easily.</span>'+
+      '<span class="sp">The bus is <b>yellow</b>, so you can find it easily in the town.</span>',
+    passage:'<b>アオイのメモ</b><br>Mr. Kubo — drives the book bus, which carries about （　あ　） hundred books<br>'+
+            '— puts the new books near the （　い　） of the bus<br>'+
+            '— the bus is （　う　）, so it is easy to find',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）月曜日", answers:["Monday"], hint:"英語1語（曜日）" },
-    { type:"fill", label:"い", pt:2, stem:"（い）音楽", answers:["music"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）一人の子どもが一度に借りられる本の冊数", answers:["five","5"], hint:"英語1語（数）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）バスが運ぶ本の冊数（〜百冊）", answers:["eight","8"], hint:"英語1語（数）" },
+    { type:"fill", label:"い", pt:2, stem:"（い）ドア", answers:["door"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）黄色い", answers:["yellow"], hint:"英語1語（色）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのレン(Ren)が、ブックバスの特別な日の手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
@@ -101,7 +101,7 @@ sections: [
     '<span class="sp"><span class="who">Ren:</span> I don\'t have one. Can I make a card there?</span>'+
     '<span class="sp"><span class="who">Aoi:</span> Yes. It\'s free, but you need something with your name and address on it.</span>'+
     '<span class="sp"><span class="who">Ren:</span> OK. I\'ll bring my student card. See you at the community center at ten.</span>',
-    note:'語注：schedule 予定表／up to 〜 〜まで／story time 読み聞かせの時間／community center 公民館／address 住所／driver 運転手／librarian 図書館員／keep 〜を持っておく／own 自分自身の／student card 生徒証',
+    note:'語注：schedule 予定表／up to 〜 〜まで／story time 読み聞かせの時間／community center 公民館／address 住所／driver 運転手／librarian 図書館員／student card 生徒証',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"2か所の（あ）に共通して入れるのに最も適当な英語1語を、ちらしの中から抜き出して書きなさい。",
       answers:["borrow"], hint:"ちらしの中にある語（We can 〜 books）" },
@@ -139,7 +139,7 @@ sections: [
 { no:4, title:"テイラー(Mr. Taylor)先生の英語の授業で、Aoi と Ren が、小学生への読み聞かせについて話し合いをしています。次の英文は、話し合いと、その日に Ren が書いた日記です。(1)〜(5)に答えなさい。", groups:[
   { passage:
     '<span class="sp"><span class="who">Mr. Taylor:</span> Next Monday, the book bus will go to Minori Elementary School, and you two are going to read picture books to the first graders there. Have you chosen your books yet?</span>'+
-    '<span class="sp"><span class="who">Aoi:</span> Yes, I have. I chose a story about a little bear who cannot sleep. The words are easy, and the pictures are big.</span>'+
+    '<span class="sp"><span class="who">Aoi:</span> Yes, I have. I chose a story about a little bear that cannot sleep. The words are easy, and the pictures are big.</span>'+
     '<span class="sp"><span class="who">Mr. Taylor:</span> Nice choice. How will you read it, Aoi?</span>'+
     '<span class="sp"><span class="who">Aoi:</span> I want to <u>use different voices</u> for each animal in the story. Then the children will not get bored.</span>'+
     '<span class="sp"><span class="who">Mr. Taylor:</span> That\'s a great idea. Ren, how about you?</span>'+
@@ -176,10 +176,10 @@ sections: [
 { no:5, title:"次の英文は、レン(Ren)が英語の授業で発表したスピーチです。(1)〜(6)に答えなさい。", groups:[
   { passage:
     '<b>①</b> Hello, everyone. I\'m Ren. Last month, I read a picture book to the first graders at Minori Elementary School for the first time. '+
-    'I did it as a volunteer of the book bus in our town. Before that day, I thought reading to children was easy. You just open a book and read the words. '+
+    'I did it as a volunteer for the book bus in our town. Before that day, I thought reading to children was easy. You just open a book and read the words. '+
     'Now I think it is much harder and much more interesting, and I want to tell you why.<br><br>'+
     '<b>②</b> First, I had to choose a book. I went to the book bus and asked Mr. Kubo, the librarian, for help. '+
-    'He showed me a story about a little dog who looks for his home. It was short, and every page had a big picture. '+
+    'He showed me a story about a little dog that looks for his home. It was short, and every page had a big picture. '+
     'I practiced the story every night for a week. Mr. Kubo said to me, '+
     '"Don\'t read fast. Look at the children\'s faces, and wait for their smiles." '+
     'On the morning of the story time, I was <u>(お) ___</u> because it was my first time to read in front of children.<br><br>'+
@@ -190,7 +190,7 @@ sections: [
     'I understood that reading to children is giving them a door to books.<br><br>'+
     '<b>④</b> Some people say that a small library on a bus cannot change children. That may be true. '+
     '<u>④ A small bus cannot carry every book in the world</u>. '+
-    'But I know what happened in the music room. <u>③ ( helped / one little dog / with / me / the children / talk )</u>. '+
+    'But I know what happened in the music room. <u>③ ( gave / one little dog / me / a chance / to talk / with the children )</u>. '+
     'When we share one story, we also share our feelings. '+
     'So please come to the park next Tuesday, and let\'s <u>(か) ___</u> the book bus together!',
     passageEn:true,
@@ -203,8 +203,8 @@ sections: [
       choices:[ "25人の子どもが音楽室のゆかにすわっていた。", "レンが犬の声を出しても、子どもたちは話をやめなかった。",
                 "前の列の男の子が、いっしょに犬のせりふを言い始めた。", "話のあとで、女の子が自分でこの本を読みたいと言った。" ], answer:1 },
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
-      words:["helped","one little dog","with","me","the children","talk"], answer:"One little dog helped me talk with the children",
-      display:"One little dog helped me talk with the children" },
+      words:["gave","one little dog","me","a chance","to talk","with the children"], answer:"One little dog gave me a chance to talk with the children",
+      display:"One little dog gave me a chance to talk with the children" },
     { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("Ren （　え　） every night for a week before the story time."),
       answers:["practiced the story"], hint:"第2段落の語・英語3語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>小さな（　①　）は、世界中のすべての（　②　）を運ぶことはできない。<br>①に入る最も適切なものを、ア〜エから選びなさい。",

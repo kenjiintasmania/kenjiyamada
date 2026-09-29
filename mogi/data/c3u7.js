@@ -1,4 +1,4 @@
-/* data/c3u7.js ─ 中3 単元テスト⑦（初見・自動採点のみ）… テーマ：プログラミング部とロボットコンテスト（架空の Hikari City）。内容はすべて新規。
+/* data/c3u7.js ─ 中3 単元テスト⑦（初見・自動採点のみ）… テーマ：プログラミング部とロボットコンテスト（架空の Momiji City）。内容はすべて新規。
    参照：factory/inputs/authoring_rules.md／factory/inputs/okayama_notes.md（3年目の分析＝提供PDFの形式・配点だけを踏襲）
         ／モデル mogi/data/chu3_341.js（大問1〜5・28問・100点の骨格）。
    出題形式・問題数・配点バランスのみ踏襲し、本文・設問・選択肢はすべて新規創作。
@@ -50,20 +50,20 @@ sections: [
       '<span class="sp">Hello, everyone. I\'m Mr. Ishii, the teacher of the programming club. I have three things to tell you today.</span>'+
       '<span class="sp">First, our next club meeting will be next <b>Saturday</b>, not Wednesday, because I have to go to a teachers\' meeting on Wednesday.</span>'+
       '<span class="sp">Second, we usually use the computer room, but next week we will meet in the <b>science</b> room. The computer room will be used by another club.</span>'+
-      '<span class="sp">Third, <b>fifteen</b> teams will join the city robot contest this year. Please think about ideas for our robot before the meeting.</span>',
+      '<span class="sp">Third, last year, <b>fifteen</b> teams joined the city robot contest. This year, more teams will join, so please think about ideas for our robot before the meeting.</span>',
     passage:'<b>ナオのメモ</b><br>Mr. Ishii\'s talk<br>— The next club meeting will be next （　あ　）.<br>'+
             '— Next week, go to the （　い　） room, not the computer room.<br>'+
-            '— （　う　） teams will join the city robot contest this year.',
+            '— （　う　） teams joined the city robot contest last year.',
     items:[
     { type:"fill", label:"あ", pt:2, stem:"（あ）土曜日", answers:["Saturday"], hint:"英語1語" },
     { type:"fill", label:"い", pt:2, stem:"（い）理科（室）", answers:["science"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）コンテストに参加するチームの数", answers:["fifteen","15"], hint:"英語1語（数を表す語）" } ] },
+    { type:"fill", label:"う", pt:2, stem:"（う）去年、コンテストに参加したチームの数", answers:["fifteen","15"], hint:"英語1語（数を表す語）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
   { intro:"問題D　あなたとクラスメイトのナオ(Nao)が、ロボット作りのワークショップについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Next Sunday, the Hikari Science Center will hold a robot workshop for junior high school students. Each team will make one robot, and you can choose one job.</span>'+
-      '<span class="sp">In Job A, you will build the body of the robot with tools. In Job B, you will write the program on a computer. In Job C, you will draw a poster and explain your robot to the judges.</span>'+
+      '<span class="sp">Next Sunday, the Momiji Science Center will hold a robot workshop for junior high school students. Each team will make one robot, and you can choose one job.</span>'+
+      '<span class="sp">In Job A, you will build the body of the robot with tools. In Job B, you will write the program on a computer. In Job C, you will draw a poster and talk about your robot in front of everyone.</span>'+
       '<span class="sp">The workshop starts at nine in the morning and finishes at one in the afternoon. Please bring a notebook and a pencil.</span>'+
       '<span class="sp"><span class="who">Nao:</span> I\'m not good at using tools, and speaking in front of people makes me nervous. But I like using computers. Which job should I choose?</span>',
     items:[
@@ -77,9 +77,9 @@ sections: [
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */
-{ no:2, title:"中学生のダイチ(Daichi)とナオ(Nao)が、ヒカリ市のロボットコンテストのちらしを見ながら会話をしています。次は、そのちらしと会話です。(1)〜(5)に答えなさい。", groups:[
+{ no:2, title:"中学生のダイチ(Daichi)とナオ(Nao)が、モミジ市のロボットコンテストのちらしを見ながら会話をしています。次は、そのちらしと会話です。(1)〜(5)に答えなさい。", groups:[
   { flyer:
-    '<h4>Hikari City Robot Contest — Junior High School Classes</h4>'+
+    '<h4>Momiji City Robot Contest — Junior High School Classes</h4>'+
     '<div class="note">Bring your robot and show your ideas!</div>'+
     '<table><tr><th>Class</th><th>What your robot will do</th><th>Entry fee (one team)</th><th>Teams now</th></tr>'+
     '<tr><td>Line Race</td><td>run along a black line to the goal</td><td>free</td><td>12</td></tr>'+
@@ -87,7 +87,7 @@ sections: [
     '<tr><td>Robot Arm</td><td>move small blocks with an arm</td><td>500 yen</td><td>5</td></tr>'+
     '<tr><td>Dance Robot</td><td>move to music for one minute</td><td>300 yen</td><td>9</td></tr></table>'+
     '<div class="note">Date … Sunday, November 16, 10:00 a.m. – 3:00 p.m.<br>'+
-    'Place … Hikari Science Center (a five-minute walk from Hikari Station)<br>'+
+    'Place … Momiji Science Center (a five-minute walk from Momiji Station)<br>'+
     'A robot kit is lent to each team for free. Please return the kit after the contest.<br>'+
     'Teams that need an extra sensor pay 200 yen.</div>',
     passage:
@@ -99,13 +99,13 @@ sections: [
     '<span class="sp"><span class="who">Daichi:</span> No, never. But I have <u>(う) make</u> programs for our club robot many times.</span>'+
     '<span class="sp"><span class="who">Nao:</span> Then you can write the program, and I\'ll build the body. Our robot will need an extra sensor to find the balls.</span>'+
     '<span class="sp"><span class="who">Daichi:</span> OK. We have to pay for the sensor, too. Let\'s ask Mr. Ishii about it today.</span>',
-    note:'語注：contest コンテスト／kit キット（ロボットの部品一式）／be lent 貸される／return 〜を返す／entry fee 参加料／shooter シューター（ボールを入れるもの）／block ブロック／sensor センサー／extra 追加の',
+    note:'語注：class 部門（競技の種類）／kit キット（ロボットの部品一式）／be lent 貸される／return 〜を返す／entry fee 参加料／shooter シューター（ボールを入れるもの）／block ブロック／sensor センサー／extra 追加の',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"2か所の（あ）に共通して入れるのに最も適当な英語1語を、ちらしの中から抜き出して書きなさい。",
       answers:["kit"], hint:"ちらしの中にある語" },
     { type:"fill", label:"(2)い", pt:3, stem:"（い）に入れるのに最も適当な2語の英語を書きなさい。", answers:["Have you"], hint:"英語2語（〜したことがありますか）" },
     { type:"fill", label:"(3)う", pt:3, stem:"下線部(う)の単語を、最も適当な形に変えて1語で書きなさい。", answers:["made"], hint:"I have 〜 programs for our club robot many times." },
-    { type:"mcq", label:"(4)", pt:3, stem:"ちらしから、ダイチとナオのチームが払う金額として最も適当なのは、ア〜エのどれですか。",
+    { type:"mcq", label:"(4)", pt:3, stem:"ちらしと会話から、ダイチとナオのチームが払う金額として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("300 yen"), E("500 yen"), E("700 yen"), E("free") ], answer:1 },
     { type:"mcq", label:"(5)", pt:4, stem:"ちらしや会話から読み取れる内容として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("The contest will be held on a Saturday in October."),
@@ -158,7 +158,7 @@ sections: [
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[E("noisy"),E("careful"),E("famous"),E("hungry")], answer:1 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[ E("How much was the battery?"), E("When did you come to Hikari City?"),
+      choices:[ E("How much was the battery?"), E("When did you come to Momiji City?"),
                 E("What was wrong with your robot?"), E("Who won the first prize?") ], answer:2 },
     { type:"mcq", label:"(4)", pt:3, stem:"話し合いの内容と合っているのは、ア〜エのどれですか。",
       choices:[ E("Daichi and Nao have already found the reason for the problem."),
@@ -207,8 +207,8 @@ sections: [
     { type:"wordorder", label:"(3)", pt:5, stem:"下線部③の語をすべて用いて、意味が通るように並べかえなさい。",
       words:["who","friends","helped","me","I","have","build","it"], answer:"I have friends who helped me build it",
       display:"I have friends who helped me build it" },
-    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("Daichi （　え　） alone for two months."),
-      answers:["wrote the program"], hint:"第2段落の語・英語3語" },
+    { type:"fill", label:"(4)え", pt:4, stem:"次の文の（え）に入れるのに最も適当な英語3語を、第2段落中から抜き出して書きなさい。<br>"+E("Daichi （　え　） again and again, but he could not find any mistakes."),
+      answers:["checked the program"], hint:"第2段落の語・英語3語" },
     { type:"mcq", label:"(5)①", pt:4, stem:"下線部④の具体的内容を説明する次の文の①・②に入る日本語を考えます。<br>小さな（　①　）は、私たちの市の大きな（　②　）を解決することはできない。<br>①に入る最も適切なものを、ア〜エから選びなさい。",
       choices:[ "コンピュータ","ロボット","学校","公園" ], answer:1 },
     { type:"mcq", label:"(5)②", pt:4, stem:"②に入る最も適切なものを、ア〜エから選びなさい。",

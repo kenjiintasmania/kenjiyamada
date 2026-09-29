@@ -76,7 +76,7 @@ sections: [
     { type:"fill", label:"(2)", pt:3,
       stem:"ヒナの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に songs を含む3語の英語を書き、英文を完成させなさい。<br>"+
            E("That's a good activity for you. Let's （　　） together."),
-      answers:["teach Japanese songs"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      answers:["teach Japanese songs","sing Japanese songs"], hint:"英語3語（説明の中の言い方を使う）" } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */
@@ -120,21 +120,21 @@ sections: [
 
 /* ===== 大問3 会話の英作文（並べかえ2問） ===== */
 { no:3, title:"オンライン交流で、ベルヒル校のルーシー(Lucy)と中学生のソラ(Sora)が会話をしています。次の①〜⑥はそのときの二人の会話です。二人が考えている内容に合うように、(1)(2)の語を正しく並べかえて、会話を完成させなさい。なお、会話は①〜⑥の順に行われています。", groups:[
-  { sceneNote:"イラスト：①ルーシーが汗をふきながら「今日はとても暑い。35度もある」と言っている。②ソラが「オーストラリアではどの月がいちばん暑いのだろう」と考えながらたずねている。③ルーシーが「1月。ここでは夏は12月に始まる」と答えている。④ソラが「日本では12月は冬の始まり」とおどろいている。⑤ルーシーが画面に映ったソラの校舎を見て「いつ建てられたのだろう」と考えながらたずねている。⑥ソラが「約60年前。祖父もここで学んだ」と答えている。",
+  { sceneNote:"イラスト：①ルーシーが汗をふきながら「今日はとても暑い。35度もある」と言っている。②ソラが「オーストラリアではどの月がいちばん暑いのだろう」と考えながらたずねている。③ルーシーが「1月。ここでは夏は12月に始まる」と答えている。④ソラが「日本では12月は冬の始まり」とおどろいている。⑤ルーシーが画面に映ったソラの後ろの写真を見て「その写真はどこで撮られたのだろう」と考えながらたずねている。⑥ソラが「古いお寺で。去年の修学旅行で訪れた」と答えている。",
     passage:
     '<span class="sp"><span class="who">Lucy:</span> ① It\'s very hot here today. It\'s thirty-five degrees!</span>'+
     '<span class="sp"><span class="who">Sora:</span> ② Wow! <u>(1)</u>?</span>'+
     '<span class="sp"><span class="who">Lucy:</span> ③ January. Summer starts in December here.</span>'+
     '<span class="sp"><span class="who">Sora:</span> ④ Really? In Japan, December is the beginning of winter.</span>'+
-    '<span class="sp"><span class="who">Lucy:</span> ⑤ I see. By the way, your school building looks old. <u>(2)</u>?</span>'+
-    '<span class="sp"><span class="who">Sora:</span> ⑥ About sixty years ago. My grandfather studied here, too.</span>',
+    '<span class="sp"><span class="who">Lucy:</span> ⑤ I see. By the way, there is a nice photo behind you. <u>(2)</u>?</span>'+
+    '<span class="sp"><span class="who">Sora:</span> ⑥ At an old temple. We visited it on our school trip last year.</span>',
     passageEn:true,
-    note:'語注：degree 度／beginning 始まり／was built 建てられた',
+    note:'語注：degree 度／beginning 始まり／school trip 修学旅行／temple 寺',
     items:[
     { type:"wordorder", label:"(1)", pt:6, stem:"イラスト：ソラが「オーストラリアではどの月がいちばん暑いのですか」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
-      words:["month","Which","the","is","hottest","in","Australia"], answer:"Which month is the hottest in Australia" },
-    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：ルーシーが「あなたの学校はいつ建てられたのですか」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
-      words:["was","When","school","your","built"], answer:"When was your school built" } ]}
+      words:["Which month","is","the","hottest","in","Australia"], answer:"Which month is the hottest in Australia" },
+    { type:"wordorder", label:"(2)", pt:5, stem:"イラスト：ルーシーが「その写真はどこで撮られたのですか」とたずねる場面。次の語を正しく並べて英文を完成させなさい。",
+      words:["was","Where","the","photo","taken"], answer:"Where was the photo taken" } ]}
 ]},
 
 /* ===== 大問4 話し合い＋日記 ===== */
@@ -153,7 +153,7 @@ sections: [
     '<span class="sp"><span class="who">Mr. Green:</span> Good question. My uncle lived in Japan, and he taught me Japanese during the vacation. That\'s why I became interested in Japan.</span>'+
     '<span class="sp"><span class="who">Sora:</span> And now you teach us English in Japan.</span>'+
     '<span class="sp"><span class="who">Mr. Green:</span> Yes, and I enjoy every day here. It is important for us to learn about each other\'s lives, so please ask many questions next Friday.</span>',
-    note:'語注：rice ball おにぎり／rule 規則／entrance 玄関／wore 〜をかぶっていた（wear の過去形）／strong （日ざしが）強い／necessary 必要な／late January 1月の終わりごろ／beach 浜辺／uncle おじ／during 〜の間に／each other おたがい' },
+    note:'語注：rice ball おにぎり／rule 規則／entrance 玄関／wore 〜をかぶっていた（wear の過去形）／strong （日ざしが）強い／late January 1月の終わりごろ／beach 浜辺／uncle おじ／during 〜の間に／each other おたがい' },
   { passage:'<b>Hina の日記</b><br>Today we talked about the next online meeting. Sora will cook rice balls, and I will show our school rules. '+
             'I （　X　）, so I asked Mr. Green about the hats. He also told us about his school days in Australia. '+
             'I want to ask Lucy a lot of questions next Friday.', passageEn:true,
