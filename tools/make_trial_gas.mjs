@@ -13,8 +13,9 @@ const SRC = resolve(ROOT, 'tools/score_gas.gs');
 const OUT = resolve(ROOT, 'tools/score_gas_trial.gs');
 
 let s = readFileSync(SRC, 'utf8');
-const PROD_ID = (s.match(/var SPREADSHEET_ID = "([^"]+)"/) || [])[1];
-if (!PROD_ID) { console.error('✗ score_gas.gs から SPREADSHEET_ID を取得できませんでした'); process.exit(1); }
+const PROD_ID = (s.match(/var SPREADSHEET_ID = "([^"]*)"/) || [])[1];
+if (PROD_ID === undefined) { console.error('✗ score_gas.gs から SPREADSHEET_ID を取得できませんでした'); process.exit(1); }
+// 事業者向けの一式（make_package.mjs）では ID を空にして出すので、空でも通す（安全弁は TRIAL 側の未設定チェックが効く）
 
 const must = (before, after, label) => {
   if (!s.includes(before)) { console.error(`✗ 置換対象が見つかりません: ${label}`); process.exit(1); }
@@ -120,4 +121,4 @@ if (process.argv.includes('--check')) {
 
 writeFileSync(OUT, s);
 console.log(`✓ 生成: tools/score_gas_trial.gs（${s.split('\n').length} 行）`);
-console.log(`  生徒用ID ${PROD_ID.slice(0, 12)}… への書き込みは安全弁でブロックされます`);
+if (PROD_ID) console.log(`  生徒用ID ${PROD_ID.slice(0, 12)}… への書き込みは安全弁でブロックされます`);
