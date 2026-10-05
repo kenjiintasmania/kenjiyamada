@@ -122,7 +122,7 @@ const unitKeys = ['kind', ...new Set([...unitPayload[1].matchAll(/([a-z_][a-zA-Z
 const META = ['kind', 'ver', 'site'];               // 列を持たない制御用フィールド
 const colKeys = new Set(COLS.map(c => c.key));
 const unmapped = meSet.filter(k => !colKeys.has(k) && !META.includes(k));
-const BUILT_BY_GAS = ['_ts', 'mt2000', 'mtgram'];   // 受信時にサーバー側で作る列（アプリは送らない）
+const BUILT_BY_GAS = ['_ts', 'mt2000', 'mtgram', 'mtgram2', 'mtidiom'];   // 受信時にサーバー側で作る列（アプリは送らない）
 const missing = COLS.map(c => c.key).filter(k => !BUILT_BY_GAS.includes(k) && !meSet.includes(k));
 if (unmapped.length) die(`列のない送信キーがあります: ${unmapped.join(', ')}`);
 if (missing.length) die(`送られない列があります: ${missing.join(', ')}`);
@@ -200,6 +200,8 @@ const DESC = {
   _ts: '受信した日時（**サーバー側で付与**。アプリは送りません）',
   mt2000: '2000語 到達度テストの合計点（**サーバー側で計算**＝「到達度テスト」タブのセットごとの最高点の合計。アプリは送りません）',
   mtgram: '全文法 到達度テストの合計点（**サーバー側で計算**。アプリは送りません）',
+  mtgram2: '全文法 到達度テスト 上級編（自分で打つ）の合計点（**サーバー側で計算**。アプリは送りません）',
+  mtidiom: '熟語200語 到達度テストの合計点（**サーバー側で計算**。アプリは送りません）',
   cls: '学年（1〜3）。生徒が入力', num: '出席番号。半角数字のみ', name: '名前。**任意**（空でも送信できる）',
   w_all: '打ち込めた単語の合計', w_goal: '目標語数（2000固定）', w_basic: '基本編で打ち込めた数',
   w_ext: '拡張編で打ち込めた数', w_g1: '1年の語', w_g2: '2年の語', w_g3: '3年の語',

@@ -4,12 +4,22 @@
  * 判定と選択肢の作りは ../assets/gojuncore.js（語順文法テストと共通）。
  * このファイルが持つのは「項目のはじめの見せかた」と「5文の回しかた」だけ。
  *
- * ・出題は「えらぶ（ドロップダウン）」に固定
+ * ★2つの画面がこの1本を読む（写しを置かない）：
+ *   gram.html  … えらぶ（ドロップダウン）＝試験ID mgram  ※この下の既定
+ *   gram2.html … 上級編＝自分で打つ        ＝試験ID mgram2（先生の指示 2026-10-05
+ *                「全文法テストの上級編として自力で入力するパターンも設置して」）
+ *   gram2.html は window.GRAM_CFG を置いてからこのファイルを読む。
+ *
  * ・1文＝完答で1点（部分点なし）。正解なら止めずに次へ、まちがえたら正解を見せて止まる
  * ・解説はたたんでおく（自学で終わっている子には邪魔なので、開きたい子だけ開く）
+ * ・打つモードの判定は GojunCore.gradeSlots（全角→半角・大文字小文字・アポストロフィ・
+ *   文末の記号を見ない）＝語順文法テストの「じぶんで打つ」とまったく同じものさし
  */
 (function () {
   "use strict";
+
+  var CFG = window.GRAM_CFG || { exam: "mgram", ver: "gram 0.5", mode: "select" };
+  var TYPE = CFG.mode === "type";               // 上級編＝打つ
 
   var G = window.GOJUN, C = window.GojunCore;
   var ITEMS = G.items, SETS = ITEMS.length;      // 31項目
@@ -19,7 +29,7 @@
   var run = null;
 
   var core = window.MasteryCore.create({
-    exam: "mgram", ver: "gram 0.4", sets: SETS, perSet: PER,
+    exam: CFG.exam, ver: CFG.ver, sets: SETS, perSet: PER,
     unitName: "項目", unitWord: "文",
     gas: "https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec",
     tipOf: function (i) { return ITEMS[i - 1].emoji + " " + ITEMS[i - 1].title; },
@@ -47,6 +57,16 @@
   });
 
   /* ---------- 出題 ---------- */
+  function inputFor(it, si, sl, f) {
+    if (TYPE) {
+      /* 上級編：箱に英語を自分で打つ（語順文法テストの「じぶんで打つ」と同じ入力欄） */
+      return '<input type="text" data-in="' + sl.k + '" class="en" placeholder="英語" autocomplete="off" ' +
+             'autocapitalize="off" autocorrect="off" spellcheck="false">';
+    }
+    var cs = C.choicesFor(it, si, sl.k, f.en);
+    return '<select data-in="' + sl.k + '"><option value="">えらぶ</option>' +
+      cs.map(function (c) { return "<option>" + core.esc(c) + "</option>"; }).join("") + "</select>";
+  }
   function draw() {
     if (!run || run.i >= PER) return done();
     var it = run.it, s = it.sents[run.i];
@@ -65,16 +85,12 @@
         (sl.q ? '<div class="bq">' + core.esc(sl.q) + "</div>" : '<div class="bq">&nbsp;</div>') +
         '<div class="bj">' + core.esc(f.ja) + "</div>";
       if (!f.en) return '<div class="box empty" data-k="' + sl.k + '">' + head + '<div class="dash">—</div></div>';
-      var cs = C.choicesFor(it, run.i, sl.k, f.en);
-      return '<div class="box" data-k="' + sl.k + '">' + head +
-        '<select data-in="' + sl.k + '"><option value="">えらぶ</option>' +
-        cs.map(function (c) { return "<option>" + core.esc(c) + "</option>"; }).join("") +
-        "</select></div>";
+      return '<div class="box" data-k="' + sl.k + '">' + head + inputFor(it, run.i, sl, f) + "</div>";
     }).join("");
     $("mLeft").textContent = PER - run.i;
     $("mOk").textContent = run.ok;
     $("mCpm").textContent = cpmNow();
-    var first = $("qFrame").querySelector("select[data-in]");
+    var first = $("qFrame").querySelector("[data-in]");
     if (first) first.focus();
   }
   function cpmNow() {
@@ -130,6 +146,17 @@
   $("qSkip").addEventListener("click", function () { check(true); });
   $("qNext").addEventListener("click", function () { draw(); });
   $("qFrame").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { e.preventDefault(); if (!run) return; run.answered ? draw() : check(false); }
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    if (!run) return;
+    if (run.answered) { draw(); return; }
+    /* 打つモードの Enter は「次の空いている箱へ」。ぜんぶ埋まっていれば答え合わせ。
+       （箱が7つあるのに最初の Enter で採点されると、残りが×になって当然の0点になる） */
+    if (TYPE) {
+      var ins = [].slice.call($("qFrame").querySelectorAll("input[data-in]")), i = ins.indexOf(e.target);
+      for (var k = i + 1; k < ins.length; k++) if (!ins[k].value.trim()) { ins[k].focus(); return; }
+      for (var j = 0; j < ins.length; j++) if (!ins[j].value.trim() && j !== i) { ins[j].focus(); return; }
+    }
+    check(false);
   });
 })();

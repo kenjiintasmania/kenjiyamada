@@ -229,7 +229,7 @@
         対象は上の「あなたの情報」の学年・番号で、<b>先生の合言葉</b>が要ります。</p>
       <div class="sendrow">
         <button class="btn danger small" id="resetHalf" type="button">2000単語 前半リセット（セット1〜10）</button>
-        <button class="btn danger small" id="resetAll" type="button">全データリセット（2000語・全文法）</button>
+        <button class="btn danger small" id="resetAll" type="button">全データリセット（到達度テスト 4本すべて）</button>
       </div>
       <div id="resetMsg"></div>
     </div>
@@ -241,7 +241,7 @@
 <script src="../words/data/words.js"></script>
 <script src="../words/data/katsuyo.js"></script>
 <script src="../assets/site.js?v=0929a"></script>
-<script src="../assets/masterycore.js?v=0929a"></script>
+<script src="../assets/masterycore.js?v=1005a"></script>
 <script>
 (function(){
   "use strict";
@@ -592,7 +592,7 @@
     if(!cls||!num){ msg.className="err"; msg.textContent="上の「あなたの情報」に学年と番号を入れてください。"; return; }
     if(!SUMMARY_GAS_URL){ msg.className="err"; msg.textContent="送信先(GAS)が未設定です。"; return; }
     var who="学年"+cls+" 番号"+num+(name?"（"+name+"）":"");
-    var what=spec.all ? "2000語・全文法 到達度テストの記録を すべて 0 に戻します。" : "2000語 到達度テストの セット1〜10 の記録を 0 に戻します。";
+    var what=spec.all ? "到達度テスト（2000語・全文法・全文法上級・熟語200語）の記録を すべて 0 に戻します。" : "2000語 到達度テストの セット1〜10 の記録を 0 に戻します。";
     if(!confirm(what+"\n"+who+"\n元に戻せません。先生の指示がありましたか？")){ msg.textContent="やめました。"; return; }
     /* 先生の合言葉（/admin と同じ）。生徒が自分で押しても、他の子の記録を消せないように。
        端末には残さない（生徒の端末なので）。 */
@@ -613,7 +613,7 @@
             n+=window.MasteryCore.applyResets(ex, whoKey, [{from:j.from||1, to:(spec.all?1e9:(j.to||10)), key:j.key}]);
           });
           msg.className="ok";
-          msg.textContent="リセットしました ✓（"+(spec.all?"2000語・全文法のすべて":"2000語 セット1〜10")+"）。"+
+          msg.textContent="リセットしました ✓（"+(spec.all?"到達度テストのすべて（"+(j.exams||[]).length+"本）":"2000語 セット1〜10")+"）。"+
             "到達度テストの画面を開いていたら、いったん閉じて開きなおしてください。";
         }else if(j&&j.result==="busy"){
           msg.className="err"; msg.textContent="混みあっています。10秒ほどおいて、もう一度押してください。";

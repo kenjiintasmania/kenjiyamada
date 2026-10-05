@@ -354,7 +354,73 @@ if(!ONLY.length){
   checkWords();
   console.log('— 単語の判定・同じ訳の見分け —');
   checkJudge();
+  console.log('— 熟語200語（到達度テスト） —');
+  checkIdioms();
 }
+/* ---------- 熟語200語 到達度テスト（mastery/data/idioms.js） ---------- *
+   2000語と同じ判定（assets/wordjudge.js）で出すので、見るものも同じ：
+   ① 全語、答えを打てば○になる（...・( )・［ ］・alt の書きかたが判定に通ること）
+   ② 同じ意味の熟語が2つ以上あるなら、手がかりか別解で必ず見分けがつく
+   そのうえで、この教材だけの約束：
+   ③ 10セット × 20 ちょうど（「覚えた数 N / 200語」の分母を画面がセット数×20で出すため）
+   ④ id・英語の重複なし、訳が空でない、訳に英語が混ざらない（答えが見える）
+   ⑤ セットは軸の動詞で組む（先生の設計）＝セット1〜7 は見出しの動詞ではじまる熟語が過半数 */
+function checkIdioms(){
+  const g = {};
+  new Function('window', readFileSync(resolve(ROOT,'assets/wordjudge.js'),'utf8'))(g);
+  try { new Function('window', r('mastery/data/idioms.js'))(g); }
+  catch(e){ fail('idioms', `idioms.js が壊れています: ${e.message}`); return; }
+  const D = g.IDIOMS, J = g.WordJudge;
+  if (!D || !Array.isArray(D.sets) || !Array.isArray(D.all)) { fail('idioms', 'IDIOMS.sets / IDIOMS.all がありません'); return; }
+  const SETS = 10, PER = 20, before = fails;
+  if (D.sets.length !== SETS) fail('idioms', `セットが ${D.sets.length}（想定 ${SETS}）`);
+  D.sets.forEach((st, i) => {
+    if (!st.title) fail('idioms', `セット${i+1} に見出しがありません`);
+    if ((st.items || []).length !== PER) fail('idioms', `セット${i+1}「${st.title}」が ${(st.items||[]).length}語（想定 ${PER}）`);
+  });
+  const all = D.all;
+  if (new Set(all.map(x => x.id)).size !== all.length) fail('idioms', 'id が重複しています');
+  const seenW = {};
+  all.forEach(x => { const k = String(x.w).toLowerCase(); if (seenW[k]) fail('idioms', `同じ熟語が2回あります: ${x.w}`); seenW[k] = 1; });
+  const blank = all.filter(x => !x.w || !x.j);
+  if (blank.length) fail('idioms', `英語か訳が空: ${blank.map(x => x.id).join(', ')}`);
+  const leak = all.filter(x => /[A-Za-z]/.test(x.j));
+  if (leak.length) fail('idioms', `訳に英語が入っています（答えが見える）: ${leak.map(x => x.w).join(', ')}`);
+  // ① 答えを打てば○
+  J.buildHints(all);
+  const dead = all.filter(w => !Object.keys(J.acceptable(w).set).some(c => J.judge(c, w)));
+  if (dead.length) fail('idioms', `答えを打っても○にならない熟語 ${dead.length}: ${dead.slice(0,6).map(x=>x.w).join(', ')}`);
+  // 「...」の熟語は、間に語を入れても○（take it off）
+  const mid = all.filter(x => /\.{3}|…/.test(x.w) && !/\.{3}ing|…ing/.test(x.w));
+  const midBad = mid.filter(x => !J.judge(String(x.w).replace(/\.{3}|…|[～〜]/g, ' it ').replace(/[（(][^)）]*[)）]|［[^］]*］/g, ' '), x));
+  if (midBad.length) fail('idioms', `「...」に語を入れると○にならない: ${midBad.map(x=>x.w).join(', ')}`);
+  // ② 同じ意味の見分け（checkJudge と同じ見かた）
+  const S = {}; all.forEach(w => { S[w.id] = J.senses(w.j); });
+  const byPos = {};
+  all.forEach(w => { const m = byPos[w.p] = byPos[w.p] || {}; S[w.id].forEach(t => { (m[t] = m[t] || []).push(w); }); });
+  const rivalsOf = (a) => { const sa = S[a.id]; if (!sa.length) return [];
+    return ((byPos[a.p] || {})[sa[0]] || []).filter(b => b.id !== a.id && sa.every(t => S[b.id].indexOf(t) >= 0)); };
+  const bad = []; let amb = 0;
+  all.forEach(a => {
+    const rv = rivalsOf(a); if (!rv.length) return;
+    amb++;
+    const h = J.hintOf(a);
+    const distinct = h && rv.every(b => J.hintOf(b) !== h);
+    const twinned = J.twinsOf(a).length === rv.length;
+    if (!distinct && !twinned) bad.push(`${a.w}「${a.j}」↔ ${rv.map(b=>b.w).join('/')}`);
+  });
+  if (bad.length) fail('idioms', `同じ意味なのに見分けがつかない ${bad.length}語: ${bad.slice(0,4).join('、')}`);
+  // ⑤ 軸の動詞
+  const AXIS = [['look'], ['take'], ['get'], ['make'], ['go', 'come'], ['have', 'give', 'keep'], ['be']];
+  AXIS.forEach((vs, i) => {
+    const st = D.sets[i]; if (!st) return;
+    const n = st.items.filter(x => vs.includes(String(x.w).split(/\s+/)[0])).length;
+    if (n * 2 < PER) fail('idioms', `セット${i+1}「${st.title}」は軸の動詞（${vs.join('/')}）ではじまる熟語が ${n}/${PER} しかありません`);
+  });
+  if (fails === before)
+    pass('idioms', `${all.length}語（${SETS}セット×${PER}）すべて答えを打てば○・意味がかぶる ${amb}語は手がかりか別解で見分けがつく・軸の動詞ごと`);
+}
+
 console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
 if(!ONLY.length){

@@ -1,7 +1,12 @@
-/* mastery/mastery.js ─ 2000語 到達度テスト（ノンストップ）
+/* mastery/mastery.js ─ 到達度テスト（打って答える・ノンストップ）
  *
  * 受付・続きの位置・帯・記録の送信は ../assets/masterycore.js（全文法と共通）。
  * このファイルが持つのは「一覧の出しかた」と「打って答える出題の回しかた」だけ。
+ *
+ * ★2つの画面がこの1本を読む（写しを置かない）：
+ *   index.html … 2000語（100語×20セット・words.js）＝試験ID m2000  ※この下の既定
+ *   idiom.html … 熟語200語（20連語×10セット・data/idioms.js）＝試験ID midiom
+ *                idiom.html は window.MASTERY_CFG を置いてからこのファイルを読む。
  *
  * 入力はノンストップ用：
  *   ・打って Enter → 正解ならそのまま次へ（止めない）
@@ -15,24 +20,35 @@
 (function () {
   "use strict";
 
-  var SET_SIZE = 100, SETS = 20;
+  /* 出題のもと。既定は 2000語。 all()＝手がかり（同じ訳の語の見分け）を組むための全語、
+     setOf(n)＝セット n の語、tipOf(n)＝帯と一覧の見出し、posOf(w)＝出題の上に出す小さな札 */
+  var CFG = window.MASTERY_CFG || {
+    exam: "m2000", ver: "mastery 0.7", sets: 20, perSet: 100, unitName: "セット", unitWord: "語",
+    all: function () { return window.WORDS || []; },
+    setOf: function (n) { return (window.WORDS || []).slice((n - 1) * 100, n * 100); },
+    tipOf: function (n) { return "セット" + n + "（" + ((n - 1) * 100 + 1) + "〜" + (n * 100) + "語目）"; },
+    posOf: function (w) { return w.p; },
+    emptyMsg: "単語が読みこめませんでした。ページを開きなおしてください。"
+  };
+  var SET_SIZE = CFG.perSet, SETS = CFG.sets;
   var RETRY_CAP = 30;     // セット末にもう一度出す上限。パスした語は出さない（捨てた語なので）
 
   var $ = function (id) { return document.getElementById(id); };
-  var WORDS = window.WORDS || [];
-  function setWords(n) { return WORDS.slice((n - 1) * SET_SIZE, n * SET_SIZE); }
-  function range(n) { return ((n - 1) * SET_SIZE + 1) + "〜" + (n * SET_SIZE) + "語目"; }
+  function setWords(n) { return CFG.setOf(n) || []; }
+  /* 手がかり（「w ではじまる」）は、この画面の出題リスト全体から組む。
+     2000語は WORDS から自動で組まれるが、熟語の画面では WORDS を読まないので、ここで明示する。 */
+  window.WordJudge.buildHints(CFG.all() || []);
 
   var run = null;
 
   var core = window.MasteryCore.create({
-    exam: "m2000", ver: "mastery 0.6", sets: SETS, perSet: SET_SIZE,
-    unitName: "セット", unitWord: "語",
+    exam: CFG.exam, ver: CFG.ver, sets: SETS, perSet: SET_SIZE,
+    unitName: CFG.unitName || "セット", unitWord: CFG.unitWord || "語",
     gas: "https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec",
-    tipOf: function (i) { return "セット" + i + "（" + range(i) + "）"; },
+    tipOf: CFG.tipOf,
 
     renderList: function (set, info) {
-      $("listTitle").textContent = "セット" + set + "（" + range(set) + "）　" +
+      $("listTitle").textContent = CFG.tipOf(set) + "　" +
         (info.attempts ? (info.attempts + 1) + "回目　これまでの最高 " + info.best + "語" : "はじめて");
       $("listBody").innerHTML = setWords(set).map(function (w) {
         return "<div><span>" + core.esc(w.j) + "</span><b>" + core.esc(w.w) + "</b></div>";
@@ -46,7 +62,7 @@
       if (!setWords(set).length) {
         run = null;
         $("qPos").textContent = "";
-        $("qJa").textContent = "単語が読みこめませんでした。ページを開きなおしてください。";
+        $("qJa").textContent = CFG.emptyMsg || "出題が読みこめませんでした。ページを開きなおしてください。";
         $("ansIn").disabled = true;
         return;
       }
@@ -64,7 +80,7 @@
   function draw() {
     var it = cur();
     if (!it) return done();
-    $("qPos").textContent = it.w.p + (it.retry ? "　🔄 もう一度" : "");
+    $("qPos").textContent = (CFG.posOf ? CFG.posOf(it.w) : it.w.p) + (it.retry ? "　🔄 もう一度" : "");
     $("qJa").textContent = window.WordJudge.promptOf(it.w);   // 同じ訳が複数あれば手がかりつき
     $("ansIn").value = "";
     $("mLeft").textContent = run.queue.length - run.i;
@@ -93,7 +109,7 @@
         core.esc(it.w.j) + ' ＝ <span class="en">' + core.esc(it.w.w) + "</span>";
     }
     run.i++;
-    // 100語ぶん終わったら、まちがえた語だけもう一度（パスした語は出さない＝捨てた語なので）
+    // セットぶん終わったら、まちがえた語だけもう一度（パスした語は出さない＝捨てた語なので）
     if (run.i >= run.queue.length && !run.retried && run.missed.length) {
       run.retried = true;
       run.missed.forEach(function (w) { if (!run.ok[w.id]) run.queue.push({ w: w, retry: true }); });

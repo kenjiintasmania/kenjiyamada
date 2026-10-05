@@ -311,7 +311,11 @@ var SUMMARY_COLS = [
   {key:"m_fk7",     head:"模試_福岡7",  max:true},
   {key:"m_fk8",     head:"模試_福岡8",  max:true},
   {key:"m_fk9",     head:"模試_福岡9",  max:true},
-  {key:"m_fk10",     head:"模試_福岡10",  max:true}
+  {key:"m_fk10",     head:"模試_福岡10",  max:true},
+  /* --- jigaku-20 で追加：到達度テストが4本になった（全文法 上級編＝打つ／熟語200語）。
+     mt2000・mtgram と同じく受け口が計算する列（アプリは送らない）。★必ず末尾。 */
+  {key:"mtgram2",   head:"到達度文法上級_合計", max:false},
+  {key:"mtidiom",   head:"到達度熟語_合計",     max:false}
 ];
 
 /* ★1回だけ実行（GASエディタで関数を選んで▶）。
@@ -367,12 +371,14 @@ var UNIT_EXAMS = {
   // 到達度テスト（ノンストップ・時間制限なし・何周でも）。1回で終わらせず、
   // 次のコマでロックを開け直せば続きから再開する。記録は「到達度テスト」タブへ。
   "m2000": "2000語 到達度テスト",
-  "mgram": "全文法 到達度テスト"
+  "mgram": "全文法 到達度テスト",
+  "mgram2": "全文法 到達度テスト 上級編（打つ）",   // jigaku-20：えらぶ編と同じ155文を自分で打つ
+  "midiom": "熟語200語 到達度テスト"                // jigaku-20：20連語×10セット（軸の動詞ごと）
 };
-var MASTERY_EXAMS = { "m2000":1, "mgram":1 };   // 単元テストとは記録の作法が違う試験
+var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-19";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-20";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -818,7 +824,7 @@ function masteryLog_(){
   return (_mlog = out);
 }
 /* マイページ「設定」から：行を消さずにリセット行を足す（上の注のとおり）。
-   d: {exam:"m2000"|"mgram"|"all", from, to} か {all:true}。返す key は足した行の日時（ms）で、
+   d: {exam:試験ID（m2000・mgram・mgram2・midiom）|"all", from, to} か {all:true}。返す key は足した行の日時（ms）で、
    端末はこれを控えて「同じリセットを二度当てない」。 */
 function masteryReset(d){
   /* ★先生の合言葉が要る（jigaku-17）。マイページは誰でも開けて学年・番号も自己申告なので、
@@ -879,7 +885,8 @@ function masteryProgress(d){
  * 合計＝**セットごとの最高点の足しあげ**。同じセットを何度やっても二重に足さない。
  *   例）セット1の1回目90点／セット1の2回目89点／セット2の1回目100点 → 90 + 100 ＝ 190点
  * アプリの画面に出ている「最高点の合計」と同じ数になる。 */
-var MASTERY_SUM_COL = [ {exam:"m2000", key:"mt2000"}, {exam:"mgram", key:"mtgram"} ];
+var MASTERY_SUM_COL = [ {exam:"m2000", key:"mt2000"}, {exam:"mgram", key:"mtgram"},
+                        {exam:"mgram2", key:"mtgram2"}, {exam:"midiom", key:"mtidiom"} ];
 function summaryColIndex_(key){
   for (var i=0;i<SUMMARY_COLS.length;i++) if (SUMMARY_COLS[i].key === key) return i;
   return -1;
@@ -948,9 +955,13 @@ function rebuildMasteryTotals(){
  *   平均CPMは「その子がどのくらいの速さで打つ子か」の目安として見ること。 */
 var MASTERY_BOARD = "到達度まとめ";
 function masteryBoardHeader(){
+  // jigaku-20 で 10列→16列（文法上級・熟語 の3列ずつを「更新」の前に）。
+  // 古い並びの行が残っていたら updateMasteryBoard が全員ぶん作りなおす。
   return ["学年","番号","名前",
           "2000語 合計点","2000語 最高CPM","2000語 平均CPM",
-          "文法 合計点","文法 最高CPM","文法 平均CPM","更新"];
+          "文法 合計点","文法 最高CPM","文法 平均CPM",
+          "文法上級 合計点","文法上級 最高CPM","文法上級 平均CPM",
+          "熟語 合計点","熟語 最高CPM","熟語 平均CPM","更新"];
 }
 function masteryStats(cls, num){
   var out = {};
@@ -978,12 +989,23 @@ function masteryBoardRow_(cls, num, name){
   }
   var n = Number(num); var g = Number(cls);
   return [isNaN(g)?cls:g, isNaN(n)?num:n, name||""]
-         .concat(agg("m2000")).concat(agg("mgram")).concat([new Date()]);
+         .concat(agg("m2000")).concat(agg("mgram")).concat(agg("mgram2")).concat(agg("midiom"))
+         .concat([new Date()]);
 }
 /* その子の行を入れなおして、名簿順（学年▶番号）に並べかえる。 */
 function updateMasteryBoard(cls, num, name){
   var head = masteryBoardHeader();
   var sh = getSheet(MASTERY_BOARD, head);
+  /* ★列が増えた版（jigaku-20：10列→16列）に貼りかえた直後は、古い並びの行が残っている。
+     見出しがいまの定義とちがっていたら、その1行だけ直さず全員ぶん作りなおす
+     （古い行は「更新」の日時が「文法上級 合計点」の列に残り、読みちがえるため）。 */
+  var lastCol = sh.getLastColumn(), oldHead = [];
+  if (lastCol){ var h0 = sh.getRange(1,1,1,lastCol).getValues()[0];
+    for (var c=0;c<h0.length;c++) if (String(h0[c]) !== "") oldHead.push(String(h0[c])); }
+  if (sh.getLastRow() > 1 && oldHead.length && oldHead.join("\t") !== head.join("\t")){
+    rebuildMasteryBoardRows_();
+    return masteryBoardRow_(cls, num, name);
+  }
   sh.getRange(1,1,1,head.length).setValues([head]);
   var last = sh.getLastRow(), r = -1;
   if (last >= 2){
@@ -1006,22 +1028,33 @@ function updateMasteryBoard(cls, num, name){
 }
 /* 全員ぶん作りなおす（メニューから）。行を消した・手で直した あとの立て直し用。 */
 function rebuildMasteryBoard(){
+  var n = rebuildMasteryBoardRows_();
+  if (n < 0) return "到達度テストの記録がありません";
+  // 成績まとめの合計点の列も、ここでいっしょに入れなおす（記録のたびには書かなくなったため）
+  try{ rebuildMasteryTotals(); }catch(e){}
+  var msg = n + "人ぶんを名簿順に並べました（" + MASTERY_BOARD + "・成績まとめの合計点も更新）";
+  try{ SpreadsheetApp.getActive().toast(msg); }catch(e){}
+  return msg;
+}
+/* 到達度まとめの行だけを、記録から全員ぶん作りなおす（成績まとめの合計点はさわらない）。
+   戻り：並べた人数。記録が無ければ -1。 */
+function rebuildMasteryBoardRows_(){
   _mlog = null;
   var sh = getSS().getSheetByName(MASTERY_LOG);
-  if (!sh || sh.getLastRow() < 2) return "到達度テストの記録がありません";
+  if (!sh || sh.getLastRow() < 2) return -1;
   var v = sh.getRange(2,4,sh.getLastRow()-1,3).getValues();   // 学年,番号,名前
-  var name = {}, order = [];
+  var name = {}, seen = {}, order = [];
   for (var i=0;i<v.length;i++){
     var cls = String(v[i][0]).trim(), num = String(v[i][1]).trim();
     if (!cls || !num) continue;
     var k = cls + " / " + num;
-    if (!name[k]) order.push([cls, num]);
-    if (v[i][2]) name[k] = String(v[i][2]);              // いちばん新しい名前を採る
+    if (!seen[k]){ seen[k] = 1; order.push([cls, num]); }   // 名前が空でも1人1行（以前は名前が空だと2行になった）
+    if (v[i][2]) name[k] = String(v[i][2]);                 // いちばん新しい名前を採る
     else name[k] = name[k] || "";
   }
   var head = masteryBoardHeader();
   var bd = getSheet(MASTERY_BOARD, head);
-  if (bd.getLastRow() > 1) bd.getRange(2,1,bd.getLastRow()-1,bd.getLastColumn()).clearContent();
+  if (bd.getLastRow() > 1) bd.getRange(2,1,bd.getLastRow()-1,Math.max(bd.getLastColumn(),head.length)).clearContent();
   bd.getRange(1,1,1,head.length).setValues([head]);
   var rows = [];
   for (var j=0;j<order.length;j++)
@@ -1031,11 +1064,7 @@ function rebuildMasteryBoard(){
     if (rows.length > 1) bd.getRange(2,1,rows.length,head.length)
                            .sort([{column:1, ascending:true}, {column:2, ascending:true}]);
   }
-  // 成績まとめの合計点の列も、ここでいっしょに入れなおす（記録のたびには書かなくなったため）
-  try{ rebuildMasteryTotals(); }catch(e){}
-  var msg = rows.length + "人ぶんを名簿順に並べました（" + MASTERY_BOARD + "・成績まとめの合計点も更新）";
-  try{ SpreadsheetApp.getActive().toast(msg); }catch(e){}
-  return msg;
+  return rows.length;
 }
 
 /* ===================== 単元テスト：提出（開いてる時のみ・1人1回） ===================== */

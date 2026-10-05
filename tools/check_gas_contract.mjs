@@ -42,7 +42,7 @@ if (cols.length < 40) fail(`SUMMARY_COLS を読めません（${cols.length}列�
 const bp = me.indexOf('function buildPayload');
 const payload = me.slice(bp, me.indexOf('\n  }', bp));
 const sent = new Set([...payload.matchAll(/([a-z0-9_]+)\s*:/g)].map(m => m[1]));
-const BUILT_BY_GAS = new Set(['_ts', 'mt2000', 'mtgram']);                // 更新日時は handleSummary が入れる（送らない）
+const BUILT_BY_GAS = new Set(['_ts', 'mt2000', 'mtgram', 'mtgram2', 'mtidiom']);   // 更新日時と到達度の合計は GAS が入れる（送らない）
 const orphan = cols.map(c => c.key).filter(k => !sent.has(k) && !BUILT_BY_GAS.has(k));
 if (orphan.length) fail(`GAS に列があるのにマイページが送っていません: ${orphan.join(', ')}`);
 else pass(`成績まとめ ${cols.length}列すべてに送信キーがある`);
@@ -79,8 +79,10 @@ if (!noGate.length && !ghost.length) pass(`単元テスト ${units.length}本が
 {
   const gasM = [...gas.matchAll(/var MASTERY_EXAMS = \{([^}]*)\}/g)]
     .flatMap(m => [...m[1].matchAll(/"([a-z0-9_]+)"\s*:/g)].map(x => x[1]));
-  // 画面側は各アプリが MasteryCore.create に渡す exam を見る（増えたらここに足す）
-  const apps = { 'mastery/mastery.js': 'm2000', 'mastery/gram.js': 'mgram' };
+  // 画面側は各アプリが MasteryCore.create に渡す exam を見る（増えたらここに足す）。
+  // gram2.html／idiom.html は同じ JS を window.*_CFG で切りかえて読むので、HTML の中の設定を見る。
+  const apps = { 'mastery/mastery.js': 'm2000', 'mastery/gram.js': 'mgram',
+                 'mastery/gram2.html': 'mgram2', 'mastery/idiom.html': 'midiom' };
   const used = [];
   for (const [f, want] of Object.entries(apps)) {
     let t = '';
@@ -118,7 +120,8 @@ const REDACTED = !LIVE && !TRIAL.length;
 if (REDACTED) console.log('  ⓘ gas     送信先URLは伏せられているため、この節は飛ばしました');
 else if (!LIVE) fail('me/index.html に生徒用の送信先がありません');
 if (!REDACTED) ['mogi/exam.html', 'jigaku/index.html', 'jigaku/bunpo.js', 'jigaku/honbun.js',
- 'gojun/gojun.js', 'mastery/mastery.js', 'mastery/gram.js', 'admin/index.html'].forEach(f => {
+ 'gojun/gojun.js', 'mastery/mastery.js', 'mastery/gram.js', 'mastery/gram2.html', 'mastery/idiom.html',
+ 'admin/index.html'].forEach(f => {
   const u = url(r(f));
   if (!u.length) return;
   if (u.some(x => x !== LIVE)) fail(`${f} が マイページと違う送信先を持っています: ${u.join(', ')}`);

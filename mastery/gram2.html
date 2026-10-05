@@ -3,45 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#5b3fa8">
-<title>全文法 到達度テスト｜ロックつき</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>🧱</text></svg>">
+<meta name="theme-color" content="#4338ca">
+<title>全文法 到達度テスト 上級編（打つ）｜ロックつき</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>⌨️</text></svg>">
 <!--
-  mastery/gram.html ─ 全文法 到達度テスト（31項目 × 5文 ＝ 155文）
-   ※上級編（自分で打つ）は gram2.html。同じ gram.js を window.GRAM_CFG で切りかえて読む。
+  mastery/gram2.html ─ 全文法 到達度テスト【上級編＝自分で打つ】（31項目 × 5文 ＝ 155文）
 
-   ねらいは2000語のほうと同じ：時間制限のない到達度評価。
-     ・先生がロックを開けている間だけ。1コマで終わらなくてよく、次に開ければ続きから
-     ・項目は生徒が自分で選べる（「不定詞をもう一度」が自由）
-     ・基本は 1→2→3 と進むが、それは「いちばん回数の少ない項目」をおすすめに
-       出しているだけで強制ではない
+   先生の指示（2026-10-05）「全文法テストの上級編として自力で入力するパターンも設置して」。
+   gram.html（えらぶ）と同じ31項目・同じ155文・同じ採点（1文＝完答で1点）。
+   ちがいは入力だけ：ドロップダウンではなく、7つの箱に英語を**自分で打つ**。
+   判定は GojunCore.gradeSlots（語順文法テストの「じぶんで打つ」と同じものさし。
+   全角→半角・大文字小文字・アポストロフィ・文末の記号は見ない）。
 
-   ★解説はたたんでおく。自学で20〜30項目を終えている子には邪魔なので、
-     開きたい子だけ開く（先生の指示：「解説を見せてから」はこれで満たす）。
+   記録は別の試験ID（mgram2）で、えらぶ編（mgram）とは混ざらない。
+   受付（ロック）も /admin の別のカード。端末の控えも別（mastery_gram2_v1）。
 
-   出題は「えらぶ（ドロップダウン）」に固定。7つの箱に、日本語訳のとおりに英語を入れる。
-   1文＝完答で1点（部分点なし）。正解したら止めずに次へ、まちがえたら正解を見せて止まる。
-
-   受付・続きの位置・帯・記録の送信は ../assets/masterycore.js（2000語と共通）。
-   判定と選択肢の作りは ../assets/gojuncore.js（語順文法テストと共通）。
+   ★画面のスクリプトは gram.html と同じ gram.js を読む（写しを置かない）。
+     この下の window.GRAM_CFG で「打つ」に切りかえているだけ。
+   受付・続きの位置・帯・記録の送信は ../assets/masterycore.js（4本の到達度テストで共通）。
 -->
 <style>
   :root{
     --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
     --jp:'游ゴシック','Yu Gothic',sans-serif;
     --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#f8f7fc; --line:#e0dcec;
-    --c1:#5b3fa8; --c1d:#432e80;
+    --c1:#4338ca; --c1d:#312e81;
     --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
   }
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
     font-family:var(--jp);line-height:1.6;padding:0 0 60px}
   .wrap{max-width:900px;margin:0 auto;padding:0 15px}
-  .hero{background:linear-gradient(100deg,#5b3fa8,#3b2a6b);color:#fff;padding:18px 0 14px;margin-bottom:12px}
+  .hero{background:linear-gradient(100deg,#4338ca,#1e1b4b);color:#fff;padding:18px 0 14px;margin-bottom:12px}
   .hero h1{margin:0;font-size:21px}
-  .hero p{margin:4px 0 0;font-size:13px;color:#d6cdf0}
+  .hero p{margin:4px 0 0;font-size:13px;color:#c7d2fe}
   .crumbs{font-size:12.5px;margin-bottom:6px}
-  .crumbs a{color:#d6cdf0}
+  .crumbs a{color:#c7d2fe}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 12px}
   .hide{display:none!important}
   h2{font-size:17px;margin:0 0 8px}
@@ -101,8 +98,9 @@
     padding:2px 8px;display:inline-block}
   .box .bq{font-size:10.5px;color:var(--muted);margin-top:3px}
   .box .bj{font-size:13px;font-weight:bold;margin:4px 0 5px;min-height:20px}
-  .box select{width:100%;font-family:var(--en);font-size:14px;padding:4px;border-radius:7px;
-    border:1px solid var(--line)}
+  .box select,.box input{width:100%;font-family:var(--en);font-size:14px;padding:4px;border-radius:7px;
+    border:1px solid var(--line);min-width:0}
+  .box input:focus{border-color:var(--c1);outline:none}
   .box.empty{background:#f4f3f8;border-style:dashed}
   .box.empty .dash{font-family:var(--en);font-size:18px;color:var(--muted);text-align:center;padding:5px 0}
   .box.ok{border-color:#a7d9bf;background:var(--okbg)}
@@ -121,9 +119,9 @@
 <body>
 
 <div class="hero"><div class="wrap">
-  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="gram2.html">上級編（自分で打つ）</a>　／　<a href="index.html">2000語</a></div>
-  <h1>全文法 到達度テスト <span class="en">Grammar</span></h1>
-  <p>31項目 × 5文。7つの箱に、日本語訳のとおりに英語をえらぶ。時間制限なし・項目は自分でえらべます。</p>
+  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="gram.html">えらぶ編（全文法）</a>　／　<a href="index.html">2000語</a></div>
+  <h1>全文法 到達度テスト 上級編 <span class="en">Grammar · Type</span></h1>
+  <p>31項目 × 5文。7つの箱に、日本語訳のとおりに英語を<b>自分で打つ</b>。えらぶ編と同じ文・同じ採点。時間制限なし・項目は自分でえらべます。</p>
 </div></div>
 
 <div class="wrap">
@@ -154,7 +152,7 @@
       <summary>📖 解説を読む（自学で終わっている人は開かなくてよい）</summary>
       <div class="body" id="leadBody"></div>
     </details>
-    <p class="note">この項目で出る5文です。日本語だけ見せています。</p>
+    <p class="note">この項目で出る5文です。日本語だけ見せています。箱には英語を自分で打ちます（Enter で次の箱へ、ぜんぶ埋まったら答え合わせ）。</p>
     <div class="btnrow">
       <button class="btn" id="startSet">▶ この項目を始める</button>
       <button class="btn sub" id="backHome">もどる</button>
@@ -207,6 +205,9 @@
 <script src="../assets/masterycore.js?v=1005a"></script>
 <script src="../assets/gojuncore.js?v=0927b"></script>
 <script src="../gojun/data/gojun_v1.js?v=0927b"></script>
+<!-- ★上級編の切りかえ。試験IDは GAS の MASTERY_EXAMS／UNIT_EXAMS と /admin のカードに同じものがある
+     （tools/check_gas_contract.mjs が突き合わせる） -->
+<script>window.GRAM_CFG = { exam: "mgram2", ver: "gram2 0.1", mode: "type" };</script>
 <script src="gram.js?v=1005a"></script>
 </body>
 </html>

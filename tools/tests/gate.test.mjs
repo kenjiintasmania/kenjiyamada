@@ -277,7 +277,7 @@ console.log("— リセット（全部）—");
   G.call({kind:"mastery", exam:"mgram", cls:"1", num:"8", name:"テスト", round:1, set:3, correct:4, asked:5, sec:30, ver:"t"});
   const t0=Date.now(); while(Date.now()-t0<3){}
   const r=G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"all", all:true, cls:"1", num:"8", name:"テスト"});
-  ok(r.result==="ok" && r.exams.length===2 && r.range==="全", "★全データ：2000語と全文法の両方にリセット行："+JSON.stringify(r.exams));
+  ok(r.result==="ok" && r.exams.length===4 && r.range==="全", "★全データ：到達度テスト4本すべてにリセット行："+JSON.stringify(r.exams));
   const p1=G.call({action:"progress", exam:"m2000", cls:"1", num:"8"});
   const p2=G.call({action:"progress", exam:"mgram", cls:"1", num:"8"});
   ok(p1.done===0 && p2.done===0, "★両方とも 0 から（"+p1.done+"/"+p2.done+"）");
@@ -386,6 +386,65 @@ console.log("— 到達度テスト以外の記録が英検タブに落ちない
   G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"m2000", from:1, to:10, cls:"1", num:"8"});
   const after=(G.dump("英検テスト履歴")||[]).length;
   ok(before===after, "status_all / mastery_reset は英検タブに行を作らない（"+before+"→"+after+"）");
+}
+
+console.log("— jigaku-20：全文法 上級編（mgram2）・熟語200語（midiom） —");
+{
+  ["mgram2","midiom"].forEach(ex=>{
+    const g=G.call({action:"gate", pin:"PIN", exam:ex, open:true});
+    ok(g.result==="ok" && g.open===true, ex+" の受付を開けられる "+JSON.stringify({result:g.result,open:g.open}));
+  });
+  let r=G.call({kind:"mastery", exam:"mgram2", cls:"1", num:"3", name:"テスト", round:1, set:2, correct:4, asked:5, sec:40, ver:"t"});
+  ok(r.result==="ok", "mgram2 を記録できる "+JSON.stringify(r));
+  r=G.call({kind:"mastery", exam:"midiom", cls:"1", num:"3", name:"テスト", round:1, set:1, correct:17, asked:20, sec:50, ver:"t"});
+  ok(r.result==="ok", "midiom を記録できる");
+  r=G.call({kind:"mastery", exam:"midiom", cls:"1", num:"3", name:"テスト", round:1, set:3, correct:20, asked:20, sec:50, ver:"t"});
+  ok(r.result==="ok", "midiom セット3も記録できる");
+  const p=G.call({action:"progress", exam:"midiom", cls:"1", num:"3"});
+  ok(p.done===2 && p.set===4, "熟語の続きの位置（done="+p.done+" set="+p.set+"）");
+  const p0=G.call({action:"progress", exam:"m2000", cls:"1", num:"3"});
+  const p1=G.call({action:"progress", exam:"mgram", cls:"1", num:"3"});
+  ok(p0.done===0 && p1.done===0, "★2000語・全文法（えらぶ）には混ざらない");
+  const st=G.call({action:"status_all", kind:"admin"});
+  ok(st.exams.mgram2 && st.exams.midiom && st.exams.mgram2.open===true, "status_all に2本が出る");
+  const e=G.call({action:"status", exam:"mgram2", cls:"1"});
+  ok(e.result==="ok" && e.open===true, "学年つきの status も開いている");
+  // 到達度まとめ（16列）と 成績まとめの末尾2列
+  G.rebuildMasteryBoard();
+  const bd=G.dump("到達度まとめ")||[], head=bd[0]||[];
+  ok(head.length===16 && head[9]==="文法上級 合計点" && head[12]==="熟語 合計点" && head[15]==="更新", "到達度まとめは16列（"+head.length+"）");
+  const row=bd.find(x=>String(x[0])==="1"&&String(x[1])==="3");
+  ok(row && Number(row[9])===4 && Number(row[12])===37, "文法上級 4・熟語 17+20=37（"+(row&&row[9])+"/"+(row&&row[12])+"）");
+  const sm=G.dump("成績まとめ")||[], hd=(sm[0]||[]).slice(); while(hd.length && hd[hd.length-1]==="") hd.pop();   // 模型は右端に空セルを足すことがある
+  const ci=hd.indexOf("到達度文法上級_合計"), cj=hd.indexOf("到達度熟語_合計");
+  const me=sm.find(x=>String(x[1])==="1"&&String(x[2])==="3");
+  ok(ci>0 && cj>0 && me && Number(me[ci])===4 && Number(me[cj])===37, "成績まとめに合計点（"+(me&&me[ci])+"/"+(me&&me[cj])+"）");
+  // 自学の単元列（自学_U1…）は受け口が実行時に右端へ足すので、「定義の末尾」＝福岡10 の直後 を見る
+  const i10=hd.indexOf("模試_福岡10");
+  ok(i10>0 && hd[i10+1]==="到達度文法上級_合計" && hd[i10+2]==="到達度熟語_合計", "★新しい列は定義の末尾（既存の列位置が動かない）: "+JSON.stringify(hd.slice(i10,i10+3)));
+  // 全データリセットは4本ぶん
+  const t0=Date.now(); while(Date.now()-t0<3){}
+  const rs=G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"all", all:true, cls:"1", num:"3", name:"テスト"});
+  ok(rs.result==="ok" && rs.exams.length===4, "全データリセットは4本ぶんのリセット行");
+  ok(G.call({action:"progress", exam:"midiom", cls:"1", num:"3"}).done===0, "熟語も 0 から");
+}
+console.log("— 到達度まとめ：古い10列の並びの行が残っていても作りなおす —");
+{
+  // 旧版（jigaku-19 まで）の10列の並びでシートが残っている状態を模す
+  const sh=G.__SS.getSheetByName("到達度まとめ");
+  const OLD=["学年","番号","名前","2000語 合計点","2000語 最高CPM","2000語 平均CPM","文法 合計点","文法 最高CPM","文法 平均CPM","更新"];
+  sh.v.length=0;
+  sh.v.push(OLD.slice());
+  sh.v.push(["3","21","テスト",190,100,95,0,"","","2026-09-30"]);
+  sh.v.push(["1","8","テスト",180,50,50,4,10,10,"2026-09-30"]);
+  // 1人ぶんの更新（リセット時に呼ばれる）が入ると、見出しのちがいを見て全員ぶん作りなおす
+  G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"mgram2", from:1, to:1, cls:"1", num:"3", name:"テスト"});
+  const bd=G.dump("到達度まとめ")||[];
+  ok(bd[0].length===16 && bd[0][15]==="更新", "見出しが16列に置きかわる（"+bd[0].length+"）");
+  const r21=bd.find(x=>String(x[0])==="3"&&String(x[1])==="21");
+  ok(r21 && typeof r21[3]==="number" && r21[3]>0 && typeof r21[9]==="number", "★古い行の「更新」が「文法上級 合計点」の列に残らない（"+(r21&&r21[9])+"）");
+  const dates=bd.slice(1).filter(x=>x[15] instanceof Date || /20\d\d/.test(String(x[15])));
+  ok(dates.length===bd.length-1, "全員の行に「更新」が16列目に入る（"+dates.length+"/"+(bd.length-1)+"）");
 }
 
 console.log(`\n${pass} pass / ${fail} fail`);

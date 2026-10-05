@@ -3,51 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f766e">
-<title>2000語 到達度テスト｜ノンストップ</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>⏱️</text></svg>">
+<meta name="theme-color" content="#b45309">
+<title>熟語200語 到達度テスト｜ノンストップ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>🧩</text></svg>">
 <!--
-  mastery/index.html ─ 到達度テスト（2000語）
-   ※熟語200語（idiom.html）は同じ mastery.js を window.MASTERY_CFG で切りかえて読む。
+  mastery/idiom.html ─ 熟語200語 到達度テスト（20連語 × 10セット）
 
-   ねらい：時間制限のない到達度評価（完全習得学習）。
-     ・100語×20セット。ノンストップで、どこまで行けたかを見る
-     ・1コマで終わらなくてよい。次にゲートが開いたら続きから
-     ・分からない語はアッサリ捨てる（空Enter＝パス）。速く何度もやって潰していく
-     ・★セットは生徒が自分で選べる（1をもう一度、20だけ、が自由）。
-       基本は1→2→3の順にすすめるが、それは「いちばん回数の少ないセット」を
-       おすすめとして出しているだけで、強制ではない。
+   先生の指示（2026-10-05）「単語2000語テストの次として熟語200語テストをつくって。
+   中3までの頻出熟語を、look 〜 ばかり連続出題したあと take 〜 ばかり出題する、みたいに
+   軸となる動詞を1セットにする（セット1 look 系・セット2 take 系・…・セット10 その他）」。
 
-   指標は CPM（Correct Per Minute＝1分あたりの正解語数）。
-   ★時間だけでは測れない：全部パスすれば誰でも最速になるため、正解数が主、CPMが従。
-   ★CPMはセット間で比べない：セット1は平均4.3字、セット20は11.4字で打鍵量が3倍ちがう。
-     比べるのは「同じセットの前の周と今の周」。百ますが同じ100問を繰り返すのと同じ理屈。
+   仕組みは 2000語 到達度テスト（index.html）とまったく同じ：
+     ・訳を見て英語を打つ。空Enter＝パス。まちがえても止めない（正解は「直前」の欄）
+     ・先生が受付を開けている間だけ。1コマで終わらなくてよく、次に開ければ続きから
+     ・セットは自分でえらべる。おすすめは「いちばん回数の少ないセット」
+   ちがうのは出題のもと（data/idioms.js）とセットの大きさ（20）だけ。
 
-   ★記録の「周回」は全体の周ではなく **そのセットの何回目か**。セットを自由に選べる以上、
-     全体の周という数えかたが成り立たないため。セット1の2回目は「周回2・セット1」として残る。
+   記録は別の試験ID（midiom）で、2000語（m2000）とは混ざらない。
+   受付（ロック）も /admin の別のカード。端末の控えも別（mastery_idiom_v1）。
 
-   続きの位置の正はサーバー（スプレッドシート）。端末の記録は保険でしかない
-   （端末を変えても、キャッシュを消しても続きから戻れるようにするため）。
-
-   ★採点はこのページがやる。判定は ../assets/wordjudge.js（単語アプリと同じもの）。
+   ★画面のスクリプトは index.html と同じ mastery.js を読む（写しを置かない）。
+     この下の window.MASTERY_CFG で出題のもとを熟語に切りかえているだけ。
+   ★採点は ../assets/wordjudge.js（単語アプリ・2000語と同じもの）。
+     take ... off のような「…」は何語入ってもよい場所（take off／take it off のどちらも○）。
 -->
 <style>
   :root{
     --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
     --jp:'游ゴシック','Yu Gothic',sans-serif;
-    --ink:#17212b; --gray:#56656f; --muted:#93a1ab; --paper:#f4f8f7; --line:#d9e6e2;
-    --c1:#0f766e; --c1d:#0b5750; --c2:#b45309;
+    --ink:#17212b; --gray:#56656f; --muted:#93a1ab; --paper:#fbf7f1; --line:#ecdcc9;
+    --c1:#b45309; --c1d:#7c3a0b; --c2:#0f766e;
     --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
   }
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
     font-family:var(--jp);line-height:1.6;padding:0 0 60px}
   .wrap{max-width:900px;margin:0 auto;padding:0 15px}
-  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:18px 0 14px;margin-bottom:12px}
+  .hero{background:linear-gradient(100deg,#b45309,#78350f);color:#fff;padding:18px 0 14px;margin-bottom:12px}
   .hero h1{margin:0;font-size:21px}
-  .hero p{margin:4px 0 0;font-size:13px;color:#b9e2dc}
+  .hero p{margin:4px 0 0;font-size:13px;color:#fde8c8}
   .crumbs{font-size:12.5px;margin-bottom:6px}
-  .crumbs a{color:#b9e2dc}
+  .crumbs a{color:#fde8c8}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 12px}
   .hide{display:none!important}
   h2{font-size:17px;margin:0 0 8px}
@@ -73,19 +69,19 @@
 
   /* 覚えた数（受付が閉じていても出す） */
   .learned{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:12px 0 2px;
-    padding:9px 13px;border-radius:12px;background:#eef6f4;border:1px solid var(--line)}
+    padding:9px 13px;border-radius:12px;background:#fbf0e3;border:1px solid var(--line)}
   .learned .ttl{font-size:13px;color:var(--gray);font-weight:bold;white-space:nowrap}
   .learned .big{font-size:26px;color:var(--c1d)}
   .learned .sub{font-size:12.5px;color:var(--gray)}
 
   /* セットの進み具合 */
   .sets{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0 4px}
-  .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#e7eeec;
+  .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#f3eadf;
     border:1px solid var(--line);font-family:inherit;font-size:12px;line-height:1.1;
     text-align:center;color:var(--gray);cursor:pointer;padding:3px 0}
   .sets button em{display:block;font-style:normal;font-size:10px;opacity:.85}
   .sets button:hover{border-color:var(--c1)}
-  .sets button.done{background:#cdebdc;border-color:#a5d8bf;color:#2c7a52;font-weight:bold}
+  .sets button.done{background:#f6dcb8;border-color:#e9bf86;color:#7c3a0b;font-weight:bold}
   .sets button.now{background:var(--c1);border-color:var(--c1d);color:#fff;font-weight:bold}
 
   /* 一覧（おぼえてからテスト） */
@@ -111,7 +107,7 @@
   .big{font-size:30px;font-weight:bold}
   table{border-collapse:collapse;width:100%;font-size:13px;margin-top:6px}
   th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}
-  th{background:#eef4f2}
+  th{background:#f6eee4}
   @media(max-width:520px){
     .sets{grid-template-columns:repeat(5,1fr)}
     .q .ja{font-size:24px} #ansIn{font-size:22px}
@@ -121,9 +117,9 @@
 <body>
 
 <div class="hero"><div class="wrap">
-  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="idiom.html">熟語200語</a>　／　<a href="gram.html">全文法</a></div>
-  <h1>2000語 到達度テスト <span class="en">Mastery</span></h1>
-  <p>100語 × 20セット。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。セットは自分でえらべます。</p>
+  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="index.html">2000語</a>　／　<a href="gram.html">全文法</a></div>
+  <h1>熟語200語 到達度テスト <span class="en">Idioms</span></h1>
+  <p>20連語 × 10セット。セットごとに<b>軸になる動詞</b>でまとめてある（1 look 系 → 2 take 系 → 3 get 系 …）。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。</p>
 </div></div>
 
 <div class="wrap">
@@ -141,7 +137,7 @@
       <label>番号 <input id="f_num" inputmode="numeric" autocomplete="off"></label>
       <label>名前 <input id="f_name" autocomplete="off" style="width:130px"></label>
     </div>
-    <div class="learned"><span class="ttl">覚えた単語</span> <span id="learned">　</span></div>
+    <div class="learned"><span class="ttl">覚えた熟語</span> <span id="learned">　</span></div>
     <div class="sets" id="setBar"></div>
     <div class="note" id="progMsg">　</div>
     <div class="note" style="margin-top:4px">数字を押すと、そのセットに移れます。
@@ -150,8 +146,8 @@
 
   <!-- 一覧 -->
   <div class="card hide" id="listCard">
-    <h2 id="listTitle">セット1の100語</h2>
-    <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
+    <h2 id="listTitle">セット1</h2>
+    <p class="note">この回に出る熟語です。同じ動詞ではじまる熟語がならんでいるので、<b>あとの部分（at／for／after …）のちがい</b>に目を通して、はじめられたら開始。分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
     <!-- ★開始ボタンは一覧より前に置く。100語の一覧は画面いっぱいになるので、
          あとに置くと画面の外へ出てしまい、タブレットでは指がとどかない（2026-09 先生報告）。 -->
     <div class="btnrow">
@@ -183,7 +179,7 @@
   <!-- 結果 -->
   <div class="card hide" id="doneCard">
     <h2 id="doneTitle">セット1 おわり</h2>
-    <div class="big" id="doneScore">0 / 100</div>
+    <div class="big" id="doneScore">0 / 20</div>
     <div class="note" id="doneSub">　</div>
     <div class="note" id="sendMsg" style="margin-top:6px">　</div>
     <!-- ★ボタンは1つ。押すと記録を送り、受付の状態を確かめてから、セットをえらぶ画面（帯）にもどる。
@@ -202,7 +198,21 @@
 <script src="../assets/site.js?v=0929a"></script>
 <script src="../assets/masterycore.js?v=1005a"></script>
 <script src="../assets/wordjudge.js?v=0927b"></script>
-<script src="../words/data/words.js?v=0927b"></script>
+<script src="data/idioms.js?v=1005a"></script>
+<!-- ★出題のもとを熟語に切りかえる。試験IDは GAS の MASTERY_EXAMS／UNIT_EXAMS と /admin のカードに
+     同じものがある（tools/check_gas_contract.mjs が突き合わせる） -->
+<script>
+window.MASTERY_CFG = (function (D) {
+  return {
+    exam: "midiom", ver: "idiom 0.1", sets: D.sets.length, perSet: 20, unitName: "セット", unitWord: "語",
+    all: function () { return D.all; },
+    setOf: function (n) { return (D.sets[n - 1] || {}).items || []; },
+    tipOf: function (n) { var s = D.sets[n - 1]; return "セット" + n + "　" + s.emoji + " " + s.title + "（" + s.sub + "）"; },
+    posOf: function (w) { var s = D.sets[w.s - 1]; return "セット" + w.s + "　" + s.title; },
+    emptyMsg: "熟語が読みこめませんでした。ページを開きなおしてください。"
+  };
+})(window.IDIOMS);
+</script>
 <script src="mastery.js?v=1005a"></script>
 </body>
 </html>
