@@ -15,7 +15,12 @@
  *   訳の文字列は words.js と同じ流儀（「…を」「～」）。同じ意味の熟語が2つ以上あるときは
  *   出題時に手がかり（「w ではじまる」）が自動でつく（tools/check_exams.mjs が見張る）。
  *
- * ★中3までの頻出熟語に限る（教科書3社と公立入試の頻度から選定）。
+ * ★中3までの頻出熟語に限る（教科書3社と公立入試の頻度から選定）。200でとめる＝入れたいものが出たら、
+ *   いまの200のどれより上かで判断して入れかえる（先生 2026-10-05「言い出したらキリがない。優先度を吟味して」）。
+ *   2026-10-05 の入れかえ：a lot of・a few・a little（2000語テストの基本編にある）・at the same time・look away・
+ *   get hurt・make a wish・fill in・show up を外し、in time・on time・these days・according to（入試の本文・グラフ問題で頻出）・
+ *   sound like・get to know・make a presentation・clean up・hold on を入れた。as soon as possible は these days／according to
+ *   より入試頻度が低いので見送り。
  *   id は セット番号×100＋通し（101〜120, 201〜…）。words.js とは別の id 空間・別の控え。
  */
 window.IDIOMS = {
@@ -37,7 +42,7 @@ sets: [
   { w: "look over",          j: "…を見渡す、…にざっと目を通す" },
   { w: "look up to",         j: "…を尊敬する" },
   { w: "look down on",       j: "…を見下す、…を軽べつする" },
-  { w: "look away",          j: "目をそらす" },
+  { w: "sound like",         j: "…のように聞こえる、…のようだ" },
   { w: "see ... off",        j: "…を見送る" },
   { w: "see a doctor",       j: "医者に診てもらう" },
   { w: "watch out",          j: "気をつける" },
@@ -91,7 +96,7 @@ sets: [
   { w: "get rid of",         j: "…を取り除く、…を処分する" },
   { w: "get in touch with",  j: "…と連絡をとる" },
   { w: "get used to",        j: "…に慣れる" },
-  { w: "get hurt",           j: "けがをする" }
+  { w: "get to know",        j: "…と知り合いになる、…を知るようになる" }
 ]},
 
 { title: "make 系", sub: "作る・する", emoji: "🔨",
@@ -111,7 +116,7 @@ sets: [
   { w: "make it",            j: "間に合う、うまくやる、成功する" },
   { w: "make sense",         j: "意味が通じる、理にかなう、なるほどと思える" },
   { w: "make a difference",  j: "ちがいを生む、重要である" },
-  { w: "make a wish",        j: "願いごとをする" },
+  { w: "make a presentation", j: "発表をする、プレゼンをする" },
   { w: "make a reservation", j: "予約する" },
   { w: "make room for",      j: "…のために場所をあける" },
   { w: "make a phone call (to)", j: "（…に）電話をかける" },
@@ -209,8 +214,8 @@ sets: [
   { w: "write ... down",     j: "…を書きとめる、…をメモする" },
   { w: "try ... on",         j: "…を試着する" },
   { w: "find ... out",       j: "…を見つけ出す、…がわかる" },
-  { w: "fill ... in",        j: "…に記入する、…を書きこむ", alt: ["fill ... out"] },
-  { w: "show up",            j: "現れる、姿を見せる" },
+  { w: "clean ... up",       j: "…をきれいにそうじする" },
+  { w: "hold on",            j: "（電話を）切らずに待つ、ちょっと待つ" },
   { w: "call ... back",      j: "…に電話をかけ直す" }
 ]},
 
@@ -238,11 +243,8 @@ sets: [
   { w: "work on",            j: "…に取り組む" }
 ]},
 
-{ title: "その他", sub: "前置詞句・数量・つなぎ", emoji: "🧩",
+{ title: "その他", sub: "前置詞句・時・つなぎ", emoji: "🧩",
   items: [
-  { w: "a lot of",           j: "たくさんの、多数の", alt: ["lots of"] },
-  { w: "a few",              j: "少数の、いくつかの" },
-  { w: "a little",           j: "少しの、少量の" },
   { w: "each other",         j: "おたがい（に）" },
   { w: "of course",          j: "もちろん" },
   { w: "for example",        j: "たとえば" },
@@ -257,9 +259,12 @@ sets: [
   { w: "because of",         j: "…のために、…が原因で" },
   { w: "instead of",         j: "…のかわりに" },
   { w: "thanks to",          j: "…のおかげで" },
-  { w: "at the same time",   j: "同時に" },
   { w: "all over the world", j: "世界中で［に］" },
-  { w: "by the way",         j: "ところで" }
+  { w: "by the way",         j: "ところで" },
+  { w: "in time",            j: "間に合って" },
+  { w: "on time",            j: "時間どおりに" },
+  { w: "these days",         j: "このごろ、最近は" },
+  { w: "according to",       j: "…によれば、…にしたがって" }
 ]}
 
 ]};
