@@ -38,16 +38,16 @@ sections: [
 
   { intro:"問題C　ノゾミ(Nozomi)が、ひだまりハウスで働くサノ(Ms. Sano)さんにインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Ms. Sano. About <b>fifty</b> people come to this house every day.</span>'+
-      '<span class="sp">The most popular activity here is <b>singing</b> old Japanese songs together.</span>'+
-      '<span class="sp">When you talk to the people here, please look at their <b>eyes</b> and speak slowly.</span>',
+      '<span class="sp">Hello, I\'m Ms. Sano. About fifty people come to this house every day.</span>'+
+      '<span class="sp">The most popular activity here is singing old Japanese songs together.</span>'+
+      '<span class="sp">When you talk to the people here, please look at their eyes and speak slowly.</span>',
     passage:'<b>ノゾミのメモ</b><br>Ms. Sano — about （　あ　） people come to this house every day<br>'+
             '— the most popular activity is （　い　） old Japanese songs together<br>'+
             '— when we talk to them, we should look at their （　う　） and speak slowly',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）50", answers:["fifty"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）歌うこと", answers:["singing"], hint:"英語1語（〜ing の形）" },
-    { type:"fill", label:"う", pt:2, stem:"（う）目", answers:["eyes"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["fifty"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["singing"], hint:"英語1語（〜ing の形）" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["eyes"], hint:"英語1語" } ] },
 
   { intro:"問題D　あなたとクラスメイトのダイキ(Daiki)が、交流会の準備についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:

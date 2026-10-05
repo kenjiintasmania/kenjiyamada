@@ -49,13 +49,13 @@ sections: [
 
   { intro:"問題3　ALTのフォックス(Ms. Fox)先生が、自分の国の学校の昼食について話しています。エミのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Ms. Fox. In my country, most students bring their own lunch to school in a <b>box</b>.</span>'+
-      '<span class="sp">Some students buy lunch at school. The most popular lunch there is <b>pizza</b>, and we eat it in a big lunch room, not in the classroom.</span>',
+      '<span class="sp">Hello, I\'m Ms. Fox. In my country, most students bring their own lunch to school in a box.</span>'+
+      '<span class="sp">Some students buy lunch at school. The most popular lunch there is pizza, and we eat it in a big lunch room, not in the classroom.</span>',
     passage:'<b>エミのメモ</b><br>Ms. Fox の国の昼食<br>— most students bring their own lunch in a （　あ　）<br>'+
             '— the most popular lunch at school: （　い　） → eat it in a big lunch room',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）箱", answers:["box"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）ピザ", answers:["pizza"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["box"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["pizza"], hint:"英語1語" } ] },
 
   { intro:"問題4　栄養の先生のカネコ(Ms. Kaneko)先生が、来週の「給食週間」について説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

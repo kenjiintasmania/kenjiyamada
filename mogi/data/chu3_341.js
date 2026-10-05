@@ -45,16 +45,16 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　ハル(Haru)が、朝市に野菜を出している農家のベイカー(Mr. Baker)さんにインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Baker. I grow vegetables, and I bring them to the market every <b>Friday</b> morning.</span>'+
-      '<span class="sp">The most important thing for me is the <b>smile</b> of the people who buy my vegetables.</span>'+
-      '<span class="sp">In the future, I want to teach young <b>farmers</b> how to grow good vegetables.</span>',
+      '<span class="sp">Hello, I\'m Mr. Baker. I grow vegetables, and I bring them to the market every Friday morning.</span>'+
+      '<span class="sp">The most important thing for me is the smile of the people who buy my vegetables.</span>'+
+      '<span class="sp">In the future, I want to teach young farmers how to grow good vegetables.</span>',
     passage:'<b>ハルのメモ</b><br>Mr. Baker — brings vegetables to the market every （　あ　） morning<br>'+
             '— the most important thing is the （　い　） of the people who buy them<br>'+
             '— wants to teach young （　う　） in the future',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）金曜日", answers:["Friday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）笑顔", answers:["smile"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）農家の人たち", answers:["farmers"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Friday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["smile"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["farmers"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのユウタ(Yuta)が、朝市の手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

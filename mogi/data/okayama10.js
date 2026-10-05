@@ -43,15 +43,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　ハルト(Haruto)が、防災ボランティアのリーダーであるホワイト(Ms. White)さんに、町づくりについてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Ms. White. In our town, we always keep some <b>water</b> and food at the community center for an emergency.</span>'+
-      '<span class="sp">When a disaster happens, the most important thing is to <b>help</b> each other as neighbors.</span>'+
-      '<span class="sp">In the future, I want to build a safer <b>town</b> for everyone who lives here.</span>',
+      '<span class="sp">Hello, I\'m Ms. White. In our town, we always keep some water and food at the community center for an emergency.</span>'+
+      '<span class="sp">When a disaster happens, the most important thing is to help each other as neighbors.</span>'+
+      '<span class="sp">In the future, I want to build a safer town for everyone who lives here.</span>',
     passage:'<b>ハルトのメモ</b><br>Ms. White — keeps （　あ　） and food at the community center<br>'+
             '— the most important thing is to （　い　） each other<br>— wants to build a safer （　う　） in the future',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）水", answers:["water"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）助ける", answers:["help"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）町", answers:["town"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["water"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["help"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["town"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋英作文） */
   { intro:"問題D　あなたとクラスメイトのアオイ(Aoi)が、防災キャンプについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

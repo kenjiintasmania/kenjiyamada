@@ -43,15 +43,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3） */
   { intro:"問題C　ユウタ(Yuta)が、ALTのグリーン(Ms. Green)先生に、ふるさとの行事についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Ms. Green from Australia. In my hometown, we have a big <b>summer</b> festival by the river every year.</span>'+
-      '<span class="sp">People wear special clothes and <b>dance</b> together in the street all night.</span>'+
-      '<span class="sp">My favorite part is the food. We always eat sweet <b>peaches</b> at the festival because they are famous here.</span>',
+      '<span class="sp">Hello, I\'m Ms. Green from Australia. In my hometown, we have a big summer festival by the river every year.</span>'+
+      '<span class="sp">People wear special clothes and dance together in the street all night.</span>'+
+      '<span class="sp">My favorite part is the food. We always eat sweet peaches at the festival because they are famous here.</span>',
     passage:'<b>ユウタのメモ</b><br>Ms. Green — has a big （　あ　） festival by the river<br>'+
             '— people （　い　） together in the street<br>— eats sweet （　う　） at the festival',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）夏", answers:["summer"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）おどる", answers:["dance"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）もも（複数）", answers:["peaches"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["summer"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["dance"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["peaches"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文） */
   { intro:"問題D　あなたとクラスメイトのリナ(Rina)が、職場体験の説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

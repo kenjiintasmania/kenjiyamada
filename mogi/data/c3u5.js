@@ -48,16 +48,16 @@ sections: [
   { intro:"問題C　ユキ(Yuki)が、動物保護施設の職員のサトウ(Ms. Sato)さんの話を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, everyone. I\'m Ms. Sato. Thank you for joining the volunteer team of Sorano Animal Shelter.</span>'+
-      '<span class="sp">Our next volunteer day will be next <b>Wednesday</b>, not Sunday, because a doctor will come to check the animals on Sunday.</span>'+
-      '<span class="sp">When you arrive, please come to the <b>kitchen</b> first. We will make food for the animals there.</span>'+
-      '<span class="sp">Our shelter has <b>eighteen</b> cats now, and each cat needs a small towel. So please bring some old towels from home if you can.</span>',
+      '<span class="sp">Our next volunteer day will be next Wednesday, not Sunday, because a doctor will come to check the animals on Sunday.</span>'+
+      '<span class="sp">When you arrive, please come to the kitchen first. We will make food for the animals there.</span>'+
+      '<span class="sp">Our shelter has eighteen cats now, and each cat needs a small towel. So please bring some old towels from home if you can.</span>',
     passage:'<b>ユキのメモ</b><br>Ms. Sato\'s talk<br>— The next volunteer day will be next （　あ　）.<br>'+
             '— Go to the （　い　） first and make food for the animals.<br>'+
             '— The shelter has （　う　） cats now. Bring some old towels.',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）水曜日", answers:["Wednesday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）台所", answers:["kitchen"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）施設にいるねこの数", answers:["eighteen","18"], hint:"英語1語（数を表す語）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Wednesday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["kitchen"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["eighteen","18"], hint:"英語1語（数を表す語）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
   { intro:"問題D　あなたとクラスメイトのショウタ(Shota)が、動物保護施設のオープンデーの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

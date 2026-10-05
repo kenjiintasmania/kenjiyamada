@@ -47,16 +47,16 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　アオイ(Aoi)が、ブックバスを運転する図書館員のクボ(Mr. Kubo)さんにインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Kubo. I drive the book bus. The bus carries about <b>eight</b> hundred books, and half of them are picture books.</span>'+
-      '<span class="sp">I always put the new books near the <b>door</b> of the bus. Then the children can find them easily.</span>'+
-      '<span class="sp">The bus is <b>yellow</b>, so you can find it easily in the town.</span>',
+      '<span class="sp">Hello, I\'m Mr. Kubo. I drive the book bus. The bus carries about eight hundred books, and half of them are picture books.</span>'+
+      '<span class="sp">I always put the new books near the door of the bus. Then the children can find them easily.</span>'+
+      '<span class="sp">The bus is yellow, so you can find it easily in the town.</span>',
     passage:'<b>アオイのメモ</b><br>Mr. Kubo — drives the book bus, which carries about （　あ　） hundred books<br>'+
             '— puts the new books near the （　い　） of the bus<br>'+
             '— the bus is （　う　）, so it is easy to find',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）バスが運ぶ本の冊数（〜百冊）", answers:["eight","8"], hint:"英語1語（数）" },
-    { type:"fill", label:"い", pt:2, stem:"（い）ドア", answers:["door"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）黄色い", answers:["yellow"], hint:"英語1語（色）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["eight","8"], hint:"英語1語（数）" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["door"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["yellow"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのレン(Ren)が、ブックバスの特別な日の手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -41,15 +41,15 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　サキが、ALTのベーカー(Ms. Baker)先生に日本でやりたいことをインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Ms. Baker from Australia. First, I\'d like to visit the old <b>temples</b> in Nara.</span>'+
-      '<span class="sp">I\'m also excited to try cooking Japanese <b>food</b> at home.</span>'+
-      '<span class="sp">And in <b>winter</b>, I want to enjoy skiing and other snow sports.</span>',
+      '<span class="sp">Hi, I\'m Ms. Baker from Australia. First, I\'d like to visit the old temples in Nara.</span>'+
+      '<span class="sp">I\'m also excited to try cooking Japanese food at home.</span>'+
+      '<span class="sp">And in winter, I want to enjoy skiing and other snow sports.</span>',
     passage:'<b>サキのメモ</b><br>Ms. Baker — visit the old （　あ　） in Nara<br>'+
             '— try cooking Japanese （　い　）<br>— enjoy （　う　） sports such as skiing',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）寺・寺院（複数）", answers:["temples"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）食べ物", answers:["food"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）冬の", answers:["winter"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["temples"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["food"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["winter"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える */
   { intro:"問題D　あなたとクラスメイトのメイ(Mei)が、職業体験についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

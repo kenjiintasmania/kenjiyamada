@@ -50,13 +50,13 @@ sections: [
 
   { intro:"問題3　ALTのエマ(Emma)先生が、自分の国の学校について話しています。アヤのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Emma. In my country, school starts in <b>February</b>, not in April.</span>'+
-      '<span class="sp">We have no uniforms, so we can choose our own <b>clothes</b> every morning.</span>',
+      '<span class="sp">Hello, I\'m Emma. In my country, school starts in February, not in April.</span>'+
+      '<span class="sp">We have no uniforms, so we can choose our own clothes every morning.</span>',
     passage:'<b>アヤのメモ</b><br>Emma の国の学校<br>— school starts in （　あ　）, not in April<br>'+
             '— no uniforms → we can choose our own （　い　） every morning',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）2月", answers:["February"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）服", answers:["clothes"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["February"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["clothes"], hint:"英語1語" } ] },
 
   { intro:"問題4　山口先生(Mr. Yamaguchi)が、職場体験について説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

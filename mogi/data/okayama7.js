@@ -43,15 +43,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3／2回読み） */
   { intro:"問題C　ハルト(Haruto)が、ALTのベイカー(Mr. Baker)先生に、文化祭の思い出についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Baker from Canada. In my country, my high school had a big <b>music</b> festival every November.</span>'+
-      '<span class="sp">I was in the brass band, and I always <b>played</b> the trumpet on the stage.</span>'+
-      '<span class="sp">My favorite memory is the last concert, because all of my <b>friends</b> sang together at the end.</span>',
+      '<span class="sp">Hello, I\'m Mr. Baker from Canada. In my country, my high school had a big music festival every November.</span>'+
+      '<span class="sp">I was in the brass band, and I always played the trumpet on the stage.</span>'+
+      '<span class="sp">My favorite memory is the last concert, because all of my friends sang together at the end.</span>',
     passage:'<b>ハルトのメモ</b><br>Mr. Baker — had a big （　あ　） festival in November<br>'+
             '— （　い　） the trumpet on the stage<br>— his （　う　） sang together at the last concert',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）音楽", answers:["music"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）演奏した（過去形）", answers:["played"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）友達（複数）", answers:["friends"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["music"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["played"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["friends"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文／2回読み） */
   { intro:"問題D　あなたとクラスメイトのアヤ(Aya)が、文化祭の係決めの説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -41,15 +41,15 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　ユキ(Yuki)が、ALTのカーター(Mr. Carter)先生に部活動の思い出についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Mr. Carter from New Zealand. When I was a junior high school student, I was a member of the basketball <b>team</b>.</span>'+
-      '<span class="sp">I practiced very hard, and later I became the <b>captain</b> of the team.</span>'+
-      '<span class="sp">At my last tournament, we won a gold <b>medal</b>. I will never forget that day.</span>',
+      '<span class="sp">Hi, I\'m Mr. Carter from New Zealand. When I was a junior high school student, I was a member of the basketball team.</span>'+
+      '<span class="sp">I practiced very hard, and later I became the captain of the team.</span>'+
+      '<span class="sp">At my last tournament, we won a gold medal. I will never forget that day.</span>',
     passage:'<b>ユキのメモ</b><br>Mr. Carter — was a member of the basketball （　あ　）<br>'+
             '— later became the （　い　） of the team<br>— won a gold （　う　） at his last tournament',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）チーム・部", answers:["team"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）キャプテン・主将", answers:["captain"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）メダル", answers:["medal"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["team"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["captain"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["medal"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える */
   { intro:"問題D　あなたとクラスメイトのアオイ(Aoi)が、体育祭についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

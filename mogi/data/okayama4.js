@@ -44,14 +44,14 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　農園の人が、桃狩り体験の注意を話しています。ヒナタ(Hinata)が書いたメモの（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Welcome to our peach farm. First, please wash your <b>hands</b> before you start.</span>'+
-      '<span class="sp">Each visitor can pick <b>five</b> peaches today, so please be careful.</span>'+
-      '<span class="sp">We will meet again at the white <b>gate</b> at eleven o\'clock.</span>',
+      '<span class="sp">Welcome to our peach farm. First, please wash your hands before you start.</span>'+
+      '<span class="sp">Each visitor can pick five peaches today, so please be careful.</span>'+
+      '<span class="sp">We will meet again at the white gate at eleven o\'clock.</span>',
     passage:'<b>ヒナタのメモ</b><br>・始める前に（　あ　）を洗う<br>・1人（　い　）個まで桃をつめる<br>・11時に白い（　う　）に集合',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）両手", answers:["hands"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）5", answers:["five"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）門・ゲート", answers:["gate"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["hands"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["five"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["gate"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言→(1)内容一致選択, (2)英語2語の応答 */
   { intro:"問題D　あなたとクラスメイトのアカリ(Akari)が、果物農園の体験コースについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -46,16 +46,16 @@ sections: [
   { intro:"問題C　ミオ(Mio)が、太鼓の先生のオダ(Mr. Oda)さんの話を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, everyone. I\'m Mr. Oda. Thank you for joining the drum team for the autumn festival.</span>'+
-      '<span class="sp">Our next practice will be next <b>Thursday</b>, not Tuesday, because I have to work on Tuesday.</span>'+
-      '<span class="sp">We will practice in the <b>gym</b> of your school. The music room is too small for all of us.</span>'+
-      '<span class="sp">I will bring <b>twelve</b> drums from the community center, so you don\'t have to bring anything.</span>',
+      '<span class="sp">Our next practice will be next Thursday, not Tuesday, because I have to work on Tuesday.</span>'+
+      '<span class="sp">We will practice in the gym of your school. The music room is too small for all of us.</span>'+
+      '<span class="sp">I will bring twelve drums from the community center, so you don\'t have to bring anything.</span>',
     passage:'<b>ミオのメモ</b><br>Mr. Oda\'s drum practice<br>— The next practice will be next （　あ　）.<br>'+
             '— Place: the （　い　） of our school<br>'+
             '— Mr. Oda will bring （　う　） drums from the community center.',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）木曜日", answers:["Thursday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）体育館", answers:["gym"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）オダさんが持ってくる太鼓の数", answers:["twelve","12"], hint:"英語1語（数を表す語）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Thursday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["gym"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["twelve","12"], hint:"英語1語（数を表す語）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
   { intro:"問題D　あなたとクラスメイトのリク(Riku)が、秋祭りの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

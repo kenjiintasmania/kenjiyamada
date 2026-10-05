@@ -41,15 +41,15 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　コウタ(Kota)が、ALTのベイカー(Ms. Baker)先生に将来の夢についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Ms. Baker from Australia. When I was a child, I wanted to be a <b>writer</b> like my father.</span>'+
-      '<span class="sp">But I loved libraries very much, so now I am a <b>librarian</b> here in Japan.</span>'+
-      '<span class="sp">In the future, I want to write a <b>story</b> for young children.</span>',
+      '<span class="sp">Hi, I\'m Ms. Baker from Australia. When I was a child, I wanted to be a writer like my father.</span>'+
+      '<span class="sp">But I loved libraries very much, so now I am a librarian here in Japan.</span>'+
+      '<span class="sp">In the future, I want to write a story for young children.</span>',
     passage:'<b>コウタのメモ</b><br>Ms. Baker — wanted to be a （　あ　） like her father<br>'+
             '— now she is a （　い　） in Japan<br>— wants to write a （　う　） for children',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）作家・書く人", answers:["writer"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）図書館員・司書", answers:["librarian"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）物語・お話", answers:["story"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["writer"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["librarian"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["story"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える */
   { intro:"問題D　あなたとクラスメイトのメイ(Mei)が、ブックウィークについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

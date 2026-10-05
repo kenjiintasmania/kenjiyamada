@@ -51,13 +51,13 @@ sections: [
   { intro:"問題3　転校生のディエゴ(Diego)が、自分の国の学校について話しています。アヤカのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hi, everyone. I\'m Diego. I came from Brazil last month.</span>'+
-      '<span class="sp">At my school in Brazil, classes started at seven and finished at noon. We didn\'t have school lunch, so we ate lunch at <b>home</b>.</span>'+
-      '<span class="sp">We had a short winter vacation in <b>July</b>, because it is winter in Brazil then. Our long vacation was in December and January.</span>',
+      '<span class="sp">At my school in Brazil, classes started at seven and finished at noon. We didn\'t have school lunch, so we ate lunch at home.</span>'+
+      '<span class="sp">We had a short winter vacation in July, because it is winter in Brazil then. Our long vacation was in December and January.</span>',
     passage:'<b>アヤカのメモ</b><br>Diego の国の学校<br>— classes: 7:00 → noon, no school lunch → ate lunch at （　あ　）<br>'+
             '— winter vacation: in （　い　）, because it is winter there then',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）家", answers:["home"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）7月", answers:["July"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["home"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["July"], hint:"英語1語" } ] },
 
   { intro:"問題4　ALTのリード先生(Ms. Reed)が、転校生のディエゴを迎える「ウェルカムウィーク」について説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

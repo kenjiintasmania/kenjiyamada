@@ -49,13 +49,13 @@ sections: [
 
   { intro:"問題3　ALTのレーン(Lane)先生が、自分の町の祭りについて話しています。ヒナタのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Ms. Lane. In my hometown, we have a big festival in <b>January</b>, not in October.</span>'+
-      '<span class="sp">People make big lights with <b>ice</b> and put them along the street. They look very beautiful at night.</span>',
+      '<span class="sp">Hello, I\'m Ms. Lane. In my hometown, we have a big festival in January, not in October.</span>'+
+      '<span class="sp">People make big lights with ice and put them along the street. They look very beautiful at night.</span>',
     passage:'<b>ヒナタのメモ</b><br>Ms. Lane の町の祭り<br>— held in （　あ　）, not in October<br>'+
             '— people make big lights with （　い　） and put them along the street',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）祭りが行われる月", answers:["January"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）大きな明かりを作るのに使うもの", answers:["ice"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["January"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["ice"], hint:"英語1語" } ] },
 
   { intro:"問題4　祭りの会長のカイさん(Mr. Kai)が、祭りを手伝う生徒たちに説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

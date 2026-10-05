@@ -38,16 +38,16 @@ sections: [
 
   { intro:"問題C　カイト(Kaito)が、修学旅行で訪ねる和紙工房のモリ(Ms. Mori)さんに電話でインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, this is Ms. Mori. Our workshop opens at nine, but school groups can come from <b>eight</b> thirty.</span>'+
-      '<span class="sp">In the workshop, you can make your own <b>postcard</b> from Japanese paper.</span>'+
-      '<span class="sp">Please don\'t forget to bring a small <b>towel</b>, because your hands will get wet.</span>',
+      '<span class="sp">Hello, this is Ms. Mori. Our workshop opens at nine, but school groups can come from eight thirty.</span>'+
+      '<span class="sp">In the workshop, you can make your own postcard from Japanese paper.</span>'+
+      '<span class="sp">Please don\'t forget to bring a small towel, because your hands will get wet.</span>',
     passage:'<b>カイトのメモ</b><br>Ms. Mori — school groups can come from （　あ　） thirty<br>'+
             '— we can make our own （　い　） from Japanese paper<br>'+
             '— must bring a small （　う　）, because our hands will get wet',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）8（時）", answers:["eight"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）はがき", answers:["postcard"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）タオル", answers:["towel"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["eight"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["postcard"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["towel"], hint:"英語1語" } ] },
 
   { intro:"問題D　あなたとクラスメイトのエミ(Emi)が、修学旅行2日目の班別行動についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:

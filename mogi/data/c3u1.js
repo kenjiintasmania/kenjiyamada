@@ -39,15 +39,15 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　ケンタ(Kenta)が、留学生のエマ(Emma)に文化祭でやりたいことをインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Emma from Australia. First, I\'d like to sing a <b>song</b> with the music club at the festival.</span>'+
-      '<span class="sp">I\'m also excited to make a poster about <b>recycling</b> with my classmates.</span>'+
-      '<span class="sp">And I want to wear a Japanese <b>kimono</b> on that day.</span>',
+      '<span class="sp">Hi, I\'m Emma from Australia. First, I\'d like to sing a song with the music club at the festival.</span>'+
+      '<span class="sp">I\'m also excited to make a poster about recycling with my classmates.</span>'+
+      '<span class="sp">And I want to wear a Japanese kimono on that day.</span>',
     passage:'<b>ケンタのメモ</b><br>Emma — sing a （　あ　） with the music club<br>'+
             '— make a poster about （　い　）<br>— wear a Japanese （　う　） on the festival day',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）歌", answers:["song"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）リサイクル", answers:["recycling"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）着物", answers:["kimono"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["song"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["recycling"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["kimono"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える */
   { intro:"問題D　あなたとクラスメイトのアオイ(Aoi)が、文化祭の準備についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -34,14 +34,14 @@ sections: [
 
   { intro:"問題C　先生が読書週間の宿題について話しています。アオイ(Aoi)が書いたメモの（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">OK, here is your homework for the reading week. Choose your favorite <b>book</b> and write about it.</span>'+
-      '<span class="sp">Your writing should be over <b>eighty</b> words in English.</span>'+
-      '<span class="sp">Please hand it in by next <b>Friday</b>.</span>',
+      '<span class="sp">OK, here is your homework for the reading week. Choose your favorite book and write about it.</span>'+
+      '<span class="sp">Your writing should be over eighty words in English.</span>'+
+      '<span class="sp">Please hand it in by next Friday.</span>',
     passage:'<b>アオイのメモ</b><br>・いちばん好きな（　あ　）を選んで書く<br>・英語で（　い　）語より多く書く<br>・次の（　う　）に提出する',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）本", answers:["book"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）80", answers:["eighty"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）金曜日", answers:["friday"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["book"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["eighty"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["friday"], hint:"英語1語" } ] },
 
   { intro:"問題D　あなたとクラスメイトのリク(Riku)が、図書館の読書イベントについての説明を聞いて話しています。(1)(2)に答えなさい。英文は2回読まれます。",
     script:

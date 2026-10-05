@@ -37,14 +37,14 @@ sections: [
 
   { intro:"問題C　先生が料理部の活動について話しています。ケンタ(Kenta)が書いたメモの（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">OK, listen, everyone. Today in cooking club, we will make <b>bread</b> together.</span>'+
-      '<span class="sp">Each group needs <b>four</b> eggs, so please check them now.</span>'+
-      '<span class="sp">We will meet in the cooking <b>room</b> at three thirty.</span>',
+      '<span class="sp">OK, listen, everyone. Today in cooking club, we will make bread together.</span>'+
+      '<span class="sp">Each group needs four eggs, so please check them now.</span>'+
+      '<span class="sp">We will meet in the cooking room at three thirty.</span>',
     passage:'<b>ケンタのメモ</b><br>・今日はみんなで（　あ　）を作る<br>・各グループに卵が（　い　）個必要<br>・料理（　う　）に3時半に集合',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）パン", answers:["bread"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）4", answers:["four"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）部屋／室", answers:["room"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["bread"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["four"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["room"], hint:"英語1語" } ] },
 
   { intro:"問題D　あなたとクラスメイトのナンシー(Nancy)が、アイスクリーム作り体験についての説明を聞いて話しています。(1)(2)に答えなさい。英文は2回読まれます。",
     script:

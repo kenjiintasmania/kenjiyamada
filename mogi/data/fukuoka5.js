@@ -53,13 +53,13 @@ sections: [
 
   { intro:"問題3　ALTのベル(Bell)先生が、自分の国のおばあさんの家について話しています。マオのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Bell. When I was a child, I often visited my grandmother\'s house. She didn\'t have a washing machine, so she washed clothes in the <b>river</b>.</span>'+
-      '<span class="sp">She also made <b>bread</b> every morning. It took about two hours, but it was the best bread in the world.</span>',
+      '<span class="sp">Hello, I\'m Mr. Bell. When I was a child, I often visited my grandmother\'s house. She didn\'t have a washing machine, so she washed clothes in the river.</span>'+
+      '<span class="sp">She also made bread every morning. It took about two hours, but it was the best bread in the world.</span>',
     passage:'<b>マオのメモ</b><br>Mr. Bell のおばあさんの家<br>— no washing machine → washed clothes in the （　あ　）<br>'+
             '— made （　い　） every morning, about two hours',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）川", answers:["river"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）パン", answers:["bread"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["river"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["bread"], hint:"英語1語" } ] },
 
   { intro:"問題4　太田さん(Ms. Ota)が、公民館で中学生に昔のくらしについて話しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

@@ -45,16 +45,16 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　リナ(Rina)が、ホシノ天文台で働くベーカー(Mr. Barker)さんにインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Barker. I have worked at this observatory since <b>2009</b>.</span>'+
-      '<span class="sp">The best season to watch stars here is <b>winter</b>, because the air is very clear.</span>'+
-      '<span class="sp">Before you come, please check the <b>weather</b> on our website.</span>',
+      '<span class="sp">Hello, I\'m Mr. Barker. I have worked at this observatory since 2009.</span>'+
+      '<span class="sp">The best season to watch stars here is winter, because the air is very clear.</span>'+
+      '<span class="sp">Before you come, please check the weather on our website.</span>',
     passage:'<b>リナのメモ</b><br>Mr. Barker — has worked at the observatory since （　あ　）<br>'+
             '— the best season to watch stars here is （　い　）<br>'+
             '— tells visitors to check the （　う　） on the website first',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）バーカーさんが天文台で働き始めた年", answers:["2009"], hint:"数字4けた（西暦）" },
-    { type:"fill", label:"い", pt:2, stem:"（い）冬", answers:["winter"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）天気", answers:["weather"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["2009"], hint:"数字4けた（西暦）" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["winter"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["weather"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのユカ(Yuka)が、科学クラブの合宿についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -41,15 +41,15 @@ sections: [
   /* 問題C：メモの空所補充 */
   { intro:"問題C　リク(Riku)が、ALTのスミス(Mr. Smith)先生に将来の夢についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Mr. Smith from Canada. When I was a child, I wanted to be a <b>doctor</b> like my mother.</span>'+
-      '<span class="sp">But I liked English very much, so now I am a <b>teacher</b> here in Japan.</span>'+
-      '<span class="sp">In the future, I want to write an English <b>book</b> for young children.</span>',
+      '<span class="sp">Hi, I\'m Mr. Smith from Canada. When I was a child, I wanted to be a doctor like my mother.</span>'+
+      '<span class="sp">But I liked English very much, so now I am a teacher here in Japan.</span>'+
+      '<span class="sp">In the future, I want to write an English book for young children.</span>',
     passage:'<b>リクのメモ</b><br>Mr. Smith — wanted to be a （　あ　） like his mother<br>'+
             '— now he is a （　い　） in Japan<br>— wants to write an English （　う　） for children',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）医者", answers:["doctor"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）先生・教師", answers:["teacher"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）本", answers:["book"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["doctor"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["teacher"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["book"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える */
   { intro:"問題D　あなたとクラスメイトのナナ(Nana)が、職場体験についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

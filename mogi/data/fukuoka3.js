@@ -50,13 +50,13 @@ sections: [
   { intro:"問題3　ALTのホール先生(Mr. Hall)が、自分の町にある橋について話しています。リンのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, I\'m Mr. Hall. I come from a small town by a river, and my town has an old bridge, too. It was built about two hundred years ago.</span>'+
-      '<span class="sp">It is made of <b>wood</b>, not stone. People still <b>walk</b> across it every day.</span>'+
+      '<span class="sp">It is made of wood, not stone. People still walk across it every day.</span>'+
       '<span class="sp">Every summer, we have a music festival on the bridge. When I was a student, I played the guitar there.</span>',
     passage:'<b>リンのメモ</b><br>Mr. Hall の町の橋<br>— built about 200 years ago<br>— made of （　あ　）, not stone<br>'+
             '— people still （　い　） across it every day<br>— every summer: a music festival on the bridge',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）橋の材料", answers:["wood"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）人々が今も毎日していること", answers:["walk"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["wood"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["walk"], hint:"英語1語" } ] },
 
   { intro:"問題4　青木先生(Ms. Aoki)が、石橋についての探究学習を説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

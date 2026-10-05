@@ -51,13 +51,13 @@ sections: [
   { intro:"問題3　ALTのキング先生(Ms. King)が、自分のふるさとの川について話しています。ユイのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, I\'m Ms. King. In my hometown, there is a long river, and it is very important to us.</span>'+
-      '<span class="sp">Every <b>August</b>, we have a boat race on the river, and many people come to watch it.</span>'+
-      '<span class="sp">When I was a student, I was in a river cleaning group. We picked up cans and bottles along the river every Sunday morning. Now the river is very clean, and we can see many <b>birds</b> there.</span>',
+      '<span class="sp">Every August, we have a boat race on the river, and many people come to watch it.</span>'+
+      '<span class="sp">When I was a student, I was in a river cleaning group. We picked up cans and bottles along the river every Sunday morning. Now the river is very clean, and we can see many birds there.</span>',
     passage:'<b>ユイのメモ</b><br>Ms. King のふるさとの川<br>— a boat race every （　あ　）<br>'+
             '— she was in a river cleaning group → picked up cans and bottles every Sunday morning<br>— now: very clean, many （　い　） there',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）ボートレースが行われる月", answers:["August"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）今その川でたくさん見られる生き物", answers:["birds"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["August"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["birds"], hint:"英語1語" } ] },
 
   { intro:"問題4　自然センターの永井さん(Mr. Nagai)が、川の調査について説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

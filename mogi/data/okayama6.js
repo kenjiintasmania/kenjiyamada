@@ -43,15 +43,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3） */
   { intro:"問題C　ケンタ(Kenta)が、ALTのベイカー(Mr. Baker)先生に、ふるさとの伝統工芸についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Baker from Canada. In my hometown, many people make beautiful things from <b>wood</b>.</span>'+
-      '<span class="sp">My grandfather was a craftsman, and he taught me how to <b>cut</b> the wood into small spoons.</span>'+
-      '<span class="sp">It was difficult, but making things by <b>hand</b> is a wonderful part of our culture.</span>',
+      '<span class="sp">Hello, I\'m Mr. Baker from Canada. In my hometown, many people make beautiful things from wood.</span>'+
+      '<span class="sp">My grandfather was a craftsman, and he taught me how to cut the wood into small spoons.</span>'+
+      '<span class="sp">It was difficult, but making things by hand is a wonderful part of our culture.</span>',
     passage:'<b>ケンタのメモ</b><br>Mr. Baker — people make things from （　あ　） in his hometown<br>'+
             '— his grandfather taught him how to （　い　） the wood<br>— making things by （　う　） is a wonderful culture',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）木材", answers:["wood"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）（〜を）切る", answers:["cut"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）手", answers:["hand"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["wood"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["cut"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["hand"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文） */
   { intro:"問題D　あなたとクラスメイトのユイ(Yui)が、職場体験の説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

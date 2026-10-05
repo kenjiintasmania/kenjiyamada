@@ -44,15 +44,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3） */
   { intro:"問題C　タクヤ(Takuya)が、ALTのベイカー(Mr. Baker)先生に、駅前図書館の利用についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Mr. Baker. I often go to the station library on <b>Sunday</b> because I have a lot of free time then.</span>'+
-      '<span class="sp">I usually take the <b>tram</b> to the library because it stops right in front of the door.</span>'+
-      '<span class="sp">My favorite place there is the reading room on the third <b>floor</b>. It is quiet and bright.</span>',
+      '<span class="sp">Hi, I\'m Mr. Baker. I often go to the station library on Sunday because I have a lot of free time then.</span>'+
+      '<span class="sp">I usually take the tram to the library because it stops right in front of the door.</span>'+
+      '<span class="sp">My favorite place there is the reading room on the third floor. It is quiet and bright.</span>',
     passage:'<b>タクヤのメモ</b><br>Mr. Baker — goes to the station library on （　あ　）<br>'+
             '— takes the （　い　） to the library<br>— likes the reading room on the third （　う　）',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）日曜日", answers:["sunday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）路面電車", answers:["tram"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）階", answers:["floor"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["sunday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["tram"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["floor"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文） */
   { intro:"問題D　あなたとクラスメイトのソフィア(Sophia)が、駅前図書館の館内放送を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

@@ -52,13 +52,13 @@ sections: [
 
   { intro:"問題3　ALTのウッド(Wood)先生が、自分の町の花について話しています。サナのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, everyone. I\'m Ms. Wood. In my town, we have a big flower festival every <b>May</b>. People plant flowers along the streets, and many visitors come to see them.</span>'+
-      '<span class="sp">My grandmother has grown <b>roses</b> for thirty years. She always gives some to her friends. I think flowers make people happy.</span>',
+      '<span class="sp">Hello, everyone. I\'m Ms. Wood. In my town, we have a big flower festival every May. People plant flowers along the streets, and many visitors come to see them.</span>'+
+      '<span class="sp">My grandmother has grown roses for thirty years. She always gives some to her friends. I think flowers make people happy.</span>',
     passage:'<b>サナのメモ</b><br>Ms. Wood の町<br>— a big flower festival every （　あ　）<br>'+
             '— her grandmother has grown （　い　） for thirty years',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）5月", answers:["May"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）バラ", answers:["roses"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["May"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["roses"], hint:"英語1語" } ] },
 
   { intro:"問題4　公園の係の上野さん(Mr. Ueno)が、花植えの日について説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

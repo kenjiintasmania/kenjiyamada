@@ -50,13 +50,13 @@ sections: [
 
   { intro:"問題3　ALTのディーン先生(Mr. Dean)が、自分の国の学校とスマートフォンについて話しています。ナナコのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Dean. In my country, students cannot use their phones at school. They give their phones to the <b>teacher</b> in the morning, and they get them back after school.</span>'+
-      '<span class="sp">At home, my parents had a rule. I had to stop using my phone at <b>nine</b> every night. At first it was hard, but I slept very well.</span>',
+      '<span class="sp">Hello, I\'m Mr. Dean. In my country, students cannot use their phones at school. They give their phones to the teacher in the morning, and they get them back after school.</span>'+
+      '<span class="sp">At home, my parents had a rule. I had to stop using my phone at nine every night. At first it was hard, but I slept very well.</span>',
     passage:'<b>ナナコのメモ</b><br>Mr. Dean の国の学校<br>— students give their phones to the （　あ　） in the morning<br>'+
             '— at home, he had to stop using his phone at （　い　） every night',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）朝、生徒がスマホをわたす相手", answers:["teacher"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）夜、スマホを使うのをやめる時こく", answers:["nine","9"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["teacher"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["nine","9"], hint:"英語1語" } ] },
 
   { intro:"問題4　保健の佐野先生(Dr. Sano)が、睡眠についての調査の結果を説明しています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

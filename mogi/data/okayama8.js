@@ -46,15 +46,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3／2回読み） */
   { intro:"問題C　ダイチ(Daichi)が、ALTのカーター(Mr. Carter)先生に、ふるさとの環境活動についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Carter from Canada. In my hometown, many people clean the <b>river</b> together every spring.</span>'+
-      '<span class="sp">We pick up bottles and cans, and then we put them into different <b>boxes</b> to recycle them.</span>'+
-      '<span class="sp">My favorite part is the end. After the work, everyone enjoys a warm cup of <b>tea</b> by the water.</span>',
+      '<span class="sp">Hello, I\'m Mr. Carter from Canada. In my hometown, many people clean the river together every spring.</span>'+
+      '<span class="sp">We pick up bottles and cans, and then we put them into different boxes to recycle them.</span>'+
+      '<span class="sp">My favorite part is the end. After the work, everyone enjoys a warm cup of tea by the water.</span>',
     passage:'<b>ダイチのメモ</b><br>Mr. Carter — many people clean the （　あ　） every spring<br>'+
             '— they put bottles and cans into different （　い　）<br>— everyone enjoys a cup of （　う　） after the work',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）川", answers:["river"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）箱（複数）", answers:["boxes"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）お茶", answers:["tea"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["river"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["boxes"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["tea"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文／2回読み） */
   { intro:"問題D　あなたとクラスメイトのサキ(Saki)が、清掃ボランティアの説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

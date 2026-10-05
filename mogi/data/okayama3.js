@@ -44,15 +44,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3） */
   { intro:"問題C　ナオト(Naoto)が、ALTのバンクス(Mr. Banks)先生に島での体験についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Mr. Banks. Last weekend I went to a small island in the Seto Inland Sea by <b>bike</b>.</span>'+
-      '<span class="sp">On the island, I joined a tour and learned about sea animals from a kind <b>guide</b>.</span>'+
-      '<span class="sp">The thing I liked the best was a beautiful <b>sunset</b> over the calm sea. I will never forget it.</span>',
+      '<span class="sp">Hi, I\'m Mr. Banks. Last weekend I went to a small island in the Seto Inland Sea by bike.</span>'+
+      '<span class="sp">On the island, I joined a tour and learned about sea animals from a kind guide.</span>'+
+      '<span class="sp">The thing I liked the best was a beautiful sunset over the calm sea. I will never forget it.</span>',
     passage:'<b>ナオトのメモ</b><br>Mr. Banks — went to a small island by （　あ　）<br>'+
             '— learned about sea animals from a kind （　い　）<br>— liked a beautiful （　う　） over the sea the best',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）自転車", answers:["bike"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）ガイド・案内人", answers:["guide"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）夕日・日の入り", answers:["sunset"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["bike"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["guide"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["sunset"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（mcq＋英作文） */
   { intro:"問題D　あなたとクラスメイトのサキ(Saki)が、島での自然教室についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

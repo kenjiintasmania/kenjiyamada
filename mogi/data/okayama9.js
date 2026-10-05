@@ -46,15 +46,15 @@ sections: [
   { intro:"問題C　ハルト(Haruto)が、ホームステイに来た留学生のルーシー(Lucy)に、楽しみたいことをインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hi, I\'m Lucy from the U.K. I came to Japan two days ago, and I\'m so excited to stay with your family.</span>'+
-      '<span class="sp">First, I really want to learn Japanese <b>calligraphy</b>. I love beautiful letters written with a brush.</span>'+
-      '<span class="sp">I also want to wear a <b>kimono</b> someday and take many photos in it.</span>'+
-      '<span class="sp">And before I go home, I hope to <b>cook</b> Japanese food with your mother. I want to make sushi!</span>',
+      '<span class="sp">First, I really want to learn Japanese calligraphy. I love beautiful letters written with a brush.</span>'+
+      '<span class="sp">I also want to wear a kimono someday and take many photos in it.</span>'+
+      '<span class="sp">And before I go home, I hope to cook Japanese food with your mother. I want to make sushi!</span>',
     passage:'<b>ハルトのメモ</b><br>Lucy — wants to learn Japanese （　あ　）<br>'+
             '— wants to wear a （　い　） and take photos<br>— hopes to （　う　） Japanese food with my mother',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）書道", answers:["calligraphy"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）着物", answers:["kimono"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）料理する", answers:["cook"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["calligraphy"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["kimono"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["cook"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文） */
   { intro:"問題D　あなたとクラスメイトのソウタ(Sota)が、留学生の歓迎会についての先生の説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

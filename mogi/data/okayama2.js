@@ -42,15 +42,15 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　ハルト(Haruto)が、ALTのベイカー(Mr. Baker)先生にワカバの町についてインタビューし、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hi, I\'m Mr. Baker from the U.K. In Wakaba, I love walking along the old <b>river</b> in the morning.</span>'+
-      '<span class="sp">The town is also famous for making strong blue <b>jeans</b>, and I bought a pair last month.</span>'+
-      '<span class="sp">On weekends, I often visit a small <b>museum</b> and learn about the history of the town.</span>',
+      '<span class="sp">Hi, I\'m Mr. Baker from the U.K. In Wakaba, I love walking along the old river in the morning.</span>'+
+      '<span class="sp">The town is also famous for making strong blue jeans, and I bought a pair last month.</span>'+
+      '<span class="sp">On weekends, I often visit a small museum and learn about the history of the town.</span>',
     passage:'<b>ハルトのメモ</b><br>Mr. Baker — likes walking along the old （　あ　） in the morning<br>'+
             '— Wakaba is famous for making blue （　い　）<br>— visits a small （　う　） to learn the town\'s history',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）川", answers:["river"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）ジーンズ", answers:["jeans"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）博物館", answers:["museum"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["river"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["jeans"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["museum"], hint:"英語1語" } ] },
 
   /* 問題D：説明を聞いて答える（内容一致＋英作文・2回読み） */
   { intro:"問題D　あなたとクラスメイトのメグ(Meg)が、町歩きイベントについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

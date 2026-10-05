@@ -115,9 +115,19 @@ function leakCheck(id, EXAM){
   (EXAM.sections||[]).forEach(sec=>{
     const listening = (sec.groups||[]).some(g=>g.script);
     (sec.groups||[]).forEach(g=>{
+      // ⑤ 放送文の中で答えを <b> で目立たせない（画面に台本が出るので、太字＝答えバレ）
+      if(g.script && /<b>/i.test(String(g.script))) fail(id, `大問${sec.no} 放送文（script）に <b> がある（答えが太字で見える）`);
       const material = String(g.passage||'') + ' ' + String(g.flyer||'');
       (g.items||[]).forEach(it=>{
         if(it.type==='fill'){
+          /* ④ メモの空所（あ・い・う）の設問文は「（あ）」だけ。日本語訳や言いかえ（「（あ）金曜日」）を書くと
+             放送を聞かなくても解ける（2026-10-05 先生指摘）。hint も「英語1語」「数字4けた」＋形の注だけ。 */
+          if(listening && /^[あ-ん]$/.test(String(it.label||''))){
+            if(!/^（[あ-ん]）$/.test(String(it.stem||'').trim()))
+              fail(id, `大問${sec.no} ${it.label} リスニングのメモの設問文に答えの訳やヒントが書かれている（「（${it.label}）」だけにする）：${strip(it.stem)}`);
+            if(it.hint && !/^(英語\d語|数字\d+けた)(（(〜ing の形|過去形|複数形|数を表す語|数|西暦)）)?$/.test(String(it.hint)))
+              fail(id, `大問${sec.no} ${it.label} リスニングのメモの hint に形以外のヒント「${it.hint}」`);
+          }
           (it.answers||[]).forEach(a=>{
             if(listening && has(material, a)) fail(id, `大問${sec.no} ${it.label||''} リスニングの資料に答え「${a}」がそのまま載っている`);
             if(has(it.stem||'', a) && !/抜き出し|最も適当な形に変えて/.test(String(it.stem||'')))

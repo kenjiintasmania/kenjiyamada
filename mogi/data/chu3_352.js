@@ -48,18 +48,18 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　ソラ(Sora)が、ALT のグリーン(Mr. Green)先生からオンライン交流についての説明を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, everyone. Our first online meeting with Bell Hill School will be next <b>Tuesday</b>.</span>'+
-      '<span class="sp">We will use the <b>computer</b> room on the second floor, because it has a big screen.</span>'+
-      '<span class="sp">The meeting will be about <b>forty</b> minutes long, so please prepare a short speech about our school.</span>',
+      '<span class="sp">Hello, everyone. Our first online meeting with Bell Hill School will be next Tuesday.</span>'+
+      '<span class="sp">We will use the computer room on the second floor, because it has a big screen.</span>'+
+      '<span class="sp">The meeting will be about forty minutes long, so please prepare a short speech about our school.</span>',
     passage:'<b>ソラのメモ</b><br>Online meeting with Bell Hill School<br>'+
             '— will be next （　あ　）<br>'+
             '— place: the （　い　） room on the second floor<br>'+
             '— about （　う　） minutes long<br>'+
             '— prepare a short speech about our school',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）火曜日", answers:["Tuesday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）コンピュータ", answers:["computer"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）会議のおよその長さ（〜分）", answers:["forty","40"], hint:"英語1語（数）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Tuesday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["computer"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["forty","40"], hint:"英語1語（数）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのヒナ(Hina)が、オンライン交流の活動についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

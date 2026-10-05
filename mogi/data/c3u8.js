@@ -49,16 +49,16 @@ sections: [
   { intro:"問題C　ハナ(Hana)が、公民館の職員のモリ(Ms. Mori)さんの話を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, everyone. I\'m Ms. Mori from Tsubaki Community Center. Thank you for helping us with the event for the children.</span>'+
-      '<span class="sp">The event will be held in <b>December</b>, not November, because another group will use the meeting room in November.</span>'+
-      '<span class="sp">When you arrive, please go to the <b>meeting</b> room on the second floor. We will keep all the toys there.</span>'+
-      '<span class="sp">The children will practice one game for about <b>twenty</b> minutes, and then they will move to the next table.</span>',
+      '<span class="sp">The event will be held in December, not November, because another group will use the meeting room in November.</span>'+
+      '<span class="sp">When you arrive, please go to the meeting room on the second floor. We will keep all the toys there.</span>'+
+      '<span class="sp">The children will practice one game for about twenty minutes, and then they will move to the next table.</span>',
     passage:'<b>ハナのメモ</b><br>Ms. Mori\'s talk<br>— The event will be held in （　あ　）.<br>'+
             '— Go to the （　い　） room on the second floor.<br>'+
             '— Each child practices one game for about （　う　） minutes.',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）12月", answers:["December"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）会議（〜 room）", answers:["meeting"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）1つの遊びを練習する時間（分）", answers:["twenty","20"], hint:"英語1語（数を表す語）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["December"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["meeting"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["twenty","20"], hint:"英語1語（数を表す語）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
   { intro:"問題D　あなたとクラスメイトのユウト(Yuto)が、小学生に昔の遊びを教える交流会についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

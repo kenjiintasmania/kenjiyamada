@@ -52,13 +52,13 @@ sections: [
 
   { intro:"問題3　ALTのコール(Cole)先生が、自分の国の駅について話しています。ミユのメモの（あ）（い）に入る英語1語を書きなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, I\'m Mr. Cole. In my country, most small stations have no staff, so people buy tickets from a <b>machine</b>.</span>'+
-      '<span class="sp">My grandfather worked at a station for <b>thirty</b> years. He loved talking with the people who took the train every morning.</span>',
+      '<span class="sp">Hello, I\'m Mr. Cole. In my country, most small stations have no staff, so people buy tickets from a machine.</span>'+
+      '<span class="sp">My grandfather worked at a station for thirty years. He loved talking with the people who took the train every morning.</span>',
     passage:'<b>ミユのメモ</b><br>Mr. Cole の国の駅<br>— most small stations have no staff → people buy tickets from a （　あ　）<br>'+
             '— his grandfather worked at a station for （　い　） years',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）機械", answers:["machine"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）おじいさんが駅で働いた年数（数を英語1語で）", answers:["thirty","30"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["machine"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["thirty","30"], hint:"英語1語" } ] },
 
   { intro:"問題4　ボランティア駅員のババさん(Mr. Baba)が、駅に来た中学生に話をしています。放送を聞いて(1)〜(3)に答えなさい。英文は2回読まれます。",
     script:

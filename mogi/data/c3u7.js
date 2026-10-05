@@ -48,16 +48,16 @@ sections: [
   { intro:"問題C　ナオ(Nao)が、プログラミング部の顧問のイシイ(Mr. Ishii)先生の話を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, everyone. I\'m Mr. Ishii, the teacher of the programming club. I have three things to tell you today.</span>'+
-      '<span class="sp">First, our next club meeting will be next <b>Saturday</b>, not Wednesday, because I have to go to a teachers\' meeting on Wednesday.</span>'+
-      '<span class="sp">Second, we usually use the computer room, but next week we will meet in the <b>science</b> room. The computer room will be used by another club.</span>'+
-      '<span class="sp">Third, last year, <b>fifteen</b> teams joined the city robot contest. This year, more teams will join, so please think about ideas for our robot before the meeting.</span>',
+      '<span class="sp">First, our next club meeting will be next Saturday, not Wednesday, because I have to go to a teachers\' meeting on Wednesday.</span>'+
+      '<span class="sp">Second, we usually use the computer room, but next week we will meet in the science room. The computer room will be used by another club.</span>'+
+      '<span class="sp">Third, last year, fifteen teams joined the city robot contest. This year, more teams will join, so please think about ideas for our robot before the meeting.</span>',
     passage:'<b>ナオのメモ</b><br>Mr. Ishii\'s talk<br>— The next club meeting will be next （　あ　）.<br>'+
             '— Next week, go to the （　い　） room, not the computer room.<br>'+
             '— （　う　） teams joined the city robot contest last year.',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）土曜日", answers:["Saturday"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）理科（室）", answers:["science"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）去年、コンテストに参加したチームの数", answers:["fifteen","15"], hint:"英語1語（数を表す語）" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Saturday"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["science"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["fifteen","15"], hint:"英語1語（数を表す語）" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
   { intro:"問題D　あなたとクラスメイトのナオ(Nao)が、ロボット作りのワークショップについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",

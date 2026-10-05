@@ -37,14 +37,14 @@ sections: [
 
   { intro:"問題C　先生が宿題について話しています。マリ(Mari)が書いたメモの（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">OK, here is your homework. Choose your favorite <b>season</b> and write about it.</span>'+
-      '<span class="sp">Your writing should be over <b>seventy</b> words in English.</span>'+
-      '<span class="sp">Please hand it in by next <b>Monday</b>.</span>',
+      '<span class="sp">OK, here is your homework. Choose your favorite season and write about it.</span>'+
+      '<span class="sp">Your writing should be over seventy words in English.</span>'+
+      '<span class="sp">Please hand it in by next Monday.</span>',
     passage:'<b>マリのメモ</b><br>・いちばん好きな（　あ　）を選んで書く<br>・英語で（　い　）語より多く書く<br>・次の（　う　）に提出する',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）季節", answers:["season"], hint:"英語1語" },
-    { type:"fill", label:"い", pt:2, stem:"（い）70", answers:["seventy"], hint:"英語1語" },
-    { type:"fill", label:"う", pt:2, stem:"（う）月曜日", answers:["monday"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["season"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["seventy"], hint:"英語1語" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["monday"], hint:"英語1語" } ] },
 
   { intro:"問題D　あなたとクラスメイトのトム(Tom)が、川の清掃活動についての説明を聞いて話しています。(1)(2)に答えなさい。英文は2回読まれます。",
     script:

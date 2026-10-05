@@ -48,16 +48,16 @@ sections: [
   { intro:"問題C　ミク(Miku)が、手話教室の先生のハヤシ(Mr. Hayashi)さんの説明を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Hello, everyone. I\'m Mr. Hayashi. Thank you for coming to the sign language class today.</span>'+
-      '<span class="sp">Next month, in <b>November</b>, we will visit a café in Nagisa City. The staff there cannot hear, so you will order your drinks in sign language.</span>'+
-      '<span class="sp">Before that, please practice the signs for food and drinks. There are <b>sixteen</b> signs on the paper I gave you today.</span>'+
-      '<span class="sp">On the day of the visit, please come to the <b>library</b> of the community center at ten, not to this room. We will walk to the café from there.</span>',
+      '<span class="sp">Next month, in November, we will visit a café in Nagisa City. The staff there cannot hear, so you will order your drinks in sign language.</span>'+
+      '<span class="sp">Before that, please practice the signs for food and drinks. There are sixteen signs on the paper I gave you today.</span>'+
+      '<span class="sp">On the day of the visit, please come to the library of the community center at ten, not to this room. We will walk to the café from there.</span>',
     passage:'<b>ミクのメモ</b><br>Mr. Hayashi\'s talk<br>— In （　あ　）, we will visit a café. The staff there cannot hear.<br>'+
             '— Practice the （　い　） signs for food and drinks on the paper.<br>'+
             '— On the day of the visit, go to the （　う　） at ten.',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）11月", answers:["November"], hint:"英語1語（月の名前）" },
-    { type:"fill", label:"い", pt:2, stem:"（い）紙に書かれている手話の数", answers:["sixteen","16"], hint:"英語1語（数を表す語）" },
-    { type:"fill", label:"う", pt:2, stem:"（う）図書室", answers:["library"], hint:"英語1語" } ] },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["November"], hint:"英語1語" },
+    { type:"fill", label:"い", pt:2, stem:"（い）", answers:["sixteen","16"], hint:"英語1語（数を表す語）" },
+    { type:"fill", label:"う", pt:2, stem:"（う）", answers:["library"], hint:"英語1語" } ] },
 
   /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
   { intro:"問題D　あなたとクラスメイトのショウ(Sho)が、公民館で行われる手話イベントの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
