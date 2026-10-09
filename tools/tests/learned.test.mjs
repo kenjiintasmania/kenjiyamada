@@ -42,7 +42,7 @@ const lockTxt = (await p.textContent("#learned")).replace(/\s+/g," ").trim();
 ok(/受付していません/.test(await p.textContent("#gateBadge")), "ロックされた");
 ok(lockTxt === openTxt, `★ロック中でも覚えた数は出たまま（${lockTxt}）`);
 
-/* 全文法のほうは「できた文」155文 */
+/* 全文法のほうは「できた文」165文 */
 G.call({action:"gate", pin:"PIN", exam:"mgram", open:true});
 G.call({kind:"mastery",exam:"mgram",cls:"1",num:"1",name:"いち",round:1,set:1,correct:4,asked:5,sec:60,ver:"t"});
 const q = await b.newPage();
@@ -53,7 +53,7 @@ await q.goto(new URL("../../mastery/gram.html", import.meta.url).href);
 await q.waitForTimeout(600);
 await q.fill("#f_num","1"); await q.selectOption("#f_cls","1"); await q.waitForTimeout(900);
 const gt = (await q.textContent("#learned")).replace(/\s+/g," ").trim();
-ok(/^4 \/ 155文/.test(gt), `★全文法は 4 / 155文（${gt}）`);
+ok(/^4 \/ 165文/.test(gt), `★全文法は 4 / 165文（${gt}）`);
 ok(/さわった1項目（5文）のうち 4 \/ 5/.test(gt), `★さわったぶんは 4 / 5（${gt}）`);
 
 

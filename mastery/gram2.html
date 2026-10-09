@@ -7,10 +7,10 @@
 <title>全文法 到達度テスト 上級編（打つ）｜ロックつき</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>⌨️</text></svg>">
 <!--
-  mastery/gram2.html ─ 全文法 到達度テスト【上級編＝自分で打つ】（31項目 × 5文 ＝ 155文）
+  mastery/gram2.html ─ 全文法 到達度テスト【上級編＝自分で打つ】（33項目 × 5文 ＝ 165文）
 
    先生の指示（2026-10-05）「全文法テストの上級編として自力で入力するパターンも設置して」。
-   gram.html（えらぶ）と同じ31項目・同じ155文・同じ採点（1文＝完答で1点）。
+   gram.html（えらぶ）と同じ33項目・同じ165文・同じ採点（1文＝完答で1点）。
    ちがいは入力だけ：ドロップダウンではなく、7つの箱に英語を**自分で打つ**。
    判定は GojunCore.gradeSlots（語順文法テストの「じぶんで打つ」と同じものさし。
    全角→半角・大文字小文字・アポストロフィ・文末の記号は見ない）。
@@ -67,7 +67,9 @@
   .learned .sub{font-size:12.5px;color:var(--gray)}
 
   /* 項目の帯（31個・押せる） */
-  .sets{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:10px 0 4px}
+  /* 33項目＝11列×3段（8列だと5段になり、横1024×768 で「▶ 始める」が画面の外に出た） */
+  .sets{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:5px;margin:10px 0 4px}
+  @media(max-width:560px){.sets{grid-template-columns:repeat(7,minmax(0,1fr))}}
   .sets button{display:block;width:100%;height:40px;border-radius:7px;background:#efedf6;
     border:1px solid var(--line);font-family:inherit;font-size:12px;line-height:1.1;
     text-align:center;color:var(--gray);cursor:pointer;padding:3px 0;overflow:hidden}
@@ -121,7 +123,7 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="gram.html">えらぶ編（全文法）</a>　／　<a href="index.html">2000語</a></div>
   <h1>全文法 到達度テスト 上級編 <span class="en">Grammar · Type</span></h1>
-  <p>31項目 × 5文。7つの箱に、日本語訳のとおりに英語を<b>自分で打つ</b>。えらぶ編と同じ文・同じ採点。時間制限なし・項目は自分でえらべます。</p>
+  <p>33項目 × 5文。7つの箱に、日本語訳のとおりに英語を<b>自分で打つ</b>。えらぶ編と同じ文・同じ採点。時間制限なし・項目は自分でえらべます。</p>
 </div></div>
 
 <div class="wrap">
@@ -202,9 +204,9 @@
 </div>
 
 <script src="../assets/site.js?v=0929a"></script>
-<script src="../assets/masterycore.js?v=1005a"></script>
+<script src="../assets/masterycore.js?v=1009a"></script>
 <script src="../assets/gojuncore.js?v=0927b"></script>
-<script src="../gojun/data/gojun_v1.js?v=0927b"></script>
+<script src="../gojun/data/gojun_v1.js?v=1009a"></script>
 <!-- ★上級編の切りかえ。試験IDは GAS の MASTERY_EXAMS／UNIT_EXAMS と /admin のカードに同じものがある
      （tools/check_gas_contract.mjs が突き合わせる） -->
 <script>window.GRAM_CFG = { exam: "mgram2", ver: "gram2 0.1", mode: "type" };</script>

@@ -1028,4 +1028,68 @@ items: [
     fill:{S:{ja:"★主語がもどる",en:"You"}, AUX:{ja:"★are に not がつく",en:"aren't"}, V:{ja:"（なし）",en:""},
           O:{ja:"（なし）",en:""}, M:{ja:"（なし）",en:""},
           PL:{ja:"体育館に",en:"in the gym"}, T:{ja:"4時に",en:"at four"}} } ] }
+,
+/* ===== ㉜ 疑問詞の疑問文（先生の分析 2026-10-09：習熟度テストで How long have you 〜? が
+   do you have／have to／time になった＝「疑問詞 ＋ 助動詞 ＋ 主語」の型を練習する項目が無かった）
+   ★末尾に足す（途中に入れると、到達度テストの記録のセット番号がずれる） ===== */
+{ key:"gimonshi", group:"kata", title:"⑧ 疑問詞の疑問文（疑問詞が頭に）", emoji:"❓",
+  lead:"疑問詞（What／Where／When／How long／How many 〜）が<b>いちばん前</b>に出て、そのうしろは「② 疑問文」と同じ＝<b>助動詞／＝ が主語の前</b>です。How long <b>have you</b> studied 〜? は have が主語の前に出ます（do you have ではない）。How many books のようなかたまりは、疑問詞の箱にまとめて入れます。",
+  slots:[
+    {k:"Q",  label:"疑問詞",   q:"★いちばん前"},
+    {k:"AUX",label:"助動詞／＝", q:"★主語の前に出た"},
+    {k:"S",  label:"主語",   q:"だれが"},
+    {k:"V",  label:"動詞",   q:"する"},
+    {k:"O",  label:"目的語", q:"なにを"},
+    {k:"PL", label:"場所",   q:"どこで"},
+    {k:"T",  label:"時間",   q:"いつ"}
+  ],
+  extra:{ Q:["Who","Why","How","Which","How much","What time"], AUX:["Do","Does","Did","Is","Are","Have","Has","Can"],
+          S:["he","they","your sister","we"],
+          V:["studies","played","practices","reading","studying"], O:["books","soccer","a book"],
+          PL:["in the park","at school","in the library"], T:["every day","last month","for two years","now"] },
+  sents:[
+  { ja:"あなたは 毎日 家で 何を 勉強しますか。", en:"What do you study at home every day?",
+    fill:{Q:{ja:"何を",en:"What"}, AUX:{ja:"（Do を借りる）",en:"do"}, S:{ja:"あなたは",en:"you"}, V:{ja:"勉強しますか",en:"study"},
+          O:{ja:"（疑問詞が目的語）",en:""}, PL:{ja:"家で",en:"at home"}, T:{ja:"毎日",en:"every day"}} },
+  { ja:"彼女は 昨日 どこで テニスを しましたか。", en:"Where did she play tennis yesterday?",
+    fill:{Q:{ja:"どこで",en:"Where"}, AUX:{ja:"（過去なので Did）",en:"did"}, S:{ja:"彼女は",en:"she"}, V:{ja:"しましたか（原形）",en:"play"},
+          O:{ja:"テニスを",en:"tennis"}, PL:{ja:"（疑問詞が場所）",en:""}, T:{ja:"昨日",en:"yesterday"}} },
+  { ja:"あなたの兄は いつ 公園で サッカーを 練習しますか。", en:"When does your brother practice soccer in the park?",
+    fill:{Q:{ja:"いつ",en:"When"}, AUX:{ja:"（三人称単数なので Does）",en:"does"}, S:{ja:"あなたの兄は",en:"your brother"}, V:{ja:"練習しますか（原形）",en:"practice"},
+          O:{ja:"サッカーを",en:"soccer"}, PL:{ja:"公園で",en:"in the park"}, T:{ja:"（疑問詞が時間）",en:""}} },
+  { ja:"あなたは どのくらいの間 英語を 勉強していますか。", en:"How long have you studied English?",
+    fill:{Q:{ja:"どのくらいの間",en:"How long"}, AUX:{ja:"★have が主語の前",en:"have"}, S:{ja:"あなたは",en:"you"}, V:{ja:"勉強して（過去分詞）",en:"studied"},
+          O:{ja:"英語を",en:"English"}, PL:{ja:"（なし）",en:""}, T:{ja:"（疑問詞が時間）",en:""}} },
+  { ja:"あなたは 先月 何冊の本を 読みましたか。", en:"How many books did you read last month?",
+    fill:{Q:{ja:"何冊の本を（かたまりで）",en:"How many books"}, AUX:{ja:"（過去なので Did）",en:"did"}, S:{ja:"あなたは",en:"you"}, V:{ja:"読みましたか（原形）",en:"read"},
+          O:{ja:"（疑問詞が目的語）",en:""}, PL:{ja:"（なし）",en:""}, T:{ja:"先月",en:"last month"}} }
+  ] },
+
+/* ===== ㉝ help／let／make ＋ 人 ＋ 動詞の原形（先生の分析 2026-10-09：習熟度テストの並べかえ
+   want to help them relax が help relax them（6人）・relax help them（4人）＝「人のうしろに原形」が入っていない） ===== */
+{ key:"shieki", group:"other", title:"help／let／make ＋人＋動詞の原形", emoji:"🤝",
+  lead:"help（手伝う）・let（させてあげる）・make（させる）は、<b>人のうしろに動詞の原形</b>が来ます。to も -ing もつけません（I want to help them relax.）。「人」の箱と「原形〜」の箱を分けて考えると、語順がくずれません。",
+  slots:[
+    {k:"S",  label:"主語",   q:"だれが"},
+    {k:"AUX",label:"助動詞／＝", q:"＝ は be動詞"},
+    {k:"V",  label:"動詞",   q:"help／let／make"},
+    {k:"O",  label:"人",     q:"だれに・だれを"},
+    {k:"C",  label:"原形〜", q:"★to も ing もつけない"}
+  ],
+  extra:{ AUX:["can","is","did"], V:["help","helped","let","lets","makes","made"],
+          O:["him","her","them","us","me","the students"],
+          C:["to relax","relaxing","to go to the concert","cleaning the classroom","carried the box","to use his computer"] },
+  sents:[
+  { ja:"わたしは 彼らが くつろぐのを 手伝いたい。", en:"I want to help them relax.",
+    fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"（なし）",en:""}, V:{ja:"手伝いたい",en:"want to help"}, O:{ja:"彼らが",en:"them"}, C:{ja:"くつろぐのを（原形）",en:"relax"}} },
+  { ja:"母は わたしを そのコンサートに 行かせてくれた。", en:"My mother let me go to the concert.",
+    fill:{S:{ja:"母は",en:"My mother"}, AUX:{ja:"（なし）",en:""}, V:{ja:"させてくれた",en:"let"}, O:{ja:"わたしを",en:"me"}, C:{ja:"そのコンサートに行く（原形）",en:"go to the concert"}} },
+  { ja:"先生は わたしたちに 教室を そうじさせた。", en:"The teacher made us clean the classroom.",
+    fill:{S:{ja:"先生は",en:"The teacher"}, AUX:{ja:"（なし）",en:""}, V:{ja:"させた",en:"made"}, O:{ja:"わたしたちに",en:"us"}, C:{ja:"教室をそうじする（原形）",en:"clean the classroom"}} },
+  { ja:"わたしは あなたが その箱を 運ぶのを 手伝います。", en:"I will help you carry the box.",
+    fill:{S:{ja:"わたしは",en:"I"}, AUX:{ja:"〜します",en:"will"}, V:{ja:"手伝う",en:"help"}, O:{ja:"あなたが",en:"you"}, C:{ja:"その箱を運ぶのを（原形）",en:"carry the box"}} },
+  { ja:"父は 週末に わたしに 自分のコンピュータを 使わせてくれる。", en:"My father lets me use his computer on weekends.",
+    fill:{S:{ja:"父は",en:"My father"}, AUX:{ja:"（なし）",en:""}, V:{ja:"させてくれる",en:"lets"}, O:{ja:"わたしに",en:"me"}, C:{ja:"週末に自分のコンピュータを使う（原形）",en:"use his computer on weekends"}} }
+  ] }
+
 ]};

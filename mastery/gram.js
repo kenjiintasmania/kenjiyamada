@@ -1,4 +1,4 @@
-/* mastery/gram.js ─ 全文法 到達度テスト（31項目 × 5文）
+/* mastery/gram.js ─ 全文法 到達度テスト（33項目 × 5文）
  *
  * 受付・続きの位置・帯・記録の送信は ../assets/masterycore.js（2000語と共通）。
  * 判定と選択肢の作りは ../assets/gojuncore.js（語順文法テストと共通）。
@@ -22,7 +22,7 @@
   var TYPE = CFG.mode === "type";               // 上級編＝打つ
 
   var G = window.GOJUN, C = window.GojunCore;
-  var ITEMS = G.items, SETS = ITEMS.length;      // 31項目
+  var ITEMS = G.items, SETS = ITEMS.length;      // 33項目（2026-10-09 に 疑問詞の疑問文・help＋人＋原形 を末尾に追加）
   var PER = 5;                                   // 1項目 5文
 
   var $ = function (id) { return document.getElementById(id); };

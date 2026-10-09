@@ -20,7 +20,7 @@ ok(/受付中/.test(await p.textContent("#gateBadge")), "受付中になる");
 await p.selectOption("#f_cls","3"); await p.fill("#f_num","7"); await p.dispatchEvent("#f_num","change");
 await p.waitForTimeout(700);
 
-ok((await p.$$("#setBar button")).length===31, "帯が31項目（"+(await p.$$("#setBar button")).length+"）");
+ok((await p.$$("#setBar button")).length===33, "帯が33項目（"+(await p.$$("#setBar button")).length+"）");
 ok(await p.isVisible("#listCard"), "項目のはじめが出る");
 ok(/一般動詞/.test(await p.textContent("#listTitle")), "1つめの項目名が出る（"+(await p.textContent("#listTitle"))+"）");
 ok((await p.$$("#listBody div")).length===5, "5文の日本語が出る");

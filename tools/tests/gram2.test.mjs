@@ -20,7 +20,7 @@ ok(/受付中/.test(await p.textContent("#gateBadge")), "受付中になる（mg
 await p.selectOption("#f_cls","3"); await p.fill("#f_num","7"); await p.dispatchEvent("#f_num","change");
 await p.waitForTimeout(700);
 
-ok((await p.$$("#setBar button")).length===31, "帯が31項目");
+ok((await p.$$("#setBar button")).length===33, "帯が33項目");
 ok(await p.isVisible("#listCard"), "項目のはじめが出る");
 ok(/自分で打ちます/.test(await p.textContent("#listCard")), "打つ編の説明が出る");
 ok(!(await p.evaluate(()=>document.getElementById("leadBox").open)), "解説はたたまれている");

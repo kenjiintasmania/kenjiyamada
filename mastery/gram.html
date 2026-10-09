@@ -7,7 +7,7 @@
 <title>全文法 到達度テスト｜ロックつき</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>🧱</text></svg>">
 <!--
-  mastery/gram.html ─ 全文法 到達度テスト（31項目 × 5文 ＝ 155文）
+  mastery/gram.html ─ 全文法 到達度テスト（33項目 × 5文 ＝ 165文）
    ※上級編（自分で打つ）は gram2.html。同じ gram.js を window.GRAM_CFG で切りかえて読む。
 
    ねらいは2000語のほうと同じ：時間制限のない到達度評価。
@@ -70,7 +70,9 @@
   .learned .sub{font-size:12.5px;color:var(--gray)}
 
   /* 項目の帯（31個・押せる） */
-  .sets{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:10px 0 4px}
+  /* 33項目＝11列×3段（8列だと5段になり、横1024×768 で「▶ 始める」が画面の外に出た） */
+  .sets{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:5px;margin:10px 0 4px}
+  @media(max-width:560px){.sets{grid-template-columns:repeat(7,minmax(0,1fr))}}
   .sets button{display:block;width:100%;height:40px;border-radius:7px;background:#efedf6;
     border:1px solid var(--line);font-family:inherit;font-size:12px;line-height:1.1;
     text-align:center;color:var(--gray);cursor:pointer;padding:3px 0;overflow:hidden}
@@ -123,7 +125,7 @@
 <div class="hero"><div class="wrap">
   <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="gram2.html">上級編（自分で打つ）</a>　／　<a href="index.html">2000語</a></div>
   <h1>全文法 到達度テスト <span class="en">Grammar</span></h1>
-  <p>31項目 × 5文。7つの箱に、日本語訳のとおりに英語をえらぶ。時間制限なし・項目は自分でえらべます。</p>
+  <p>33項目 × 5文。7つの箱に、日本語訳のとおりに英語をえらぶ。時間制限なし・項目は自分でえらべます。</p>
 </div></div>
 
 <div class="wrap">
@@ -204,9 +206,9 @@
 </div>
 
 <script src="../assets/site.js?v=0929a"></script>
-<script src="../assets/masterycore.js?v=1005a"></script>
+<script src="../assets/masterycore.js?v=1009a"></script>
 <script src="../assets/gojuncore.js?v=0927b"></script>
-<script src="../gojun/data/gojun_v1.js?v=0927b"></script>
+<script src="../gojun/data/gojun_v1.js?v=1009a"></script>
 <script src="gram.js?v=1005a"></script>
 </body>
 </html>

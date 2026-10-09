@@ -10,9 +10,9 @@ await p.goto(new URL("../../gojun/index.html", import.meta.url).href); await p.w
 
 ok(await p.evaluate(()=>!!window.GojunCore), "共通ファイル（GojunCore）が読めている");
 const n=await p.evaluate(()=>window.GOJUN.items.length);
-ok(n===31, "31項目ある（"+n+"）");
+ok(n===33, "33項目ある（"+n+"）");
 const sent=await p.evaluate(()=>window.GOJUN.items.reduce((a,i)=>a+i.sents.length,0));
-ok(sent===155, "155文ある（"+sent+"）");
+ok(sent===165, "165文ある（"+sent+"）");
 
 // 判定のものさしが共通ファイル経由で効く
 const j=await p.evaluate(()=>({

@@ -3,51 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f766e">
-<title>2000語 到達度テスト｜ノンストップ</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>⏱️</text></svg>">
+<meta name="theme-color" content="#15803d">
+<title>活用編 到達度テスト｜ノンストップ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='84'>🔄</text></svg>">
 <!--
-  mastery/index.html ─ 到達度テスト（2000語）
-   ※熟語200語（idiom.html）は同じ mastery.js を window.MASTERY_CFG で切りかえて読む。
+  mastery/katsuyo.html ─ 活用編 到達度テスト（動詞150語×3形＋形容詞50語×3形＝600語形・8セット）
 
-   ねらい：時間制限のない到達度評価（完全習得学習）。
-     ・100語×20セット。ノンストップで、どこまで行けたかを見る
-     ・1コマで終わらなくてよい。次にゲートが開いたら続きから
-     ・分からない語はアッサリ捨てる（空Enter＝パス）。速く何度もやって潰していく
-     ・★セットは生徒が自分で選べる（1をもう一度、20だけ、が自由）。
-       基本は1→2→3の順にすすめるが、それは「いちばん回数の少ないセット」を
-       おすすめとして出しているだけで、強制ではない。
+   先生の指示（2026-10-09）：習熟度テストで seen が saw になる（過去分詞が出ない）子が多かった。
+   単語アプリの「活用編」はあるが本人まかせで記録が残らないので、2000語・熟語と同じ
+   ロックつきの到達度テストにする（セットごとの最高点を記録・合計600点）。
 
-   指標は CPM（Correct Per Minute＝1分あたりの正解語数）。
-   ★時間だけでは測れない：全部パスすれば誰でも最速になるため、正解数が主、CPMが従。
-   ★CPMはセット間で比べない：セット1は平均4.3字、セット20は11.4字で打鍵量が3倍ちがう。
-     比べるのは「同じセットの前の周と今の周」。百ますが同じ100問を繰り返すのと同じ理屈。
+   出題のもとは単語アプリと同じ words/data/katsuyo.js（1パターン＝原形→過去形→過去分詞形、
+   または 原形→比較級→最上級 の3語形。前の語形は訳の下に見せる）。
+   1セット＝25パターン×3＝75語形。セット1〜6が動詞、7〜8が形容詞。
 
-   ★記録の「周回」は全体の周ではなく **そのセットの何回目か**。セットを自由に選べる以上、
-     全体の周という数えかたが成り立たないため。セット1の2回目は「周回2・セット1」として残る。
-
-   続きの位置の正はサーバー（スプレッドシート）。端末の記録は保険でしかない
-   （端末を変えても、キャッシュを消しても続きから戻れるようにするため）。
-
-   ★採点はこのページがやる。判定は ../assets/wordjudge.js（単語アプリと同じもの）。
+   仕組みは 2000語（index.html）とまったく同じ。★画面のスクリプトは同じ mastery.js を読む（写しを置かない）。
+   記録は試験ID mkatsu で、2000語（m2000）とは混ざらない。端末の控えは mastery_katsu_v1。
+   ★採点は ../assets/wordjudge.js（単語アプリの活用編と同じもの）。
 -->
 <style>
   :root{
     --en:'Comic Sans MS','Comic Sans',ui-rounded,'Segoe Print',cursive;
     --jp:'游ゴシック','Yu Gothic',sans-serif;
-    --ink:#17212b; --gray:#56656f; --muted:#93a1ab; --paper:#f4f8f7; --line:#d9e6e2;
-    --c1:#0f766e; --c1d:#0b5750; --c2:#b45309;
+    --ink:#17212b; --gray:#56656f; --muted:#93a1ab; --paper:#f3faf4; --line:#d3e8d7;
+    --c1:#15803d; --c1d:#14532d; --c2:#0f766e;
     --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
   }
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);
     font-family:var(--jp);line-height:1.6;padding:0 0 60px}
   .wrap{max-width:900px;margin:0 auto;padding:0 15px}
-  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:18px 0 14px;margin-bottom:12px}
+  .hero{background:linear-gradient(100deg,#15803d,#14532d);color:#fff;padding:18px 0 14px;margin-bottom:12px}
   .hero h1{margin:0;font-size:21px}
-  .hero p{margin:4px 0 0;font-size:13px;color:#b9e2dc}
+  .hero p{margin:4px 0 0;font-size:13px;color:#cdebd4}
   .crumbs{font-size:12.5px;margin-bottom:6px}
-  .crumbs a{color:#b9e2dc}
+  .crumbs a{color:#cdebd4}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 12px}
   .hide{display:none!important}
   h2{font-size:17px;margin:0 0 8px}
@@ -73,19 +63,19 @@
 
   /* 覚えた数（受付が閉じていても出す） */
   .learned{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:12px 0 2px;
-    padding:9px 13px;border-radius:12px;background:#eef6f4;border:1px solid var(--line)}
+    padding:9px 13px;border-radius:12px;background:#e9f5ec;border:1px solid var(--line)}
   .learned .ttl{font-size:13px;color:var(--gray);font-weight:bold;white-space:nowrap}
   .learned .big{font-size:26px;color:var(--c1d)}
   .learned .sub{font-size:12.5px;color:var(--gray)}
 
   /* セットの進み具合 */
   .sets{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0 4px}
-  .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#e7eeec;
+  .sets button{display:block;width:100%;height:38px;border-radius:7px;background:#e6efe8;
     border:1px solid var(--line);font-family:inherit;font-size:12px;line-height:1.1;
     text-align:center;color:var(--gray);cursor:pointer;padding:3px 0}
   .sets button em{display:block;font-style:normal;font-size:10px;opacity:.85}
   .sets button:hover{border-color:var(--c1)}
-  .sets button.done{background:#cdebdc;border-color:#a5d8bf;color:#2c7a52;font-weight:bold}
+  .sets button.done{background:#cfe9d6;border-color:#a3d4b1;color:#14532d;font-weight:bold}
   .sets button.now{background:var(--c1);border-color:var(--c1d);color:#fff;font-weight:bold}
 
   /* 一覧（おぼえてからテスト） */
@@ -111,7 +101,7 @@
   .big{font-size:30px;font-weight:bold}
   table{border-collapse:collapse;width:100%;font-size:13px;margin-top:6px}
   th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}
-  th{background:#eef4f2}
+  th{background:#e9f5ec}
   @media(max-width:520px){
     .sets{grid-template-columns:repeat(5,1fr)}
     .q .ja{font-size:24px} #ansIn{font-size:22px}
@@ -121,9 +111,9 @@
 <body>
 
 <div class="hero"><div class="wrap">
-  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="idiom.html">熟語200語</a>　／　<a href="gram.html">全文法</a></div>
-  <h1>2000語 到達度テスト <span class="en">Mastery</span></h1>
-  <p>100語 × 20セット。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。セットは自分でえらべます。</p>
+  <div class="crumbs"><a href="../index.html">← トップ</a>　／　<a href="index.html">2000語</a>　／　<a href="idiom.html">熟語200語</a></div>
+  <h1>活用編 到達度テスト <span class="en">Forms</span></h1>
+  <p>動詞150語×3形（原形→過去形→過去分詞形）＋形容詞50語×3形（原形→比較級→最上級）＝600語形・8セット。前の語形は訳の下に出ます。時間制限なし。分からない語は空Enterで飛ばして、どんどん進もう。</p>
 </div></div>
 
 <div class="wrap">
@@ -141,7 +131,7 @@
       <label>番号 <input id="f_num" inputmode="numeric" autocomplete="off"></label>
       <label>名前 <input id="f_name" autocomplete="off" style="width:130px"></label>
     </div>
-    <div class="learned"><span class="ttl">覚えた単語</span> <span id="learned">　</span></div>
+    <div class="learned"><span class="ttl">できた語形</span> <span id="learned">　</span></div>
     <div class="sets" id="setBar"></div>
     <div class="note" id="progMsg">　</div>
     <div class="note" style="margin-top:4px">数字を押すと、そのセットに移れます。
@@ -150,8 +140,8 @@
 
   <!-- 一覧 -->
   <div class="card hide" id="listCard">
-    <h2 id="listTitle">セット1の100語</h2>
-    <p class="note">この回に出る語です。ざっと目を通して、はじめられたら開始。<b>覚えきらなくて大丈夫</b> ― 分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
+    <h2 id="listTitle">セット1</h2>
+    <p class="note">この回に出る語形です。1語につき 原形→過去形→過去分詞形（形容詞は 原形→比較級→最上級）の順に3つ続けて出ます。<b>不規則なもの</b>に目を通して、はじめられたら開始。分からない語は本番で空Enterで飛ばして、次にこのセットをやるときにまた当たります。</p>
     <!-- ★開始ボタンは一覧より前に置く。100語の一覧は画面いっぱいになるので、
          あとに置くと画面の外へ出てしまい、タブレットでは指がとどかない（2026-09 先生報告）。 -->
     <div class="btnrow">
@@ -183,7 +173,7 @@
   <!-- 結果 -->
   <div class="card hide" id="doneCard">
     <h2 id="doneTitle">セット1 おわり</h2>
-    <div class="big" id="doneScore">0 / 100</div>
+    <div class="big" id="doneScore">0 / 75</div>
     <div class="note" id="doneSub">　</div>
     <div class="note" id="sendMsg" style="margin-top:6px">　</div>
     <!-- ★ボタンは1つ。押すと記録を送り、受付の状態を確かめてから、セットをえらぶ画面（帯）にもどる。
@@ -202,7 +192,28 @@
 <script src="../assets/site.js?v=0929a"></script>
 <script src="../assets/masterycore.js?v=1009a"></script>
 <script src="../assets/wordjudge.js?v=0927b"></script>
-<script src="../words/data/words.js?v=0927b"></script>
+<script src="../words/data/katsuyo.js?v=1009a"></script>
+<!-- ★出題のもとを活用編に切りかえる。試験IDは GAS の MASTERY_EXAMS／UNIT_EXAMS と /admin のカードに
+     同じものがある（tools/check_gas_contract.mjs が突き合わせる） -->
+<script>
+window.MASTERY_CFG = (function (K) {
+  var PER_PAT = 25;                                 // 1セット＝25パターン×3語形＝75
+  var by = {}, PAT = [];
+  K.forEach(function (w) { if (!by[w.kid]) { by[w.kid] = []; PAT.push(w.kid); } by[w.kid].push(w); });
+  PAT.forEach(function (k) { by[k].sort(function (a, b) { return a.slot - b.slot; }); });   // 原形→過去形→過去分詞形
+  var SETS = Math.ceil(PAT.length / PER_PAT);       // 200パターン → 8セット（1〜6 動詞・7〜8 形容詞）
+  function setOf(n) { var out = []; PAT.slice((n - 1) * PER_PAT, n * PER_PAT).forEach(function (k) { out = out.concat(by[k]); }); return out; }
+  function kindOf(w) { return /形容詞/.test(w.p) ? "形容詞の比較" : "動詞の活用"; }
+  return {
+    exam: "mkatsu", ver: "katsu 0.1", sets: SETS, perSet: PER_PAT * 3, unitName: "セット", unitWord: "語形",
+    all: function () { return K; },
+    setOf: setOf,
+    tipOf: function (n) { var s = setOf(n); return s.length ? "セット" + n + "　" + kindOf(s[0]) + "（" + s[0].w + " 〜 " + s[s.length - 3].w + "）" : "セット" + n; },
+    posOf: function (w) { return kindOf(w) + "　" + w.slotLabel; },
+    emptyMsg: "活用のデータが読みこめませんでした。ページを開きなおしてください。"
+  };
+})(window.KATSUYO_WORDS || []);
+</script>
 <script src="mastery.js?v=1005a"></script>
 </body>
 </html>

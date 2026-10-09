@@ -1,4 +1,4 @@
-/* assets/masterycore.js ─ 到達度テストの共通部分（2000語・全文法・全文法上級・熟語200語 の4本が使う）
+/* assets/masterycore.js ─ 到達度テストの共通部分（2000語・全文法・全文法上級・熟語200語・活用編 の5本が使う）
  *
  * ★写さずに1か所へ置く理由：このリポジトリは「同じ仕組みの写しが少しずつ食いちがう」
  *   事故を何度も起こしている（4レーンの norm()、/admin の試験一覧など）。
@@ -22,7 +22,8 @@
      マイページの「設定」（リセット）もここを見るので、各画面とここで写さない。 */
   var LS_OF = { m2000: "mastery_v1", mgram: "mastery_gram_v1",
                 mgram2: "mastery_gram2_v1",     // 全文法 上級編（打つ）
-                midiom: "mastery_idiom_v1" };   // 熟語200語
+                midiom: "mastery_idiom_v1",    // 熟語200語
+                mkatsu: "mastery_katsu_v1" };   // 活用編（動詞の変化形・形容詞の比較）
   function readLS(key) { try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) { return {}; } }
   function writeLS(key, o) { try { localStorage.setItem(key, JSON.stringify(o)); } catch (e) {} }
 

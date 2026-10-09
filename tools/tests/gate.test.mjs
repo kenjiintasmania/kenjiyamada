@@ -277,7 +277,7 @@ console.log("— リセット（全部）—");
   G.call({kind:"mastery", exam:"mgram", cls:"1", num:"8", name:"テスト", round:1, set:3, correct:4, asked:5, sec:30, ver:"t"});
   const t0=Date.now(); while(Date.now()-t0<3){}
   const r=G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"all", all:true, cls:"1", num:"8", name:"テスト"});
-  ok(r.result==="ok" && r.exams.length===4 && r.range==="全", "★全データ：到達度テスト4本すべてにリセット行："+JSON.stringify(r.exams));
+  ok(r.result==="ok" && r.exams.length===5 && r.range==="全", "★全データ：到達度テスト5本すべてにリセット行："+JSON.stringify(r.exams));
   const p1=G.call({action:"progress", exam:"m2000", cls:"1", num:"8"});
   const p2=G.call({action:"progress", exam:"mgram", cls:"1", num:"8"});
   ok(p1.done===0 && p2.done===0, "★両方とも 0 から（"+p1.done+"/"+p2.done+"）");
@@ -412,7 +412,7 @@ console.log("— jigaku-20：全文法 上級編（mgram2）・熟語200語（mi
   // 到達度まとめ（16列）と 成績まとめの末尾2列
   G.rebuildMasteryBoard();
   const bd=G.dump("到達度まとめ")||[], head=bd[0]||[];
-  ok(head.length===16 && head[9]==="文法上級 合計点" && head[12]==="熟語 合計点" && head[15]==="更新", "到達度まとめは16列（"+head.length+"）");
+  ok(head.length===19 && head[9]==="文法上級 合計点" && head[12]==="熟語 合計点" && head[15]==="活用 合計点" && head[18]==="更新", "到達度まとめは19列（"+head.length+"）");
   const row=bd.find(x=>String(x[0])==="1"&&String(x[1])==="3");
   ok(row && Number(row[9])===4 && Number(row[12])===37, "文法上級 4・熟語 17+20=37（"+(row&&row[9])+"/"+(row&&row[12])+"）");
   const sm=G.dump("成績まとめ")||[], hd=(sm[0]||[]).slice(); while(hd.length && hd[hd.length-1]==="") hd.pop();   // 模型は右端に空セルを足すことがある
@@ -425,8 +425,24 @@ console.log("— jigaku-20：全文法 上級編（mgram2）・熟語200語（mi
   // 全データリセットは4本ぶん
   const t0=Date.now(); while(Date.now()-t0<3){}
   const rs=G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"all", all:true, cls:"1", num:"3", name:"テスト"});
-  ok(rs.result==="ok" && rs.exams.length===4, "全データリセットは4本ぶんのリセット行");
+  ok(rs.result==="ok" && rs.exams.length===5, "全データリセットは5本ぶんのリセット行");
   ok(G.call({action:"progress", exam:"midiom", cls:"1", num:"3"}).done===0, "熟語も 0 から");
+}
+console.log("— jigaku-21：活用編（mkatsu）・🏅の合計点をまとめて書く —");
+{
+  const g=G.call({action:"gate", pin:"PIN", exam:"mkatsu", open:true});
+  ok(g.result==="ok" && g.open===true, "mkatsu の受付を開けられる");
+  let r=G.call({kind:"mastery", exam:"mkatsu", cls:"2", num:"4", name:"テスト", round:1, set:7, correct:60, asked:75, sec:300, ver:"t"});
+  ok(r.result==="ok", "mkatsu を記録できる（マイページから一度も送っていない子）");
+  const msg=G.rebuildMasteryTotals();
+  ok(/人ぶん/.test(msg), "🏅の合計点（"+msg+"）");
+  const sm=G.dump("成績まとめ")||[], hd=sm[0]||[], ck=hd.indexOf("到達度活用_合計");
+  const me=sm.find(x=>String(x[1])==="2"&&String(x[2])==="4");
+  ok(ck>0 && me && Number(me[ck])===60, "★成績まとめに行が足され、活用の合計点が入る（"+(me&&me[ck])+"）");
+  const rows=sm.slice(1).filter(x=>String(x[1])==="2"&&String(x[2])==="4");
+  ok(rows.length===1, "行は1つだけ（"+rows.length+"）");
+  const c3=sm.find(x=>String(x[1])==="3"&&String(x[2])==="21");
+  ok(c3 && Number(c3[hd.indexOf("到達度2000語_合計")])>0, "ほかの子の合計点もまとめて入る");
 }
 console.log("— 到達度まとめ：古い10列の並びの行が残っていても作りなおす —");
 {
@@ -440,11 +456,11 @@ console.log("— 到達度まとめ：古い10列の並びの行が残ってい�
   // 1人ぶんの更新（リセット時に呼ばれる）が入ると、見出しのちがいを見て全員ぶん作りなおす
   G.call({action:"mastery_reset", kind:"mastery_reset", pin:"PIN", exam:"mgram2", from:1, to:1, cls:"1", num:"3", name:"テスト"});
   const bd=G.dump("到達度まとめ")||[];
-  ok(bd[0].length===16 && bd[0][15]==="更新", "見出しが16列に置きかわる（"+bd[0].length+"）");
+  ok(bd[0].length===19 && bd[0][18]==="更新", "見出しが19列に置きかわる（"+bd[0].length+"）");
   const r21=bd.find(x=>String(x[0])==="3"&&String(x[1])==="21");
   ok(r21 && typeof r21[3]==="number" && r21[3]>0 && typeof r21[9]==="number", "★古い行の「更新」が「文法上級 合計点」の列に残らない（"+(r21&&r21[9])+"）");
-  const dates=bd.slice(1).filter(x=>x[15] instanceof Date || /20\d\d/.test(String(x[15])));
-  ok(dates.length===bd.length-1, "全員の行に「更新」が16列目に入る（"+dates.length+"/"+(bd.length-1)+"）");
+  const dates=bd.slice(1).filter(x=>x[18] instanceof Date || /20\d\d/.test(String(x[18])));
+  ok(dates.length===bd.length-1, "全員の行に「更新」が19列目に入る（"+dates.length+"/"+(bd.length-1)+"）");
 }
 
 console.log(`\n${pass} pass / ${fail} fail`);
