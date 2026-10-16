@@ -6,6 +6,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { loadEikenBank, countBank } from './lib/eiken_bank.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
@@ -37,6 +38,7 @@ const count = {};
   const s1 = {}; new Function('window', r('dojo/data/drill_s1.js'))(s1);
   const s3 = {}; new Function('window', r('dojo/data/drill_s3.js'))(s3);
   count.tech = w.DOJO_TECHS.length; count.s1 = s1.DOJO_S1.items.length; count.s3 = s3.DOJO_S3.items.length; }
+{ const eb = loadEikenBank(); count.eiken = countBank(eb.BANK).total; }
 { const w = {}; new Function('window', r('challenge/data/compose.js'))(w);
   const k = Object.keys(w).find(x => Array.isArray(w[x]));
   count.compose = k ? w[k].length : 0; }
@@ -58,7 +60,7 @@ const PAGES = [
   ['mogi/vocab_chu2.html', '習熟度単語テスト 中2', '答えの単語だけを確認するテスト', '採点される'],
   ['mogi/vocab_chu3_2.html', '習熟度単語テスト 中3第2回', '同上', '採点される'],
   ['mogi/vocab_chu3_3.html', '習熟度単語テスト 中3第3回', '同上', '採点される'],
-  ['eiken/index.html', '英検アプリ（7〜2級・全413問）',
+  ['eiken/index.html', `英検アプリ（7〜2級・全${count.eiken}問）`,
    '級を選ぶ→ジャンル訓練→判定テスト。結果を送信できる',
    '判定テストを1回終えて「先生に送信」→ 実証シートの「英検テスト履歴」に1行増える'],
   ['challenge/index.html', `挑戦モード（並べ替え英作文${count.compose}問ほか）`,
@@ -246,7 +248,7 @@ ${examRows}
       <tr><th>動作環境</th><td>Chrome / Edge / Safari の現行版。GIGA端末（Chromebook）はURLを開くだけ</td></tr>
       <tr><th>通信</th><td>記録送信時のみ。宛先は Google Apps Script のウェブアプリ1本。第三者サービスへの通信なし</td></tr>
       <tr><th>保存</th><td>学習状況は端末内（localStorage）。端末をまたいで共有されない</td></tr>
-      <tr><th>収録数</th><td>単語${count.words}語（基本${count.wBasic}／拡張${count.wExt}）＋活用600点・模試${EXAMS.length}本（${[...new Set(EXAMS.filter(e => !e.unit).map(e => e.full))].sort((a, b) => b - a).join('点／')}点）・英検413問・読解道場テク${count.tech}枚＋ドリル${count.s1 + count.s3}問・並べ替え英作文${count.compose}問</td></tr>
+      <tr><th>収録数</th><td>単語${count.words}語（基本${count.wBasic}／拡張${count.wExt}）＋活用600点・模試${EXAMS.length}本（${[...new Set(EXAMS.filter(e => !e.unit).map(e => e.full))].sort((a, b) => b - a).join('点／')}点）・英検${count.eiken}問・読解道場テク${count.tech}枚＋ドリル${count.s1 + count.s3}問・並べ替え英作文${count.compose}問</td></tr>
       <tr><th>実証モードの解除</th><td>画面上部の帯の「通常モードにもどす」。60日で自動失効</td></tr>
     </table>
   </div>

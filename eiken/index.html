@@ -1,4 +1,5 @@
 <!-- mado_loop.html | v0.25 | 2026-06-19 JST -->
+<!--   v0.25→v0.26：フル判定テストを「3回分以上の問題から毎回ランダムに1回分を引く」に（data/bank2.js に増量ぶん・FULL_PLAN が1回分の数・読解は本文ごとにまとめて後半）。 -->
 <!--   v0.24→v0.25：①級チップ選択でアクションカードへスムーズスクロール。②レベルバーを4マーカー化（◯直近/★本番最高(濃金)/☆クイック最高(薄金)/◆平均(紫)）。公式キャプションは本番(フル)最高のみで駆動・新フル最高だけ大☆ポップ。③ヘッダのブランドをどの画面からでもホームへ＋判定テスト中に「←ホーム」を表示。 -->
 <!--   v0.23→v0.24：成績送信先GAS_URLを新デプロイ(mado_score_gas v2.0)に更新。 -->
 <!--   v0.22→v0.23：最高★の黒外枠を◯のリングと同じ2.5pxに（視認性UP）。 -->
@@ -341,9 +342,11 @@
 </div>
 
 <script src="../assets/site.js"></script>
+<!-- 増量ぶんの問題（フル判定テスト×3回分）。index.html の BANK に連結する（下の merge 参照） -->
+<script src="data/bank2.js?v=1016a"></script>
 <script>
 (function(){
-  var APP_VER = "v0.25";
+  var APP_VER = "v0.26";
 
   /* ============================ 級・ジャンル定義 ============================ */
   var GRADES = [
@@ -575,9 +578,9 @@
     "7":{
       vocab:[
         {t:"mc", q:"「青」を表す英語は？", ch:["blue","red","yellow","white"], a:0, ex:"blue＝青。"},
-        {t:"mc", q:"🐱 これを表す英語は？", ch:["cat","dog","cow","pig"], a:0, ex:"cat＝ねこ。"},
+        {t:"mc", q:"🐸 これを表す英語は？", ch:["frog","dog","cow","pig"], a:0, ex:"frog＝かえる。"},
         {t:"mc", q:"「本」を表す英語は？", ch:["book","pen","desk","bag"], a:0, ex:"book＝本。"},
-        {t:"fill", q:"「赤」を英語で書こう（r で始まる）。", a:"red", ex:"red＝赤。"},
+        {t:"fill", q:"「白」を英語で書こう（w で始まる）。", a:"white", ex:"white＝白。"},
         {t:"mc", q:"数の「three」はいくつ？", ch:["3","2","5","8"], chJp:true, a:0, ex:"three＝3。"},
         {t:"mc", q:"あいさつ「ありがとう」は？", ch:["Thank you.","Good night.","I'm sorry.","Hello."], a:0, ex:"Thank you.＝ありがとう。"}
       ],
@@ -846,7 +849,7 @@
       vocab:[
         {t:"mc", q:"🐘 これを表す英語は？", ch:["elephant","cat","dog","bird"], a:0, ex:"elephant＝ぞう。"},
         {t:"mc", q:"「黄色」を表す英語は？", ch:["yellow","blue","red","green"], a:0, ex:"yellow＝黄色。"},
-        {t:"fill", q:"「ねこ」を英語で書こう（c で始まる）。", a:"cat", ex:"cat＝ねこ。"},
+        {t:"fill", q:"「うさぎ」を英語で書こう（r で始まる）。", a:"rabbit", ex:"rabbit＝うさぎ。"},
         {t:"mc", q:"数の「five」はいくつ？", ch:["5","3","4","9"], chJp:true, a:0, ex:"five＝5。"},
         {t:"mc", q:"あいさつ「さようなら」は？", ch:["Goodbye.","Hello.","Thank you.","Sorry."], a:0, ex:"Goodbye.＝さようなら。"}
       ],
@@ -1289,6 +1292,32 @@
       for(var ge in MORE4[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
         BANK[g][ge]=BANK[g][ge].concat(MORE4[g][ge]); } }
   })();
+
+  /* ---- 増量ぶん（data/bank2.js・2026-10 先生指示「フル×3回分に増量し、毎回ランダムに出す」）----
+     別ファイルにしてあるのは、この HTML が1万行になるのを避けるため。無くても動く（読めなければ元の問題だけ）。 */
+  (function(){
+    var X = (typeof window!=="undefined" && window.EIKEN_BANK2) || null; if(!X) return;
+    for(var g in (X.BANK||{})){ if(!BANK[g])BANK[g]={};
+      for(var ge in X.BANK[g]){ if(!BANK[g][ge])BANK[g][ge]=[];
+        BANK[g][ge]=BANK[g][ge].concat(X.BANK[g][ge]); } }
+    for(var pid in (X.PASSAGES||{})) if(!PASSAGES[pid]) PASSAGES[pid]=X.PASSAGES[pid];
+  })();
+
+  /* ---- フル判定テストの「1回分」（ジャンルごとの出題数）----
+     ★問題は3回分以上あるが、1回のテストに出すのはこの数だけ。毎回ランダムに引く（drawFull）。
+     数は増量前（v0.25・478問時点）の級ごとの問題数そのまま＝本番1回分に近い量。
+     reading は本文ごとにまとめて引く（同じ本文の問題を離して出さない・本文を何度も読ませない）。 */
+  var FULL_PLAN = {
+    "7":        {vocab:16, grammar:12, technique:11, practice:8},
+    "6":        {vocab:13, grammar:12, technique:11, practice:8},
+    "prep":     {meta:20},
+    "5":        {vocab:13, grammar:12, technique:11, practice:8,  reading:9},
+    "4":        {vocab:14, grammar:16, technique:13, practice:10, reading:13},
+    "3":        {vocab:24, grammar:18, technique:18, practice:16, reading:17},
+    "pre2":     {vocab:12, grammar:12, technique:11, practice:8,  reading:14},
+    "pre2plus": {vocab:9,  grammar:9,  technique:9,  practice:8,  reading:10},
+    "2":        {vocab:12, grammar:12, technique:11, practice:8,  reading:10}
+  };
 
   /* ============================ 採点ユーティリティ ============================ */
   function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -1806,12 +1835,15 @@
     setLoop("test");
     var gm=gradeMeta(S.grade), pool=gradePool(S.grade);
     var quick=Math.min(QUICK_N,pool.length);
+    // ★ここで1回分を引いておき、画面の問題数とスタート後の中身をそろえる
+    S.pendingFull={grade:S.grade, queue:drawFull(S.grade)};
+    var fullN=S.pendingFull.queue.length, times=fullN?Math.floor(pool.length/fullN*10)/10:0;
     app.innerHTML=''+
     '<div class="card center">'+
       '<div class="sectlabel" style="justify-content:center;color:var(--brand-ink);font-size:16px;margin-bottom:8px;">📋 '+esc(gm.name)+' 判定テスト</div>'+
       '<div class="hint" style="margin-bottom:16px;">英検の判定基準にならい、<b>正答率65%以上で合格</b>。モードをえらんでね。</div>'+
-      '<button class="act big" id="mFull">フルモード（全'+pool.length+'問）</button>'+
-      '<div class="hint" style="margin:6px 0 14px;">本番に近い問題数。じっくり実力を判定。</div>'+
+      '<button class="act big" id="mFull">フルモード（'+fullN+'問）</button>'+
+      '<div class="hint" style="margin:6px 0 14px;">本番に近い問題数。'+pool.length+'問（約'+times+'回分）から<b>毎回ちがう組み合わせ</b>で出ます。</div>'+
       '<button class="act sec big" id="mQuick">クイックモード（'+quick+'問）</button>'+
       '<div class="hint" style="margin-top:6px;">少しずつ出題。短時間でサッと判定。</div>'+
     '</div>'+
@@ -1821,9 +1853,28 @@
     $("backHome2").addEventListener("click",function(){go("home");});
   }
 
+  /* フル1回分をランダムに引く。読解以外は混ぜて前半に、読解は本文ごとにまとめて後半に（本番と同じ並び）。 */
+  function drawFull(grade){
+    var plan=FULL_PLAN[grade]||{}, head=[], tail=[];
+    GENRES.forEach(function(ge){
+      var qs=((BANK[grade]&&BANK[grade][ge.id])||[]).slice(); if(!qs.length) return;
+      var n=(plan[ge.id]!=null)?plan[ge.id]:qs.length;
+      if(ge.id==="reading"){
+        var byP={}, ids=[];
+        qs.forEach(function(q){ var k=q.p||"_"; if(!byP[k]){byP[k]=[];ids.push(k);} byP[k].push(q); });
+        shuffle(ids);
+        var got=0; for(var i=0;i<ids.length&&got<n;i++){ tail=tail.concat(byP[ids[i]]); got+=byP[ids[i]].length; }
+      } else {
+        head=head.concat(shuffle(qs).slice(0,Math.min(n,qs.length)));
+      }
+    });
+    return shuffle(head).concat(tail);
+  }
   function startTest(mode){
-    var pool=shuffle(gradePool(S.grade).slice());
-    if(mode==="quick")pool=pool.slice(0,Math.min(QUICK_N,pool.length));
+    var pool;
+    if(mode==="quick") pool=shuffle(gradePool(S.grade).slice()).slice(0,Math.min(QUICK_N,gradePool(S.grade).length));
+    else pool=(S.pendingFull&&S.pendingFull.grade===S.grade)?S.pendingFull.queue:drawFull(S.grade);
+    S.pendingFull=null;
     S.test={mode:mode, queue:pool, idx:0, ok:0, byGenre:{}};
     go("test");
   }
@@ -2003,6 +2054,8 @@
   }
 
   go("home");
+  // 通し試験（tools/tests/eiken.test.mjs）が中を見るための手がかり。画面からは使わない。
+  window.__eiken = { drawFull:drawFull, gradePool:gradePool, go:go, S:S, BANK:BANK, GENRES:GENRES, FULL_PLAN:FULL_PLAN };
 })();
 </script>
 </body>
