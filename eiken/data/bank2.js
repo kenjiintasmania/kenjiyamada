@@ -662,13 +662,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【2級・聞く】A: Excuse me, does this train stop at Minami Station? B: No, you need the local train on Platform 3. 質問: What should the passenger do?",
      "ch": [
-      "Take the local train on Platform 3.",
+      "Change to a local train.",
       "Stay on this train until Minami Station.",
       "Buy a new ticket.",
       "Walk to Minami Station."
      ],
      "a": 0,
-     "ex": "you need the local train on Platform 3 から。"
+     "ex": "you need the local train on Platform 3＝各駅停車に乗りかえる、と言いかえた選択肢を選ぶ。"
     },
     {
      "t": "mc",
@@ -1072,13 +1072,13 @@ window.EIKEN_BANK2 = {
      "p": "g2_remote_work",
      "q": "質問: Why did remote work spread quickly?",
      "ch": [
-      "Because many offices had to close for health reasons.",
+      "Because many workplaces were shut to protect people's health.",
       "Because trains stopped running.",
       "Because offices became larger.",
       "Because workers wanted higher pay."
      ],
      "a": 0,
-     "ex": "第1段落 after many offices had to close for health reasons。"
+     "ex": "第1段落 after many offices had to close for health reasons＝健康上の理由で職場が閉まった。"
     },
     {
      "t": "mc",
@@ -1111,26 +1111,26 @@ window.EIKEN_BANK2 = {
      "p": "g2_remote_work",
      "q": "質問: What problem do young employees face?",
      "ch": [
-      "They may lose chances to learn from experienced colleagues.",
+      "They may have fewer chances to learn from senior staff.",
       "They must commute every day.",
       "They cannot use computers.",
       "They are paid less than others."
      ],
      "a": 0,
-     "ex": "第3段落 may miss the chance to learn from experienced colleagues。"
+     "ex": "第3段落 may miss the chance to learn from experienced colleagues＝経験ある同僚（＝先輩社員）から学ぶ機会を失うかもしれない。"
     },
     {
      "t": "mc",
      "p": "g2_remote_work",
      "q": "質問: What are many companies doing now?",
      "ch": [
-      "Looking for a balance between the two styles.",
+      "Trying to combine office work and remote work.",
       "Closing all of their offices in the big cities.",
       "Banning remote work completely.",
       "Moving to big cities."
      ],
      "a": 0,
-     "ex": "第3段落 searching for a balance between the two styles。"
+     "ex": "第3段落 searching for a balance between the two styles＝出社とテレワークの両立を探っている。"
     },
     {
      "t": "mc",
@@ -1163,26 +1163,26 @@ window.EIKEN_BANK2 = {
      "p": "g2_aging_society",
      "q": "質問: What do retired residents do in one town?",
      "ch": [
-      "They run a cafe and teach children traditional crafts.",
+      "They manage a coffee shop and pass skills on to children.",
       "They drive the school buses for all children in the town.",
       "They build hospitals.",
       "They sell their houses."
      ],
      "a": 0,
-     "ex": "第3段落 run a small cafe where they teach children traditional crafts。"
+     "ex": "第3段落 run a small cafe where they teach children traditional crafts＝カフェを営み、子どもに伝統工芸を教える。"
     },
     {
      "t": "mc",
      "p": "g2_aging_society",
      "q": "質問: How do volunteer drivers help?",
      "ch": [
-      "They take elderly people to hospitals.",
-      "They deliver newspapers to elderly people.",
+      "They drive older residents to the hospital.",
+      "They deliver newspapers to elderly people every day.",
       "They teach driving.",
       "They repair roads."
      ],
      "a": 0,
-     "ex": "第3段落 volunteer drivers to take elderly people to hospitals。"
+     "ex": "第3段落 volunteer drivers to take elderly people to hospitals＝高齢者を病院へ車で送る。"
     },
     {
      "t": "mc",
@@ -1202,13 +1202,13 @@ window.EIKEN_BANK2 = {
      "p": "g2_fast_fashion",
      "q": "質問: Why do many people buy more clothes than they need?",
      "ch": [
-      "New designs are released often at low prices.",
+      "Cheap new styles come out very frequently.",
       "Clothes last a long time, so people collect them.",
       "Shops are closed.",
       "Clothes are expensive."
      ],
      "a": 0,
-     "ex": "第1段落 release new designs every few weeks and sell them at low prices。"
+     "ex": "第1段落 release new designs every few weeks and sell them at low prices＝安い新作が次々出る。"
     },
     {
      "t": "mc",
@@ -1228,26 +1228,26 @@ window.EIKEN_BANK2 = {
      "p": "g2_fast_fashion",
      "q": "質問: What happens to most discarded clothes?",
      "ch": [
-      "They end up in landfills.",
-      "They are sold again abroad.",
+      "They are buried in waste sites.",
+      "They are sold again in other countries.",
       "They are burned at home.",
       "They become food."
      ],
      "a": 0,
-     "ex": "第2段落 most discarded clothes end up in landfills。"
+     "ex": "第2段落 most discarded clothes end up in landfills＝landfill（埋め立て地）＝ごみを埋める場所。"
     },
     {
      "t": "mc",
      "p": "g2_fast_fashion",
      "q": "質問: What is growing in popularity among young people?",
      "ch": [
-      "Second-hand shops and rental services.",
+      "Buying used clothes and renting clothes.",
       "Buying brand-new clothes every single week.",
       "Throwing clothes away.",
       "Dyeing fabric at home."
      ],
      "a": 0,
-     "ex": "第3段落 Second-hand shops and clothing rental services are growing in popularity。"
+     "ex": "第3段落 Second-hand shops and clothing rental services are growing in popularity＝古着を買う・服を借りる。"
     },
     {
      "t": "mc",
@@ -1280,13 +1280,13 @@ window.EIKEN_BANK2 = {
      "p": "g2_cashless",
      "q": "質問: Why is cashless payment good for shops?",
      "ch": [
-      "They can serve customers faster.",
-      "They do not have to pay any taxes.",
+      "They can deal with customers more quickly.",
+      "They do not have to pay taxes to the government.",
       "They need no staff.",
       "They get free goods."
      ],
      "a": 0,
-     "ex": "第2段落 shops can serve people faster。"
+     "ex": "第2段落 shops can serve people faster＝客をより速くさばける。"
     },
     {
      "t": "mc",
@@ -1306,7 +1306,7 @@ window.EIKEN_BANK2 = {
      "p": "g2_cashless",
      "q": "質問: Who might be left behind in a cashless society?",
      "ch": [
-      "People unfamiliar with technology or without a bank account.",
+      "People who are not used to new technology or have no bank account.",
       "Young smartphone users.",
       "Shop owners only.",
       "Government workers."
@@ -1411,7 +1411,7 @@ window.EIKEN_BANK2 = {
     {
      "t": "fill",
      "en": "I'm tired. Let's take a (   ).",
-     "q": "(   ) に入る1語（b で始まる）。",
+     "q": "(   ) に入る1語（b で始まる）。意味は「休憩」。",
      "a": "break",
      "ac": [
       "rest",
@@ -2397,13 +2397,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【3級・読む】Eメール（Tom → Daiki）: Thanks for inviting me. I'd love to go, but I have a piano lesson until eleven. Can we meet at the museum at noon instead? 質問: Why can't Tom meet at ten?",
      "ch": [
-      "He has a piano lesson.",
+      "He has a music lesson.",
       "He has to help his brother.",
       "The museum is closed.",
       "He doesn't like science."
      ],
      "a": 0,
-     "ex": "but I have a piano lesson until eleven から。"
+     "ex": "but I have a piano lesson until eleven から。piano lesson を music lesson と言いかえている。"
     },
     {
      "t": "mc",
@@ -2421,13 +2421,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【3級・読む】メモ: Mom, I'm at Hana's house. We're making a poster for the school festival. I'll be home by six. Please don't make dinner for me. I'll eat here. - Aya 質問: What does Aya ask her mother to do?",
      "ch": [
-      "Not to make dinner for her.",
+      "Not to cook for her.",
       "Pick her up at Hana's house at six.",
       "Bring a poster.",
       "Call Hana's mother."
      ],
      "a": 0,
-     "ex": "Please don't make dinner for me から。"
+     "ex": "Please don't make dinner for me から。make dinner＝cook（料理する）。"
     },
     {
      "t": "mc",
@@ -2445,25 +2445,25 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【3級・読む】Eメール（Haruto → Ms. Brown）: Thank you for the great lesson yesterday. I didn't understand the last part about the past tense. Could you explain it again tomorrow? 質問: What does Haruto want Ms. Brown to do?",
      "ch": [
-      "Explain the past tense again.",
+      "Teach the past tense one more time.",
       "Cancel tomorrow's lesson.",
       "Check his homework before tomorrow.",
       "Call his parents."
      ],
      "a": 0,
-     "ex": "Could you explain it again の it＝the past tense。"
+     "ex": "Could you explain it again の it＝the past tense。explain … again＝teach … one more time。"
     },
     {
      "t": "mc",
      "q": "【3級・聞く】A: Excuse me, does this bus go to the city museum? B: No, you need the No. 5 bus. It leaves from the stop across the street. 質問: What will A probably do next?",
      "ch": [
-      "Go to the bus stop across the street.",
+      "Cross the street to take another bus.",
       "Get on this bus.",
       "Walk to the museum from this bus stop.",
       "Buy a ticket."
      ],
      "a": 0,
-     "ex": "5番のバスは across the street の停留所から出る。"
+     "ex": "5番のバスは across the street（通りの向かい）の停留所から出る → 通りを渡って別のバスに乗る。"
     },
     {
      "t": "mc",
@@ -2481,13 +2481,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【3級・聞く】A: Yumi, did you see the soccer game last night? B: No, I had to study for today's math test. How was it? A: Our team won 2-1! 質問: Why didn't Yumi watch the game?",
      "ch": [
-      "She was studying for a test.",
+      "She had to get ready for a test.",
       "She was playing soccer with her team.",
       "She went to bed early.",
       "She doesn't like soccer."
      ],
      "a": 0,
-     "ex": "I had to study for today's math test から。"
+     "ex": "I had to study for today's math test から。study for＝get ready for（〜の準備をする）。"
     },
     {
      "t": "mc",
@@ -2859,7 +2859,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "A: Excuse me. Is this seat taken? B: (   )",
+     "en": "A: Excuse me. Is anyone sitting here? B: (   )",
      "q": "応答として自然なのは？",
      "ch": [
       "No, go ahead.",
@@ -2937,7 +2937,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "A: I passed the exam! B: (   )",
+     "en": "A: I got first prize in the speech contest! B: (   )",
      "q": "応答として自然なのは？",
      "ch": [
       "Congratulations! I'm happy for you.",
@@ -3017,13 +3017,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "英文: Saki wants to be a doctor, so she studies science very hard every night. 質問: Why does Saki study science hard?",
      "ch": [
-      "Because she wants to be a doctor.",
+      "Because she hopes to become a doctor.",
       "Because she likes her teacher.",
       "Because she has a test tomorrow.",
       "Because her friend asked her to."
      ],
      "a": 0,
-     "ex": "so の前が理由（wants to be a doctor）。"
+     "ex": "so の前が理由。wants to be a doctor＝hopes to become a doctor。"
     },
     {
      "t": "mc",
@@ -3041,13 +3041,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "会話: A: Where did you buy that bag? B: I didn't buy it. My aunt gave it to me for my birthday. 質問: How did B get the bag?",
      "ch": [
-      "B's aunt gave it to B.",
+      "It was a present from B's aunt.",
       "B bought it at a shop.",
       "B found it at school.",
       "B made it."
      ],
      "a": 0,
-     "ex": "My aunt gave it to me から。"
+     "ex": "My aunt gave it to me for my birthday から。買ったのではなく、おばからの誕生日プレゼント。"
     },
     {
      "t": "mc",
@@ -3097,26 +3097,26 @@ window.EIKEN_BANK2 = {
      "p": "g3_speech_garden",
      "q": "質問: Why did Mio almost give up?",
      "ch": [
-      "Because nothing happened for a long time.",
+      "Because the seeds did not grow quickly.",
       "Because the tomatoes were not sweet.",
       "Because she was too busy.",
       "Because her grandmother was angry."
      ],
      "a": 0,
-     "ex": "第2段落 Nothing happened for a long time, so I almost gave up。"
+     "ex": "第2段落 Nothing happened for a long time, so I almost gave up＝種をまいても長い間なにも育たなかった（＝すぐには育たなかった）。"
     },
     {
      "t": "mc",
      "p": "g3_speech_garden",
      "q": "質問: What will students do in July?",
      "ch": [
-      "Cook the vegetables and eat them with their teachers.",
-      "Visit Mio's grandmother.",
+      "Eat the vegetables they grew with their teachers.",
+      "Visit Mio's grandmother's garden behind her house.",
       "Buy tomatoes at the supermarket.",
       "Clean the gym."
      ],
      "a": 0,
-     "ex": "第3段落 In July ... We will cook the vegetables and eat them together with our teachers。"
+     "ex": "第3段落 In July … We will cook the vegetables and eat them together with our teachers＝育てた野菜を先生と食べる（Garden Lunch）。"
     },
     {
      "t": "fill",
@@ -3139,13 +3139,13 @@ window.EIKEN_BANK2 = {
      "p": "g3_speech_letters",
      "q": "質問: Why did Haruto move to Hokkaido?",
      "ch": [
-      "Because of his father's work.",
+      "Because his father had to work there.",
       "Because he wanted to see snow.",
       "Because he joined a new soccer team.",
       "Because his grandparents lived there."
      ],
      "a": 0,
-     "ex": "第2段落 moved to Hokkaido because of his father's job。job＝work（仕事）。"
+     "ex": "第2段落 moved to Hokkaido because of his father's job＝父の仕事の都合で（父がそこで働くことになった）。"
     },
     {
      "t": "mc",
@@ -3360,26 +3360,26 @@ window.EIKEN_BANK2 = {
      "p": "g3_story_bakery",
      "q": "質問: Why did Hinata help at the bakery?",
      "ch": [
-      "Because Mr. Sato broke his leg.",
+      "Because her grandmother's helper got hurt.",
       "Because she wanted to get money.",
       "Because her grandmother was sick.",
       "Because the bakery was very busy in summer."
      ],
      "a": 0,
-     "ex": "第1段落 because her helper, Mr. Sato, broke his leg。"
+     "ex": "第1段落 her helper, Mr. Sato, broke his leg＝おばあちゃんの店を手伝う人がけがをした（broke his leg＝got hurt）。"
     },
     {
      "t": "mc",
      "p": "g3_story_bakery",
      "q": "質問: What was Hinata's job at the bakery?",
      "ch": [
-      "Putting bread on the shelves and greeting customers.",
-      "Baking milk bread.",
+      "Putting bread on shelves and greeting customers.",
+      "Baking milk bread at five every morning.",
       "Washing the dishes.",
       "Delivering bread to houses."
      ],
      "a": 0,
-     "ex": "第1段落 put the bread on the shelves and to say \"Good morning\" to the customers。"
+     "ex": "第1段落 put the bread on the shelves and to say \"Good morning\" to the customers（＝greeting）。milk bread を焼くのはおばあちゃん。"
     },
     {
      "t": "mc",
@@ -3425,26 +3425,26 @@ window.EIKEN_BANK2 = {
      "p": "g3_story_lucas",
      "q": "質問: Why did the teacher ask Shun to sit next to Lucas?",
      "ch": [
-      "Because Shun liked English.",
+      "Because Shun was interested in English.",
       "Because Shun played soccer.",
       "Because Shun was from Brazil.",
       "Because Shun was the class leader."
      ],
      "a": 0,
-     "ex": "第1段落 asked me to sit next to him because I liked English。"
+     "ex": "第1段落 asked me to sit next to him because I liked English＝Shun は英語が好き（interested in）だった。"
     },
     {
      "t": "mc",
      "p": "g3_story_lucas",
      "q": "質問: Why didn't Shun talk much to Lucas at first?",
      "ch": [
-      "He was afraid of making mistakes in English.",
+      "He didn't want to make mistakes in English.",
       "He didn't like Lucas.",
       "He was busy with club activities.",
       "Lucas couldn't speak any Japanese."
      ],
      "a": 0,
-     "ex": "第2段落 I was afraid of making mistakes in English。"
+     "ex": "第2段落 I was afraid of making mistakes in English＝英語でまちがえるのが怖かった → まちがえたくなかった。"
     },
     {
      "t": "mc",
@@ -3918,13 +3918,13 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "It is important (   ) breakfast every day.",
+     "en": "It is fun (   ) soccer with my friends.",
      "q": "(   ) に入る語は？",
      "ch": [
-      "to eat",
-      "eating",
-      "ate",
-      "eats"
+      "to play",
+      "playing",
+      "played",
+      "plays"
      ],
      "a": 0,
      "ex": "It is ～ to＋原形＝…することは〜だ。"
@@ -4373,7 +4373,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【4級・大問3】語を正しく並べた文は？ ( did / what / you / do / last night )",
+     "q": "【4級・大問3】語を正しく並べた文は？ ( you / last night / do / did / what )",
      "ch": [
       "What did you do last night?",
       "What you did do last night?",
@@ -4399,13 +4399,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【4級・読む】Eメール: Hi Ken, Thank you for the birthday present. I love the blue cap! I'll wear it at the soccer game on Sunday. 質問: What did Ken give his friend?",
      "ch": [
-      "A blue cap.",
-      "A soccer ball.",
-      "A book.",
-      "A T-shirt."
+      "Something to wear on his head.",
+      "A ball for the soccer game.",
+      "A book for his birthday.",
+      "Some blue shoes."
      ],
      "a": 0,
-     "ex": "I love the blue cap! がプレゼント。"
+     "ex": "I love the blue cap! がプレゼント。cap＝頭にかぶるもの。"
     },
     {
      "t": "mc",
@@ -4423,13 +4423,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【4級・読む】Eメール: Hi Emi, I can't go to the movie tomorrow. My grandmother is coming to see us. Can we go next Saturday? 質問: Why can't the writer go to the movie tomorrow?",
      "ch": [
-      "Her grandmother is coming.",
-      "She is sick.",
-      "She has a test.",
+      "Her grandmother will visit.",
+      "She is sick in bed.",
+      "She has a big test.",
       "She has no money."
      ],
      "a": 0,
-     "ex": "My grandmother is coming が理由。"
+     "ex": "My grandmother is coming to see us（おばあさんが来る）が理由。"
     },
     {
      "t": "mc",
@@ -4765,15 +4765,15 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "聞く: A: Excuse me, where is the post office? B: Go down this street and turn right. You'll see it beside the bank. 質問: Where is the post office?",
+     "q": "聞く: A: Excuse me, where is the post office? B: Go down this street and turn right. You'll see it on your left. It's by the bank. 質問: Where is the post office?",
      "ch": [
       "Next to the bank.",
       "In front of the station.",
-      "Across from the school.",
+      "Near the school.",
       "Behind the park."
      ],
      "a": 0,
-     "ex": "beside the bank（銀行のそば）＝ next to the bank。"
+     "ex": "by the bank（銀行のそば）＝ next to the bank。"
     }
    ],
    "reading": [
@@ -4847,13 +4847,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_flea_market",
      "q": "質問: Where is Sakura Park?",
      "ch": [
-      "Beside the library.",
+      "Near the library.",
       "In front of the station.",
       "Behind the town office.",
-      "Near the school."
+      "Next to the school."
      ],
      "a": 0,
-     "ex": "Sakura Park (next to the city library) ＝ 図書館のそば。"
+     "ex": "Sakura Park (next to the city library) ＝ 図書館の近く。next to the school とは書かれていない。"
     },
     {
      "t": "mc",
@@ -4873,13 +4873,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_flea_market",
      "q": "質問: What will happen if it rains?",
      "ch": [
-      "The market will be in the library hall.",
-      "The market will stop.",
-      "The market will be on May 5.",
-      "The market will be in the gym."
+      "They will use a room in the library.",
+      "They will stop the market.",
+      "They will have it on May 5 instead.",
+      "They will use the school gym."
      ],
      "a": 0,
-     "ex": "If it rains, ... in the library hall。"
+     "ex": "If it rains, ... in the library hall（図書館のホール）＝ 図書館の部屋を使う。"
     },
     {
      "t": "mc",
@@ -4925,13 +4925,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_lost_cat",
      "q": "質問: How did they find the cat's owner?",
      "ch": [
-      "They called the number on the name tag.",
+      "They made a phone call.",
       "They put up a poster.",
       "They asked a neighbor.",
       "They went to the police."
      ],
      "a": 0,
-     "ex": "第2段落 found a phone number on the name tag and called it。"
+     "ex": "第2段落 found a phone number on the name tag and called it ＝ 電話をかけた。"
     },
     {
      "t": "mc",
@@ -4990,13 +4990,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_aki_speech",
      "q": "質問: What did Aki do on the last day of fishing?",
      "ch": [
-      "She caught a big fish.",
+      "She got a very big one.",
       "She lost her fishing rod.",
       "She swam in the sea.",
       "She cooked dinner."
      ],
      "a": 0,
-     "ex": "第3段落 on the last day I caught a big fish。"
+     "ex": "第3段落 on the last day I caught a big fish ＝ 大きな魚（a big one）をつった。"
     },
     {
      "t": "mc",
@@ -5016,13 +5016,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_tennis_club",
      "q": "質問: Why can't they use the city tennis courts?",
      "ch": [
-      "The courts will be closed for cleaning.",
-      "It will rain.",
+      "People will clean them that day.",
+      "It will rain on Friday.",
       "The courts are too far.",
       "There is a game there."
      ],
      "a": 0,
-     "ex": "closed for cleaning が理由。"
+     "ex": "closed for cleaning（清掃のため閉まる）＝ その日は清掃する人が使う。"
     },
     {
      "t": "mc",
@@ -5055,13 +5055,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_rina_relay",
      "q": "質問: Why didn't Rina like the school sports day?",
      "ch": [
-      "She was not good at sports.",
+      "She didn't play sports well.",
       "She didn't have friends.",
       "It was too hot.",
       "She was always sick."
      ],
      "a": 0,
-     "ex": "第1段落 not good at sports, so ...。"
+     "ex": "第1段落 not good at sports（スポーツが苦手）＝ うまくできなかった。"
     },
     {
      "t": "mc",
@@ -5094,13 +5094,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_rina_relay",
      "q": "質問: How did Rina's team do in the race?",
      "ch": [
-      "They finished second.",
-      "They won.",
+      "They got second place.",
+      "They won first place.",
       "They finished last.",
-      "They didn't run."
+      "They didn't run at all."
      ],
      "a": 0,
-     "ex": "第3段落 finished second。"
+     "ex": "第3段落 finished second ＝ 2位。"
     },
     {
      "t": "mc",
@@ -6245,13 +6245,13 @@ window.EIKEN_BANK2 = {
      "p": "g5_yuta_family",
      "q": "質問: What does Yuta's mother do in the park?",
      "ch": [
-      "She reads a book.",
+      "She reads under a tree.",
       "She plays catch.",
       "She runs with the dog.",
       "She cooks."
      ],
      "a": 0,
-     "ex": "第3段落 My mother reads a book under a big tree。"
+     "ex": "第3段落 My mother reads a book under a big tree → 木の下で本を読む。"
     },
     {
      "t": "mc",
@@ -6362,13 +6362,13 @@ window.EIKEN_BANK2 = {
      "p": "g5_ryo_club",
      "q": "質問: What does the club have next month?",
      "ch": [
-      "An important game.",
+      "A basketball game.",
       "A basketball party.",
       "A new coach.",
       "A big test."
      ],
      "a": 0,
-     "ex": "第3段落 Next month, we have a big game＝大事な試合。"
+     "ex": "第3段落 Next month, we have a big game。Ryo はバスケットボール部なので、バスケの試合。"
     },
     {
      "t": "mc",
@@ -6388,13 +6388,13 @@ window.EIKEN_BANK2 = {
      "p": "g5_amy_sunday",
      "q": "質問: What does Jack do in the morning?",
      "ch": [
-      "He plays games in his room.",
+      "He plays games at home.",
       "He cleans his room with Amy.",
       "He helps his mother.",
       "He goes to the library with Mika."
      ],
      "a": 0,
-     "ex": "第2段落 He plays video games in his room。"
+     "ex": "第2段落 He plays video games in his room → 自分の部屋（家）でゲームをする。"
     },
     {
      "t": "mc",
@@ -6703,7 +6703,7 @@ window.EIKEN_BANK2 = {
    "grammar": [
     {
      "t": "mc",
-     "en": "I (   ) a student.",
+     "en": "I (   ) in my room now.",
      "q": "(   ) に入る語は？",
      "ch": [
       "am",
@@ -7030,16 +7030,16 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "A: Happy birthday, Ken!",
+     "en": "A: Where are you from?",
      "q": "【6級リスニング】自然な応答は？",
      "ch": [
-      "Thank you.",
-      "Here you are.",
-      "Yes, I can.",
-      "It's Monday."
+      "I'm from Japan.",
+      "I'm eleven.",
+      "It's Sunday.",
+      "Yes, I am."
      ],
      "a": 0,
-     "ex": "お祝いの言葉（Happy birthday!）には Thank you.（ありがとう）と返す。"
+     "ex": "Where are you from?（どこから来たの？）には I'm from ～.（～出身です）と答える。"
     },
     {
      "t": "mc",
@@ -7108,10 +7108,10 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "A: Where is my pen?",
+     "en": "A: Where is my cap?",
      "q": "【6級リスニング】自然な応答は？",
      "ch": [
-      "It's on the desk.",
+      "It's on the bed.",
       "It's Monday.",
       "I'm fine.",
       "You're welcome."
@@ -8622,7 +8622,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "(   ) you a student? — Yes, I am.",
+     "en": "(   ) you Ken? — Yes, I am.",
      "q": "(   ) に入る語は？",
      "ch": [
       "Are",
@@ -9727,9 +9727,9 @@ window.EIKEN_BANK2 = {
      "q": "質問: How much does it cost to use a bike for twenty minutes?",
      "ch": [
       "Just 100 yen.",
-      "Two hundred yen.",
+      "200 yen.",
       "It is free.",
-      "One hundred yen for each ten minutes."
+      "100 yen for every ten minutes."
      ],
      "a": 0,
      "ex": "第1段落 The first thirty minutes cost only one hundred yen（20分は30分以内）。"
@@ -9739,7 +9739,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_bike_sharing",
      "q": "質問: What is one change the service has brought to the city?",
      "ch": [
-      "The air in the city center has become cleaner.",
+      "The city has cleaner air now.",
       "More cars come to the city center.",
       "Shops near the stations have closed.",
       "People stopped using bikes."
@@ -9752,7 +9752,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_bike_sharing",
      "q": "質問: Why do shops near the stations have more customers?",
      "ch": [
-      "Riders stop and look around the shops.",
+      "People on bikes stop to visit the shops.",
       "The shops sell bikes.",
       "The shops give free bikes.",
       "The city pays the shops to put stations near them."
@@ -9765,7 +9765,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_bike_sharing",
      "q": "質問: What problem does the city have?",
      "ch": [
-      "Some riders do not return their bikes to a station.",
+      "Some bikes are not brought back to a station.",
       "The city cannot collect the bikes from the stations.",
       "The bikes are too expensive.",
       "Nobody uses the service."
@@ -9778,7 +9778,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_bike_sharing",
      "q": "質問: What is the city planning to do?",
      "ch": [
-      "Give discounts to people who return bikes to a station.",
+      "Offer lower prices to riders who bring bikes back to a station.",
       "Close some of the stations.",
       "Raise the price for the first thirty minutes to collect more money.",
       "Buy more cars."
@@ -9895,8 +9895,8 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_sports_day_notice",
      "q": "質問: What should students who ordered lunch boxes do?",
      "ch": [
-      "Nothing. They do not need to order again.",
-      "Order again on the website.",
+      "Nothing. They ordered already.",
+      "Order again on the school website.",
       "Pay at the gym.",
       "Bring their own lunch."
      ],
@@ -9960,8 +9960,8 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_school_farm",
      "q": "質問: What do older people in the town do for the school?",
      "ch": [
-      "They teach students how to grow vegetables.",
-      "They buy the vegetables.",
+      "They teach farming to students.",
+      "They buy the vegetables from the school.",
       "They cook school lunch.",
       "They clean the school."
      ],
@@ -9986,13 +9986,13 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_homestay_email",
      "q": "質問: How long has Riku been in Greenhill?",
      "ch": [
-      "About half a month.",
+      "For fourteen days.",
       "For more than two months.",
       "For two days.",
       "For a year."
      ],
      "a": 0,
-     "ex": "第1段落 for two weeks now＝2週間＝約半月。"
+     "ex": "第1段落 for two weeks now＝2週間＝14日。"
     },
     {
      "t": "mc",
@@ -10025,7 +10025,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_homestay_email",
      "q": "質問: What will Riku do next week?",
      "ch": [
-      "Go camping by a lake with his class.",
+      "Camp with his classmates.",
       "Return to Japan.",
       "Move to another family.",
       "Take an English test."
@@ -10051,8 +10051,8 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_night_market",
      "q": "質問: How do visitors pay for food?",
      "ch": [
-      "With tickets bought at the main gate.",
-      "With cash at each restaurant.",
+      "With tickets sold at the entrance.",
+      "With cash at each restaurant's stand.",
       "With a school ID.",
       "They do not have to pay."
      ],
@@ -10077,7 +10077,7 @@ window.EIKEN_BANK2 = {
      "p": "gpre2_night_market",
      "q": "質問: What should students do to apply as a volunteer?",
      "ch": [
-      "Send an e-mail by July 25.",
+      "E-mail the office by July 25.",
       "Call the office on August 1.",
       "Go to the main gate on Saturday.",
       "Fill in a form at school."
@@ -10566,13 +10566,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【準2+ 読む】長文: More and more companies allow their employees to work from home two days a week. 質問: What do many companies allow?",
      "ch": [
-      "Working from home two days a week.",
+      "Doing their jobs at home twice a week.",
       "Taking a two-week vacation every summer.",
       "Leaving work at noon.",
       "Working on weekends."
      ],
      "a": 0,
-     "ex": "allow ～ to work from home two days a week が答え。"
+     "ex": "allow ～ to work from home two days a week＝週2日は家で仕事をしてよい（twice a week）。"
     },
     {
      "t": "mc",
@@ -10627,13 +10627,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【準2+ 聞く】A: The library is closing early today for a special event. B: Oh, then I'll return my books tomorrow instead. 質問: What will B do?",
      "ch": [
-      "Return the books tomorrow.",
+      "Bring the books back the next day.",
       "Go to the event.",
       "Buy new books.",
-      "Stay at the library all day."
+      "Stay at the library until the event starts."
      ],
      "a": 0,
-     "ex": "I'll return my books tomorrow instead から。"
+     "ex": "I'll return my books tomorrow instead＝明日返す＝bring the books back the next day。"
     },
     {
      "t": "mc",
@@ -10664,13 +10664,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【準2+ 読む】長文: Although the new shopping mall created many jobs, some local shop owners worry that they will lose customers. 質問: What are some local shop owners worried about?",
      "ch": [
-      "Losing customers.",
-      "Getting new jobs.",
+      "Fewer people coming to their shops.",
+      "Getting new jobs at the shopping mall.",
       "Building a mall.",
       "Having too many customers."
      ],
      "a": 0,
-     "ex": "worry that they will lose customers から。"
+     "ex": "worry that they will lose customers＝客が減ること。jobs は「モールができて増えた」側の話。"
     },
     {
      "t": "mc",
@@ -10689,13 +10689,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "【準2+ 聞く】A: Excuse me, does this bus go to the city museum? B: No, you need the number 12 bus. It leaves from the stop across the street. 質問: What should A do?",
      "ch": [
-      "Catch the number 12 bus across the street.",
+      "Cross the street and take a different bus.",
       "Stay on this bus until it reaches the museum.",
       "Walk to the museum.",
       "Take a taxi."
      ],
      "a": 0,
-     "ex": "you need the number 12 bus ＋ the stop across the street。"
+     "ex": "you need the number 12 bus ＋ the stop across the street＝道の向かいで別のバスに乗る。"
     },
     {
      "t": "mc",
@@ -10921,13 +10921,13 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "英文: Mr. Sato stopped driving to work and now takes the train, which saves him money and gives him time to read. 質問: What is one benefit Mr. Sato gets from taking the train?",
      "ch": [
-      "He has time to read.",
-      "He arrives earlier.",
+      "He can enjoy books on the way.",
+      "He arrives at work earlier than before.",
       "He can drive faster.",
       "He meets his boss."
      ],
      "a": 0,
-     "ex": "gives him time to read が利点のひとつ。"
+     "ex": "gives him time to read が利点のひとつ＝移動中に本が読める。"
     },
     {
      "t": "mc",
@@ -11079,13 +11079,13 @@ window.EIKEN_BANK2 = {
      "p": "gpre2plus_shopping_street",
      "q": "質問: What do these efforts show?",
      "ch": [
-      "A shopping street can be a place where people meet.",
+      "Shopping streets are also for meeting people.",
       "Shopping streets are no longer needed.",
-      "Online stores are the only choice.",
+      "Online stores are the only choice for shoppers.",
       "Music events are expensive."
      ],
      "a": 0,
-     "ex": "第3段落 not only a place to buy things but also a place where people meet。"
+     "ex": "第3段落 not only a place to buy things but also a place where people meet＝人と会う場所でもある。"
     },
     {
      "t": "mc",
@@ -11105,13 +11105,13 @@ window.EIKEN_BANK2 = {
      "p": "gpre2plus_bike_sharing",
      "q": "質問: What is one reason bike sharing is popular?",
      "ch": [
-      "Bikes do not produce air pollution.",
-      "Bikes are faster than trains.",
-      "Bikes are free in every city.",
-      "Bikes can carry many people."
+      "They do not make the air dirty.",
+      "They are faster than trains.",
+      "They are free in every city.",
+      "They can carry many people."
      ],
      "a": 0,
-     "ex": "第2段落 do not produce air pollution。"
+     "ex": "第2段落 do not produce air pollution＝空気を汚さない。"
     },
     {
      "t": "mc",
@@ -11131,20 +11131,20 @@ window.EIKEN_BANK2 = {
      "p": "gpre2plus_bike_sharing",
      "q": "質問: What problem is mentioned in the passage?",
      "ch": [
-      "Bikes left on the sidewalk block walkers.",
+      "Some bikes get in the way of walkers.",
       "Bikes are too expensive.",
       "The apps do not work.",
       "There are too few users."
      ],
      "a": 0,
-     "ex": "第3段落 leave bikes on the sidewalk, where they block the way for walkers。"
+     "ex": "第3段落 leave bikes on the sidewalk, where they block the way for walkers＝歩く人のじゃまになる。"
     },
     {
      "t": "mc",
      "p": "gpre2plus_bike_sharing",
      "q": "質問: What do cities need to do?",
      "ch": [
-      "Make more places to park and clearer rules.",
+      "Make more places to park and set clearer rules.",
       "Ban bicycles from sidewalks and the city center.",
       "Stop the service completely.",
       "Buy more buses for crowded cities."
@@ -11157,26 +11157,26 @@ window.EIKEN_BANK2 = {
      "p": "gpre2plus_hoshino",
      "q": "質問: What was Hoshino like forty years ago?",
      "ch": [
-      "It had a busy school and many young families.",
+      "Many children and young families lived there.",
       "It had no school.",
       "Most residents were over sixty-five.",
       "It was a large city."
      ],
      "a": 0,
-     "ex": "第1段落 a busy elementary school and many young families。"
+     "ex": "第1段落 a busy elementary school and many young families＝子どもと若い家族が多かった。over sixty-five は「今」の話。"
     },
     {
      "t": "mc",
      "p": "gpre2plus_hoshino",
      "q": "質問: Why must older people travel to the next town?",
      "ch": [
-      "Because the last supermarket in Hoshino closed.",
-      "Because the school moved there.",
+      "Because Hoshino has no supermarket now.",
+      "Because the elementary school moved to that town.",
       "Because the buses are free.",
       "Because they like traveling."
      ],
      "a": 0,
-     "ex": "第2段落 The last supermarket closed ..., so older people must travel to the next town。"
+     "ex": "第2段落 The last supermarket closed ..., so older people must travel to the next town＝町にスーパーがなくなった。"
     },
     {
      "t": "mc",
@@ -11196,13 +11196,13 @@ window.EIKEN_BANK2 = {
      "p": "gpre2plus_hoshino",
      "q": "質問: What do the high school students do?",
      "ch": [
-      "They deliver food to elderly residents once a week.",
+      "They bring food to older people every week.",
       "They teach the twenty students at the elementary school.",
       "They drive the town bus.",
       "They sell land to young families."
      ],
      "a": 0,
-     "ex": "第3段落 collect orders ... and deliver food（once a week）。"
+     "ex": "第3段落 collect orders ... and deliver food（once a week）＝週に1回食料を届ける。"
     },
     {
      "t": "mc",
@@ -11264,9 +11264,9 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "辞書の単語の横にある「動」「名」「形」などの表示は何を表す？",
      "ch": [
-      "品詞（動詞・名詞・形容詞）",
+      "品詞（動詞・名詞・形容詞などの種類）",
       "単語の難しさ（易しい・ふつう・難しい）",
-      "その単語が出てくる学年（1年・2年・3年）",
+      "その単語を習う学年（1年・2年・3年）",
       "単語の文字数（3文字・4文字・5文字）"
      ],
      "chJp": true,
@@ -11277,8 +11277,8 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "英文で大文字で書き始めるのは？",
      "ch": [
-      "文の最初・I・人名や地名",
-      "すべての動詞（go, like, play など）",
+      "文の最初の語・I・人名や地名",
+      "すべての動詞（go, like など）",
       "6文字以上の長い単語すべて",
       "文の最後の単語とピリオドの前"
      ],
@@ -11394,9 +11394,9 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "相手の話を聞いていると伝えるのに役立つ表現は？",
      "ch": [
-      "I see. / Really? などの相づち",
-      "Goodbye. / See you later. などの別れのあいさつ",
-      "I don't know. / No idea. と言って話を止める",
+      "I see. / Really? などの短い相づち",
+      "Goodbye. / See you. などの別れのあいさつ",
+      "I don't know. と言って話を止める",
       "Stop. / Be quiet. と大きな声で言う"
      ],
      "chJp": true,
@@ -11511,7 +11511,7 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "an apple が「アナポー」のように聞こえるのはなぜ？",
      "ch": [
-      "単語の音がつながって発音されるから",
+      "前後の単語の音がつながって発音されるから",
       "聞いている人の聞き方がまちがっているから",
       "録音の機械がこわれて音がゆがんでいるから",
       "an apple ではなく別の単語を言っているから"
@@ -11563,7 +11563,7 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "テストで問題の指示文をよく読む理由は？",
      "ch": [
-      "問われ方が変わることがあるから",
+      "問題ごとに問われ方が変わることがあるから",
       "指示文を読んだかどうかも採点されるから",
       "読まないと解答時間がもらえないから",
       "指示文の中に正解が書いてあるから"
@@ -11680,8 +11680,8 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "習ったことを復習するのに効果的なタイミングは？",
      "ch": [
-      "習ったその日のうちに短く",
-      "1か月後に全部まとめて長い時間かけて",
+      "習ったその日のうちに短い時間で",
+      "1か月後に全部まとめて一気に",
       "テストの前日の夜に一気に全部",
       "忘れたころにゆっくり時間をかけて"
      ],
@@ -11709,7 +11709,7 @@ window.EIKEN_BANK2 = {
       "歌詞の意味を確かめながら一緒に歌う",
       "歌詞は見ずにメロディーだけを聞く",
       "日本語訳の歌詞だけを読んで覚える",
-      "歌詞を見ずに何度も聞き流すだけにする"
+      "歌わずに歌詞の単語をノートに書き写すだけにする"
      ],
      "chJp": true,
      "a": 0,

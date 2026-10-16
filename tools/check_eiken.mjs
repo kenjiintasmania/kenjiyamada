@@ -75,11 +75,34 @@ if (!bad) pass(`${n}問の形と重複：問題なし`);
       const txt = norm(PASSAGES[q.p].paras.join(' '));
       if (txt.includes(norm(q.ch[0]).replace(/[.?!]$/, ''))) { fail(`${where} 正解の選択肢が本文にそのまま載っている:「${q.ch[0]}」`); leak++; }
     }
+    // 4語以上つづけて同じ（Because／They を頭につけただけ、人称を変えただけ の丸写し）
+    if (q.t === 'mc' && !q.chJp) {
+      const src = ge === 'reading' && q.p && PASSAGES[q.p] ? PASSAGES[q.p].paras.join(' ') : ((q.en || '') + ' ' + (q.q || ''));
+      const words = norm(q.ch[0]).replace(/[^a-z' ]/g, ' ').split(/\s+/).filter(Boolean);
+      const body = ' ' + norm(src).replace(/[^a-z' ]/g, ' ').replace(/\s+/g, ' ') + ' ';
+      // 機能語だけの並び（for a long time／do not need to）は言いかえようがないので、内容語が2つ以上ある並びだけ見る
+      const STOP = new Set(('a an the to of in on at for with and or but not no is are was were be been do does did have has had it its they them their he she his her we our you your i my me this that these those there here by from as if so very can will would may who what which when where how up out about into than then more most some any one'.split(' ')));
+      for (let k = 0; k + 4 <= words.length; k++) {
+        const w4 = words.slice(k, k + 4), run = w4.join(' ');
+        if (w4.filter(x => !STOP.has(x)).length < 2) continue;
+        if (body.includes(' ' + run + ' ')) { fail(`${where} 正解の4語「${run}」が本文・英文にそのまま`); leak++; break; }
+      }
+    }
     if (q.t === 'mc') { const L = q.ch.map(c => c.length); const k = g + '/' + ge; bias[k] = bias[k] || { n: 0, l: 0 }; bias[k].n++; if (L[0] > Math.max(...L.slice(1))) bias[k].l++; }
   });
   const biased = Object.entries(bias).filter(([k, v]) => v.n >= 8 && v.l / v.n > 0.5).map(([k, v]) => `${k} ${v.l}/${v.n}`);
   if (biased.length) fail(`正解が最長の問題が半分を超えている（長いのを選べば当たる）: ${biased.join(', ')}`);
   if (!leak && !biased.length) pass('答えが問題文・本文に見えていない／正解の長さに偏りがない');
+}
+
+// 級をまたいで同じ問題（同じ英文＋設問）が2回出ないか
+{
+  const seen = new Map(); let d = 0;
+  for (const g of Object.keys(BANK)) for (const ge of Object.keys(BANK[g])) BANK[g][ge].forEach((q, i) => {
+    if (!q.en) return; const k = norm(q.en) + '|' + norm(q.q);
+    if (seen.has(k)) { fail(`${g}/${ge}#${i + 1} は ${seen.get(k)} と同じ問題: ${q.en.slice(0, 50)}`); d++; } else seen.set(k, `${g}/${ge}#${i + 1}`);
+  });
+  if (!d) pass('級をまたいだ同一問題なし');
 }
 
 // 本文：参照されない本文、段落が空
