@@ -209,7 +209,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "recommend",
-      "remember",
+      "remind",
       "remove",
       "release"
      ],
@@ -660,7 +660,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【2級・聞く】A: Excuse me, does this train stop at Minami Station? B: No, you need the local train on Platform 3. 質問: What should the woman do?",
+     "q": "【2級・聞く】A: Excuse me, does this train stop at Minami Station? B: No, you need the local train on Platform 3. 質問: What should the passenger do?",
      "ch": [
       "Take the local train on Platform 3.",
       "Stay on this train.",
@@ -697,7 +697,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【2級・聞く】A: How was the job interview? B: It went well, but they said they'd let me know by next week. 質問: What will happen next week?",
+     "q": "【2級・聞く】A: How was the job interview, Ken? B: It went well, but they said they'd let me know by next week. 質問: What will happen by next week?",
      "ch": [
       "He will hear the result.",
       "He will start the job.",
@@ -746,12 +746,12 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【2級・聞く】A: Hello, I'd like to return this jacket. B: Do you have the receipt? A: I'm afraid I lost it. 質問: What is the man's problem?",
+     "q": "【2級・聞く】A: Hello, I'd like to return this jacket. B: Do you have the receipt? A: I'm afraid I lost it. 質問: What is the customer's problem?",
      "ch": [
-      "He does not have the receipt.",
+      "The receipt has been lost.",
       "The jacket is too small.",
       "The shop is closed.",
-      "He forgot the jacket."
+      "The jacket was left at home."
      ],
      "a": 0,
      "ex": "I lost it＝レシートを失くした。"
@@ -1020,7 +1020,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "submit",
       "submits",
-      "submitted",
+      "to submit",
       "submitting"
      ],
      "a": 0,
@@ -1411,17 +1411,18 @@ window.EIKEN_BANK2 = {
     {
      "t": "fill",
      "en": "I'm tired. Let's take a (   ).",
-     "q": "(   ) に入る1語。",
+     "q": "(   ) に入る1語（b で始まる）。",
      "a": "break",
      "ac": [
-      "rest"
+      "rest",
+      "nap"
      ],
-     "ex": "take a break（rest）＝「休憩する」。"
+     "ex": "take a break＝「休憩する」。take a rest も同じ意味。"
     },
     {
      "t": "fill",
      "en": "I (   ) the blue one because it was cheaper.",
-     "q": "ワードバンク [chose / grew / lent] から1語。",
+     "q": "ワードバンク [chose / grew / forgot] から1語。",
      "a": "chose",
      "ex": "choose の過去形 chose＝「選んだ」。安かったから選んだ。"
     },
@@ -1455,10 +1456,10 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "fill",
-     "en": "I (   ) my umbrella on the train yesterday.",
-     "q": "ワードバンク [left / brought / carried] から1語。",
-     "a": "left",
-     "ex": "leave 物 場所＝「（物）を（場所）に置き忘れる」。"
+     "en": "Mika (   ) me to her birthday party, so I bought a present for her.",
+     "q": "ワードバンク [invited / visited / joined] から1語。",
+     "a": "invited",
+     "ex": "invite 人 to ～＝「（人）を〜に招待する」。プレゼントを買った、が根拠。"
     },
     {
      "t": "fill",
@@ -1691,7 +1692,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "The Shinano River is the (   ) in Japan. It is 367 kilometers.",
+     "en": "The Shinano River is the (   ) river in Japan. It is 367 kilometers long.",
      "q": "場面に合う語は？",
      "ch": [
       "longest",
@@ -1700,7 +1701,7 @@ window.EIKEN_BANK2 = {
       "busiest"
      ],
      "a": 0,
-     "ex": "kilometers（長さ）→ longest（最も長い）。"
+     "ex": "kilometers long（長さ）→ longest（最も長い）。"
     },
     {
      "t": "mc",
@@ -1722,8 +1723,8 @@ window.EIKEN_BANK2 = {
      "ch": [
       "hurry",
       "rest",
-      "line",
-      "way"
+      "dream",
+      "corner"
      ],
      "a": 0,
      "ex": "be in a hurry＝急いでいる。"
@@ -2466,7 +2467,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【3級・聞く】A: Dad, can you drive me to the station? B: Sorry, the car is at the garage today. Why don't you take your bike? 質問: How will A probably go to the station?",
+     "q": "【3級・聞く】A: Dad, can you drive me to the station? B: Sorry, the car isn't working today. Why don't you take your bike? 質問: How will A probably go to the station?",
      "ch": [
       "By bike.",
       "By car.",
@@ -2474,7 +2475,7 @@ window.EIKEN_BANK2 = {
       "On foot."
      ],
      "a": 0,
-     "ex": "Why don't you take your bike? が提案。車は修理中。"
+     "ex": "Why don't you take your bike? が提案。車は使えない。"
     },
     {
      "t": "mc",
@@ -2538,9 +2539,9 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【3級・聞く】A: Ken, have you finished your science report? B: Not yet. I need to go to the library to find some books. A: You can use my books if you want. 質問: What does A offer to do?",
+     "q": "【3級・聞く】A: Ken, have you finished your history report? B: Not yet. I need to go to the library to find some books. A: You can use my books if you want. 質問: What does A offer to do?",
      "ch": [
-      "Lend Ken her books.",
+      "Lend Ken some books.",
       "Go to the library with him.",
       "Write his report.",
       "Buy some books."
@@ -2728,16 +2729,16 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "I'm sorry. I (   ) my umbrella on the train yesterday.",
+     "en": "I (   ) a cold last week, so I stayed home for two days.",
      "q": "(   ) に入る語は？",
      "ch": [
-      "left",
-      "kept",
-      "sent",
-      "built"
+      "caught",
+      "took",
+      "made",
+      "gave"
      ],
      "a": 0,
-     "ex": "left（leave の過去形）＝置き忘れた。leave ＋物＋場所。"
+     "ex": "catch a cold＝かぜをひく。caught は catch の過去形。"
     },
     {
      "t": "mc",
@@ -2871,29 +2872,29 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "A: What's wrong? You look tired. B: (   )",
+     "en": "A: Whose notebook is this? B: (   )",
      "q": "応答として自然なのは？",
      "ch": [
-      "I stayed up late last night.",
-      "Yes, please.",
-      "It's on the desk.",
-      "Congratulations!"
+      "It's Ken's. He left it here.",
+      "It's on Monday.",
+      "Yes, it is.",
+      "I have two."
      ],
      "a": 0,
-     "ex": "疲れている理由を答える。stay up late＝夜おそくまで起きている。"
+     "ex": "Whose ～?（だれの）には持ち主を答える。"
     },
     {
      "t": "mc",
-     "en": "A: Hello. This is Mika. May I speak to Jun? B: (   )",
+     "en": "A: Hello. This is Mika. Is Jun there? B: (   )",
      "q": "電話での応答として自然なのは？",
      "ch": [
-      "Sorry, he's out now.",
+      "Just a minute, please. I'll get him.",
       "Nice to meet you.",
       "Yes, I did.",
       "It's two dollars."
      ],
      "a": 0,
-     "ex": "電話で May I speak to ～? には、いる・いないを答える。"
+     "ex": "電話で Is ～ there? と呼び出しを頼まれたら Just a minute.（少々お待ちください）でつなぐ。"
     },
     {
      "t": "mc",
@@ -3029,7 +3030,7 @@ window.EIKEN_BANK2 = {
      "q": "英文: The city museum is open from 9 a.m. to 5 p.m., but it is closed on Tuesdays. 質問: When is the museum closed?",
      "ch": [
       "On Tuesdays.",
-      "At 5 p.m.",
+      "On Sundays.",
       "On weekends.",
       "In the morning."
      ],
@@ -3120,7 +3121,7 @@ window.EIKEN_BANK2 = {
     {
      "t": "fill",
      "p": "g3_speech_letters",
-     "q": "空所(あ)に入る英語1語を本文からそのまま抜き出そう。ヒント：第2段落の、メッセージのよい点。",
+     "q": "空所(あ)に入る英語1語を本文からそのまま抜き出そう。ヒント：第2段落の we could talk ～ の語。",
      "en": "Messages are useful when you want to tell something [ ___ ].",
      "a": "quickly",
      "ex": "第2段落 It was easy, and we could talk quickly の quickly。メッセージの長所＝速さ。"
@@ -3347,7 +3348,7 @@ window.EIKEN_BANK2 = {
      "q": "質問: What does Linda want to know about Kaito?",
      "ch": [
       "His favorite food and things he can't eat.",
-      "His favorite sport.",
+      "His birthday.",
       "The time his plane arrives.",
       "His Japanese school."
      ],
@@ -3691,7 +3692,7 @@ window.EIKEN_BANK2 = {
      "q": "「〜に参加する・加わる」は？",
      "ch": [
       "join",
-      "enter",
+      "leave",
       "end",
       "jump"
      ],
@@ -4547,7 +4548,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "Tom is (   ) than anyone in his class.",
+     "en": "Tom is (   ) than his father.",
      "q": "(   ) に入る語は？",
      "ch": [
       "stronger",
@@ -4924,13 +4925,13 @@ window.EIKEN_BANK2 = {
      "p": "g4_lost_cat",
      "q": "質問: How did they find the cat's owner?",
      "ch": [
-      "They called the number on the collar.",
+      "They called the number on the name tag.",
       "They put up a poster.",
       "They asked a neighbor.",
       "They went to the police."
      ],
      "a": 0,
-     "ex": "第2段落 found a phone number on the collar and called it。"
+     "ex": "第2段落 found a phone number on the name tag and called it。"
     },
     {
      "t": "mc",
@@ -5475,7 +5476,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "When",
-      "What",
+      "How",
       "Where",
       "Who"
      ],
@@ -5699,7 +5700,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "take",
       "look",
-      "see",
+      "play",
       "go"
      ],
      "a": 0,
@@ -5750,7 +5751,7 @@ window.EIKEN_BANK2 = {
      "q": "【5級・大問1】(   ) に合う語は？",
      "ch": [
       "drives",
-      "rides",
+      "reads",
       "walks",
       "runs"
      ],
@@ -5764,8 +5765,8 @@ window.EIKEN_BANK2 = {
      "ch": [
       "wash",
       "brush",
-      "open",
-      "close"
+      "eat",
+      "read"
      ],
      "a": 0,
      "ex": "wash my hands＝手を洗う。"
@@ -6083,7 +6084,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "This bag is Yuki's. It is (   ).",
+     "en": "This bag is Emi's. It is (   ).",
      "q": "(   ) に入る語は？",
      "ch": [
       "hers",
@@ -6346,7 +6347,7 @@ window.EIKEN_BANK2 = {
     {
      "t": "mc",
      "p": "g5_ryo_club",
-     "q": "質問: Who is Mr. Yamada?",
+     "q": "質問: Who is Mr. Mori?",
      "ch": [
       "Ryo's coach.",
       "Ryo's father.",
@@ -6354,7 +6355,7 @@ window.EIKEN_BANK2 = {
       "Ryo's friend."
      ],
      "a": 0,
-     "ex": "第2段落 Our coach is Mr. Yamada。"
+     "ex": "第2段落 Our coach is Mr. Mori。"
     },
     {
      "t": "mc",
@@ -6441,7 +6442,10 @@ window.EIKEN_BANK2 = {
      "t": "fill",
      "q": "「お母さん」を英語で（m で始まる）。",
      "a": "mother",
-     "ex": "mother＝お母さん。"
+     "ac": [
+      "mom"
+     ],
+     "ex": "mother＝お母さん。mom（ママ）でも正解。"
     },
     {
      "t": "mc",
@@ -7681,7 +7685,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "🥛 これを表す英語は？",
+     "q": "🥛（ぎゅうにゅう）これを表す英語は？",
      "ch": [
       "milk",
       "water",
@@ -7922,7 +7926,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "an",
       "a",
-      "the",
+      "two",
       "×"
      ],
      "a": 0,
@@ -8428,15 +8432,15 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【7級リスニング】絵:🥛 質問『What is this?』 答えは？",
+     "q": "【7級リスニング】絵:🥚 質問『What is this?』 答えは？",
      "ch": [
-      "It's milk.",
-      "It's water.",
       "It's an egg.",
+      "It's an apple.",
+      "It's a ball.",
       "It's a cup."
      ],
      "a": 0,
-     "ex": "絵についての質問。milk＝牛乳。"
+     "ex": "絵についての質問。egg＝たまご。母音の音で始まるので an egg。"
     },
     {
      "t": "mc",
@@ -8647,7 +8651,7 @@ window.EIKEN_BANK2 = {
      "q": "「はじめまして」",
      "ch": [
       "meet",
-      "see",
+      "play",
       "go",
       "eat"
      ],
@@ -8697,7 +8701,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "attracts",
       "avoids",
-      "permits",
+      "borrows",
       "retires"
      ],
      "a": 0,
@@ -8729,7 +8733,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "agreement",
       "accident",
-      "audience",
+      "ability",
       "average"
      ],
      "a": 0,
@@ -8843,7 +8847,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "experiment",
-      "exercise",
+      "example",
       "expression",
       "exhibition"
      ],
@@ -8889,8 +8893,8 @@ window.EIKEN_BANK2 = {
      "ch": [
       "satisfied",
       "divided",
-      "delayed",
-      "surrounded"
+      "crowded",
+      "delayed"
      ],
      "a": 0,
      "ex": "be satisfied with＝〜に満足している。"
@@ -8924,7 +8928,7 @@ window.EIKEN_BANK2 = {
       "playing",
       "played",
       "plays",
-      "to play"
+      "play"
      ],
      "a": 0,
      "ex": "現在分詞の後置修飾：the girl playing the piano＝ピアノを弾いている少女。"
@@ -9054,7 +9058,7 @@ window.EIKEN_BANK2 = {
       "happy",
       "happily",
       "happiness",
-      "to happy"
+      "to be happy"
      ],
      "a": 0,
      "ex": "make＋人＋形容詞＝人を〜にする。"
@@ -9091,9 +9095,9 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "the",
-      "a",
       "an",
-      "some"
+      "much",
+      "very"
      ],
      "a": 0,
      "ex": "最上級には the。the most ～ I have ever ～。"
@@ -9132,10 +9136,10 @@ window.EIKEN_BANK2 = {
       "Although",
       "Because of",
       "So",
-      "Unless"
+      "In spite of"
      ],
      "a": 0,
-     "ex": "although＝〜だけれども（譲歩）。Because of のあとは名詞。"
+     "ex": "although＝〜だけれども（譲歩）。Because of / In spite of のあとは名詞（節は置けない）。"
     },
     {
      "t": "mc",
@@ -9165,29 +9169,29 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "(   ) a big dog in front of him, the little boy ran away.",
+     "en": "(   ) a strange sound behind him, the little boy ran away.",
      "q": "(   ) に入る語は？",
      "ch": [
-      "Seeing",
-      "Saw",
-      "Seen",
-      "See"
+      "Hearing",
+      "Heard",
+      "Hear",
+      "Hears"
      ],
      "a": 0,
-     "ex": "分詞構文：Seeing ～＝〜を見て。"
+     "ex": "分詞構文：Hearing ～＝〜を聞いて（＝When he heard ～）。"
     },
     {
      "t": "mc",
-     "en": "The man (   ) to be a famous writer in his country.",
+     "en": "(   ) I study, the better my scores become.",
      "q": "(   ) に入る語は？",
      "ch": [
-      "is said",
-      "says",
-      "said",
-      "is saying"
+      "The harder",
+      "Harder",
+      "The hard",
+      "Hardest"
      ],
      "a": 0,
-     "ex": "be said to＋原形＝〜だと言われている。"
+     "ex": "The＋比較級 ～, the＋比較級 …＝〜すればするほど…。"
     },
     {
      "t": "mc",
@@ -9384,7 +9388,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "【準2級・読む】Eメール: Hi Mia, thanks for inviting me to your birthday party. Unfortunately, I have a piano recital that day, so I can't come. Let's have lunch together next week instead. 質問: Why can't the writer go to the party?",
+     "q": "【準2級・読む】Eメール: Hi Mia, thanks for inviting me to your birthday party. Unfortunately, I have a piano recital that day, so I can't come. Let's have lunch together next week instead. Kana 質問: Why can't Kana go to the party?",
      "ch": [
       "She has a piano recital.",
       "She is going to lunch that day.",
@@ -9497,16 +9501,16 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "en": "I have two reasons. (   ), it is good for our health.",
-     "q": "【準2級・書く】理由を並べるときの (   ) に合う語は？",
+     "en": "I have two reasons. First, it is good for our health. (   ), it does not cost much money.",
+     "q": "【準2級・書く】2つ目の理由を導く (   ) に合う語は？",
      "ch": [
-      "First",
-      "For example",
+      "Second",
       "However",
+      "For example",
       "In conclusion"
      ],
      "a": 0,
-     "ex": "two reasons と予告したあとは First, … Second, … と並べる。"
+     "ex": "First, … に続けて2つ目の理由は Second, …。However は逆接、In conclusion は結論。"
     }
    ],
    "practice": [
@@ -10134,6 +10138,10 @@ window.EIKEN_BANK2 = {
      "t": "fill",
      "q": "「減る・減らす」を英語で（d で始まる）。",
      "a": "decrease",
+     "ac": [
+      "decline",
+      "drop"
+     ],
      "ex": "decrease＝減少する（⇔ increase）。"
     },
     {
@@ -10352,7 +10360,7 @@ window.EIKEN_BANK2 = {
       "so that",
       "in order",
       "because of",
-      "even though"
+      "in spite of"
      ],
      "a": 0,
      "ex": "so that＋S＋can/could＝〜できるように。"
@@ -10402,7 +10410,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "with",
-      "as",
+      "at",
       "by",
       "for"
      ],
@@ -10415,7 +10423,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "in case",
-      "unless",
+      "despite",
       "although",
       "so that"
      ],
@@ -10480,7 +10488,7 @@ window.EIKEN_BANK2 = {
      "q": "(   ) に入る語は？",
      "ch": [
       "had better",
-      "would rather",
+      "would better",
       "have better",
       "should better"
      ],
@@ -10494,7 +10502,7 @@ window.EIKEN_BANK2 = {
      "ch": [
       "as long as",
       "as far as",
-      "as soon as",
+      "as much as",
       "as well as"
      ],
      "a": 0,
@@ -10840,7 +10848,7 @@ window.EIKEN_BANK2 = {
       "Unless",
       "If",
       "Because",
-      "Though"
+      "Despite"
      ],
      "a": 0,
      "ex": "Unless＝〜しなければ（if ～ not）。"
@@ -11308,7 +11316,7 @@ window.EIKEN_BANK2 = {
      "t": "mc",
      "q": "4線ノートで英語の文字を練習するときのポイントは？",
      "ch": [
-      "文字ごとの高さ（線の位置）を合わせる",
+      "文字ごとに決まった線の位置（高さ）に合わせて書く",
       "好きな大きさで書く",
       "すべて同じ高さで書く",
       "線を無視して速く書く"
@@ -11341,7 +11349,7 @@ window.EIKEN_BANK2 = {
      ],
      "chJp": true,
      "a": 0,
-     "ex": "作文はまちがいのない短い文がいちばん強い。長さより正確さ。"
+     "ex": "作文はまちがいのない短い文を積み重ねるのが基本。長さより正確さ。"
     },
     {
      "t": "mc",
@@ -11423,9 +11431,9 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "相手の質問の意味がわからないときの正しい対応は？",
+     "q": "相手の質問の意味がわからないときの良い対応は？",
      "ch": [
-      "What do you mean? と聞いて確認する",
+      "Sorry, what do you mean? と聞き返して確認する",
       "わかったふりをしてうなずく",
       "適当に Yes と答える",
       "話題を無視する"
@@ -11575,7 +11583,7 @@ window.EIKEN_BANK2 = {
      ],
      "chJp": true,
      "a": 0,
-     "ex": "空欄は必ず0点。選べば正解の可能性がある。"
+     "ex": "空欄は必ず0点。英検は減点がないので、選べば正解の可能性がある。"
     },
     {
      "t": "mc",
@@ -11634,7 +11642,7 @@ window.EIKEN_BANK2 = {
      "q": "たくさんの単語を覚えるとき効果的な整理の方法は？",
      "ch": [
       "食べ物・色などの仲間ごとにまとめる",
-      "アルファベット順に全部",
+      "意味は見ずにつづりだけ覚える",
       "文字数ごとに分ける",
       "好きな順に並べる"
      ],
@@ -11657,7 +11665,7 @@ window.EIKEN_BANK2 = {
     },
     {
      "t": "mc",
-     "q": "英文を作るとき、最初に決めると良いのは？",
+     "q": "日本語を1つの英文にするとき、まず決めると良いのは？",
      "ch": [
       "主語と動詞",
       "最後の単語",
@@ -11807,7 +11815,7 @@ window.EIKEN_BANK2 = {
   "g3_email_host": {
    "title": "Eメール：ホストファミリーの Linda から Kaito へ",
    "paras": [
-    "From: Linda Baker / To: Kaito Mori / Subject: Welcome to our home! — Dear Kaito, hello! My name is Linda Baker. My family and I are very happy that you will stay with us in Riverton next month. Let me tell you about our family. My husband, Mark, is a nurse at the city hospital. We have two children. Our son, Jack, is fourteen, the same age as you, and our daughter, Amy, is nine. Jack is a member of the school basketball team, and he wants to teach you how to play. Amy is a little shy, but she is very interested in Japan. She has been learning some Japanese words from a book.",
+    "From: Linda Baker / To: Kaito Mori / Subject: Welcome to our home! — Dear Kaito, hello! My name is Linda Baker. My family and I are very happy that you will stay with us in Riverton next month. Let me tell you about our family. My husband, Mark, is a nurse at the city hospital. We have two children. Our son, Jack, is fourteen, the same age as you, and our daughter, Amy, is nine. Jack is a member of the school basketball team, and he wants to teach you how to play. Amy is a little shy, but she is very interested in Japan. She is learning some Japanese words from a book.",
     "Our house is near a big lake. On weekends, we often go fishing or have a picnic there. Please bring warm clothes because it is still cold in the morning in April.",
     "Could you tell me about your favorite food and anything you can't eat? I want to cook something you like on your first night. Also, Jack asked me, \"Does Kaito like basketball?\" Please tell him by e-mail! We are all looking forward to meeting you at the airport. Best wishes, Linda"
    ]
@@ -11834,7 +11842,7 @@ window.EIKEN_BANK2 = {
    "title": "メール：Sam から Yuta へ（キャンプのさそい）",
    "paras": [
     "From: Sam — Hi Yuta! My family is going camping at Lake Hoshino next weekend. Do you want to come with us? We will leave on Saturday morning and come back on Sunday evening. My father will cook curry, and we can go fishing in the lake. Please bring warm clothes because it gets cold at night.",
-    "From: Yuta — Hi Sam! Thank you for inviting me. I'd love to go! I have never been camping, so I'm very excited. I'll ask my mother tonight. Do I need a sleeping bag? I don't have one."
+    "From: Yuta — Hi Sam! Thank you for inviting me. I'd love to go! This will be my first camping trip, so I'm very excited. Do I need a sleeping bag? I don't have one."
    ]
   },
   "g4_flea_market": {
@@ -11849,8 +11857,8 @@ window.EIKEN_BANK2 = {
    "title": "Nana と迷子のネコ",
    "paras": [
     "One rainy afternoon, Nana was walking home from school. She heard a small sound. A gray cat was sitting under a bench. It looked hungry.",
-    "Nana took the cat home and gave it some milk. Her mother said, \"This cat has a collar. Someone is looking for it.\" They found a phone number on the collar and called it.",
-    "An hour later, an old man came to Nana's house. The cat was his, and its name was Momo. He was so happy that he gave Nana a box of cookies."
+    "Nana took the cat home and gave it some milk. Her mother said, \"This cat has a name tag. Someone is looking for it.\" They found a phone number on the name tag and called it.",
+    "An hour later, an old man came to Nana's house. The cat was his, and its name was Momo. He was very happy and gave Nana a box of cookies."
    ]
   },
   "g4_aki_speech": {
@@ -11858,7 +11866,7 @@ window.EIKEN_BANK2 = {
    "paras": [
     "Hello, everyone. I'm Aki. Today I want to talk about my grandfather. He is seventy years old and lives in a small village by the sea.",
     "Every summer, I stay at his house for two weeks. He has a big garden, and we grow tomatoes and cucumbers together. Picking fresh tomatoes is a lot of fun.",
-    "Last summer, he taught me how to fish. I couldn't catch anything on the first day, but on the last day I caught a big fish. My grandfather said, \"You did it!\" Thank you."
+    "Last summer, we went fishing together every morning. I couldn't catch anything on the first day, but on the last day I caught a big fish. My grandfather said, \"You did it!\" Thank you."
    ]
   },
   "g4_tennis_club": {
@@ -11896,8 +11904,8 @@ window.EIKEN_BANK2 = {
    "title": "Ryo のクラブ活動",
    "paras": [
     "I am Ryo. I am a junior high school student in Sakura City. I am in the basketball club. We have twenty members.",
-    "We practice in the gym from four to six after school. We don't practice on Tuesdays and Sundays. Our coach is Mr. Yamada. He is tall and very good at basketball.",
-    "Next month, we have a big game. I practice very hard every day. I want to win!"
+    "We practice in the gym from four to six after school. We don't practice on Tuesdays and Sundays. Our coach is Mr. Mori. He is tall and very good at basketball.",
+    "Next month, we have a big game. I practice very hard. I want to win!"
    ]
   },
   "g5_amy_sunday": {
