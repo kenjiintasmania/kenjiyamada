@@ -463,4 +463,35 @@ console.log("— 到達度まとめ：古い10列の並びの行が残ってい�
   ok(dates.length===bd.length-1, "全員の行に「更新」が19列目に入る（"+dates.length+"/"+(bd.length-1)+"）");
 }
 
+console.log("— 単元テストまとめ（1人1行・名簿順・成績表用）—");
+{
+  G.call({action:"gate", pin:"PIN", exam:"c3u1", open:true});
+  const s1=G.call({action:"status", exam:"c3u1"}).session;
+  const put=(cls,num,name,exam,score)=>G.call({kind:"unittest", exam, session:G.call({action:"status", exam}).session, cls, num, name, score, total:100, pct:score, ver:"t"});
+  ok(put("3","2","テストB","c3u1",80).result==="ok", "単元テストを提出できる");
+  G.call({action:"gate", pin:"PIN", exam:"c3u2", open:true});
+  put("3","1","テストA","c3u2",65);
+  put("3","2","テストB","c3u2",90);
+  // 受付を開けなおして同じ子がもう一度 → 新しいほうを採る
+  G.call({action:"gate", pin:"PIN", exam:"c3u1", open:false}); G.call({action:"gate", pin:"PIN", exam:"c3u1", open:true});
+  const t0=Date.now(); while(Date.now()-t0<3){}
+  put("3","2","テストB","c3u1",70);
+  const msg=G.rebuildUnitBoard();
+  const bd=G.dump("単元テストまとめ")||[], hd=bd[0]||[];
+  ok(/人ぶん/.test(msg), "作れる（"+msg+"）");
+  ok(hd[0]==="学年" && hd[2]==="名前" && hd[3]==="中2 単元テスト①" && hd.indexOf("中3 単元テスト⑨")>0 && hd.indexOf("受験数")>0 && hd.indexOf("備考")>0, "見出し：学年・番号・名前・試験ごと・受験数・平均・備考・更新（"+hd.length+"列）");
+  ok(!hd.includes("2000語 到達度テスト"), "到達度テストの列は入れない");
+  const rows=bd.slice(1).filter(x=>String(x[0])==="3");
+  const r1=rows.find(x=>String(x[1])==="1"), r2=rows.find(x=>String(x[1])==="2");
+  const c1=hd.indexOf("中3 単元テスト①"), c2=hd.indexOf("中3 単元テスト②");
+  ok(r1 && r2 && rows.indexOf(r1) < rows.indexOf(r2), "名簿順（1番が2番より上）");
+  ok(r2 && Number(r2[c1])===70 && Number(r2[c2])===90, "★同じ試験を2回出したら新しいほう（70）・別の試験は90（"+(r2&&r2[c1])+"/"+(r2&&r2[c2])+"）");
+  ok(r2 && /c3u1×2/.test(String(r2[hd.indexOf("備考")])), "備考に回数（"+(r2&&r2[hd.indexOf("備考")])+"）");
+  ok(r1 && r1[c1]==="" && Number(r1[c2])===65 && Number(r1[hd.indexOf("受験数")])===1 && Number(r1[hd.indexOf("平均")])===65, "未受験は空欄・受験数1・平均65");
+  // 成績まとめにいて単元テストを1本も出していない子（3年21番など）も空欄で出る
+  const r21=bd.slice(1).find(x=>String(x[0])==="3"&&String(x[1])==="21");
+  ok(r21 && Number(r21[hd.indexOf("受験数")])===0, "★1本も出していない子も名簿に出る（受験数0）");
+  ok(bd.slice(1).every(x=>x[hd.length-1] instanceof Date || /20\d\d/.test(String(x[hd.length-1]))), "更新の日時が入る");
+}
+
 console.log(`\n${pass} pass / ${fail} fail`);

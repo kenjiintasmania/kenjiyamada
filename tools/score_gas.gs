@@ -367,7 +367,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1, "mkatsu":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-21";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-22";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -1077,6 +1077,72 @@ function rebuildMasteryBoardRows_(){
   return rows.length;
 }
 
+/* ===================== 単元テストまとめ（1人1行・名簿順） ===================== *
+ * 先生指示 2026-10-20「単元テスト一覧を名簿順に出してほしい（成績表につかう）」。
+ * 「単元テスト記録」は提出順に1回1行なので成績表には写しにくい。このタブは **1人1行**・学年▶番号順・
+ * 試験ごとに1列（得点）。同じ試験を2回以上出した子は**いちばん新しい提出**を採り、備考に「c3u1×2」と回数を残す
+ * （どちらを成績にするかは先生が判断できるように）。名簿は 単元テスト記録 と 成績まとめ の両方から集めるので、
+ * 1本も出していない子も空欄の行で出る（未受験が見える）。メニュー「📋 単元テストまとめ…を作りなおす」で作る。 */
+var UNIT_BOARD = "単元テストまとめ";
+function unitBoardExams_(){ var out=[]; for (var k in UNIT_EXAMS) if (!MASTERY_EXAMS[k]) out.push(k); return out; }
+function unitBoardHeader(){
+  var h = ["学年","番号","名前"];
+  unitBoardExams_().forEach(function(k){ h.push(UNIT_EXAMS[k]); });
+  return h.concat(["受験数","平均","備考","更新"]);
+}
+function rebuildUnitBoard(){
+  var exams = unitBoardExams_(), people = {}, order = [];
+  function person(cls, num, name){
+    cls = String(cls||"").trim(); num = String(num||"").trim();
+    if (!cls || !num) return null;
+    var k = cls + " / " + num;
+    if (!people[k]){ people[k] = {cls:cls, num:num, name:"", score:{}, count:{}}; order.push(k); }
+    if (name) people[k].name = String(name);
+    return people[k];
+  }
+  // 名簿：成績まとめ（マイページから送った子）＋ 単元テスト記録（出した子）
+  var sm = getSS().getSheetByName(SUMMARY_SHEET);
+  if (sm && sm.getLastRow() >= 2){
+    var ids = sm.getRange(2,2,sm.getLastRow()-1,3).getValues();   // 学年,番号,名前
+    for (var a=0;a<ids.length;a++) person(ids[a][0], ids[a][1], ids[a][2]);
+  }
+  var lg = getSS().getSheetByName(UNIT_LOG);
+  if (lg && lg.getLastRow() >= 2){
+    var v = lg.getRange(2,1,lg.getLastRow()-1,10).getValues();   // 提出日時,セッション,試験,学年,番号,名前,得点,…
+    for (var i=0;i<v.length;i++){
+      var exam = String(v[i][2]).trim();
+      if (exams.indexOf(exam) < 0) continue;
+      var p = person(v[i][3], v[i][4], v[i][5]); if (!p) continue;
+      var sc = Number(v[i][6]); if (isNaN(sc) || String(v[i][6]).trim()==="") continue;
+      var t = masteryTime_(v[i][0]) || 0;              // 日時が読めない行は、あとの行ほど新しいとみなす
+      if (!p.score[exam] || t >= p.score[exam].t) p.score[exam] = {s:sc, t:t};
+      p.count[exam] = (p.count[exam]||0) + 1;
+    }
+  }
+  if (!order.length) return "単元テストの記録がありません";
+  var head = unitBoardHeader(), rows = [];
+  order.forEach(function(k){
+    var p = people[k], g = Number(p.cls), n = Number(p.num);
+    var row = [isNaN(g)?p.cls:g, isNaN(n)?p.num:n, p.name], sum = 0, cnt = 0, note = [];
+    exams.forEach(function(ex){
+      var sc = p.score[ex];
+      row.push(sc ? sc.s : "");
+      if (sc){ sum += sc.s; cnt++; }
+      if ((p.count[ex]||0) > 1) note.push(ex + "×" + p.count[ex]);
+    });
+    row.push(cnt, cnt ? Math.round(sum/cnt*10)/10 : "", note.join(" "), new Date());
+    rows.push(row);
+  });
+  var sh = getSheet(UNIT_BOARD, head);
+  if (sh.getLastRow() > 1) sh.getRange(2,1,sh.getLastRow()-1,Math.max(sh.getLastColumn(),head.length)).clearContent();
+  sh.getRange(1,1,1,head.length).setValues([head]);
+  sh.getRange(2,1,rows.length,head.length).setValues(rows);
+  if (rows.length > 1) sh.getRange(2,1,rows.length,head.length).sort([{column:1, ascending:true}, {column:2, ascending:true}]);
+  var msg = rows.length + "人ぶんを名簿順に並べました（" + UNIT_BOARD + "）";
+  try{ SpreadsheetApp.getActive().toast(msg); }catch(e){}
+  return msg;
+}
+
 /* ===================== 単元テスト：提出（開いてる時のみ・1人1回） ===================== */
 function handleUnitTest(d){
   var exam = d.exam;
@@ -1185,6 +1251,7 @@ function onOpen(){
     .addItem("🔤 自学ログ▶ユニット別クリア語数を更新", "rebuildJigakuUnitsMenu")
     .addItem("🎯 到達度テスト▶合計点を入れなおす", "rebuildMasteryTotals")
     .addItem("🏅 到達度まとめ（1人1行・名簿順）を作りなおす", "rebuildMasteryBoard")
+    .addItem("📋 単元テストまとめ（1人1行・名簿順・成績表用）を作りなおす", "rebuildUnitBoard")
     .addSeparator()
     .addSubMenu(unitMenu)
     .addToUi();
