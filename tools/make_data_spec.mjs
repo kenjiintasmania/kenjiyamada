@@ -211,6 +211,7 @@ const DESC = {
   e_full: '英検レベルの座標（0〜8）・本番モード', e_full_label: 'レベルの目安ラベル',
   e_quick: '同・クイックモード', e_avg: '平均レベル',
   e_recent_grade: '直近に受けた級', e_recent_pct: '直近の正答率', e_recent_pass: '直近の合否',
+  e_full_n: '英検 判定テスト（フルモード）を受けた回数の合計（端末の記録から）', e_full_pass: 'そのうち合格（65%以上）した回数', e_full_by: '級ごとの回数（例 3級×2 4級×1）',
 };
 for (const c of COLS) {
   const d = DESC[c.key] || (/^m_/.test(c.key) ? `各回のベスト（${fullOf(c.key)}点満点）`

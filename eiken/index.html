@@ -1,4 +1,5 @@
 <!-- mado_loop.html | v0.25 | 2026-06-19 JST -->
+<!--   v0.26→v0.27：フルモードの受験回数・合格回数を級ごとに端末へ（mado_fullruns_v1）→マイページから成績まとめへ。フルは学年・番号があれば結果を自動送信。 -->
 <!--   v0.25→v0.26：フル判定テストを「3回分以上の問題から毎回ランダムに1回分を引く」に（data/bank2.js に増量ぶん・FULL_PLAN が1回分の数・読解は本文ごとにまとめて後半）。 -->
 <!--   v0.24→v0.25：①級チップ選択でアクションカードへスムーズスクロール。②レベルバーを4マーカー化（◯直近/★本番最高(濃金)/☆クイック最高(薄金)/◆平均(紫)）。公式キャプションは本番(フル)最高のみで駆動・新フル最高だけ大☆ポップ。③ヘッダのブランドをどの画面からでもホームへ＋判定テスト中に「←ホーム」を表示。 -->
 <!--   v0.23→v0.24：成績送信先GAS_URLを新デプロイ(mado_score_gas v2.0)に更新。 -->
@@ -346,7 +347,7 @@
 <script src="data/bank2.js?v=1016a"></script>
 <script>
 (function(){
-  var APP_VER = "v0.26";
+  var APP_VER = "v0.27";
 
   /* ============================ 級・ジャンル定義 ============================ */
   var GRADES = [
@@ -1390,6 +1391,15 @@
 
   /* ---- 実力レベルの目安（直近の判定テスト結果から算出） ---- */
   var LASTTEST_KEY="mado_loop_lasttest_v1";
+  /* フルモードの受験回数・合格回数（級ごと）。先生指示 2026-10-26「クイックじゃなくフル問題を何セット練習したか
+     記録に残したい」。端末に残し、マイページの送信（e_full_n／e_full_pass／e_full_by）で成績まとめに載る。 */
+  var FULLRUNS_KEY="mado_fullruns_v1";
+  function bumpFullRuns(grade, pass){
+    var o; try{ o=JSON.parse(localStorage.getItem(FULLRUNS_KEY))||{}; }catch(e){ o={}; }
+    var g=o[grade]||{n:0,pass:0}; g.n++; if(pass) g.pass++; o[grade]=g;
+    try{ localStorage.setItem(FULLRUNS_KEY, JSON.stringify(o)); }catch(e){}
+    return g;
+  }
   var LEVEL_ORDER=["7","6","5","4","3","pre2","pre2plus","2"]; // 易→難
   function saveLastTest(o){try{localStorage.setItem(LASTTEST_KEY,JSON.stringify(o));}catch(e){}}
   function loadLastTest(){try{return JSON.parse(localStorage.getItem(LASTTEST_KEY));}catch(e){return null;}}
@@ -1978,6 +1988,7 @@
     var pass=(t.ok/total)>=PASS;
     if(LEVEL_ORDER.indexOf(S.grade)>=0) saveLastTest({grade:S.grade, pct:pct, pass:pass, ts:Date.now()});
     S.lastResult={grade:S.grade, score:t.ok, total:total, pct:pct, pass:pass, mode:t.mode};
+    S.lastRuns = (t.mode==="full") ? bumpFullRuns(S.grade, pass) : null;   // フルだけ数える
     var L=null; S._newFullBest=false;
     if(LEVEL_ORDER.indexOf(S.grade)>=0){
       L=levelCoordOf(S.grade, pct, pass);             // この回のバー座標
@@ -2027,6 +2038,14 @@
     $("rHome").addEventListener("click",function(){go("home");});
     $("send").addEventListener("click",sendScore);
     fillIdentity();
+    /* ★フルモードは、学年・番号が端末に残っていれば自動で送る（押し忘れで記録が抜けないように）。
+       クイックはこれまでどおりボタンで。 */
+    if(S.lastResult && S.lastResult.mode==="full" && $("scls").value && han($("sid").value)){
+      $("sendmsg").textContent="フルモードの結果を自動で送っています…";
+      sendScore();
+    }
+    if(S.lastRuns){ var sm=$("sendmsg"); sm.textContent=(sm.textContent?sm.textContent+"　":"")+
+      "この級のフルモード："+S.lastRuns.n+"回目（合格 "+S.lastRuns.pass+"回）"; }
   }
 
   /* ============================ ルーター ============================ */

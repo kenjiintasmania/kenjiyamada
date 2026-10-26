@@ -206,6 +206,7 @@
       <div class="mini"><div class="k">平均の目安</div><div class="v" id="e_avg">–</div></div>
     </div>
     <div class="mini" style="margin-top:8px"><div class="k">直近の判定テスト</div><div class="v" id="e_recent">まだ受けていない</div></div>
+    <div class="mini" style="margin-top:8px"><div class="k">フルモードの受験</div><div class="v" id="e_runs">まだ受けていない</div></div>
     <p class="hint"><a href="../eiken/index.html" style="color:var(--eiken);font-weight:bold;text-decoration:none">→ 英検アプリをひらく</a></p>
   </div>
 
@@ -386,7 +387,8 @@
       full:lsNum("mado_bestfull_v1"),
       quick:lsNum("mado_bestquick_v1"),
       avg:(avgO&&avgO.count)?avgO.sum/avgO.count:null,
-      last:lsJSON("mado_loop_lasttest_v1")
+      last:lsJSON("mado_loop_lasttest_v1"),
+      runs:lsJSON("mado_fullruns_v1")||{}        // 級ごとの {n:フル受験回数, pass:合格回数}
     };
   }
   function renderEiken(e){
@@ -399,6 +401,14 @@
       $("e_recent").innerHTML=g+'（正答 '+e.last.pct+'%）'+
         ' <span class="pill '+(e.last.pass?'pass':'fail')+'">'+(e.last.pass?'合格':'もう一歩')+'</span>';
     }else{ $("e_recent").textContent="まだ受けていない"; }
+    var fr=fullRuns(e);
+    $("e_runs").textContent = fr.n ? (fr.n+"回（合格 "+fr.pass+"回）　"+fr.by) : "まだ受けていない";
+  }
+  /* フルモードの受験回数：合計と級別（"3級×2 4級×1"）。クイックは数えない。 */
+  function fullRuns(e){
+    var n=0, pass=0, by=[];
+    Object.keys(e.runs||{}).forEach(function(g){ var r=e.runs[g]||{}; n+=r.n||0; pass+=r.pass||0; if(r.n) by.push((GN[g]||g)+"×"+r.n); });
+    return {n:n, pass:pass, by:by.join(" ")};
   }
 
   /* ---------- 4) 習熟度 単語テスト（最高点・回数） ---------- */
@@ -530,6 +540,8 @@
       e_recent_grade:(e.last?(GN[e.last.grade]||e.last.grade):""),
       e_recent_pct:(e.last?e.last.pct:""),
       e_recent_pass:(e.last?(e.last.pass?"合格":"不合格"):""),
+      // 英検フルモードの受験回数・合格回数・級別（jigaku-23）
+      e_full_n:fullRuns(e).n, e_full_pass:fullRuns(e).pass, e_full_by:fullRuns(e).by,
       // 習熟度単語（80%以上だけ正式送信。回数は常に送る）
       sv_c2:(s.c2&&s.c2.pct>=80)?s.c2.pct:"", sv_c2_n:(s.c2?s.c2.count:""),
       sv_c3:(s.c3&&s.c3.pct>=80)?s.c3.pct:"", sv_c3_n:(s.c3?s.c3.count:""),

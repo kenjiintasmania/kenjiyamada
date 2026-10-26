@@ -303,7 +303,11 @@ var SUMMARY_COLS = [
   {key:"mtgram2",   head:"到達度文法上級_合計", max:false},
   {key:"mtidiom",   head:"到達度熟語_合計",     max:false},
   /* --- jigaku-21 で追加：活用編 到達度テスト（動詞の変化形・形容詞の比較・600点）。★必ず末尾。 */
-  {key:"mtkatsu",   head:"到達度活用_合計",     max:false}
+  {key:"mtkatsu",   head:"到達度活用_合計",     max:false},
+  /* --- jigaku-23 で追加：英検フルモードの受験回数（先生指示 2026-10-26「クリア数を記録できるように」）。★必ず末尾。 */
+  {key:"e_full_n",    head:"英検_フル回数",   max:true},
+  {key:"e_full_pass", head:"英検_フル合格数", max:true},
+  {key:"e_full_by",   head:"英検_フル級別",   max:false}
 ];
 
 /* ★1回だけ実行（GASエディタで関数を選んで▶）。
@@ -367,7 +371,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1, "mkatsu":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-22";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-23";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
