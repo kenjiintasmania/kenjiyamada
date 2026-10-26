@@ -127,17 +127,12 @@ if (!REDACTED) ['mogi/exam.html', 'jigaku/index.html', 'jigaku/bunpo.js', 'jigak
   if (u.some(x => x !== LIVE)) fail(`${f} が マイページと違う送信先を持っています: ${u.join(', ')}`);
   if (u.some(x => TRIAL.includes(x))) fail(`${f} に実証用URLが混ざっています`);
 });
-// 英検だけは昔から別デプロイ。実証用が混ざっていないことと、1本だけであることを見る。
+// 英検も 2026-10-26 からマイページと同じ送信先（それまで別デプロイで、新バージョンの当て忘れが起きた）。
 const eiken = REDACTED ? [] : url(r('eiken/index.html'));
 if (!REDACTED && eiken.length !== 1) fail(`eiken/index.html の送信先が1本ではありません（${eiken.length}本）`);
+if (!REDACTED && eiken[0] !== LIVE) fail(`eiken/index.html の送信先がマイページと違います（…${String(eiken[0]).slice(-6)}）`);
 if (eiken.some(x => TRIAL.includes(x))) fail('eiken/index.html に実証用URLが混ざっています');
-if (!fails && !REDACTED) {
-  pass('送信先URL：生徒用と実証用が分かれている');
-  if (eiken[0] !== LIVE)
-    console.log('  ⓘ gas     英検だけ別デプロイ（…' + eiken[0].slice(-6) + '）。/admin の版表示は ' +
-                '…' + LIVE.slice(-6) + ' のぶんなので、score_gas.gs を貼ったら' +
-                '〔デプロイを管理〕で両方に新バージョンを当てること。');
-}
+if (!fails && !REDACTED) pass('送信先URL：全画面が同じ1本・実証用と分かれている');
 
 console.log(fails ? `\n✗ GASとの食いちがい ${fails} 件` : '\n✓ アプリと GAS の約束ごとは一致しています');
 process.exit(fails ? 1 : 0);

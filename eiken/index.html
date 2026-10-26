@@ -1943,8 +1943,10 @@
   }
 
   // ---- 成績を先生に送信（GAS連携） ----
-  // ★先生へ：mado_score_gas のウェブアプリURLを下に貼ると有効になります（?cls=3A&num=5&name=… で自動入力）。
-  var GAS_URL="https://script.google.com/macros/s/AKfycbypiWV57RwbVJ8jz6pib1aIzLhjVqeYCS9q7-r-irBVym7RD0rTdZqEH2bgeol1K7C6aA/exec";
+  // ★先生へ：送信先はマイページ（me/index.html）と同じウェブアプリURL。変えるときは全画面いっしょに。
+  /* ★2026-10-26 マイページと同じ送信先に統一（それまで英検だけ別のデプロイURLを持っていて、新バージョンを当て忘れると
+     英検側だけ古いコードのまま動いた）。受け口のコードは1つで、英検の行は同じ handleEiken が同じブックに書く。 */
+  var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
   // 実証（試用版）モードのときだけ実証用GASへ。通常モードでは上のURLのまま（assets/site.js）。
   if(window.SITE) GAS_URL = SITE.gasFor("eiken", GAS_URL);
   function idStore(k,v){try{localStorage.setItem("mado_"+k,v);}catch(e){}}
