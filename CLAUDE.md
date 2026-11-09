@@ -11,7 +11,8 @@
   - 公開URL: https://kenjiintasmania.github.io/kenjiyamada/
 - 生徒アプリ：`words/`（単語）・`mogi/`（模試）・`eiken/`（英検）・`me/`（マイページ）・
   `challenge/`（挑戦モード）・`admin/`（先生用）。
-- 品質ゲート：`node tools/check_exams.mjs`（全模試100点・構造・話者連続・okayama横断重複・単語サニティ）。
+- 品質ゲート：`node tools/check_exams.mjs`（全模試100点・構造・話者連続・答えバレ・読解の選択肢のかたより・
+  okayama横断重複・同じ学年内の答え重複・単語サニティ）。新作の模試は `BIAS_GRANDFATHER` に足さないこと。
   模試データを触ったら必ず通すこと。
 
 ## GAS（Google Apps Script）— 手動デプロイ

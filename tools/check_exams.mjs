@@ -4,6 +4,10 @@
 //   1) 全模試データを実エンジンで「全問正解→100点」になるか採点（出題/採点の整合）
 //   2) 設問の構造チェック（mcq/bankpickのanswer索引、wordorderの語＝answerトークン一致 等）
 //   3) 単語データのサニティ（相対参照の訳「↑の複数」等・空訳・件数）
+//   4) 答えバレ（リスニングの資料・設問文に答えがそのまま載っていないか）＋読解の選択肢のかたより
+//      （正解だけ内容語がぜんぶ本文にある／正解だけがいちばん長い／正解の4語連続が本文にそのまま）
+//   5) 答えの重複（県立入試スタイルの横断重複＋同じ学年の本どうしで fill／並べかえ／正解の選択肢が同じ）
+//   ※ 4)5) の既存ファイルは据え置き（BIAS_GRANDFATHER）。新作から強制。
 import { JSDOM } from 'jsdom';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -156,6 +160,52 @@ function underlineRef(id, EXAM){
   });
 }
 
+/* 読解の選択肢のかたより（2026-11-09 先生指示「答えが見えるところに載ってないか」を恒久化）。
+   リスニング以外の大問で、英語の mcq／bankpick の正解が
+     ① 正解だけ、内容語（a/the/to/is… 以外）がぜんぶ本文・資料にある
+     ② 正解だけがいちばん長い（最短の1.3倍より長い）
+     ③ 正解の4語連続（うち内容語2語以上）が本文にそのまま載っている
+   のどれかなら、本文を読まなくても正解が選べるので落とす。
+   既存ファイルは据え置き（印だけ出す）。新作から強制。 */
+const BIAS_GRANDFATHER = new Set(['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332',
+  'c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4','c3u5','c3u6','c3u7','c3u8','c3u9',
+  'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
+  'chu3_341','chu3_342','chu3_351','chu3_352',
+  'fukuoka1','fukuoka2','fukuoka3','fukuoka4','fukuoka5','fukuoka6','fukuoka7','fukuoka8','fukuoka9','fukuoka10']);
+const STOP_WORDS = new Set('a an the to of in on at for and or but is are was were be been will do does did i you he she it we they me him them my your his her our their this that these those there here with from by about not no yes can so very'.split(' '));
+const stripHtml = s => String(s==null?'':s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+const normText  = s => stripHtml(s).toLowerCase().replace(/[.,!?;:"'’“”()（）]/g,'').replace(/\s+/g,' ').trim();
+let biasKept = 0;
+function choiceBias(id, EXAM){
+  const old = BIAS_GRANDFATHER.has(id);
+  (EXAM.sections||[]).forEach(sec=>{
+    const groups = sec.groups||[];
+    if(groups.some(g=>g.script)) return;                      // リスニングは leakCheck が見る
+    const material = normText(groups.map(g=>String(g.passage||'')+' '+String(g.flyer||'')+' '+String(g.intro||'')).join(' ')+' '+String(sec.lead||''));
+    if(!material) return;
+    const mw = new Set(material.split(' '));
+    groups.forEach(g=>(g.items||[]).forEach(it=>{
+      if(!(it.type==='mcq'||it.type==='bankpick') || typeof it.answer!=='number') return;
+      const raw = it.choices||it.bank||[]; const ch = raw.map(normText);
+      if(!/[a-z]{3,}/.test(ch[it.answer]||'')) return;        // 日本語の選択肢・記号は対象外
+      const words = s => s.split(' ').filter(w=>w && !STOP_WORDS.has(w));
+      const ratio = ch.map(c=>{ const ws=words(c); return ws.length ? ws.filter(w=>mw.has(w)).length/ws.length : 0; });
+      const maxLen = Math.max(...ch.map(c=>c.length)), minLen = Math.min(...ch.map(c=>c.length));
+      const why = [];
+      if(ratio[it.answer]===1 && ratio.filter(r=>r===1).length===1) why.push('正解だけ内容語がぜんぶ本文にある');
+      if(ch[it.answer].length===maxLen && ch.filter(c=>c.length===maxLen).length===1 && maxLen>1.3*minLen) why.push('正解だけがいちばん長い');
+      // ③ は正解だけに起きているときだけ（場所名など短い選択肢は本文に出て当然なので6語以上）
+      const runOf = c => { const t=c.split(' '); if(t.length<6) return null;
+        for(let i=0;i+4<=t.length;i++){ const ph=t.slice(i,i+4); if(ph.filter(w=>!STOP_WORDS.has(w)).length>=2 && material.includes(ph.join(' '))) return ph.join(' '); } return null; };
+      const runs = ch.map(runOf);
+      if(runs[it.answer] && runs.filter(Boolean).length===1) why.push(`正解の4語「${runs[it.answer]}」が本文にそのまま`);
+      if(!why.length) return;
+      const msg = `大問${sec.no} ${it.label||''} 読解の選択肢がかたよる（${why.join('／')}）：「${stripHtml(raw[it.answer])}」 一致率=${ratio.map(r=>r.toFixed(2)).join('/')}`;
+      if(old) biasKept++; else fail(id, msg);
+    }));
+  });
+}
+
 // 話者連続：passage/script 内で同じ話者の <span class="who"> が2回続いていないか（QAで頻発した不具合）
 function speakerContinuity(id, EXAM){
   (EXAM.sections||[]).forEach(s=>{
@@ -199,6 +249,7 @@ function gradeExam(id, ci=0, label=''){
   underlineRef(id, EXAM);
   memoFormat(id, EXAM);
   leakCheck(id, EXAM);
+  if(ci===0) choiceBias(id, EXAM);   // コースごとに2回まわるので1回だけ
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   // 採点するコースを選びなおす（既定は先頭＝Xコースだけ）
   (EXAM.sections||[]).forEach(sec=>{
@@ -421,13 +472,50 @@ function checkIdioms(){
     pass('idioms', `${all.length}語（${SETS}セット×${PER}）すべて答えを打てば○・意味がかぶる ${amb}語は手がかりか別解で見分けがつく・軸の動詞ごと`);
 }
 
+/* 学年の中での答えの重複（2026-11-09 先生指示「似た問題だが答えの単語がほとんど一致したりはしていない状態か」）。
+   同じ学年の本どうしで、fill の答え・並べかえの答え・正解の選択肢（英語）が同じものを拾う。
+   「No, she doesn't.」のような Yes/No の定型と、数・曜日・時刻だけの答えは除く。
+   既存どうしの重複は据え置き（件数だけ出す）。新作（BIAS_GRANDFATHER 外）がからむものは落とす。 */
+const FAMILIES = { '中2': /^(chu2|c2u)/, '中3': /^(chu3|m332|mock332|c3u)/ };
+const YESNO = /^(yes|no) (i|you|he|she|it|we|they) /;
+const TRIVIAL = /^(\d+|[a-z]+day|(at |on |in )?(january|february|march|april|may|june|july|august|september|october|november|december).*|at \w+( \w+)?|(for )?(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve) ?\w*)$/;
+function familyDupCheck(){
+  const ids = [...new Set([...EXAMS, ...ONLY])];
+  for(const [fam, re] of Object.entries(FAMILIES)){
+    const set = ids.filter(id=>re.test(id)); if(set.length<2) continue;
+    const map = {};
+    const add = (str,id,where) => { const k=normText(str); if(k.length<4 || YESNO.test(k) || TRIVIAL.test(k)) return;
+      (map[k]=map[k]||{ids:new Set(),raw:stripHtml(str),where:[]}).ids.add(id); map[k].where.push(`${id} ${where}`); };
+    for(const id of set){
+      const w={}; try{ new Function('window', r(`mogi/data/${id}.js`))(w); }catch(e){ continue; }
+      (w.EXAM.sections||[]).forEach(sec=>{
+        const its=[]; if(sec.courses) sec.courses.forEach(c=>its.push(...(c.items||[]))); else (sec.groups||[]).forEach(g=>its.push(...(g.items||[])));
+        its.forEach(it=>{ const where=`大問${sec.no}${it.label||''}`;
+          if(it.type==='fill') (it.answers||[]).slice(0,1).forEach(a=>add(a,id,where));
+          else if(it.type==='wordorder') add(it.answer,id,where);
+          else if((it.type==='mcq'||it.type==='bankpick') && typeof it.answer==='number'){ const c=(it.choices||it.bank||[])[it.answer]; if(/[a-z]{3,}/i.test(stripHtml(c))) add(c,id,where); }
+        });
+      });
+    }
+    const dups = Object.values(map).filter(o=>o.ids.size>=2);
+    let kept=0;
+    dups.forEach(o=>{
+      if([...o.ids].every(id=>BIAS_GRANDFATHER.has(id))) { kept++; return; }
+      fail(`${fam}-dup`, `同じ学年の本で答えが同じ「${o.raw}」：${o.where.join('／')}`);
+    });
+    pass(fam, `${set.length}本の答え重複：新作がからむもの 0／既存どうし ${kept}（据え置き）`.replace('新作がからむもの 0', dups.length-kept ? `新作がからむもの ${dups.length-kept}` : '新作がからむもの 0'));
+  }
+}
+
 console.log('— 新規創作ぶんの横断重複 —');
 okayamaDupCheck();
+familyDupCheck();
+if(biasKept) console.log(`  ・ 読解の選択肢のかたより：既存ファイル ${biasKept} 問は据え置き（新作から強制）`);
 if(!ONLY.length){
   console.log('— 活用編（動詞の変化形／形容詞の比較） —');
   checkKatsuyo();
 }
-console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・okayama横断重複なし・単語サニティOK・活用編OK）');
+console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・選択肢のかたよりOK・okayama横断重複なし・学年内の答え重複なし・単語サニティOK・活用編OK）');
 process.exit(fails ? 1 : 0);
 
 // 活用編：150+50=200パターン・1パターン3疑似単語（原形→slot0/1/2）・id/kid重複なし・英字妥当性
