@@ -13,7 +13,7 @@ body{ font-family:"Century","Times New Roman","Noto Serif CJK JP","游明朝","Y
 .page{ width:188mm; min-height:275mm; margin:0 auto; padding:0; box-sizing:border-box; position:relative; }
 .page + .page{ break-before:page; page-break-before:always; }
 @media screen{ body{ background:#ddd; } .page{ background:#fff; margin:10mm auto; padding:9mm 11mm; width:210mm; min-height:297mm; box-shadow:0 2px 8px rgba(0,0,0,.25);} }
-h1{ font-size:14pt; margin:0 0 1mm; letter-spacing:.02em; }
+h1{ font-size:14pt; margin:0 0 .5mm; letter-spacing:.02em; }
 h1 small{ font-size:9.5pt; font-weight:normal; color:var(--sub); margin-left:3mm; }
 .head{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; border-bottom:1.5px solid var(--line); padding-bottom:1.2mm; margin-bottom:2mm; }
 .head h1{ flex:1 1 auto; white-space:nowrap; }
@@ -21,25 +21,25 @@ h1 small{ font-size:9.5pt; font-weight:normal; color:var(--sub); margin-left:3mm
 .name{ font-size:10pt; white-space:nowrap; }
 .name span{ display:inline-block; border-bottom:1px solid var(--line); min-width:12mm; text-align:center; margin:0 1mm; }
 .name .long{ min-width:38mm; }
-h2{ font-size:11pt; margin:2.6mm 0 1mm; padding:.4mm 2mm; background:var(--box); border-left:4px solid var(--line); }
+h2{ font-size:11pt; margin:2mm 0 .8mm; padding:.4mm 2mm; background:var(--box); border-left:4px solid var(--line); }
 h2 .pt{ float:right; font-weight:normal; font-size:9pt; color:var(--sub); }
 .lead{ font-size:9.5pt; color:var(--sub); margin:0 0 1mm 1mm; }
 ol{ margin:0; padding-left:0; list-style:none; counter-reset:q; }
-ol li{ counter-increment:q; position:relative; padding-left:7mm; margin:0 0 1.1mm; }
+ol li{ counter-increment:q; position:relative; padding-left:7mm; margin:0 0 .8mm; }
 ol li::before{ content:"(" counter(q) ")"; position:absolute; left:0; top:0; width:6.5mm; }
 .two{ columns:2; column-gap:6mm; }
 .two li{ break-inside:avoid; }
 .en{ font-family:"Century","Times New Roman",serif; }
-.ans{ display:inline-block; border-bottom:1px solid var(--line); min-width:9mm; height:1.2em; vertical-align:bottom; margin:0 .5mm; }
-.ans.w{ min-width:14mm; } .ans.x{ min-width:24mm; } .ans.l{ min-width:70mm; }
-.box{ display:inline-block; width:7mm; height:5.2mm; border:1px solid var(--line); vertical-align:middle; margin-right:1.5mm; }
-.line{ display:block; border-bottom:1px solid var(--line); height:6.8mm; margin:0 0 0 0; }
+.ans{ display:inline-block; border-bottom:1px solid var(--line); min-width:18mm; height:1.25em; vertical-align:bottom; margin:0 1mm; }
+.ans.w{ min-width:22mm; } .ans.x{ min-width:28mm; } .ans.l{ min-width:70mm; }
+.box{ display:inline-block; width:8mm; height:6mm; border:1px solid var(--line); vertical-align:middle; margin-right:1.5mm; }
+.line{ display:block; border-bottom:1px solid var(--line); height:7mm; margin:0; }
 .wo b{ font-weight:normal; }
 .wo .br{ border:1px solid var(--line); padding:0 1.5mm; margin:0 1mm; }
 table{ border-collapse:collapse; width:100%; }
 td,th{ border:1px solid var(--line); padding:.6mm 1.5mm; font-size:10pt; vertical-align:middle; }
-th{ background:var(--box); font-weight:normal; text-align:center; }
-td.blank{ height:6.6mm; }
+th{ background:var(--box); font-weight:normal; text-align:center; width:1%; white-space:nowrap; padding:.6mm 2.5mm; }
+td.blank{ height:8.2mm; }
 .grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 6mm; }
 .tri{ grid-template-columns:1fr 1fr 1fr; }
 .tip{ font-size:9pt; color:var(--sub); }
@@ -85,12 +85,12 @@ td.blank{ height:6.6mm; }
 
   <h2>3　1語を入れる　<span class="pt">各2点</span></h2>
   <ol class="two">
-    <li><span class="en">I have known him <span class="ans w"></span> 2020.</span></li>
-    <li><span class="en">She has been busy <span class="ans w"></span> three days.</span></li>
+    <li><span class="en">I have known him <span class="ans w"></span> 2020.</span>　<span class="tip">〜から</span></li>
+    <li><span class="en">She has been busy <span class="ans w"></span> three days.</span>　<span class="tip">〜の間</span></li>
     <li><span class="en">Have you <span class="ans w"></span> tried sushi?</span>　<span class="tip">今までに</span></li>
-    <li><span class="en">I have <span class="ans w"></span> seen such a big dog.</span>　<span class="tip">一度も〜ない</span></li>
-    <li><span class="en">Have you finished your homework <span class="ans w"></span>?</span>　<span class="tip">もう</span></li>
-    <li><span class="en">He has <span class="ans w"></span> eaten lunch.</span>　<span class="tip">すでに</span></li>
+    <li><span class="en">I have <span class="ans w"></span> been to Hokkaido.</span>　<span class="tip">一度も</span></li>
+    <li><span class="en">Have you eaten lunch <span class="ans w"></span>?</span>　<span class="tip">もう</span></li>
+    <li><span class="en">She has <span class="ans w"></span> left home.</span>　<span class="tip">すでに</span></li>
   </ol>
 
   <h2>4　英語で書く　<span class="pt">各2点</span></h2>
@@ -173,22 +173,22 @@ td.blank{ height:6.6mm; }
   <ol class="two">
     <li><span class="en">I have been a member <span class="ans"></span> April.</span></li>
     <li><span class="en"><span class="ans w"></span> you like to try it?</span>　<span class="tip">〜しませんか</span></li>
-    <li><span class="en"><span class="ans w"></span> we watch the stars tonight?</span>　<span class="tip">〜しましょうか</span></li>
+    <li><span class="en"><span class="ans w"></span> we watch the stars?</span>　<span class="tip">〜しましょうか</span></li>
     <li><span class="en"><span class="ans"></span> much is this ticket?</span></li>
     <li><span class="en">Can you show me how <span class="ans"></span> play it?</span></li>
-    <li><span class="en">Lucy helped me <span class="ans x"></span> her country.</span>　<span class="tip">理解する・原形</span></li>
+    <li><span class="en">Lucy helped me <span class="ans x"></span> it.</span>　<span class="tip">理解する</span></li>
     <li><span class="en">I'm looking forward <span class="ans"></span> seeing you.</span></li>
     <li><span class="en">Thank you for talking <span class="ans"></span> me.</span></li>
   </ol>
 
   <h2>E　疑問詞（答えから質問を作る）　<span class="pt">（　）に1〜2語／各1点</span></h2>
   <ol class="two">
-    <li><span class="en"><span class="ans x"></span> has he grown them? — For ten years.</span></li>
+    <li><span class="en"><span class="ans x"></span> has he lived here? — For ten years.</span></li>
     <li><span class="en"><span class="ans x"></span> is this book? — 300 yen.</span></li>
     <li><span class="en"><span class="ans x"></span> month is the hottest? — January.</span></li>
-    <li><span class="en"><span class="ans x"></span> was the photo taken? — In Australia.</span></li>
+    <li><span class="en"><span class="ans x"></span> was the photo taken? — In Nara.</span></li>
     <li><span class="en"><span class="ans x"></span> made this? — My uncle did.</span></li>
-    <li><span class="en"><span class="ans x"></span> times have you been there? — Twice.</span></li>
+    <li><span class="en"><span class="ans x"></span> times did you go? — Twice.</span></li>
     <li><span class="en"><span class="ans x"></span> does it start? — At nine.</span></li>
     <li><span class="en"><span class="ans x"></span> did it begin? — In 2009.</span></li>
   </ol>
