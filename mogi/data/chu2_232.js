@@ -3,7 +3,7 @@
    本文・設問・選択肢・語句はすべて新規創作。
    題材：わかば科学館の冬の星空ウィーク（大問2）／美術部の作品展（大問3）／
          おばのパン屋とチャリティーバザー（大問5）。模試231・c2u1〜c2u3 と内容の重複なし。
-   文法の山：must / have to / 不定詞（名詞・副詞・形容詞用法）/ what to・how to / 動名詞 /
+   文法の山：must / have to / 不定詞（名詞・副詞・形容詞用法）/ what to・how to / 動名詞 / be good at /
              be going to / will / SVOO(told me a story) / SVOC(call our dog Momo) / that節の省略
    配点：1コースぶんで ちょうど100点（24+13+17+10+16+12+8）。 */
 const E = s => '<span class="en">'+s+'</span>';
@@ -148,10 +148,10 @@ sections: [
         answers:["美術部の18人がこの部屋でいっしょに絵をかいて、よくおたがいに絵を見せ合っているということ"],
         hint:"「〜ということ」の形で" },
       { type:"bankpick", label:"(3)Ａ", pt:3, stem:"［　Ａ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
-        bank:[E("Did you finish your picture?"),E("You don't have to draw well."),E("Will you buy a picture?"),
+        bank:[E("Can you draw pictures well?"),E("You don't have to draw well."),E("Will you buy a picture?"),
               E("You should not try new things."),E("Can we take pictures there?")], answer:4 },
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
-        bank:[E("Did you finish your picture?"),E("You don't have to draw well."),E("Will you buy a picture?"),
+        bank:[E("Can you draw pictures well?"),E("You don't have to draw well."),E("Will you buy a picture?"),
               E("You should not try new things."),E("Can we take pictures there?")], answer:1 },
       { type:"fill", label:"(4)", pt:3,
         stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("How long will Leo stay in Japan?"),
@@ -165,11 +165,10 @@ sections: [
   { intro:"(1) 次の絵は、カナダにいるケイト(Kate)が電話でユカに質問しているところです。ケイトはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
     items:[
       { type:"fill", label:"①", pt:4,
-        stem:'<div class="scene">絵：ケイトが電話で「＿＿＿＿＿ today?」とたずね、ユカが「It\'s snowing.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ today?"),
-        answers:["how is the weather","how's the weather","how is the weather there","how's the weather there",
-                 "what is the weather like","what's the weather like"],
-        hint:"How で始める・today? の前まで" }
+        stem:'<div class="scene">絵：ケイトが電話で「＿＿＿＿＿ is it today in Japan?」とたずね、ユカがカレンダーを見ながら「It\'s Friday.」と答えている。</div>'+
+             E("＿＿＿＿＿＿＿＿＿＿ is it today in Japan?"),
+        answers:["what day","what day of the week"],
+        hint:"What で始める・is it の前まで" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
@@ -209,15 +208,15 @@ sections: [
       { type:"mcq", label:"(3)①", pt:3, stem:E("Where did Yoko sell bread?"),
         choices:[E("At the station."),E("At the town hall."),E("At the children's hospital."),E("At Miki's school.")], answer:1 },
       { type:"mcq", label:"(3)②", pt:3, stem:E("What does Miki want to do someday?"),
-        choices:[E("She wants to be a teacher like her mother."),
-                 E("She wants to work at a post office."),
-                 E("She wants to open a bakery near the station."),
-                 E("She wants to make bread for the children in the hospital.")], answer:3 },
+        choices:[E("She wants to be a teacher at an elementary school."),
+                 E("She wants to work at the post office with her father."),
+                 E("She wants to open her own bakery near the station."),
+                 E("She wants to give bread to sick children.")], answer:3 },
       { type:"mcq", label:"(4)", pt:3, stem:"本文の内容に合うものを、ア〜エから1つ選びなさい。",
-        choices:[E("Miki cooks in the cooking club every day after school."),
-                 E("Miki could answer the questions because she helped Yoko every weekend."),
+        choices:[E("Miki cooks with the cooking club every day after school."),
+                 E("Miki knew a lot about the bread because she often helped Yoko."),
                  E("Yoko is always cheerful when she makes bread with Miki."),
-                 E("The money from the bazaar will go to Miki's school.")], answer:1 }
+                 E("The money from the bazaar will go to Miki's elementary school.")], answer:1 }
     ] }
 ]},
 
@@ -266,18 +265,18 @@ sections: [
 /* ===== 大問7 1語補充（8点） ===== */
 { no:7, title:"次の対話文が成り立つように、①〜④の（　）内にあてはまる最も適切な英語を、それぞれ1語ずつ書きなさい。", groups:[
   { passage:
-      W("Ken:")+" "+E("I like winter sports. How about （　①　） skiing with us next month?")+"<br>"+
-      W("Lisa:")+" "+E("Sounds fun, but I'm not good （　②　） skiing.")+"<br>"+
+      W("Ken:")+" "+E("I like winter sports. I'm good （　①　） skiing. Will you come with us next month?")+"<br>"+
+      W("Lisa:")+" "+E("Sounds fun, but I don't know （　②　） to ski.")+"<br>"+
       W("Ken:")+" "+E("Don't worry. My father will teach you. He was a ski teacher.")+"<br>"+
       W("Lisa:")+" "+E("Really? Then I want to go. But I have （　③　） ask my parents first.")+"<br>"+
       W("Ken:")+" "+E("Of course.")+"<br>"+
-      W("Lisa:")+" "+E("Thank you （　④　） inviting me, Ken.")+"<br>"+
-      '<div class="note">[注] skiing スキー　invite 〜を招待する</div>',
+      W("Lisa:")+" "+E("Thank you for （　④　） me, Ken.")+"<br>"+
+      '<div class="note">[注] skiing スキー　ski スキーをする</div>',
     items:[
-      { type:"fill", label:"①", pt:2, stem:"①に入る英語1語", answers:["going"], hint:"How about のあとの形" },
-      { type:"fill", label:"②", pt:2, stem:"②に入る英語1語", answers:["at"], hint:"be good 〜" },
+      { type:"fill", label:"①", pt:2, stem:"①に入る英語1語", answers:["at"], hint:"be good 〜" },
+      { type:"fill", label:"②", pt:2, stem:"②に入る英語1語", answers:["how"], hint:"「〜のしかた」＝ 〜 to …" },
       { type:"fill", label:"③", pt:2, stem:"③に入る英語1語", answers:["to"], hint:"「〜しなければならない」の形" },
-      { type:"fill", label:"④", pt:2, stem:"④に入る英語1語", answers:["for"], hint:"Thank you 〜 …ing" }
+      { type:"fill", label:"④", pt:2, stem:"④に入る英語1語", answers:["inviting"], hint:"Thank you for のあとの形（「〜を招待する」）" }
     ] }
 ]}
 
