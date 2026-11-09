@@ -90,23 +90,23 @@ sections: [
     '<tr><td>Wednesday</td><td>Cooking online — Australian sweets</td><td>cooking room</td><td>16</td></tr>'+
     '<tr><td>Thursday</td><td>Talk with Bell Hill students in small groups</td><td>English room</td><td>24</td></tr></table>'+
     '<div class="note">Time … 9:00 a.m. – 9:40 a.m. (Japan time) = 10:00 a.m. – 10:40 a.m. (Australia time)<br>'+
-    'Fee … The cooking event is 200 yen for the food. The other events are free.<br>'+
+    'Fee … The cooking event is 200 yen for the food. The online tour is 100 yen for the booklet. The other events are free.<br>'+
     'Bring … your own headphones.<br>'+
-    'Please use simple English and speak slowly. The students there are learning Japanese, too.</div>',
+    'Please use short sentences and speak slowly. The students there are learning Japanese, too.</div>',
     passage:
     '<span class="sp"><span class="who">Sora:</span> Hina, look at this. Bell Hill Week starts next Monday. We can meet the students in Australia online.</span>'+
     '<span class="sp"><span class="who">Hina:</span> Great! I want to join the quiz on Tuesday. And on Wednesday, we can learn how to make Australian sweets.</span>'+
     '<span class="sp"><span class="who">Sora:</span> That sounds fun. Are you going to join both?</span>'+
     '<span class="sp"><span class="who">Hina:</span> Yes. I （　い　） looking forward to it since I saw the video from Bell Hill School. How about you?</span>'+
     '<span class="sp"><span class="who">Sora:</span> I\'ll join the talk on Thursday. I want to ask the students about their town. Have you ever <u>(う) speak</u> English with a person from another country?</span>'+
-    '<span class="sp"><span class="who">Hina:</span> Only once, with Mr. Green\'s friend. I was nervous, but he used （　あ　） words, so I could understand him.</span>'+
-    '<span class="sp"><span class="who">Sora:</span> Then let\'s use （　あ　） English, too. The students there are learning Japanese, so they will try to understand us.</span>'+
+    '<span class="sp"><span class="who">Hina:</span> Only once, with Mr. Green\'s friend. I was nervous, but he used （　あ　） sentences, so I could understand him.</span>'+
+    '<span class="sp"><span class="who">Sora:</span> Then let\'s use （　あ　） sentences, too. The students there are learning Japanese, so they will try to understand us.</span>'+
     '<span class="sp"><span class="who">Hina:</span> Right. And I\'ll bring my own headphones. I don\'t want to miss any words.</span>'+
     '<span class="sp"><span class="who">Sora:</span> Good idea. Let\'s tell Mr. Green about our plans.</span>',
-    note:'語注：sister school 姉妹校／tour 見学／quiz クイズ／sweets おかし／fee 料金／look forward to 〜 〜を楽しみに待つ／nervous 緊張して／headphones ヘッドホン／miss 〜を聞きのがす',
+    note:'語注：sister school 姉妹校／tour 見学／quiz クイズ／sweets おかし／fee 料金／look forward to 〜 〜を楽しみに待つ／nervous 緊張して／headphones ヘッドホン／miss 〜を聞きのがす／booklet 小冊子／foreign 外国の',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"2か所の（あ）に共通して入れるのに最も適当な英語1語を、ちらしの中から抜き出して書きなさい。",
-      answers:["simple"], hint:"ちらしの中にある語" },
+      answers:["short"], hint:"ちらしの中にある語" },
     { type:"fill", label:"(2)い", pt:3, stem:"（い）に入れるのに最も適当な2語の英語を書きなさい。", answers:["have been"], hint:"英語2語（ずっと〜し続けている）" },
     { type:"fill", label:"(3)う", pt:3, stem:"下線部(う)の単語を、最も適当な形に変えて1語で書きなさい。", answers:["spoken"], hint:"Have you ever 〜 English with a person from another country?" },
     { type:"mcq", label:"(4)", pt:3, stem:"ちらしから、ヒナが火曜日と水曜日の行事の両方に参加するとき、払う金額は全部でいくらですか。最も適当なのは、ア〜エのどれですか。",
@@ -115,7 +115,7 @@ sections: [
       choices:[ E("Sora will join the cooking event on Wednesday."),
                 E("The events start at ten in the morning in Japan."),
                 E("The students at Bell Hill School are learning Chinese."),
-                E("Hina has talked in English with a person from another country before.") ], answer:3 } ]}
+                E("Hina has used English with a foreign person once.") ], answer:3 } ]}
 ]},
 
 /* ===== 大問3 会話の英作文（並べかえ2問） ===== */
@@ -146,7 +146,7 @@ sections: [
     '<span class="sp"><span class="who">Sora:</span> Rice balls. They are easy to make, and I can teach the students how to make them.</span>'+
     '<span class="sp"><span class="who">Mr. Green:</span> Nice. Hina, how about you?</span>'+
     '<span class="sp"><span class="who">Hina:</span> I want to show our school rules, like changing shoes at the entrance. And I have a question. In the video, every student wore a hat outside. Is that a rule?</span>'+
-    '<span class="sp"><span class="who">Mr. Green:</span> Yes, at many schools. The sun is very strong there, so wearing a hat outside is （　あ　）. Students must wear one.</span>'+
+    '<span class="sp"><span class="who">Mr. Green:</span> Yes, at many schools. The sun is very strong there, so students （　あ　） wear a hat outside. It is a school rule.</span>'+
     '<span class="sp"><span class="who">Hina:</span> I see. Their school life is different from ours in many ways.</span>'+
     '<span class="sp"><span class="who">Mr. Green:</span> Right. Now let me talk about my school days in Australia. Our school year started in late January, and we had a long summer vacation in December. I went to the beach almost every day.</span>'+
     '<span class="sp"><span class="who">Sora:</span> （　い　）</span>'+
@@ -161,7 +161,7 @@ sections: [
     { type:"fill", label:"(1)", pt:4, stem:"下線部の内容になるように、次の文の[　　]に入る最も適当な英語3語を、話し合いの中の Sora の発言から抜き出して書きなさい。<br>"+E("Sora wants to [　　] and show it to the students at Bell Hill School."),
       answers:["cook Japanese food"], hint:"英語3語" },
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[E("necessary"),E("dangerous"),E("expensive"),E("quiet")], answer:0 },
+      choices:[E("must"),E("may not"),E("don't have to"),E("can't")], answer:0 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("How many students were in your class?"), E("Why did you become interested in Japan?"),
                 E("When will you go back to the beach?"), E("What did you eat for lunch at school?") ], answer:1 },

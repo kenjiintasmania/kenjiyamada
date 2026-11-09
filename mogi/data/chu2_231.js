@@ -43,7 +43,7 @@ sections: [
            "Sam: Wow. I want to read Japanese books, but they are difficult for me.\n"+
            "Aya: You can find easy English books there, too. The library opens at nine thirty.\n"+
            "Sam: Great. I will go there next Saturday. Will you come with me?\n"+
-           "Aya: Sorry, I have a piano lesson on Saturday morning. How about Sunday afternoon?\n"+
+           "Aya: Sorry, I have a piano lesson on Saturday morning. How about Saturday afternoon?\n"+
            "Sam: OK. Let's meet at two.",
     intro:"(2) サム(Sam)とアヤ(Aya)の対話を聞き、そのあとの①〜④の質問の答えとして最も適切なものを、ア〜エから1つずつ選びなさい。",
     items:[
@@ -54,7 +54,7 @@ sections: [
       { type:"mcq", label:"③", pt:3, stem:E("Does Sam want to read Japanese books?"),
         choices:[E("Yes, he does."),E("Yes, he did."),E("No, he doesn't."),E("No, he didn't.")], answer:0 },
       { type:"mcq", label:"④", pt:3, stem:E("When will Sam and Aya go to the library?"),
-        choices:[E("On Saturday morning."),E("On Saturday afternoon."),E("On Sunday morning."),E("On Sunday afternoon.")], answer:3 }
+        choices:[E("On Saturday morning."),E("On Saturday afternoon."),E("On Sunday morning."),E("On Sunday afternoon.")], answer:1 }
     ] },
 
   { passage:'<div class="scene">①の絵：ケンタが本だなの前で、1冊の本に手をのばしている。</div>'+
@@ -143,10 +143,10 @@ sections: [
         answers:["吹奏楽部に25人の生徒がいて、その人たちがハルトの仲のよい友達だということ"],
         hint:"「〜ということ」の形で" },
       { type:"bankpick", label:"(3)Ａ", pt:3, stem:"［　Ａ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
-        bank:[E("How was the concert?"),E("Trying new things is fun."),E("Will you play the trumpet?"),
+        bank:[E("How was the concert last year?"),E("Trying new things is fun."),E("Will you play the trumpet for us?"),
               E("You cannot try new things."),E("What time will your part start?")], answer:4 },
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
-        bank:[E("How was the concert?"),E("Trying new things is fun."),E("Will you play the trumpet?"),
+        bank:[E("How was the concert last year?"),E("Trying new things is fun."),E("Will you play the trumpet for us?"),
               E("You cannot try new things."),E("What time will your part start?")], answer:1 },
       { type:"fill", label:"(4)", pt:3,
         stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("When will Anna come to Japan?"),
@@ -201,10 +201,10 @@ sections: [
       { type:"mcq", label:"(3)①", pt:3, stem:E("Where did Takeshi clean with people in his town?"),
         choices:[E("At Sota's house."),E("At the hospital."),E("At the river."),E("At the city office.")], answer:2 },
       { type:"mcq", label:"(3)②", pt:3, stem:E("What does Sota want to do after the cleaning?"),
-        choices:[E("He wants to learn only about fishing."),
+        choices:[E("He wants to learn only about fishing from Takeshi."),
                  E("He wants to learn about the river and other things."),
-                 E("He wants to learn English in other countries."),
-                 E("He wants to teach fishing to children.")], answer:1 },
+                 E("He wants to study English in other countries someday."),
+                 E("He wants to teach fishing to children by the river.")], answer:1 },
       { type:"mcq", label:"(4)", pt:3, stem:"本文の内容に合うものを、ア〜エから1つ選びなさい。",
         choices:[E("Sota studies rivers in the science club every day."),
                  E("Takeshi is always very kind when he teaches fishing."),
@@ -262,14 +262,14 @@ sections: [
       W("Tom:")+" "+E("What kind of sports do you like?")+"<br>"+
       W("Rika:")+" "+E("I like winter sports. Are you interested （　②　） them?")+"<br>"+
       W("Tom:")+" "+E("Oh, yes. Skiing is exciting.")+"<br>"+
-      W("Rika:")+" "+E("That's right. Well, Yuki and I are （　③　） to go to a ski school next month.")+"<br>"+
+      W("Rika:")+" "+E("That's right. Well, Yuki and I are going to a ski school next month. It （　③　） be exciting.")+"<br>"+
       "　　　 "+E("（　④　） you are free, please join us.")+"<br>"+
       W("Tom:")+" "+E("Thank you. I want to go with you.")+"<br>"+
       '<div class="note">[注] skiing スキー　free ひまな</div>',
     items:[
       { type:"fill", label:"①", pt:2, stem:"①に入る英語1語", answers:["playing"], hint:"enjoy のあとの形" },
       { type:"fill", label:"②", pt:2, stem:"②に入る英語1語", answers:["in"], hint:"be interested 〜" },
-      { type:"fill", label:"③", pt:2, stem:"③に入る英語1語", answers:["going"], hint:"be 〜 to ＝〜する予定だ" },
+      { type:"fill", label:"③", pt:2, stem:"③に入る英語1語", answers:["will"], hint:"「〜でしょう」（未来）" },
       { type:"fill", label:"④", pt:2, stem:"④に入る英語1語", answers:["If"], hint:"「もし〜なら」" }
     ] }
 ]}

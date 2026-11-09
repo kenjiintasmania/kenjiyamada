@@ -167,10 +167,10 @@ function underlineRef(id, EXAM){
      ③ 正解の4語連続（うち内容語2語以上）が本文にそのまま載っている
    のどれかなら、本文を読まなくても正解が選べるので落とす。
    既存ファイルは据え置き（印だけ出す）。新作から強制。 */
-const BIAS_GRANDFATHER = new Set(['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332',
+const BIAS_GRANDFATHER = new Set(['chu2','chu2_a1','chu2_2','chu2_3','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332',
   'c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4','c3u5','c3u6','c3u7','c3u8','c3u9',
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
-  'chu3_341','chu3_342','chu3_351','chu3_352',
+  'chu3_341','chu3_342',
   'fukuoka1','fukuoka2','fukuoka3','fukuoka4','fukuoka5','fukuoka6','fukuoka7','fukuoka8','fukuoka9','fukuoka10']);
 const STOP_WORDS = new Set('a an the to of in on at for and or but is are was were be been will do does did i you he she it we they me him them my your his her our their this that these those there here with from by about not no yes can so very'.split(' '));
 const stripHtml = s => String(s==null?'':s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
