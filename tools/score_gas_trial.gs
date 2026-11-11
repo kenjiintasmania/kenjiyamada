@@ -379,6 +379,11 @@ var UNIT_EXAMS = {
   "c3u7": "中3 単元テスト⑦",
   "c3u8": "中3 単元テスト⑧",
   "c3u9": "中3 単元テスト⑨",
+  // jigaku-25：模試と連動した単元テスト（同じ構成・文法、単語だけ入れかえ）。先生指示 2026-11-11
+  "c2u231": "中2 単元テスト231",
+  "c2u232": "中2 単元テスト232",
+  "c3u351": "中3 単元テスト351",
+  "c3u352": "中3 単元テスト352",
   // 到達度テスト（ノンストップ・時間制限なし・何周でも）。1回で終わらせず、
   // 次のコマでロックを開け直せば続きから再開する。記録は「到達度テスト」タブへ。
   "m2000": "2000語 到達度テスト",
@@ -390,7 +395,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1, "mkatsu":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-24";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-25";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -1273,7 +1278,12 @@ function onOpen(){
     .addItem("中2 単元テスト①", "um_c2u1")
     .addItem("中2 単元テスト②", "um_c2u2")
     .addItem("中3 単元テスト①", "um_c3u1")
-    .addItem("中3 単元テスト②", "um_c3u2");
+    .addItem("中3 単元テスト②", "um_c3u2")
+    .addSeparator()
+    .addItem("中2 単元テスト231", "um_c2u231")
+    .addItem("中2 単元テスト232", "um_c2u232")
+    .addItem("中3 単元テスト351", "um_c3u351")
+    .addItem("中3 単元テスト352", "um_c3u352");
   ui.createMenu("📊 成績ツール")
     .addItem("🔢 学年▶番号で並べかえ", "sortSummary")
     .addSeparator()
@@ -1295,6 +1305,10 @@ function um_c2u1(){ listMissingUnit("c2u1"); }
 function um_c2u2(){ listMissingUnit("c2u2"); }
 function um_c3u1(){ listMissingUnit("c3u1"); }
 function um_c3u2(){ listMissingUnit("c3u2"); }
+function um_c2u231(){ listMissingUnit("c2u231"); }
+function um_c2u232(){ listMissingUnit("c2u232"); }
+function um_c3u351(){ listMissingUnit("c3u351"); }
+function um_c3u352(){ listMissingUnit("c3u352"); }
 
 // 成績まとめを 学年(昇順)▶番号(昇順) で並べかえ（番号は数値順）
 function sortSummary(){
