@@ -43,7 +43,7 @@ sections: [
            "Ken: I like pictures of the sea. My sister likes pictures of flowers. She bought four postcards.\n"+
            "Emma: Nice. I want to see Japanese pictures, but I don't know much about them.\n"+
            "Ken: You can get an English map of the museum there. The museum opens at ten.\n"+
-           "Emma: Great. I'll visit it next Sunday. Can you come with me?\n"+
+           "Emma: Great. I'll visit it next Sunday. Do you want to go with me?\n"+
            "Ken: Sorry, I have tennis practice on Sunday morning. How about Sunday afternoon?\n"+
            "Emma: OK. Let's meet at one thirty.",
     intro:"(2) エマ(Emma)とケン(Ken)の対話を聞き、そのあとの①〜④の質問の答えとして最も適切なものを、ア〜エから1つずつ選びなさい。",
@@ -175,7 +175,7 @@ sections: [
 /* ===== 大問5 長文（16点） ===== */
 { no:5, title:"次は、中学生のヒカリが書いた英文です。よく読んで、あとの(1)〜(4)の問いに答えなさい。", groups:[
   { passage:
-      E("I'm Hikari. I live in Hamano with my father and mother. I'm in the nature club at school. I study sea animals on Mondays and Wednesdays. I like the sea very much. My mother is a teacher at a junior high school. My father is a bus driver.")+
+      E("I'm Hikari. I live in Hamano with my father and mother. I'm in the nature club at school. I study sea animals on Mondays and Wednesdays. I like the sea very much. My mother is a teacher at a junior high school. My father drives a bus in our town.")+
       " <b>［ア］</b> "+
       E("My grandmother lives next to my house. Her name is Fumiko, and she is seventy-two. She teaches children about sea animals at the beach. I'm one of those children. She is very kind, but sometimes strict when I learn from her. She is a good teacher for me.")+
       "<br><br>"+
@@ -188,7 +188,7 @@ sections: [
       E("I was nervous, but I tried to speak to them in English. They asked me many questions. For example, \"What kind of birds come to this beach?\" and \"Where should we put these bottles?\" I learned a lot about the sea from Fumiko, so I could answer the students from other countries. I was really happy about <u>that</u>.")+
       "<br><br>"+
       E("After the cleaning, I talked with Fumiko. She said, \"You helped a lot of people today. Thank you. Did you have fun?\" I said, \"Yes. When I talked with the students, my knowledge about the sea helped me. I want to know more about it. And I will try other things, too.\" She smiled and said, \"You did well.\"")+
-      '<div class="note">[注] nature club 自然部　sea animal 海の生き物　bus driver バスの運転手　strict きびしい　'+
+      '<div class="note">[注] nature club 自然部　sea animal 海の生き物　drive 〜を運転する　strict きびしい　'+
       'clean 〜をそうじする　chance 機会　nervous 緊張して　for example 例えば　bottle びん　'+
       'cleaning そうじ　knowledge 知識</div>',
     items:[
