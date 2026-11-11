@@ -16,7 +16,7 @@ import { dirname, resolve } from 'node:path';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const r = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu2_232','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4','c3u5','c3u6','c3u7','c3u8','c3u9',
+const EXAMS = ['chu2','chu2_a1','chu2_2','chu2_3','chu2_231','chu2_232','chu3_1','chu3_2','chu3_3','chu3_4','m332','mock332','c2u1','c2u2','c2u3','c3u1','c3u2','c3u3','c3u4','c3u5','c3u6','c3u7','c3u8','c3u9','c2u231','c2u232','c3u351','c3u352',
   'okayama1','okayama2','okayama3','okayama4','okayama5','okayama6','okayama7','okayama8','okayama9','okayama10',
   'chu3_341','chu3_342','chu3_351','chu3_352',
   'fukuoka1','fukuoka2','fukuoka3','fukuoka4','fukuoka5','fukuoka6','fukuoka7','fukuoka8','fukuoka9','fukuoka10'];
@@ -304,7 +304,7 @@ function checkWords(){
 // 新規創作ぶんの横断重複：並べかえ答・抜き出し答・長い選択肢が2本以上で一致しないか。
 // 対象は okayama*（県立入試スタイル）と、同じ型で書き下ろした chu3_34x・c3u3/c3u4。
 // 既存の chu2*/chu3_1〜4 等は正進社の過去問ベースで言い回しが元から近いので含めない。
-const NEW_STYLE = /^(okayama\d+|fukuoka\d+|chu3_3[45]\d|c3u[3-9])$/;
+const NEW_STYLE = /^(okayama\d+|fukuoka\d+|chu3_3[45]\d|c3u[3-9]\d*)$/;
 function okayamaDupCheck(){
   const set = [...new Set([...EXAMS, ...ONLY])].filter(id=>NEW_STYLE.test(id));
   if(set.length<2) return;

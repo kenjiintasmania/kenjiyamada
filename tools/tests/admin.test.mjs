@@ -48,7 +48,7 @@ await p.goto(new URL("../../admin/index.html", import.meta.url).href); await p.w
 const ADM = readFileSync(new URL("../../admin/index.html", import.meta.url), "utf8");
 const ADM_IDS = [...((ADM.match(/var EXAMS=\[([\s\S]*?)\n  \];/)||[,""])[1]
   .matchAll(/id:"([a-z0-9_]+)"/g))].map(m=>m[1]);
-const UNIT_N = ADM_IDS.filter(id=>/^c[23]u\d$/.test(id)).length;
+const UNIT_N = ADM_IDS.filter(id=>/^c[23]u\d+$/.test(id)).length;
 const titles=await p.$$eval("#exams .exam-title", ns=>ns.map(n=>n.textContent.trim()));
 ok(titles.length===ADM_IDS.length, `カードが${ADM_IDS.length}枚（${titles.length}）`);
 ok(titles.some(t=>/2000語 到達度テスト/.test(t)), "2000語 到達度テストのカードがある");

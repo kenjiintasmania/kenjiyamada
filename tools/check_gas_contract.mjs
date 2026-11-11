@@ -51,7 +51,7 @@ else pass(`成績まとめ ${cols.length}列すべてに送信キーがある`);
 const metaBlk = (exam.match(/const meta=\{([\s\S]*?)\n  \};/) || [])[1] || '';
 const entries = [...metaBlk.matchAll(/^\s*([a-z0-9_]+):\s*\{([^\n]*)/gm)];
 const units = entries.filter(m => /unit:\s*true/.test(m[2])).map(m => m[1]);
-const gasUnits = [...gas.matchAll(/"(c[23]u\d)":/g)].map(m => m[1]);
+const gasUnits = [...gas.matchAll(/"(c[23]u\d+)":/g)].map(m => m[1]);
 const noGate = units.filter(u => !gasUnits.includes(u));
 const ghost  = gasUnits.filter(u => !units.includes(u));
 if (noGate.length) fail(`GAS の UNIT_EXAMS に無いので受付を開けません: ${noGate.join(', ')}`);
