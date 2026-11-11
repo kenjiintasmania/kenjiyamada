@@ -38,7 +38,7 @@ sections: [
       '<span class="sp"><span class="who">B:</span> （チャイム）</span>',
     items:[
     { type:"mcq", label:"(1)", pt:3, stem:"チャイムの部分に入る応答は？",
-      choices:[ E("No, I have never been there."), E("Yes, I have. I practiced it last night."),
+      choices:[ E("No, I have never seen it."), E("Yes, I have. I practiced it last night."),
                 E("Yes, it was very cold last night."), E("He lives near the park.") ], answer:1 } ] },
   { script:
       '<span class="sp"><span class="who">A:</span> Zoe says it\'s winter in New Zealand now. Can you believe it?</span>'+
@@ -51,7 +51,7 @@ sections: [
   /* 問題C：メモの空所補充（英語1語×3・2回読み） */
   { intro:"問題C　トモヤ(Tomoya)が、ALT のスコット(Ms. Scott)先生からオンライン交流についての説明を聞いて、メモを取っています。（あ）〜（う）に適切な英語1語を入れなさい。英文は2回読まれます。",
     script:
-      '<span class="sp">Hello, everyone. Our first online meeting with Fern Lake School will be next Wednesday.</span>'+
+      '<span class="sp">Hello, everyone. Our first online meeting with Fern Lake School will be next Saturday.</span>'+
       '<span class="sp">We will use the music room on the third floor, because it has a big screen and good speakers.</span>'+
       '<span class="sp">The meeting will be about sixty minutes long, so please prepare some questions about their school.</span>',
     passage:'<b>トモヤのメモ</b><br>Online meeting with Fern Lake School<br>'+
@@ -60,7 +60,7 @@ sections: [
             '— about （　う　） minutes long<br>'+
             '— prepare some questions about their school',
     items:[
-    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Wednesday"], hint:"英語1語" },
+    { type:"fill", label:"あ", pt:2, stem:"（あ）", answers:["Saturday"], hint:"英語1語" },
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["music"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["sixty","60"], hint:"英語1語（数）" } ] },
 
@@ -95,21 +95,21 @@ sections: [
     '<div class="note">Time … 10:00 a.m. – 10:50 a.m. (Japan time) = 1:00 p.m. – 1:50 p.m. (New Zealand time)<br>'+
     'Fee … The cooking event is 300 yen for the food. The online tour is 150 yen for the map of the school. The other events are free.<br>'+
     'Bring … your own tablet.<br>'+
-    'Please use easy words and speak clearly. The students there are learning Japanese, too.</div>',
+    'Please use easy words and speak in a loud voice. The students there are learning Japanese, too.</div>',
     passage:
     '<span class="sp"><span class="who">Tomoya:</span> Ayane, look at this. Fern Lake Week begins next Monday. We can talk with the students in New Zealand online.</span>'+
     '<span class="sp"><span class="who">Ayane:</span> Nice! I want to join the online tour on Monday. And on Wednesday, we can learn how to make New Zealand cookies.</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> Sounds good. Will you join both of them?</span>'+
     '<span class="sp"><span class="who">Ayane:</span> Yes. I have （　い　） for this week since Ms. Scott showed us the pictures of Fern Lake School. What about you?</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> I\'ll join the talk on Thursday. I want to ask them about their school life. Have you ever <u>(う) meet</u> a person from New Zealand?</span>'+
-    '<span class="sp"><span class="who">Ayane:</span> Only once, at the city festival last summer. She spoke （　あ　）, so I could understand her English.</span>'+
-    '<span class="sp"><span class="who">Tomoya:</span> Then let\'s speak （　あ　）, too. The students there are learning Japanese, so they will try to understand us.</span>'+
+    '<span class="sp"><span class="who">Ayane:</span> Only once, at the city festival last summer. She spoke in a （　あ　） voice, so I could understand her English.</span>'+
+    '<span class="sp"><span class="who">Tomoya:</span> Then let\'s speak in a （　あ　） voice, too. The students there are learning Japanese, so they will try to understand us.</span>'+
     '<span class="sp"><span class="who">Ayane:</span> Right. And I\'ll bring my own tablet. I want to show them some pictures of our town.</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> Good idea. Let\'s tell Ms. Scott about our plans.</span>',
     note:'語注：sister school 姉妹校／tour 見学／song time 歌の時間／cookie クッキー／pair ペア／fee 料金／map 地図／tablet タブレット／festival 祭り／both 両方',
     items:[
     { type:"fill", label:"(1)あ", pt:3, stem:"2か所の（あ）に共通して入れるのに最も適当な英語1語を、ちらしの中から抜き出して書きなさい。",
-      answers:["clearly"], hint:"ちらしの中にある語" },
+      answers:["loud"], hint:"ちらしの中にある語" },
     { type:"fill", label:"(2)い", pt:3, stem:"（い）に入れるのに最も適当な2語の英語を書きなさい。", answers:["been waiting"], hint:"英語2語（ずっと〜し続けている）" },
     { type:"fill", label:"(3)う", pt:3, stem:"下線部(う)の単語を、最も適当な形に変えて1語で書きなさい。", answers:["met"], hint:"Have you ever 〜 a person from New Zealand?" },
     { type:"mcq", label:"(4)", pt:3, stem:"ちらしから、アヤネが月曜日と水曜日の行事の両方に参加するとき、払う金額は全部でいくらですか。最も適当なのは、ア〜エのどれですか。",
@@ -148,23 +148,23 @@ sections: [
     '<span class="sp"><span class="who">Ms. Scott:</span> Good point. In New Zealand, most students bring a lunch box from home. What will you make, Tomoya?</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> Miso soup. It is easy to make, and I can show the students how to make it.</span>'+
     '<span class="sp"><span class="who">Ms. Scott:</span> Nice. Ayane, how about you?</span>'+
-    '<span class="sp"><span class="who">Ayane:</span> I want to show our school events, like the sports day in autumn. And I have a question. In the video, some students were walking outside without shoes. Is that OK?</span>'+
-    '<span class="sp"><span class="who">Ms. Scott:</span> Yes, at many schools. Students （　あ　） wear shoes outside when it is warm. Some of them like to feel the grass under their feet.</span>'+
+    '<span class="sp"><span class="who">Ayane:</span> I want to show our school events, like the sports day in autumn. And I have a question. In the video, every student was wearing the same green sweater. Is that a rule?</span>'+
+    '<span class="sp"><span class="who">Ms. Scott:</span> Yes. Most schools there have a school uniform, so every student （　あ　） wear it. Some students even wear it in the city after school.</span>'+
     '<span class="sp"><span class="who">Ayane:</span> I see. Their school life is very different from ours.</span>'+
     '<span class="sp"><span class="who">Ms. Scott:</span> Right. Now let me tell you about my school days in New Zealand. Our school year began in early February, and we had a long summer vacation from the middle of December. I often went to the lake with my family.</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> （　い　）</span>'+
     '<span class="sp"><span class="who">Ms. Scott:</span> Good question. My aunt lived in Japan, and she sent me Japanese comic books every year. I wanted to read them, so I started studying Japanese by myself.</span>'+
     '<span class="sp"><span class="who">Tomoya:</span> And now you teach English in Japan.</span>'+
     '<span class="sp"><span class="who">Ms. Scott:</span> Yes, and I love my life here. We can learn a lot from each other, so please ask the students many questions next Thursday.</span>',
-    note:'語注：miso soup みそ汁／sandwich サンドイッチ／garden 庭／lunch box 弁当箱／sports day 運動会／without 〜なしで／grass 草／feet 足（foot の複数形）／early February 2月の初めごろ／the middle of 〜 〜の中ごろ／aunt おば／comic book まんが本／by myself 自分で／each other おたがい' },
+    note:'語注：miso soup みそ汁／sandwich サンドイッチ／garden 庭／lunch box 弁当箱／sports day 運動会／sweater セーター／rule 規則／uniform 制服／even 〜でさえ／early February 2月の初めごろ／the middle of 〜 〜の中ごろ／aunt おば／comic book まんが本／by myself 自分で／each other おたがい' },
   { passage:'<b>Ayane の日記</b><br>Today we talked about the next online meeting. Tomoya will make miso soup, and I will show our school events. '+
-            'I （　X　）, so I asked Ms. Scott about them. She also told us about her school days in New Zealand. '+
+            'I （　X　）, so I asked Ms. Scott about it. She also told us about her school days in New Zealand. '+
             'I want to ask Zoe a lot of questions next Thursday.', passageEn:true,
     items:[
     { type:"fill", label:"(1)", pt:4, stem:"下線部の内容になるように、次の文の[　　]に入る最も適当な英語3語を、話し合いの中の Tomoya の発言から抜き出して書きなさい。<br>"+E("Tomoya wants to [　　] and show it to the students at Fern Lake School."),
       answers:["make Japanese lunch"], hint:"英語3語" },
     { type:"mcq", label:"(2)あ", pt:3, stem:"（あ）に入れるのに最も適当なのは、ア〜エのどれですか。",
-      choices:[E("must"),E("don't have to"),E("must not"),E("should")], answer:1 },
+      choices:[E("has to"),E("doesn't have to"),E("must not"),E("is able to")], answer:0 },
     { type:"mcq", label:"(3)い", pt:3, stem:"（い）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("What did you do at the lake?"), E("How many comic books do you have?"),
                 E("How did you start learning Japanese?"), E("When will you go back to New Zealand?") ], answer:2 },
@@ -172,10 +172,10 @@ sections: [
       choices:[ E("Tomoya will make miso soup in the video Zoe sent."),
                 E("Ms. Scott had her summer vacation in August."),
                 E("Ayane wants to show the students some school events."),
-                E("Students in New Zealand always wear shoes at school.") ], answer:2 },
+                E("Students in New Zealand never wear a uniform at school.") ], answer:2 },
     { type:"mcq", label:"(5)X", pt:3, stem:"（X）に入れるのに最も適当なのは、ア〜エのどれですか。",
       choices:[ E("was good at making miso soup"), E("have been to New Zealand before"),
-                E("wanted to make miso soup at home"), E("wanted to know about the shoes") ], answer:3 } ]}
+                E("wanted to make miso soup at home"), E("wanted to know about the sweater") ], answer:3 } ]}
 ]},
 
 /* ===== 大問5 スピーチ（長文読解） ===== */
