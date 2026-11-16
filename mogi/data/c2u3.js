@@ -218,7 +218,7 @@ sections: [
   lead:"文の最初にくる語も小文字で示しています。", groups:[
   { items:[
     { type:"wordorder", label:"(1)", pt:3,
-      stem:"A: You ［ "+E("must / clean / your / room")+" ］ today.　B: OK.",
+      stem:"A: You ［ "+E("your / room / clean / must")+" ］ today.　B: OK.",
       words:["must","clean","your","room"], answer:"You must clean your room today.",
       display:"You must clean your room today." },
     { type:"wordorder", label:"(2)", pt:3,

@@ -196,7 +196,7 @@ sections: [
       { type:"wordorder", label:"(3)", pt:3, stem:'A:［ '+E("if / are / you / free")+' ］ this weekend, let\'s go to the concert.　B: Sounds good.',
         words:["if","are","you","free"], answer:"If you are free this weekend, let's go to the concert.",
         display:"If you are free this weekend, let's go to the concert." },
-      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("was / your / brother / playing")+' ］ the guitar at seven yesterday?　B: Yes, he was.',
+      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("your / playing / brother / was")+' ］ the guitar at seven yesterday?　B: Yes, he was.',
         words:["was","your","brother","playing"], answer:"Was your brother playing the guitar at seven yesterday?",
         display:"Was your brother playing the guitar at seven yesterday?" } ] },
     { name:"Yコース", items:[
@@ -206,10 +206,10 @@ sections: [
       { type:"wordorder", label:"(2)", pt:3, stem:'A: I stayed home ［ '+E("was / because / it / raining")+' ］ hard yesterday.　B: I see.',
         words:["was","because","it","raining"], answer:"I stayed home because it was raining hard yesterday.",
         display:"I stayed home because it was raining hard yesterday." },
-      { type:"wordorder", label:"(3)", pt:3, stem:'A: I use this room ［ '+E("to / practice / the / drums")+' ］ every day.　B: Cool.',
+      { type:"wordorder", label:"(3)", pt:3, stem:'A: I use this room ［ '+E("practice / drums / the / to")+' ］ every day.　B: Cool.',
         words:["to","practice","the","drums"], answer:"I use this room to practice the drums every day.",
         display:"I use this room to practice the drums every day." },
-      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("if / you / are / hungry")+' ］ now, let\'s eat lunch.　B: OK.',
+      { type:"wordorder", label:"(4)", pt:3, stem:'A:［ '+E("you / hungry / are / if")+' ］ now, let\'s eat lunch.　B: OK.',
         words:["if","you","are","hungry"], answer:"If you are hungry now, let's eat lunch.",
         display:"If you are hungry now, let's eat lunch." } ] }
   ] },

@@ -205,7 +205,7 @@ sections: [
       { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("you / birds / were / watching")+' ］ at four last evening?　B: Yes, I was.',
         words:["you","birds","were","watching"], answer:"Were you watching birds at four last evening?",
         display:"Were you watching birds at four last evening?" },
-      { type:"wordorder", label:"(2)", pt:3, stem:'A: I stayed home ［ '+E("because / it / was / very")+' ］ rainy this morning.　B: I see.',
+      { type:"wordorder", label:"(2)", pt:3, stem:'A: I stayed home ［ '+E("it / very / was / because")+' ］ rainy this morning.　B: I see.',
         words:["because","it","was","very"], answer:"I stayed home because it was very rainy this morning.",
         display:"I stayed home because it was very rainy this morning." },
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("to / the / see / zoo")+' ］ the pandas last week.　B: That\'s nice.',

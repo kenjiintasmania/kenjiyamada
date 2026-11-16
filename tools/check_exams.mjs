@@ -8,6 +8,7 @@
 //      （正解だけ内容語がぜんぶ本文にある／正解だけがいちばん長い／正解の4語連続が本文にそのまま）
 //   5) 答えの重複（県立入試スタイルの横断重複＋同じ学年の本どうしで fill／並べかえ／正解の選択肢が同じ）
 //   ※ 4)5) の既存ファイルは据え置き（BIAS_GRANDFATHER）。新作から強制。
+//   6) 並べかえの語群が答えの順で見えていないか（設問文の ［ a / b / c ］ と画面のチップ）。据え置きなし。
 import { JSDOM } from 'jsdom';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -206,6 +207,42 @@ function choiceBias(id, EXAM){
   });
 }
 
+/* 並べかえの語群が答えの順で見えていないか（2026-11-16 先生指摘「最初から正答順だった」）。
+   ① 設問文に書いた ［ a / b / c / d ］ が答えの順（3語以上つづけて答えの順）になっていない
+   ② 画面のチップ（engine.js が語群から決まる固定の並びにまぜる）が答えの順になっていない
+   据え置きなし。全模試で強制。 */
+function wordOrderLeak(id, EXAM){
+  const posIn = (ans, t) => ans.indexOf(normText(t).replace(/[’]/g,"'"));
+  itemsOf(EXAM).forEach(it=>{
+    if(it.type!=='wordorder') return;
+    const ans = normText(it.answer).replace(/[’]/g,"'");
+    const m = stripHtml(it.stem||'').match(/[［\[(（]\s*([^［\]）)］]*\/[^［\]）)］]*)[］\])）]/);
+    if(m){
+      const toks = m[1].split('/').map(x=>x.trim()).filter(Boolean);
+      const ps = toks.map(t=>posIn(ans,t));
+      if(toks.length>1 && ps.every(p=>p>=0)){
+        const sorted=[...ps].sort((a,b)=>a-b), rank=ps.map(p=>sorted.indexOf(p));
+        let run=1, maxRun=1; for(let i=1;i<rank.length;i++){ run = rank[i]===rank[i-1]+1 ? run+1 : 1; maxRun=Math.max(maxRun,run); }
+        if(maxRun>=Math.min(3,toks.length)) fail(id, `並べかえ ${it.label||''} 設問文の語群が答えの順のまま：［ ${toks.join(' / ')} ］`);
+      }
+    }
+    // engine.js の bankOrder と同じ計算
+    let h=0; const key=it.words.join("|"); for(let i=0;i<key.length;i++) h=(h*31+key.charCodeAt(i))>>>0;
+    const idx=it.words.map((_,i)=>i);
+    for(let i=idx.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+    const correct = (it.order && it.order.length===it.words.length) ? it.order.slice() : orderTokens(it.words, it.answer);
+    const used=[], posInCorrect=it.words.map(w=>{ const k=correct.findIndex((c,ci)=>c===w && !used[ci]); if(k>=0) used[k]=true; return k; });
+    const badRun=(a)=>{ let run=1,mx=1; for(let k=1;k<a.length;k++){ run=(posInCorrect[a[k]]===posInCorrect[a[k-1]]+1)?run+1:1; if(run>mx) mx=run; } return mx>=Math.min(3,a.length); };
+    let tries=0;
+    while(idx.length>1 && badRun(idx) && tries<30){
+      for(let i=idx.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+      tries++;
+    }
+    if(idx.length>1 && idx.map(i=>it.words[i]).join("|")===correct.join("|")){ idx.push(idx.shift()); }
+    if(idx.length>1 && badRun(idx)) fail(id, `並べかえ ${it.label||''} 画面のチップが答えの順（3語以上つづく）：${idx.map(i=>it.words[i]).join(' / ')}`);
+  });
+}
+
 // 話者連続：passage/script 内で同じ話者の <span class="who"> が2回続いていないか（QAで頻発した不具合）
 function speakerContinuity(id, EXAM){
   (EXAM.sections||[]).forEach(s=>{
@@ -250,6 +287,7 @@ function gradeExam(id, ci=0, label=''){
   memoFormat(id, EXAM);
   leakCheck(id, EXAM);
   if(ci===0) choiceBias(id, EXAM);   // コースごとに2回まわるので1回だけ
+  if(ci===0) wordOrderLeak(id, EXAM);
   w.MockExam.render(EXAM, w.document.getElementById('quiz'));
   // 採点するコースを選びなおす（既定は先頭＝Xコースだけ）
   (EXAM.sections||[]).forEach(sec=>{
@@ -515,7 +553,7 @@ if(!ONLY.length){
   console.log('— 活用編（動詞の変化形／形容詞の比較） —');
   checkKatsuyo();
 }
-console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・選択肢のかたよりOK・okayama横断重複なし・学年内の答え重複なし・単語サニティOK・活用編OK）');
+console.log(fails ? `\n✗ ${fails} 件の問題が見つかりました` : '\n✓ ALL PASS（全模試が満点どおり・構造OK・話者連続OK・選択肢のかたよりOK・並べかえの語順バレなし・okayama横断重複なし・学年内の答え重複なし・単語サニティOK・活用編OK）');
 process.exit(fails ? 1 : 0);
 
 // 活用編：150+50=200パターン・1パターン3疑似単語（原形→slot0/1/2）・id/kid重複なし・英字妥当性

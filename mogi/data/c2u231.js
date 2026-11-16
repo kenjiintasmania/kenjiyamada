@@ -220,7 +220,7 @@ sections: [
   courses:[
   { name:"Xコース", items:[
     { type:"wordorder", label:"(1)", pt:3,
-      stem:"A: You ［ "+E("must / take / an / umbrella")+" ］ today.　B: OK.",
+      stem:"A: You ［ "+E("umbrella / must / an / take")+" ］ today.　B: OK.",
       words:["must","take","an","umbrella"], answer:"You must take an umbrella today.",
       display:"You must take an umbrella today." },
     { type:"wordorder", label:"(2)", pt:3,

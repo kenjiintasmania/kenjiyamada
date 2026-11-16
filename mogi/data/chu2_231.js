@@ -219,7 +219,7 @@ sections: [
   courses:[
   { name:"Xコース", items:[
     { type:"wordorder", label:"(1)", pt:3,
-      stem:"A: You ［ "+E("must / read / this / book")+" ］ today.　B: OK.",
+      stem:"A: You ［ "+E("this / must / book / read")+" ］ today.　B: OK.",
       words:["must","read","this","book"], answer:"You must read this book today.",
       display:"You must read this book today." },
     { type:"wordorder", label:"(2)", pt:3,

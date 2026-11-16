@@ -204,7 +204,7 @@ sections: [
       { type:"wordorder", label:"(1)", pt:3, stem:'A:［ '+E("you / TV / were / watching")+' ］ at eight last night?　B: Yes, I was.',
         words:["you","TV","were","watching"], answer:"Were you watching TV at eight last night?",
         display:"Were you watching TV at eight last night?" },
-      { type:"wordorder", label:"(2)", pt:3, stem:'A: I didn\'t go out ［ '+E("because / it / was / very")+' ］ cold this morning.　B: I see.',
+      { type:"wordorder", label:"(2)", pt:3, stem:'A: I didn\'t go out ［ '+E("it / very / was / because")+' ］ cold this morning.　B: I see.',
         words:["because","it","was","very"], answer:"I didn't go out because it was very cold this morning.",
         display:"I didn't go out because it was very cold this morning." },
       { type:"wordorder", label:"(3)", pt:3, stem:'A: I went to ［ '+E("to / my / see / Osaka")+' ］ grandmother last week.　B: That\'s nice.',

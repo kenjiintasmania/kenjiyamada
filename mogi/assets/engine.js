@@ -280,8 +280,17 @@ function renderItem(it, ctx){
       for(let i=0;i<key.length;i++) h=(h*31+key.charCodeAt(i))>>>0;
       const idx=it.words.map((_,i)=>i);
       for(let i=idx.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; }
-      // 偶然そのまま正解順になったら1つずらす
-      if(idx.length>1 && idx.every((v,i)=>v===i)){ idx.push(idx.shift()); }
+      /* ★まぜた結果が答えの順（または答えの順が3語以上つづく並び）なら、まぜなおす。
+         データの words が正解順でなくても、まぜた結果がたまたま正解順になることがあった
+         （2026-11-16 の総点検）。「catch / the first / train / to」のような、ほぼ答えの並びも出さない。 */
+      const used=[], posInCorrect=it.words.map(w=>{ const k=correct.findIndex((c,ci)=>c===w && !used[ci]); if(k>=0) used[k]=true; return k; });
+      const badRun=(a)=>{ let run=1,mx=1; for(let k=1;k<a.length;k++){ run=(posInCorrect[a[k]]===posInCorrect[a[k-1]]+1)?run+1:1; if(run>mx) mx=run; } return mx>=Math.min(3,a.length); };
+      let tries=0;
+      while(idx.length>1 && badRun(idx) && tries<30){
+        for(let i=idx.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+        tries++;
+      }
+      if(idx.length>1 && idx.map(i=>it.words[i]).join("|")===correct.join("|")){ idx.push(idx.shift()); }
       return idx; })();
     function draw(){
       build.innerHTML=""; bank.innerHTML="";
