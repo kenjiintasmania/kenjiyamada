@@ -67,10 +67,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["仕事は朝7時に始まり、10時に終わる。","仕事は3種類あり、2つまで選ぶことができる。",
                "参加できるのは高校生だけである。","参加者は自分の野菜を持ってくる。"], answer:0 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"ユウタの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"ユウタの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That's a good job for you. Let's （　　） together."),
-      answers:["make price cards"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["make","price","cards"], answer:"Let's make price cards together.", display:"Let's make price cards together." } ] }
 ]},
 
 /* ===== 大問2 ポスター＋対話 ===== */

@@ -73,10 +73,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"池のそばですることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("plant cosmos near the gate"), E("plant sunflowers by the pond"),
                 E("water the flowers and clean the garden"), E("clean the pond and pick the flowers") ], answer:1 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"サナが2番目のグループを選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"サナが2番目のグループを選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Sana chose the second group because she wants to （　　）."),
-      answers:["see tall flowers"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["see","tall","flowers"], answer:"Sana chose the second group because she wants to see tall flowers.", display:"Sana chose the second group because she wants to see tall flowers." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -226,11 +226,11 @@ sections: [
       words:["make","because","happy","the people","flowers","visiting the park"],
       answer:"because flowers make the people visiting the park happy",
       display:"because flowers make the people visiting the park happy." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはウッド先生に、花のことでわたしたちを手伝ってほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want Ms. Wood （　　） with the flowers."),
-      answers:["to help us"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","help","us"], answer:"I want Ms. Wood to help us with the flowers.", display:"I want Ms. Wood to help us with the flowers." } ]}
 ]}
 
 ]};

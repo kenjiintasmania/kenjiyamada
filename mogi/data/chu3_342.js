@@ -67,10 +67,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["活動は全部で4種類ある。","それぞれの活動は約3時間かかる。",
                "活動のあと、室内で朝食を食べる。","参加者は3つの活動すべてに参加する。"], answer:1 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"ユカの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"ユカの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That sounds good for you. Let's （　　） together."),
-      answers:["take moon photos"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["take","moon","photos"], answer:"Let's take moon photos together.", display:"Let's take moon photos together." } ] }
 ]},
 
 /* ===== 大問2 ポスター＋対話 ===== */

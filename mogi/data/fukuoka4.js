@@ -73,10 +73,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"冬に川の水が最もきれいである理由として最も適当なのは、ア〜エのどれですか。",
       choices:["川を訪れてごみを残す人が少ないから。","雨がたくさんふるから。",
                "水がとても冷たいから。","生き物がたくさんいるから。"], answer:0 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"ユイがグループ2を選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"ユイがグループ2を選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Yui chose group two because she wants to （　　）."),
-      answers:["find water insects"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["find","water","insects"], answer:"Yui chose group two because she wants to find water insects.", display:"Yui chose group two because she wants to find water insects." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -230,11 +230,11 @@ sections: [
       words:["because","we can","quickly pick up","the trash","left in the river"],
       answer:"because we can quickly pick up the trash left in the river",
       display:"because we can quickly pick up the trash left in the river." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしは町の人々に、川のそうじの日にわたしたちに加わってほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want people in our town （　　） on the river cleaning day."),
-      answers:["to join us"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","join","us"], answer:"I want people in our town to join us on the river cleaning day.", display:"I want people in our town to join us on the river cleaning day." } ]}
 ]}
 
 ]};

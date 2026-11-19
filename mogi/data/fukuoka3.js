@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"グループ2がすることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("read old books about the bridge"), E("count the people who cross the bridge"),
                 E("ask old people about their memories"), E("clean the bridge every morning") ], answer:1 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"リンがグループ2を選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"リンがグループ2を選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Rin chose group two because she wants to know （　　） use the bridge."),
-      answers:["how many people"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["how","many","people"], answer:"Rin chose group two because she wants to know how many people use the bridge.", display:"Rin chose group two because she wants to know how many people use the bridge." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -226,11 +226,11 @@ sections: [
       words:["because","it is","a bridge","used by","many people"],
       answer:"because it is a bridge used by many people",
       display:"because it is a bridge used by many people." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしは町の人々に、この橋を大切にしてほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want people in our town （　　） of this bridge."),
-      answers:["to take care"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","take","care"], answer:"I want people in our town to take care of this bridge.", display:"I want people in our town to take care of this bridge." } ]}
 ]}
 
 ]};

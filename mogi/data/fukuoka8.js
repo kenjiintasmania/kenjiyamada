@@ -70,10 +70,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"金曜日にすることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("vote for the favorite lunch menu"), E("cook the most popular menu"),
                 E("weigh the food left on the trays"), E("wash the trays after lunch") ], answer:2 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"シュンのクラスが全部食べようとした理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"シュンのクラスが全部食べようとした理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Shun's class tried to eat everything because they wanted to （　　）."),
-      answers:["thank the cooks"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["thank","the","cooks"], answer:"Shun's class tried to eat everything because they wanted to thank the cooks.", display:"Shun's class tried to eat everything because they wanted to thank the cooks." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -226,11 +226,11 @@ sections: [
       words:["because","there","are","many students","who","can't finish eating in twenty minutes"],
       answer:"because there are many students who can't finish eating in twenty minutes",
       display:"because there are many students who can't finish eating in twenty minutes." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはみんなに、毎日昼食を食べ終えてほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want everyone （　　） their lunch every day."),
-      answers:["to finish eating"], hint:"英語3語（want＋人＋to 〜 の形。「食べ終える」は finish ＋ 〜ing）" } ]}
+      words:["to","finish","eating"], answer:"I want everyone to finish eating their lunch every day.", display:"I want everyone to finish eating their lunch every day." } ]}
 ]}
 
 ]};

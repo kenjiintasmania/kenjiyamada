@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"カイさんが祭りについて困っていることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("Many of the people who carry the lanterns are over sixty."), E("The festival has too many young people."),
                 E("Nobody wants to make lanterns."), E("The festival is only ten years old.") ], answer:0 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"ヒナタが1つ目のグループを選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"ヒナタが1つ目のグループを選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Hinata chose the first group because she wants to （　　）."),
-      answers:["learn old skills"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["learn","old","skills"], answer:"Hinata chose the first group because she wants to learn old skills.", display:"Hinata chose the first group because she wants to learn old skills." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -228,11 +228,11 @@ sections: [
       words:["because","many","there","are","students","who don't know about the festival"],
       answer:"because there are many students who don't know about the festival",
       display:"because there are many students who don't know about the festival." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしは若い人たちに、祭りに参加してほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want young people （　　） in the festival."),
-      answers:["to take part","to join us"], hint:"英語3語（want＋人＋to 〜 の形。あとに in が続く）" } ]}
+      words:["to","take","part"], answer:"I want young people to take part in the festival.", display:"I want young people to take part in the festival." } ]}
 ]}
 
 ]};

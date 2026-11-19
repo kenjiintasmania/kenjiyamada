@@ -66,8 +66,8 @@ function structuralChecks(id, EXAM){
       else if(it.answers.some(a=>/[ぁ-んァ-ン一-龥]/.test(String(a)) && String(a).length>=8))
         fail(id, `${w} ${it.label||''} 日本語の長い記述は完全一致でしか正解にならない（4択にする）：${String(it.answers[0]).slice(0,30)}…`);
       /* 英文を自由に書かせる記述（4語以上）も同じ理由で不可（2026-11-19 先生指示「別解を見逃すなら並べかえが無難」）。
-         本文・放送からの抜き出しは答えが1つに決まるので可。それ以外は並べかえ（wordorder）で出す。 */
-      else if(/^[A-Za-z]/.test(String(it.answers[0])) && String(it.answers[0]).trim().split(/\s+/).length>=4
+         本文・放送からの抜き出しは答えが1つに決まるので可。それ以外は並べかえ（wordorder）で出す。3語以上が対象（2026-11-19 に中3・福岡の33問も変更）。 */
+      else if(/^[A-Za-z]/.test(String(it.answers[0])) && String(it.answers[0]).trim().split(/\s+/).length>=3
               && !/抜き出し|の語・|段落の語|中にある語|放送の中/.test(stripHtml(it.stem||'')+' '+String(it.hint||'')))
         fail(id, `${w} ${it.label||''} 英文を自由に書かせる記述は別解を取りこぼす（並べかえにする）：${it.answers[0]}`);
     } else if(it.type==='wordorder'){

@@ -59,10 +59,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["それぞれのグループの時間は約40分である。","訪問は次の水曜日の朝に行われる。",
                "グループは全部で4つある。","楽器は持って行かなくてよい。"], answer:0 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"ダイキの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"ダイキの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("Then Group B is good for us. Let's （　　） together."),
-      answers:["make paper flowers"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["make","paper","flowers"], answer:"Let's make paper flowers together.", display:"Let's make paper flowers together." } ] }
 ]},
 
 /* ===== 大問2 案内＋対話 ===== */

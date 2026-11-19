@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"いちご農園ですることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("help visitors and clean the old tools"), E("pick strawberries and pack them in boxes"),
                 E("put books back and read stories"), E("clean the school and cook lunch") ], answer:1 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"ケンタが図書館を選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
-           E("Kenta chose the library because he wants to （　　）."),
-      answers:["read more books"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"ケンタが図書館を選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
+           E("Kenta chose the library because he （　　） more books."),
+      words:["wants","to","read"], answer:"Kenta chose the library because he wants to read more books.", display:"Kenta chose the library because he wants to read more books." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -219,11 +219,11 @@ sections: [
       words:["because","many","there","are","old tools","used in Keino Town"],
       answer:"because there are many old tools used in Keino Town",
       display:"because there are many old tools used in Keino Town." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはエマに、わたしたちの町についてもっと知ってほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
-           E("I want Emma （　　） more about our town."),
-      answers:["to learn about"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+           "（　）に入る語を正しい順に並べなさい。<br>"+
+           E("I want Emma （　　） about our town."),
+      words:["to","learn","more"], answer:"I want Emma to learn more about our town.", display:"I want Emma to learn more about our town." } ]}
 ]}
 
 ]};

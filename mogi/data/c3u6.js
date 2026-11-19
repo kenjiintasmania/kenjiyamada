@@ -69,10 +69,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["仕事は2種類あり、両方に参加しなければならない。","参加者は午前10時に公園に来るように言われている。",
                "イベントは午前10時に始まり、午後1時に終わる。","手伝うことができるのは小学生だけである。"], answer:2 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"レンの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に picture を含む3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"レンの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That's a good job for you. Let's （　　） together."),
-      answers:["read picture books"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["read","picture","books"], answer:"Let's read picture books together.", display:"Let's read picture books together." } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */

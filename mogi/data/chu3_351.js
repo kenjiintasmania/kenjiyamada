@@ -68,10 +68,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["祭りは10月の最初の日曜日に行われる。","手伝いをする生徒には昼食が出される。",
                "仕事は3種類あり、すべてに参加しなければならない。","祭りは午前10時に始まり、午後4時に終わる。"], answer:1 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"リクの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に drums を含む3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"リクの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That's the best job for you. Let's （　　） together."),
-      answers:["play small drums","play the drums"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["play","small","drums"], answer:"Let's play small drums together.", display:"Let's play small drums together." } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */

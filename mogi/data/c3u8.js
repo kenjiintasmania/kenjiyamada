@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["交流会は午前10時に始まり、正午に終わる。","参加する小学生は13人である。",
                "グループは全部で4つある。","手伝う生徒は、始まる1時間前に来る。"], answer:0 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"ユウトの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に tops を含む3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"ユウトの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("Group C is the best for you. Let's （　　） together."),
-      answers:["play with tops","spin the tops","spin our tops","spin some tops"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["play","with","tops"], answer:"Let's play with tops together.", display:"Let's play with tops together." } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */

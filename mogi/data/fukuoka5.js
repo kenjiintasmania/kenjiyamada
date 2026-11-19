@@ -74,10 +74,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"太田さんの母にとって最もたいへんだった仕事として最も適当なのは、ア〜エのどれですか。",
       choices:[ E("making a fire"), E("washing clothes"),
                 E("reading books"), E("carrying rice") ], answer:1 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"洗濯機を買ったとき、太田さんの母がうれしかった理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"洗濯機を買ったとき、太田さんの母がうれしかった理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Ms. Ota's mother was happy because she could use the time （　　）."),
-      answers:["for other things"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["for","other","things"], answer:"Ms. Ota's mother was happy because she could use the time for other things.", display:"Ms. Ota's mother was happy because she could use the time for other things." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -231,11 +231,11 @@ sections: [
       words:["because","we","can learn","about","the tools","used fifty years ago"],
       answer:"because we can learn about the tools used fifty years ago",
       display:"because we can learn about the tools used fifty years ago." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはみんなに、その道具を作った人々について考えてほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want everyone （　　） the people who made those tools."),
-      answers:["to think about","to think of"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","think","about"], answer:"I want everyone to think about the people who made those tools.", display:"I want everyone to think about the people who made those tools." } ]}
 ]}
 
 ]};

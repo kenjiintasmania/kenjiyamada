@@ -73,10 +73,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["活動は4種類あり、2つを選ぶことができる。","各グループは金曜日の午前中にオーストラリアの生徒と会う。",
                "オーストラリアは日本より3時間進んでいる。","生徒はできるだけ速く話すように言われている。"], answer:1 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"ヒナの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に songs を含む3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"ヒナの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That's a good activity for you. Let's （　　） together."),
-      answers:["teach Japanese songs","sing Japanese songs"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["teach","Japanese","songs"], answer:"Let's teach Japanese songs together.", display:"Let's teach Japanese songs together." } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */

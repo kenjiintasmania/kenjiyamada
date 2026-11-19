@@ -73,10 +73,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"ボランティアが毎朝することとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("clean the waiting room"), E("sell tickets at the window"),
                 E("drive the train to the city"), E("paint the bench in the park") ], answer:0 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"ババさんがボランティアをしている理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"ババさんがボランティアをしている理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Mr. Baba does the volunteer work because he wants to （　　）."),
-      answers:["make people smile"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["make","people","smile"], answer:"Mr. Baba does the volunteer work because he wants to make people smile.", display:"Mr. Baba does the volunteer work because he wants to make people smile." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -232,11 +232,11 @@ sections: [
       words:["because","we","can help","foreign people","who","use the station"],
       answer:"because we can help foreign people who use the station",
       display:"because we can help foreign people who use the station." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはババさんに、わたしたちの案内板を見てほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want Mr. Baba （　　） our signs."),
-      answers:["to look at"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","look","at"], answer:"I want Mr. Baba to look at our signs.", display:"I want Mr. Baba to look at our signs." } ]}
 ]}
 
 ]};

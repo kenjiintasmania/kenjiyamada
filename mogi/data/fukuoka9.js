@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"生徒がねむりにつきにくくなる原因として、佐野先生が挙げたものはどれですか。",
       choices:[ E("the light from the phone"), E("the sound from the TV"),
                 E("a hot room at night"), E("a big dinner") ], answer:0 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"リクがスマホを居間に置く理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"リクがスマホを居間に置く理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Riku puts his phone in the living room because he wants to （　　）."),
-      answers:["get up early"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ] }
+      words:["get","up","early"], answer:"Riku puts his phone in the living room because he wants to get up early.", display:"Riku puts his phone in the living room because he wants to get up early." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -225,11 +225,11 @@ sections: [
       words:["because","phones","used in bed","make","our sleep time","shorter"],
       answer:"because phones used in bed make our sleep time shorter",
       display:"because phones used in bed make our sleep time shorter." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはみんなに、ベッドでスマホを使うのをやめてほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want everyone （　　） their phones in bed."),
-      answers:["to stop using","not to use"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","stop","using"], answer:"I want everyone to stop using their phones in bed.", display:"I want everyone to stop using their phones in bed." } ]}
 ]}
 
 ]};

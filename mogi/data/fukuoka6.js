@@ -72,10 +72,10 @@ sections: [
     { type:"mcq", label:"(2)", pt:2, stem:"グループCがすることとして最も適当なのは、ア〜エのどれですか。",
       choices:[ E("show him the school rules"), E("eat school lunch with him"),
                 E("take him to club activities"), E("teach him Japanese songs") ], answer:2 },
-    { type:"fill", label:"(3)", pt:4,
-      stem:"アヤカがグループBを選んだ理由を、放送の中の語を使って英語3語で書きなさい。<br>"+
+    { type:"wordorder", label:"(3)", pt:4,
+      stem:"アヤカがグループBを選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
            E("Ayaka chose Group B because she wants to （　　）."),
-      answers:["talk about food"], hint:"英語3語（放送の中の言い方をそのまま使う）" } ]}
+      words:["talk","about","food"], answer:"Ayaka chose Group B because she wants to talk about food.", display:"Ayaka chose Group B because she wants to talk about food." } ]}
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
@@ -227,11 +227,11 @@ sections: [
       words:["because","a good chance","they are","friends","to make","who like soccer"],
       answer:"because they are a good chance to make friends who like soccer",
       display:"because they are a good chance to make friends who like soccer." },
-    { type:"fill", label:"(3)", pt:4,
+    { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはディエゴに、わたしたちの学校で友達を作ってほしい。」という文にします。<br>"+
-           "（　）に入れるのに最も適当な英語3語を書きなさい。<br>"+
+           "（　）に入る語を正しい順に並べなさい。<br>"+
            E("I want Diego （　　） at our school."),
-      answers:["to make friends"], hint:"英語3語（want＋人＋to 〜 の形）" } ]}
+      words:["to","make","friends"], answer:"I want Diego to make friends at our school.", display:"I want Diego to make friends at our school." } ]}
 ]}
 
 ]};

@@ -71,10 +71,10 @@ sections: [
     { type:"mcq", label:"(1)", pt:3, stem:"説明の内容と合っているものを、ア〜エから1つ選びなさい。",
       choices:["祭りは4月の最初の土曜日に行われる。","仕事は3種類あり、2つ選ばなければならない。",
                "祭りは午前9時に始まり、午後3時に終わる。","手伝いをする生徒には飲み物が出される。"], answer:3 },
-    { type:"fill", label:"(2)", pt:3,
-      stem:"コウタの発言に対して、あなたはどのように答えますか。書き出しに続けて（　）に children を含む3語の英語を書き、英文を完成させなさい。<br>"+
+    { type:"wordorder", label:"(2)", pt:3,
+      stem:"コウタの発言に対して、あなたはどのように答えますか。書き出しに続けて、（　）に入る語を正しい順に並べ、英文を完成させなさい。<br>"+
            E("That's the best job for you. Let's （　　） together."),
-      answers:["dance with children","dance with the children"], hint:"英語3語（説明の中の言い方を使う）" } ] }
+      words:["dance","with","children"], answer:"Let's dance with children together.", display:"Let's dance with children together." } ] }
 ]},
 
 /* ===== 大問2 ちらし（表）＋対話 ===== */
