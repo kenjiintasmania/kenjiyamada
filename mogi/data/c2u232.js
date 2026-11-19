@@ -139,10 +139,9 @@ sections: [
       '<div class="note">[注] calligraphy 書道　work 作品　each other おたがい　advice アドバイス　calligraphy show 作品展　'+
       'town library 町立図書館　visitor 来場者　brush ふで　beginner 初心者　Why don\'t you 〜? 〜しませんか。</div>',
     items:[
-      { type:"fill", label:"(1)", pt:4, stem:"［　ⓐ　］にあてはまる適切な文を、英文1文で書きなさい。",
-        answers:["How many students are in the calligraphy club?","How many students are there in the calligraphy club?",
-                 "How many members are in the calligraphy club?","How many members does the calligraphy club have?"],
-        hint:"How many で始める英文" },
+      { type:"wordorder", label:"(1)", pt:4,
+        stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
+        words:["How","many","students","are","in","the calligraphy club"], answer:"How many students are in the calligraphy club?", display:"How many students are in the calligraphy club?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["書道部の22人がいっしょに字を書き、よくアドバイスをし合っていること",
                  "メイが週に3回、放課後に書道室で字を書いていること",
@@ -154,22 +153,20 @@ sections: [
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
         bank:[E("You don't have to write well."),E("Will you sell your works?"),E("Can we bring small children?"),
               E("Are you good at calligraphy?"),E("You should not write too fast.")], answer:0 },
-      { type:"fill", label:"(4)", pt:3,
-        stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("How long will Lily stay in Japan?"),
-        answers:["She will stay in Japan for two weeks.","She will stay there for two weeks.","She will stay for two weeks."],
-        hint:"主語と動詞のある英文1文" }
+      { type:"wordorder", label:"(4)", pt:3,
+        stem:"対話文の内容について、次の質問の答えになるように、（　）内に入る語（句）を正しく並べなさい。<br>"+E("How long will Lily stay in Japan?")+"<br>"+E("She （　　　　　）."),
+        words:["will","stay","for","two","weeks"], answer:"She will stay for two weeks.", display:"She will stay for two weeks." }
     ] }
 ]},
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、ロンドンにいるトム(Tom)が電話でアヤに質問しているところです。トムはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、ロンドンにいるトム(Tom)が電話でアヤに質問しているところです。トムはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-      { type:"fill", label:"①", pt:4,
-        stem:'<div class="scene">絵：トムが電話で「＿＿＿＿＿ is it in Japan today?」とたずね、アヤがカレンダーを見ながら「It\'s December 13.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ is it in Japan today?"),
-        answers:["what date","what's the date","what is the date"],
-        hint:"What で始める・is it の前まで" }
+      { type:"wordorder", label:"①", pt:4,
+        stem:'<div class="scene">絵：トムが電話で「＿＿＿＿＿ in Japan today?」とたずね、アヤがカレンダーを見ながら「It\'s December 13.」と答えている。</div>'+
+             E("（　　　　　） in Japan today?"),
+        words:["What","date","is","it"], answer:"What date is it in Japan today?", display:"What date is it in Japan today?" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[

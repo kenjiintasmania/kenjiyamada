@@ -133,19 +133,20 @@ sections: [
                 "リクが「姉はよい演奏者だ」と言ったこと。",
                 "リクが「町のホールにいた」と言ったこと。",
                 "リクが「音楽が好きだ」と言ったこと。" ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Anna's grandfather have in his room?"),
-      answers:["he has many old records in his room","he has many old records","he has old records in his room"], hint:"He has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Anna's grandfather have in his room?")+"<br>"+E("He （　　　　　） in his room."),
+        words:["has","many","old","records"], answer:"He has many old records in his room.", display:"He has many old records in his room." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ハナ(Hana)がサム(Sam)に質問しているところです。サムの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、ハナ(Hana)がサム(Sam)に質問しているところです。サムの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：サムが手作りのうちわ（paper fan）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Hana:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Hana:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Sam:</span> '+E("It's mine. My grandmother made it."),
-      answers:["whose paper fan is this","whose fan is this","whose paper fan is this one"], hint:"Whose で始める英文" } ] },
+      words:["Whose","paper","fan","is"], answer:"Whose paper fan is this?", display:"Whose paper fan is this?" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

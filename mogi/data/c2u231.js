@@ -138,8 +138,9 @@ sections: [
       '<div class="note">[注] chorus club 合唱部　member 部員　town hall 町民ホール　beginner 初心者　'+
       'stage ステージ　Why don\'t you 〜? 〜しませんか。</div>',
     items:[
-      { type:"fill", label:"(1)", pt:4, stem:"［　ⓐ　］にあてはまる適切な文を、英文1文で書きなさい。",
-        answers:["Where do you practice singing?","Where do you sing?","Where do you practice the songs?"], hint:"Where で始める英文" },
+      { type:"wordorder", label:"(1)", pt:4,
+        stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
+        words:["Where","do","you","practice","singing"], answer:"Where do you practice singing?", display:"Where do you practice singing?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["ダイキが毎日、放課後に歌の練習をしていること",
                  "合唱部の30人が、みんなダイキの仲のよい友達であること",
@@ -151,20 +152,20 @@ sections: [
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
         bank:[E("Singing with others is fun."),E("What time will your club sing?"),E("How many songs did you sing last year?"),
               E("You cannot sing new songs."),E("Will you sing a song for us now?")], answer:0 },
-      { type:"fill", label:"(4)", pt:3,
-        stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("When will Noah come to Japan?"),
-        answers:["He will come to Japan on December 12.","He will come on December 12."], hint:"主語と動詞のある英文1文" }
+      { type:"wordorder", label:"(4)", pt:3,
+        stem:"対話文の内容について、次の質問の答えになるように、（　）内に入る語（句）を正しく並べなさい。<br>"+E("When will Noah come to Japan?")+"<br>"+E("He （　　　　　）."),
+        words:["will","come","on","December 12"], answer:"He will come on December 12.", display:"He will come on December 12." }
     ] }
 ]},
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、オーストラリアにいるエマ(Emma)が電話でリクに質問しているところです。エマはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、オーストラリアにいるエマ(Emma)が電話でリクに質問しているところです。エマはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-      { type:"fill", label:"①", pt:4,
-        stem:'<div class="scene">絵：エマが電話で「＿＿＿＿＿ now?」とたずね、リクが「It\'s seven thirty in Japan.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ now?"),
-        answers:["what time is it in Japan","what time is it there"], hint:"What で始める・now? の前まで" }
+      { type:"wordorder", label:"①", pt:4,
+        stem:'<div class="scene">絵：エマが電話で「＿＿＿＿＿ in Japan now?」とたずね、リクが「It\'s seven thirty in Japan.」と答えている。</div>'+
+             E("（　　　　　） in Japan now?"),
+        words:["What","time","is","it"], answer:"What time is it in Japan now?", display:"What time is it in Japan now?" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[

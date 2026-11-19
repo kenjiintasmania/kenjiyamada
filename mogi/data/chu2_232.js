@@ -140,10 +140,9 @@ sections: [
       '<div class="note">[注] art club 美術部　each other おたがい　art show 作品展　city gallery 市民ギャラリー　'+
       'visitor 来場者　brush ふで　ink すみ　beginner 初心者　Why don\'t you 〜? 〜しませんか。</div>',
     items:[
-      { type:"fill", label:"(1)", pt:4, stem:"［　ⓐ　］にあてはまる適切な文を、英文1文で書きなさい。",
-        answers:["How many students are in the art club?","How many students are there in the art club?",
-                 "How many members are in the art club?","How many members does the art club have?"],
-        hint:"How many で始める英文" },
+      { type:"wordorder", label:"(1)", pt:4,
+        stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
+        words:["How","many","students","are","in","the art club"], answer:"How many students are in the art club?", display:"How many students are in the art club?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["ハナが毎日、放課後に美術室で絵をかいていること",
                  "美術室のかべに、たくさんの絵がかざってあること",
@@ -155,22 +154,20 @@ sections: [
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
         bank:[E("Can you draw pictures well?"),E("You don't have to draw well."),E("Will you buy a picture?"),
               E("You should not try new things."),E("Can we take pictures there?")], answer:1 },
-      { type:"fill", label:"(4)", pt:3,
-        stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("How long will Leo stay in Japan?"),
-        answers:["He will stay in Japan for ten days.","He will stay there for ten days.","He will stay for ten days."],
-        hint:"主語と動詞のある英文1文" }
+      { type:"wordorder", label:"(4)", pt:3,
+        stem:"対話文の内容について、次の質問の答えになるように、（　）内に入る語（句）を正しく並べなさい。<br>"+E("How long will Leo stay in Japan?")+"<br>"+E("He （　　　　　）."),
+        words:["will","stay","for","ten","days"], answer:"He will stay for ten days.", display:"He will stay for ten days." }
     ] }
 ]},
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、カナダにいるケイト(Kate)が電話でユカに質問しているところです。ケイトはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、カナダにいるケイト(Kate)が電話でユカに質問しているところです。ケイトはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-      { type:"fill", label:"①", pt:4,
-        stem:'<div class="scene">絵：ケイトが電話で「＿＿＿＿＿ is it today in Japan?」とたずね、ユカがカレンダーを見ながら「It\'s Friday.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ is it today in Japan?"),
-        answers:["what day","what day of the week"],
-        hint:"What で始める・is it の前まで" }
+      { type:"wordorder", label:"①", pt:4,
+        stem:'<div class="scene">絵：ケイトが電話で「＿＿＿＿＿ today in Japan?」とたずね、ユカがカレンダーを見ながら「It\'s Friday.」と答えている。</div>'+
+             E("（　　　　　） today in Japan?"),
+        words:["What","day","is","it"], answer:"What day is it today in Japan?", display:"What day is it today in Japan?" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[

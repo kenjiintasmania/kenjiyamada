@@ -131,19 +131,20 @@ sections: [
                 "ケンが「弟はよい選手だ」と言ったこと。",
                 "ケンが「ミドリ公園にいた」と言ったこと。",
                 "ケンが「サッカーが好きだ」と言ったこと。" ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Emma's grandmother have in her room?"),
-      answers:["she has many old soccer photos in her room","she has many old soccer photos","she has old soccer photos in her room"], hint:"She has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Emma's grandmother have in her room?")+"<br>"+E("She （　　　　　） in her room."),
+        words:["has","many","old","soccer","photos"], answer:"She has many old soccer photos in her room.", display:"She has many old soccer photos in her room." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りのペンケース（pen case）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My sister made it."),
-      answers:["whose pen case is this","whose pencil case is this","whose pen case is this one"], hint:"Whose で始める英文" } ] },
+      words:["Whose","pen","case","is"], answer:"Whose pen case is this?", display:"Whose pen case is this?" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

@@ -132,19 +132,20 @@ sections: [
                 "リクが「ゾウは本当に大きい」と言ったこと。",
                 "リクが「ミドリ動物園にいた」と言ったこと。",
                 "リクが「動物が好きだ」と言ったこと。" ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Kate's mother have in her room?"),
-      answers:["she has many animal books in her room","she has many animal books","she has animal books in her room"], hint:"She has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Kate's mother have in her room?")+"<br>"+E("She （　　　　　） in her room."),
+        words:["has","many","animal","books"], answer:"She has many animal books in her room.", display:"She has many animal books in her room." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、アヤ(Aya)がベン(Ben)に質問しているところです。ベンの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、アヤ(Aya)がベン(Ben)に質問しているところです。ベンの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：ベンが手作りの鳥のおきもの（bird）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Aya:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Aya:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Ben:</span> '+E("It's mine. My brother made it."),
-      answers:["whose bird is this","whose bird is this one","whose wooden bird is this"], hint:"Whose で始める英文" } ] },
+      words:["Whose","bird","is"], answer:"Whose bird is this?", display:"Whose bird is this?" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

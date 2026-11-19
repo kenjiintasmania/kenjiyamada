@@ -129,19 +129,20 @@ sections: [
                 "ケンが「姉は速い走者だ」と言ったこと。",
                 "ケンが「ミドリ競技場にいた」と言ったこと。",
                 "ケンが「スポーツが好きだ」と言ったこと。" ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Emma's grandfather have in his room?"),
-      answers:["he has many old medals in his room","he has many old medals","he has old medals in his room"], hint:"He has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Emma's grandfather have in his room?")+"<br>"+E("He （　　　　　） in his room."),
+        words:["has","many","old","medals"], answer:"He has many old medals in his room.", display:"He has many old medals in his room." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りの応援うちわ（cheering fan）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My brother made it."),
-      answers:["whose cheering fan is this","whose fan is this","whose cheering fan is this one"], hint:"Whose で始める英文" } ] },
+      words:["Whose","cheering","fan","is"], answer:"Whose cheering fan is this?", display:"Whose cheering fan is this?" } ] },
   { intro:"(2) 運動会に向けてあなたが練習することを表す英文です。次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

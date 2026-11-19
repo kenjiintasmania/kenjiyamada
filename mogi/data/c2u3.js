@@ -137,8 +137,9 @@ sections: [
       '<div class="note">[注] rice cooker すいはんき　rice ball おにぎり　community center 公民館　'+
       'noon 正午　Why don\'t you 〜? 〜しませんか。</div>',
     items:[
-      { type:"fill", label:"(1)", pt:4, stem:"［　ⓐ　］にあてはまる適切な文を、英文1文で書きなさい。",
-        answers:["What do you cook?","What do you make?"], hint:"What で始める英文" },
+      { type:"wordorder", label:"(1)", pt:4,
+        stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
+        words:["What","do","you","cook"], answer:"What do you cook?", display:"What do you cook?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["ミナが毎週水曜日の放課後に、調理室で料理をしていること",
                  "調理室のテーブルの上に、すいはんきが置いてあること",
@@ -150,20 +151,20 @@ sections: [
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
         bank:[E("How was the event?"),E("Learning new things is fun."),E("Will you eat the rice balls?"),
               E("You cannot learn new things."),E("What time will the cooking start?")], answer:1 },
-      { type:"fill", label:"(4)", pt:3,
-        stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("When will Daniel come to Japan?"),
-        answers:["He will come to Japan on January 20.","He will come on January 20."], hint:"主語と動詞のある英文1文" }
+      { type:"wordorder", label:"(4)", pt:3,
+        stem:"対話文の内容について、次の質問の答えになるように、（　）内に入る語（句）を正しく並べなさい。<br>"+E("When will Daniel come to Japan?")+"<br>"+E("He （　　　　　）."),
+        words:["will","come","on","January 20"], answer:"He will come on January 20.", display:"He will come on January 20." }
     ] }
 ]},
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、カナダにいるルーシー(Lucy)が電話でソウタに質問しているところです。ルーシーはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、カナダにいるルーシー(Lucy)が電話でソウタに質問しているところです。ルーシーはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-      { type:"fill", label:"①", pt:4,
+      { type:"wordorder", label:"①", pt:4,
         stem:'<div class="scene">絵：ルーシーが電話で「＿＿＿＿＿ in Japan?」とたずね、ソウタが「It\'s snowy.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ in Japan?"),
-        answers:["how is the weather"], hint:"How で始める・in Japan? の前まで" }
+             E("（　　　　　） in Japan?"),
+        words:["How","is","the","weather"], answer:"How is the weather in Japan?", display:"How is the weather in Japan?" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[

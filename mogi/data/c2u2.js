@@ -132,19 +132,20 @@ sections: [
                 "リクが「庭は本当に美しい」と言ったこと。",
                 "リクが「古い城の近くにいた」と言ったこと。",
                 "リクが「旅行が好きだ」と言ったこと。" ], answer:0 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Emma's mother have in her room?"),
-      answers:["she has many travel books in her room","she has many travel books","she has travel books in her room"], hint:"She has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Emma's mother have in her room?")+"<br>"+E("She （　　　　　） in her room."),
+        words:["has","many","travel","books"], answer:"She has many travel books in her room.", display:"She has many travel books in her room." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、アオイ(Aoi)がリク(Riku)に質問しているところです。リクの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、アオイ(Aoi)がリク(Riku)に質問しているところです。リクの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：リクが手作りの町の地図（map）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Aoi:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Aoi:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Riku:</span> '+E("It's mine. My father made it."),
-      answers:["whose map is this","whose map is this one","whose town map is this"], hint:"Whose で始める英文" } ] },
+      words:["Whose","map","is"], answer:"Whose map is this?", display:"Whose map is this?" } ] },
   { intro:"(2) 英語の授業で、あなたの旅行の思い出について話します。次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"旅行先を表す英文です。次の語を正しく並べて英文を完成させなさい。",

@@ -137,8 +137,9 @@ sections: [
       '<div class="note">[注] brass band 吹奏楽部　city hall 市民ホール　beginner 初心者　'+
       'instrument 楽器　Why don\'t you 〜? 〜しませんか。</div>',
     items:[
-      { type:"fill", label:"(1)", pt:4, stem:"［　ⓐ　］にあてはまる適切な文を、英文1文で書きなさい。",
-        answers:["Where do you practice it?","Where do you practice?"], hint:"Where で始める英文" },
+      { type:"wordorder", label:"(1)", pt:4,
+        stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
+        words:["Where","do","you","practice","it"], answer:"Where do you practice it?", display:"Where do you practice it?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["ハルトが毎朝、始業前にトランペットを練習していること",
                  "音楽室の窓の近くに、トランペットが置いてあること",
@@ -150,20 +151,20 @@ sections: [
       { type:"bankpick", label:"(3)Ｂ", pt:3, stem:"［　Ｂ　］にあてはまる最も適切な文を、ア〜オから1つ選びなさい。",
         bank:[E("How was the concert last year?"),E("Trying new things is fun."),E("Will you play the trumpet for us?"),
               E("You cannot try new things."),E("What time will your part start?")], answer:1 },
-      { type:"fill", label:"(4)", pt:3,
-        stem:"対話文の内容について、次の質問に答えなさい。ただし、主語と動詞を含む英文1文で書きなさい。<br>"+E("When will Anna come to Japan?"),
-        answers:["She will come to Japan on December 5.","She will come on December 5."], hint:"主語と動詞のある英文1文" }
+      { type:"wordorder", label:"(4)", pt:3,
+        stem:"対話文の内容について、次の質問の答えになるように、（　）内に入る語（句）を正しく並べなさい。<br>"+E("When will Anna come to Japan?")+"<br>"+E("She （　　　　　）."),
+        words:["will","come","on","December 5"], answer:"She will come on December 5.", display:"She will come on December 5." }
     ] }
 ]},
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、アメリカにいるエリック(Eric)が電話でユカに質問しているところです。エリックはどのような質問をしましたか。下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、アメリカにいるエリック(Eric)が電話でユカに質問しているところです。エリックはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-      { type:"fill", label:"①", pt:4,
+      { type:"wordorder", label:"①", pt:4,
         stem:'<div class="scene">絵：エリックが電話で「＿＿＿＿＿ in Japan?」とたずね、ユカが「It\'s ten o\'clock.」と答えている。</div>'+
-             E("＿＿＿＿＿＿＿＿＿＿ in Japan?"),
-        answers:["what time is it"], hint:"What で始める・in Japan? の前まで" }
+             E("（　　　　　） in Japan?"),
+        words:["What","time","is","it"], answer:"What time is it in Japan?", display:"What time is it in Japan?" }
     ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[

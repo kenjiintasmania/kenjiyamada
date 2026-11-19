@@ -133,19 +133,20 @@ sections: [
                 "ソラが「犬の写真をよくとる」と言ったこと。",
                 "ソラが「犬が好きだ」と言ったこと。",
                 "オリバーの犬が大きくて白いこと。" ], answer:1 },
-    { type:"fill", label:"(3)", pt:4, stem:"対話の内容について、次の質問に主語と動詞を含む英文1文で答えなさい。<br>"+E("What does Oliver's grandmother have at her house?"),
-      answers:["she has three dogs at her house","she has three dogs","she has three dogs at her home"], hint:"She has 〜." } ]}
+    { type:"wordorder", label:"(3)", pt:4,
+        stem:"対話の内容について、次の質問の答えになるように、（　）内に入る語を正しく並べなさい。<br>"+E("What does Oliver's grandmother have at her house?")+"<br>"+E("She （　　　　　） at her house."),
+        words:["has","three","dogs"], answer:"She has three dogs at her house.", display:"She has three dogs at her house." } ]}
 ]},
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ナナミ(Nanami)がベン(Ben)に質問しているところです。ベンの返事に合うように、下線部に適切な英語を書き、英文を完成させなさい。",
+  { intro:"(1) 次は、ナナミ(Nanami)がベン(Ben)に質問しているところです。ベンの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
     items:[
-    { type:"fill", label:"①", pt:4,
+    { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：ベンが手作りの帽子（cap）を持っている。</div>'+
-           '<span class="who" style="font-family:var(--en)">Nanami:</span> '+E("（　①　）?")+'　'+
+           '<span class="who" style="font-family:var(--en)">Nanami:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Ben:</span> '+E("It's mine. My brother made it."),
-      answers:["whose cap is this","whose cap is this one","whose hat is this"], hint:"Whose で始める英文" } ] },
+      words:["Whose","cap","is"], answer:"Whose cap is this?", display:"Whose cap is this?" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",
