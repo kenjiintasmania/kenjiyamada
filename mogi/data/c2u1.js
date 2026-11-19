@@ -136,13 +136,13 @@ sections: [
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
+  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語（句）を正しい順に並べ、英文を完成させなさい。文の最初にくる語は大文字で示しています。",
     items:[
     { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りの応援うちわ（cheering fan）を持っている。</div>'+
            '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My brother made it."),
-      words:["Whose","cheering","fan","is"], answer:"Whose cheering fan is this?", display:"Whose cheering fan is this?" } ] },
+      words:["Whose","cheering fan","is"], answer:"Whose cheering fan is this?", display:"Whose cheering fan is this?" } ] },
   { intro:"(2) 運動会に向けてあなたが練習することを表す英文です。次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

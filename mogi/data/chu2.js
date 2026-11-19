@@ -138,13 +138,13 @@ sections: [
 
 /* ===== 大問4 英作文 ===== */
 { no:4, title:"次の問いに答えなさい。", groups:[
-  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語を正しい順に並べ、英文を完成させなさい。",
+  { intro:"(1) 次は、ミカ(Mika)がレオ(Leo)に質問しているところです。レオの返事に合うように、（　）に入る語（句）を正しい順に並べ、英文を完成させなさい。文の最初にくる語は大文字で示しています。",
     items:[
     { type:"wordorder", label:"①", pt:4,
       stem:'<div class="scene">絵：レオが手作りのペンケース（pen case）を持っている。</div>'+
            '<span class="who" style="font-family:var(--en)">Mika:</span> '+E("（　　　　　） this?")+'　'+
            '<span class="who" style="font-family:var(--en)">Leo:</span> '+E("It's mine. My sister made it."),
-      words:["Whose","pen","case","is"], answer:"Whose pen case is this?", display:"Whose pen case is this?" } ] },
+      words:["Whose","pen case","is"], answer:"Whose pen case is this?", display:"Whose pen case is this?" } ] },
   { intro:"(2) 次の語を正しく並べて英文を完成させなさい。",
     items:[
     { type:"wordorder", label:"", pt:6, stem:"次の語を正しく並べて英文を完成させなさい。",

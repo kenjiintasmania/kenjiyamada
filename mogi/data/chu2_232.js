@@ -142,7 +142,7 @@ sections: [
     items:[
       { type:"wordorder", label:"(1)", pt:4,
         stem:"［　ⓐ　］にあてはまる文になるように、次の語（句）を正しく並べなさい。文の最初にくる語は大文字で示しています。",
-        words:["How","many","students","are","in","the art club"], answer:"How many students are in the art club?", display:"How many students are in the art club?" },
+        words:["How many students","are","in","the art club"], answer:"How many students are in the art club?", display:"How many students are in the art club?" },
       { type:"mcq", label:"(2)", pt:4, stem:"下線部 That が指す内容として最も適切なものを、ア〜エから1つ選びなさい。",
         choices:["ハナが毎日、放課後に美術室で絵をかいていること",
                  "美術室のかべに、たくさんの絵がかざってあること",
@@ -162,7 +162,7 @@ sections: [
 
 /* ===== 大問4（10点） ===== */
 { no:4, title:"次の(1)、(2)の問いに答えなさい。", groups:[
-  { intro:"(1) 次の絵は、カナダにいるケイト(Kate)が電話でユカに質問しているところです。ケイトはどのような質問をしましたか。（　）に入る語を正しい順に並べ、英文を完成させなさい。",
+  { intro:"(1) 次の絵は、カナダにいるケイト(Kate)が電話でユカに質問しているところです。ケイトはどのような質問をしましたか。（　）に入る語（句）を正しい順に並べ、英文を完成させなさい。文の最初にくる語は大文字で示しています。",
     items:[
       { type:"wordorder", label:"①", pt:4,
         stem:'<div class="scene">絵：ケイトが電話で「＿＿＿＿＿ today in Japan?」とたずね、ユカがカレンダーを見ながら「It\'s Friday.」と答えている。</div>'+

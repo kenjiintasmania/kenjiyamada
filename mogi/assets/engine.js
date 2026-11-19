@@ -266,7 +266,7 @@ function renderItem(it, ctx){
 
   if(it.type==="wordorder"){
     q.appendChild(el("div","stem", stem));
-    q.appendChild(el("div","note","（　）内の"+it.words.length+"語だけを正しい順にタップしよう（カッコの外の語はそのまま）。もう一度タップで取り消し。"));
+    q.appendChild(el("div","note","下の"+it.words.length+"個の語（句）を正しい順にタップしよう（カッコの外の語はそのまま）。もう一度タップで取り消し。"));
     const correct = (it.order && it.order.length===it.words.length) ? it.order.slice()
                                                                     : orderTokens(it.words, it.answer);
     const build=el("div","wo-build");
