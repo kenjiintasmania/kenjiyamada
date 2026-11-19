@@ -57,7 +57,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["gym"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["twelve","12"], hint:"英語1語（数を表す語）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのリク(Riku)が、秋祭りの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">The Kaede Autumn Festival will be held on the last Sunday of October, and we need help from junior high school students. You can choose one job.</span>'+

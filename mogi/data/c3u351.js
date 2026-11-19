@@ -60,7 +60,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["playground"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["fourteen","14"], hint:"英語1語（数を表す語）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのコウタ(Kota)が、春祭りの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">The Kohaku Spring Festival will be held on the second Saturday of April, and we need help from junior high school students. You can choose one job.</span>'+

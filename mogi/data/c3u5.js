@@ -59,7 +59,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["kitchen"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["eighteen","18"], hint:"英語1語（数を表す語）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのショウタ(Shota)が、動物保護施設のオープンデーの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next Sunday, Sorano Animal Shelter will hold an open day, and we need help from junior high school students. You can choose one job.</span>'+

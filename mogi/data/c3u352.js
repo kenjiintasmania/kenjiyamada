@@ -64,7 +64,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["music"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["sixty","60"], hint:"英語1語（数）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのアヤネ(Ayane)が、オンライン交流の活動についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next month, our school will begin an online exchange program with Fern Lake School in New Zealand. Each of you will choose one of them.</span>'+

@@ -59,7 +59,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["science"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["fifteen","15"], hint:"英語1語（数を表す語）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのナオ(Nao)が、ロボット作りのワークショップについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next Sunday, the Momiji Science Center will hold a robot workshop for junior high school students. Each team will make one robot, and you can choose one job.</span>'+

@@ -58,7 +58,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["door"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["yellow"], hint:"英語1語" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのレン(Ren)が、ブックバスの特別な日の手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">On the last Sunday of this month, Minori Library will hold a special book bus day at Minori Park. Junior high school students can help as volunteers. There are three jobs.</span>'+

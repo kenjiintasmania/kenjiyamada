@@ -56,7 +56,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["winter"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["weather"], hint:"英語1語" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのユカ(Yuka)が、科学クラブの合宿についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">On the second day of the science camp, you can join one of three activities.</span>'+

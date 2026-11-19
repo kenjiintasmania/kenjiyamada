@@ -229,8 +229,8 @@ sections: [
     { type:"wordorder", label:"(3)", pt:4,
       stem:"③「わたしはみんなに、毎日昼食を食べ終えてほしい。」という文にします。<br>"+
            "（　）に入る語を正しい順に並べなさい。<br>"+
-           E("I want everyone （　　） their lunch every day."),
-      words:["to","finish","eating"], answer:"I want everyone to finish eating their lunch every day.", display:"I want everyone to finish eating their lunch every day." } ]}
+           E("I （　　） finish eating their lunch every day."),
+      words:["want","everyone","to"], answer:"I want everyone to finish eating their lunch every day.", display:"I want everyone to finish eating their lunch every day." } ]}
 ]}
 
 ]};

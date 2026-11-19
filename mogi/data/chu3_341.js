@@ -56,7 +56,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["smile"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["farmers"], hint:"英語1語" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのユウタ(Yuta)が、朝市の手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next Saturday, Yamabe Town will hold a morning market for junior high school students. You can choose one job.</span>'+

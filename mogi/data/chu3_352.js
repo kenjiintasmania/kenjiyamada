@@ -61,7 +61,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["computer"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["forty","40"], hint:"英語1語（数）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのヒナ(Hina)が、オンライン交流の活動についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next month, our school will start an online exchange program with Bell Hill School in Australia. You can choose one activity.</span>'+

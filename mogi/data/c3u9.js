@@ -59,7 +59,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["sixteen","16"], hint:"英語1語（数を表す語）" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["library"], hint:"英語1語" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋指定語を含む3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのショウ(Sho)が、公民館で行われる手話イベントの手伝いについての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next Sunday, Nagisa Community Center will hold Sign Language Day, and we need help from junior high school students. You can choose one job.</span>'+

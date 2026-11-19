@@ -60,7 +60,7 @@ sections: [
     { type:"fill", label:"い", pt:2, stem:"（い）", answers:["meeting"], hint:"英語1語" },
     { type:"fill", label:"う", pt:2, stem:"（う）", answers:["twenty","20"], hint:"英語1語（数を表す語）" } ] },
 
-  /* 問題D：説明＋人物発言（内容一致選択＋3語の英語） */
+  /* 問題D：説明＋人物発言（内容一致選択＋3語の並べかえ） */
   { intro:"問題D　あなたとクラスメイトのユウト(Yuto)が、小学生に昔の遊びを教える交流会についての説明を聞いて話しています。放送を聞いて(1)(2)に答えなさい。英文は2回読まれます。",
     script:
       '<span class="sp">Next Sunday, thirty children from Tsubaki Elementary School will come to the community center to learn old Japanese games. You will teach them in three groups.</span>'+

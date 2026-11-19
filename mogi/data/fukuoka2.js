@@ -75,8 +75,8 @@ sections: [
                 E("water the flowers and clean the garden"), E("clean the pond and pick the flowers") ], answer:1 },
     { type:"wordorder", label:"(3)", pt:4,
       stem:"サナが2番目のグループを選んだ理由になるように、（　）に入る語を正しい順に並べなさい。<br>"+
-           E("Sana chose the second group because she wants to （　　）."),
-      words:["see","tall","flowers"], answer:"Sana chose the second group because she wants to see tall flowers.", display:"Sana chose the second group because she wants to see tall flowers." } ] }
+           E("Sana chose the second group because she （　　） tall flowers."),
+      words:["wants","to","see"], answer:"Sana chose the second group because she wants to see tall flowers.", display:"Sana chose the second group because she wants to see tall flowers." } ] }
 ]},
 
 /* ===== 大問2 短い対話の空所補充（8点4問） ===== */
