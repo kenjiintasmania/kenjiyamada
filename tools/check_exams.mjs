@@ -61,6 +61,10 @@ function structuralChecks(id, EXAM){
       (Array.isArray(it.answer)?it.answer:[]).forEach(a=>{ if(a<0||a>=arr.length) fail(id, `${w} answer索引が範囲外 (${a})`); });
     } else if(it.type==='fill'){
       if(!Array.isArray(it.answers) || !it.answers.length) fail(id, `${w} answers が空`);
+      /* 日本語の長い記述は自動採点（完全一致）ではだれも○にならない（2026-11-19 先生指摘「自由記述はまず満点取れない」）。
+         「〜が指す内容」は4択（mcq）で出す。漢字1字・短い語（7字まで）は可。 */
+      else if(it.answers.some(a=>/[ぁ-んァ-ン一-龥]/.test(String(a)) && String(a).length>=8))
+        fail(id, `${w} ${it.label||''} 日本語の長い記述は完全一致でしか正解にならない（4択にする）：${String(it.answers[0]).slice(0,30)}…`);
     } else if(it.type==='wordorder'){
       // 並べかえ：各語が answer 内に見つかること（中2大問6の部分並べかえ＝語群がanswerの部分集合でもOK）
       const aw = normSpell(it.answer).split(" ");
