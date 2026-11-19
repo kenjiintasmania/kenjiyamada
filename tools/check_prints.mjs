@@ -7,6 +7,7 @@
 //   ① 語群が答えの順（3語以上つづけて答えの順）になっていない
 //   ② 語群の語が、答えの文の中にぜんぶある（語群と解答の食いちがい）
 //   ③ 生徒用ページ（オモテ・ウラ）に、解答ページの英文がそのまま載っていない
+//   ④ 作り手向けの注記（先生用・配らない・ねらい… など）が紙に出ていない。解答ページも生徒に配る。
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -47,6 +48,10 @@ for (const f of readdirSync(DIR).filter(x => /\.html$/.test(x)).sort()) {
     console.log(`  → ${f} (${i+1}) ${toks.join(' / ')}  ⇒  ${neu}`);
   });
   if (fixed) writeFileSync(path, src);
+  // ④ 作り手向けの注記を紙に出さない（2026-11-19 先生指示「メタコメント削除。解答も生徒に配ってる」）
+  { const vis = strip(src.replace(/<style[\s\S]*?<\/style>/g,'').replace(/<!--[\s\S]*?-->/g,''));
+    const m = vis.match(/先生用|配らない|ねらい：|マイナーチェンジ|答えそのものは載せない/);
+    if (m) fail(f, `作り手向けの注記が紙に出ている：「${m[0]}」（解答ページも生徒に配る）`); }
   // ③ 解答ページの英文（4語以上）が生徒用ページにそのまま載っていない
   const stu = norm(student);
   [...key.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => norm(m[1]).replace(/\[[^\]]*\]/g,'').trim())
