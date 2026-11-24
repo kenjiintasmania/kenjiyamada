@@ -131,7 +131,7 @@
         <div class="st" id="st_l"></div></button>
       <button class="mode" id="goS"><span class="emoji">🎤</span>
         <div class="t">疑似スピーキング</div>
-        <div class="d">英検二次の質問を読み上げてもらい、マイクで答える。話した言葉から観測値を出します。</div>
+        <div class="d">AIが面接官になって英検二次の質問を1問ずつ出す。答えた言葉から観測値を出します。</div>
         <div class="st" id="st_s"></div></button>
     </div>
     <div class="msg" id="envMsg"></div>
@@ -174,7 +174,7 @@
         <button class="btn" id="l_openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="l_toPaste">📥 ③ 素材を貼る画面へ</button>
       </div>
-      <p class="hint">AIが出した素材には放送文と正解が入っています。<b>読まずにコピー</b>して③に貼ろう。聞いて答えるのはこのアプリの中です。</p>
+      <p class="hint">AIが出した素材は、<b>読まずに</b> <code>=== LISTENING ===</code> から <code>=== END ===</code> まで（いちばん下の正解の記号まで）コピーして③に貼ろう。聞いて答えるのはこのアプリの中です。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
   </div>
@@ -186,7 +186,7 @@
   <div class="card">
     <h2>AIが出した素材を貼る</h2>
     <p class="hint" style="margin-top:0"><code>=== LISTENING ===</code> から <code>=== END ===</code> までを貼り付けてください。</p>
-    <textarea id="l_paste" rows="12" placeholder="=== LISTENING ===&#10;題: 職場体験の相談&#10;回数: 2&#10;--- SCRIPT ---&#10;A: Hi, Mei. What are you going to do next week?&#10;B: I'm going to work at a flower shop.&#10;--- QUESTIONS ---&#10;1 | What will Mei do next week? | work at a flower shop | study at home | visit a museum | play tennis | 1&#10;=== END ==="></textarea>
+    <textarea id="l_paste" rows="12" placeholder="=== LISTENING ===&#10;題: 職場体験の相談&#10;回数: 2&#10;--- SCRIPT ---&#10;A: Hi, Mei. What are you going to do next week?&#10;B: I'm going to work at a flower shop.&#10;--- QUESTIONS ---&#10;1 | What will Mei do next week?&#10;ア | study at home&#10;イ | work at a flower shop&#10;ウ | visit a museum&#10;エ | play tennis&#10;--- KAISETSU ---&#10;1 | B の2文目で仕事の場所を言っています。&#10;--- ANSWERS ---&#10;1 | イ&#10;=== END ==="></textarea>
     <div class="msg" id="l_pmsg"></div>
     <div class="row">
       <button class="btn" id="l_start">この素材で聞く</button>
@@ -245,9 +245,9 @@
 
 <!-- ============ スピーキング ============ -->
 <div id="sBuild" class="hide">
-  <div class="steps"><span class="now">① 質問を作らせる</span><span>② 貼る</span><span>③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="steps"><span class="now">① プロンプト</span><span>② AIと1問ずつ話す</span><span>③ まとめを貼る</span><span>④ ふりかえり</span></div>
   <div class="card">
-    <h2>🎤 英検二次の質問をAIに作らせる</h2>
+    <h2>🎤 AIと英検二次の面接練習（1問ずつ）</h2>
     <div class="grid2">
       <div><label for="s_grade">級</label>
         <select id="s_grade"><option>5級</option><option>4級</option><option selected>3級</option><option>準2級</option><option>2級</option></select></div>
@@ -265,30 +265,30 @@
       <div class="row">
         <button class="btn" id="s_copy">📋 ① コピーする</button>
         <button class="btn" id="s_openAI">🤖 ② AIモードに貼る</button>
-        <button class="btn ghost" id="s_toPaste">📥 ③ 質問を貼る画面へ</button>
+        <button class="btn ghost" id="s_toPaste">📥 ③ まとめを貼る画面へ</button>
       </div>
-      <p class="hint">AIは質問を<b>まとめて</b>出します（AIの画面では答えません）。それをコピーして③に貼ると、このアプリが<b>1問ずつ</b>読み上げ、きみが声で答え、最後にふりかえりが出ます。<br>
-      AIと会話しながら本番どおりの面接（音読・イラスト）を練習したいときは <a href="../challenge/">挑戦モードの「英検二次」</a> へ。</p>
+      <p class="hint">AIが面接官になって<b>1問ずつ</b>質問します。1問ずつ英語で答えよう（キーボードのマイクで声を入れてもOK）。全部終わるとAIが講評と<b>まとめ</b>を出すので、<code>=== SPEAKING ===</code> から <code>=== END ===</code> までをコピーして③に貼ろう。<br>
+      音読やイラストの問題もふくめた本番どおりの面接は <a href="../challenge/">挑戦モードの「英検二次」</a> へ。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
   </div>
 </div>
 
 <div id="sPaste" class="hide">
-  <div class="steps"><span>① 作らせる</span><span class="now">② 貼る</span><span>③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="steps"><span>① プロンプト</span><span>② AIと1問ずつ話す</span><span class="now">③ まとめを貼る</span><span>④ ふりかえり</span></div>
   <div class="card">
-    <h2>質問を貼る</h2>
-    <textarea id="s_paste" rows="9" placeholder="=== SPEAKING ===&#10;題: 3級 二次（好きなスポーツ）&#10;1 | What sport do you like?&#10;2 | Why do you like it?&#10;=== END ==="></textarea>
+    <h2>AIが最後に出したまとめを貼る</h2>
+    <textarea id="s_paste" rows="9" placeholder="=== SPEAKING ===&#10;題: 好きなスポーツ&#10;1 | What sport do you like? | I like soccer.&#10;2 | Why do you like it? | Because it is fun.&#10;=== END ==="></textarea>
     <div class="msg" id="s_pmsg"></div>
     <div class="row">
-      <button class="btn" id="s_start">この質問で練習する</button>
+      <button class="btn" id="s_start">ふりかえりを見る</button>
       <button class="btn ghost sm" data-go="sBuild">← もどる</button>
     </div>
   </div>
 </div>
 
 <div id="sPlay" class="hide">
-  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span class="now">③ 話して答える</span><span>④ ふりかえり</span></div>
+  <div class="steps"><span>① 質問を貼る</span><span class="now">② 話して答える</span><span>③ ふりかえり</span></div>
   <div class="card">
     <div class="player">
       <div class="title" id="s_qno">質問 1</div>
@@ -312,7 +312,7 @@
 </div>
 
 <div id="sResult" class="hide">
-  <div class="steps"><span>① 作らせる</span><span>② 貼る</span><span>③ 話して答える</span><span class="now">④ ふりかえり</span></div>
+  <div class="steps"><span>① プロンプト</span><span>② AIと1問ずつ話す</span><span>③ まとめを貼る</span><span class="now">④ ふりかえり</span></div>
   <div class="card">
     <h2>ふりかえり（点はつけません）</h2>
     <p class="hint" style="margin-top:0">話す力は機械では正しく採点できないので、<b>自分が実際に言った言葉から測れることだけ</b>を出します。</p>
@@ -323,9 +323,11 @@
       <div><b id="sr_link">–</b><span>つなぎ語の種類</span></div>
     </div>
     <div id="sr_detail"></div>
+    <div id="sr_revbox">
     <h3>AIに講評してもらう（任意）</h3>
     <p class="hint" style="margin-top:0">下をコピーしてAIに貼ると、言い方のアドバイスがもらえます。点数は求めない書き方にしてあります。</p>
     <pre class="prompt" id="sr_review"></pre>
+    </div>
     <div class="row">
       <button class="btn" id="sr_copy">📋 コピーする</button>
       <button class="btn ghost sm" id="sr_save">記録する</button>
@@ -431,13 +433,26 @@
     p.push("--- SCRIPT ---");
     p.push("（ここに放送する英文。会話ならA:／B:を行頭につける）");
     p.push("--- QUESTIONS ---");
-    p.push("1 | （英語の質問） | 選択肢1 | 選択肢2 | 選択肢3 | 選択肢4 | 正解の番号");
+    p.push("1 | （英語の質問）");
+    p.push("ア | （選択肢）");
+    p.push("イ | （選択肢）");
+    p.push("ウ | （選択肢）");
+    p.push("エ | （選択肢）");
+    p.push("");
+    p.push("2 | ...");
+    p.push("--- KAISETSU ---");
+    p.push("1 | （日本語で1〜2文。放送のどこを聞けば分かるか）");
+    p.push("2 | ...");
+    p.push("--- ANSWERS ---");
+    p.push("1 | （ア〜エの記号だけ）");
     p.push("2 | ...");
     p.push("=== END ===");
     p.push("");
-    p.push("・区切りは半角の縦棒 | を使ってください。最後の欄は正解の番号（1〜4）だけを書いてください。");
+    p.push("・区切りは半角の縦棒 | を使ってください。選択肢は1行に1つ、ア・イ・ウ・エで書いてください。");
+    p.push("・**QUESTIONS の中には正解を書かないでください。**正解の記号は、いちばん下の ANSWERS にだけまとめて書いてください。");
+    p.push("・KAISETSU（解説）にも ア〜エ の記号は書かないでください。");
+    p.push("・正解の記号がアばかり・イばかりにならないよう、ばらばらにしてください。");
     p.push("・SCRIPT には日本語を混ぜないでください（そのまま読み上げるため）。");
-    p.push("・解説・日本語訳は書かないでください（答え合わせはアプリがします）。");
     p.push("・=== END === のあとに、次の1行だけを書いて終わってください：");
     p.push("　「↑ === LISTENING === から === END === までを、読まずにコピーして、アプリに貼ろう。聞いて答えるのはアプリの中です。」");
     return p.join("\n");
@@ -461,32 +476,51 @@
 
   /* ---------- ② 解析 ---------- */
   function parseListening(raw){
+    // 新しい書式：質問と選択肢（ア〜エ）を1行ずつ、正解は末尾の ANSWERS にまとめる。
+    // 前の書式（1行に 質問 | 選択肢… | 正解番号）もそのまま読める。
     var t=String(raw||"").replace(/\r/g,"").replace(/｜/g,"|");
     var i=t.indexOf("=== LISTENING ==="), j=t.indexOf("=== END ===");
     var body=(i>=0)? t.slice(i+17, j>i? j : t.length) : t;
-    var title="", reps=2, script="", qs=[], bad=0, sec="";
+    var title="", reps=2, script="", qs=[], bad=0, sec="", byNo={}, KANA="アイウエ";
     body.split("\n").forEach(function(line){
       var s=line.trim();
       if(/^---\s*SCRIPT\s*---$/i.test(s)){ sec="script"; return; }
       if(/^---\s*QUESTIONS?\s*---$/i.test(s)){ sec="q"; return; }
+      if(/^---\s*(KAISETSU|解説)\s*---$/i.test(s)){ sec="ex"; return; }
+      if(/^---\s*(ANSWERS?|答え|正解)\s*---$/i.test(s)){ sec="ans"; return; }
       var mt=s.match(/^題\s*[:：]\s*(.+)$/); if(mt){ title=mt[1].trim(); return; }
       var mr=s.match(/^回数\s*[:：]\s*(\d+)/); if(mr){ reps=Math.max(1,Math.min(3,parseInt(mr[1],10))); return; }
       if(sec==="script"){ script+= (script?"\n":"")+line.replace(/\s+$/,""); return; }
-      if(sec==="q"||s.indexOf("|")>=0){
-        if(s.indexOf("|")<0) return;
-        var c=s.split("|").map(function(x){return x.trim();});
-        if(c.length<4){ bad++; return; }
-        var no=parseInt(c[0].replace(/[^0-9]/g,""),10);
-        if(!no){ bad++; return; }
+      if(!s) return;
+      if(sec==="ans"){
+        var re=/(\d+)\s*[|:：.．)）]?\s*([アイウエ1-4])/g, m2;
+        while((m2=re.exec(s))){ var q0=byNo[m2[1]]; if(!q0) continue;
+          var k=KANA.indexOf(m2[2]); q0.ans=(k>=0)? k : parseInt(m2[2],10)-1; }
+        return;
+      }
+      if(sec==="ex"){
+        var me=s.match(/^(\d+)\s*[|:：.．)）]\s*(.+)$/); if(me && byNo[me[1]]) byNo[me[1]].ex=me[2].trim();
+        return;
+      }
+      var c=s.split("|").map(function(x){return x.trim();});
+      var mc=s.match(/^([アイウエ])\s*[|:：.．)）]?\s*(.+)$/);
+      if(mc && qs.length && c.length<=2){ qs[qs.length-1].choices.push(mc[2].trim()); return; }
+      var no=parseInt(c[0].replace(/[^0-9]/g,""),10);
+      if(!no || !/^\d+\s*[.．)）]?$/.test(c[0]) && c.length<2){ return; }
+      var q;
+      if(c.length>=4){                       // 前の書式
         var ansRaw=c[c.length-1];
         var ans=parseInt(ansRaw.replace(/[^0-9]/g,""),10);
-        if(!ans){ var k="アイウエ".indexOf(ansRaw.replace(/[^ア-エ]/g,"")); if(k>=0) ans=k+1; }
-        var ch=c.slice(2,c.length-1).filter(function(x){return x!=="";});
-        if(!ch.length||!ans||ans>ch.length){ bad++; return; }
-        qs.push({no:no, q:c[1], choices:ch, ans:ans-1});
-      }
+        if(!ans){ var k2=KANA.indexOf(ansRaw.replace(/[^ア-エ]/g,"")); if(k2>=0) ans=k2+1; }
+        q={no:no, q:c[1], choices:c.slice(2,c.length-1).filter(function(x){return x!=="";}), ans:(ans?ans-1:-1), ex:""};
+      } else if(c.length===2 && c[1]){        // 新しい書式（質問だけの行）
+        q={no:no, q:c[1], choices:[], ans:-1, ex:""};
+      } else return;
+      qs.push(q); byNo[String(no)]=q;
     });
-    return {title:title, reps:reps, script:script.trim(), qs:qs, bad:bad};
+    var good=qs.filter(function(q){ return q.choices.length>=2 && q.ans>=0 && q.ans<q.choices.length; });
+    bad=qs.length-good.length;
+    return {title:title, reps:reps, script:script.trim(), qs:good, bad:bad};
   }
 
   var cur=null, played=0, picked={};
@@ -495,7 +529,7 @@
     var p=parseListening($("l_paste").value);
     if(!p.script || !p.qs.length){
       m.className="msg show ng";
-      m.innerHTML="✗ 素材を読み取れませんでした。<br>AIにこう言い直そう：<code>=== LISTENING === / --- SCRIPT --- / --- QUESTIONS --- の書式で、質問は 番号 | 質問 | 選択肢1 | 選択肢2 | 選択肢3 | 選択肢4 | 正解番号 の形で出し直して</code>";
+      m.innerHTML="✗ 素材を読み取れませんでした。<br>AIにこう言い直そう：<code>=== LISTENING === から === END === まで、最初にお願いした書式（SCRIPT・QUESTIONS・KAISETSU・ANSWERS）のまま出し直して</code><br>※いちばん下の ANSWERS（正解の記号）までコピーできているかも確かめよう。";
       return;
     }
     cur=p; played=0; picked={};
@@ -516,7 +550,7 @@
       var ch=document.createElement("div"); ch.className="choices";
       q.choices.forEach(function(c,ci){
         var b=document.createElement("button"); b.className="choice";
-        b.innerHTML='<span class="en">'+(ci+1)+'. '+esc(c)+'</span>';
+        b.innerHTML='<b>'+"アイウエオ".charAt(ci)+'</b>　<span class="en">'+esc(c)+'</span>';
         b.addEventListener("click",function(){
           picked[qi]=ci;
           [].forEach.call(ch.children,function(x,k){ x.classList.toggle("sel",k===ci); });
@@ -559,12 +593,17 @@
     $("lr_ver").textContent="v"+(store().pv||0);
     var h='<table><thead><tr><th>#</th><th>質問</th><th>えらんだ</th><th>正解</th><th>判定</th></tr></thead><tbody>';
     cur.qs.forEach(function(q,qi){
-      var mine=(picked[qi]!=null)? (picked[qi]+1)+". "+q.choices[picked[qi]] : "（未回答）";
+      var K="アイウエオ";
+      var mine=(picked[qi]!=null)? K.charAt(picked[qi])+"　"+q.choices[picked[qi]] : "（未回答）";
       h+='<tr><td>'+(qi+1)+'</td><td class="en">'+esc(q.q)+'</td><td class="en">'+esc(mine)+
-         '</td><td class="en">'+(q.ans+1)+". "+esc(q.choices[q.ans])+'</td><td>'+
+         '</td><td class="en">'+K.charAt(q.ans)+"　"+esc(q.choices[q.ans])+'</td><td>'+
          (picked[qi]===q.ans?"○":"×")+'</td></tr>';
     });
-    $("lr_detail").innerHTML=h+'</tbody></table>';
+    h+='</tbody></table>';
+    if(cur.qs.some(function(q){ return q.ex; })){
+      h+='<h3>解説</h3>'+cur.qs.map(function(q,qi){ return q.ex? '<div class="hint"><b>'+(qi+1)+'.</b> '+esc(q.ex)+'</div>' : ''; }).join("");
+    }
+    $("lr_detail").innerHTML=h;
     $("lr_script").textContent=cur.script;
     $("lr_msg").className="msg";
     $("lr_save").disabled=false;
@@ -583,28 +622,36 @@
   /* ---------- スピーキング ---------- */
   function sPrompt(grade,n,topic){
     var p=[];
-    p.push("あなたは英検"+grade+"の面接官です。二次試験の練習の質問を作ってください。");
-    p.push("質問は、わたしのアプリが1問ずつ読み上げます。ここでは質問の一覧だけを作ってください。");
-    p.push("（ここで面接を始めたり、わたしの返事を待ったりしないでください。）");
+    p.push("あなたは英検"+grade+"の二次試験の面接官です。わたしと、1問ずつ会話しながら面接の練習をしてください。");
     p.push("");
     p.push("【級】"+grade);
     p.push("【質問数】"+n+"問");
     p.push("【話題】"+(topic||"（おまかせ）"));
     p.push("【レベル】"+grade+"の受験者が答えられる長さ・語彙にしてください。");
     p.push("");
-    p.push("【いちばん大事なお願い】");
-    p.push("わたしのアプリが読み上げるので、下の書式で出してください。書式は1文字も変えないでください。");
+    p.push("【進め方】");
+    p.push("1. 英語で短くあいさつしてから、質問を**1つだけ**出してください。");
+    p.push("2. **必ず1問ずつ**です。わたしが答えるまで、次の質問を出さないでください。質問をまとめて見せないでください。");
+    p.push("3. わたしが答えたら、英語で一言だけ返して（I see. / Thank you. など）、すぐ次の質問に進んでください。");
+    p.push("　とちゅうでは、まちがいを直したり、模範解答を見せたりしないでください。");
+    p.push("4. わたしが答えにつまったら、やさしい英語で質問を言いかえてください。");
+    p.push("5. "+n+"問おわったら、日本語で講評してください。点数はつけず、次の3つだけ：");
+    p.push("　もっと自然になる言い方（1問に1つ）／文法のまちがい／次に足すとよい一言");
+    p.push("6. 講評のあと、最後に下の【提出ブロック】を出してください。");
     p.push("");
+    p.push("【提出ブロック】※この書式は1文字も変えないでください");
     p.push("=== SPEAKING ===");
     p.push("題: （日本語で話題の名前）");
-    p.push("1 | （英語の質問）");
+    p.push("1 | （あなたが出した英語の質問） | （わたしの答えをそのまま）");
     p.push("2 | ...");
     p.push("=== END ===");
     p.push("");
-    p.push("・質問は英語だけで書いてください（そのまま読み上げます）。");
-    p.push("・模範解答・日本語訳・答え方のヒントは書かないでください（自分で答えてから見直すため）。");
+    p.push("・「わたしの答え」は、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
+    p.push("・答えられなかった問は、答えの欄に （無回答） と書いてください。");
     p.push("・=== END === のあとに、次の1行だけを書いて終わってください：");
-    p.push("　「↑ === SPEAKING === から === END === までをコピーして、アプリの『質問を貼る』に貼ろう。答えるのはアプリの中です。」");
+    p.push("　「↑ === SPEAKING === から === END === までをコピーして、アプリの『まとめを貼る』に貼ろう。」");
+    p.push("");
+    p.push("では、あいさつから始めてください。");
     return p.join("\n");
   }
   $("s_mk").addEventListener("click",function(){
@@ -624,7 +671,12 @@
       var s=line.trim(); if(!s) return;
       var mt=s.match(/^題\s*[:：]\s*(.+)$/); if(mt){ title=mt[1].trim(); return; }
       var m=s.match(/^(\d+)\s*[|.)．]\s*(.+)$/);
-      if(m && /[A-Za-z]/.test(m[2])) qs.push({no:parseInt(m[1],10), q:m[2].trim()});
+      if(m && /[A-Za-z]/.test(m[2])){
+        var c=m[2].split("|").map(function(x){ return x.trim(); });
+        var o={no:parseInt(m[1],10), q:c[0]};
+        if(c.length>1){ var a=c.slice(1).join(" ").trim(); o.a=/^[（(]?\s*(無回答|no answer)\s*[)）]?$/i.test(a)? "" : a; }
+        qs.push(o);
+      }
     });
     return {title:title, qs:qs};
   }
@@ -635,10 +687,14 @@
     var p=parseSpeaking($("s_paste").value);
     if(!p.qs.length){
       m.className="msg show ng";
-      m.innerHTML="✗ 質問を読み取れませんでした。<br>AIにこう言い直そう：<code>=== SPEAKING === と === END === ではさんで、1 | 質問 の形で英語だけで出し直して</code>";
+      m.innerHTML="✗ まとめを読み取れませんでした。<br>AIにこう言い直そう：<code>さっきの面接を、1 | 質問 | わたしの答え の形で、=== SPEAKING === と === END === ではさんで出し直して</code>";
       return;
     }
     sCur=p; sIdx=0; sAns=[];
+    if(p.qs.some(function(q){ return q.a!=null; })){     // AIと会話した結果（答えつき）→ そのままふりかえりへ
+      sAns=p.qs.map(function(q){ return q.a||""; });
+      showSResult(true); return;
+    }
     $("s_kept").innerHTML="";
     renderS(); show("sPlay");
   });
@@ -688,8 +744,10 @@
   });
 
   var LINKERS=["because","for example","i think","but","so","also","first","then","and"];
-  $("s_done").addEventListener("click",function(){
-    keep(); stopAll();
+  $("s_done").addEventListener("click",function(){ keep(); stopAll(); showSResult(false); });
+  function showSResult(conv){
+    $("sr_revbox").classList.toggle("hide", !!conv);     // AIと会話したときは講評ずみなので出さない
+    $("sr_copy").classList.toggle("hide", !!conv);
     var totalW=0, keyHit=0, linkSet={}, rows=[];
     sCur.qs.forEach(function(q,i){
       var a=sAns[i]||"";
@@ -722,7 +780,7 @@
     $("sr_review").textContent=rv.join("\n");
     $("sr_msg").className="msg"; $("sr_save").disabled=false;
     show("sResult");
-  });
+  }
   $("sr_copy").addEventListener("click",function(){ copyFrom("sr_review", this, "📋 コピーする"); });
   $("sr_save").addEventListener("click",function(){
     var s=store();
