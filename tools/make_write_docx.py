@@ -119,7 +119,7 @@ TAKE = [
     ("You {} {} my umbrella.",                  "持って行ってもよい",   "10 助動詞 may",              "may take"),
     ("You {} {} off your shoes here.",          "くつをぬぐべきだ",     "10 助動詞 should",           "should take"),
     ("I {} {} {} care of my dog.",              "世話しなければならない", "10 have to",             "have to take"),
-    ("I {} {} {} {} a piano lesson.",           "習うつもりだ", "11 be going to",         "am going to take"),
+    ("I {} {} {} {} a piano lesson.",           "習う予定", "11 be going to",         "am going to take"),
     ("I enjoy {} pictures.",                    "写真を撮ること",       "12 動名詞",                  "taking"),
     ("I {} {} {} this class for a year.",       "ずっと受けている", "13 現在完了進行形",        "have been taking"),
     ("The train is {} {} the bus.",             "〜より速い",           "14 比較級",                  "faster than"),
