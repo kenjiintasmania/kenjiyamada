@@ -174,6 +174,7 @@
         <button class="btn" id="l_openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="l_toPaste">📥 ③ 素材を貼る画面へ</button>
       </div>
+      <p class="hint">AIが出した素材には放送文と正解が入っています。<b>読まずにコピー</b>して③に貼ろう。聞いて答えるのはこのアプリの中です。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
   </div>
@@ -266,6 +267,8 @@
         <button class="btn" id="s_openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="s_toPaste">📥 ③ 質問を貼る画面へ</button>
       </div>
+      <p class="hint">AIは質問を<b>まとめて</b>出します（AIの画面では答えません）。それをコピーして③に貼ると、このアプリが<b>1問ずつ</b>読み上げ、きみが声で答え、最後にふりかえりが出ます。<br>
+      AIと会話しながら本番どおりの面接（音読・イラスト）を練習したいときは <a href="../challenge/">挑戦モードの「英検二次」</a> へ。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
   </div>
@@ -434,7 +437,9 @@
     p.push("");
     p.push("・区切りは半角の縦棒 | を使ってください。最後の欄は正解の番号（1〜4）だけを書いてください。");
     p.push("・SCRIPT には日本語を混ぜないでください（そのまま読み上げるため）。");
-    p.push("・答えの解説は === END === より後ろに書いてください。");
+    p.push("・解説・日本語訳は書かないでください（答え合わせはアプリがします）。");
+    p.push("・=== END === のあとに、次の1行だけを書いて終わってください：");
+    p.push("　「↑ === LISTENING === から === END === までを、読まずにコピーして、アプリに貼ろう。聞いて答えるのはアプリの中です。」");
     return p.join("\n");
   }
   $("l_mk").addEventListener("click",function(){
@@ -579,6 +584,8 @@
   function sPrompt(grade,n,topic){
     var p=[];
     p.push("あなたは英検"+grade+"の面接官です。二次試験の練習の質問を作ってください。");
+    p.push("質問は、わたしのアプリが1問ずつ読み上げます。ここでは質問の一覧だけを作ってください。");
+    p.push("（ここで面接を始めたり、わたしの返事を待ったりしないでください。）");
     p.push("");
     p.push("【級】"+grade);
     p.push("【質問数】"+n+"問");
@@ -595,7 +602,9 @@
     p.push("=== END ===");
     p.push("");
     p.push("・質問は英語だけで書いてください（そのまま読み上げます）。");
-    p.push("・模範解答は === END === より後ろに書いてください。");
+    p.push("・模範解答・日本語訳・答え方のヒントは書かないでください（自分で答えてから見直すため）。");
+    p.push("・=== END === のあとに、次の1行だけを書いて終わってください：");
+    p.push("　「↑ === SPEAKING === から === END === までをコピーして、アプリの『質問を貼る』に貼ろう。答えるのはアプリの中です。」");
     return p.join("\n");
   }
   $("s_mk").addEventListener("click",function(){
