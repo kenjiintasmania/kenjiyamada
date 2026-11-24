@@ -1,8 +1,8 @@
 # tools/make_write_docx.py ─ 同じ動詞を全文法で書き分けるプリント（A4 両面1枚：表＝問題、裏＝解答 か なぞり書き）
-# 使い方: python3 tools/make_write_docx.py 出力.docx [write|study] [trace]      （要 python-docx）
+# 使い方: python3 tools/make_write_docx.py 出力.docx [write|study|take] [trace]      （要 python-docx）
 #   trace を付けると裏面が「なぞり書き」（うすい字の全文をなぞる。答えの語は下線）。付けなければ裏面は解答。
 # 正本は mogi/print/docx/zenbunpo_write.docx（先生がレイアウトを調整した版・2026-11-24）。
-# なぞり書き版：zenbunpo_write_nazori.docx / zenbunpo_study_nazori.docx（なぞり字は「UD デジタル 教科書体 NK-R」＝Windows 標準）。
+# なぞり書き版：zenbunpo_write_nazori.docx / zenbunpo_study_nazori.docx / zenbunpo_take_nazori.docx（なぞり字は「UD デジタル 教科書体 NK-R」＝Windows 標準）。
 # ★レイアウトの決め手：Word（游ゴシック＋Century）は LibreOffice より行が高く出るので、
 #   下余白を 9mm のままだと表の38行目が2ページ目に落ちる。下余白 2.5mm でオモテ1ページに収まる（先生の調整）。
 # 番号は「全文法 到達度テスト」（gojun/data/gojun_v1.js）の項目番号。
@@ -103,8 +103,50 @@ STUDY = [
     ("{} {} you {}?",                           "何を勉強したのですか", "32 疑問詞の疑問文",          "What did ／ study"),
     ("My mother {} me {} English.",             "勉強するのを手伝った", "33 help＋人＋原形",          "helped ／ study"),
 ]
+# take は行ごとに意味をわざと変える（撮る・乗る・入る・連れて行く・持って行く・受ける・飲む・かかる…）
+TAKE = [
+    ("I {} a bath every day.",                  "ふろに入る",           "1 一般動詞（現在形）",        "take"),
+    ("It {} ten minutes to the station.",       "10分かかる",           "1 一般動詞（3人称単数）",     "takes"),
+    ("I {} {} good pictures.",                  "写真を撮れる",         "2 助動詞 can",               "can take"),
+    ("I {} a shower this morning.",             "シャワーを浴びた",     "3 過去形",                   "took"),
+    ("I {} {} a walk now.",                     "散歩しているところだ", "4 現在進行形",               "am taking"),
+    ("I {} {} my sister to the park tomorrow.", "連れて行くだろう",     "5 未来 will",                "will take"),
+    ("I have already {} the medicine.",         "もう薬を飲んだ",       "6 現在完了",                 "taken"),
+    ("I {} {} notes then.",                     "メモを取っていた",     "7 過去進行形",               "was taking"),
+    ("This picture {} {} by Ken.",              "ケンに撮られた",       "8 受け身",                   "was taken"),
+    ("This {} a picture of my family.",         "〜です",               "9 be動詞の文",               "is"),
+    ("I {} {} a test today.",                   "テストを受けなければならない", "10 助動詞 must",     "must take"),
+    ("You {} {} my umbrella.",                  "持って行ってもよい",   "10 助動詞 may",              "may take"),
+    ("You {} {} off your shoes here.",          "くつをぬぐべきだ",     "10 助動詞 should",           "should take"),
+    ("I {} {} {} care of my dog.",              "世話しなければならない", "10 have to",             "have to take"),
+    ("I {} {} {} {} a piano lesson.",           "習うつもりだ", "11 be going to",         "am going to take"),
+    ("I enjoy {} pictures.",                    "写真を撮ること",       "12 動名詞",                  "taking"),
+    ("I {} {} {} this class for a year.",       "ずっと受けている", "13 現在完了進行形",        "have been taking"),
+    ("The train is {} {} the bus.",             "〜より速い",           "14 比較級",                  "faster than"),
+    ("This is the {} way to the station.",      "いちばん速い",         "14 最上級",                  "fastest"),
+    ("It is important for us {} {} a rest.",    "休むことは",           "15 It … for 〜 to …",        "to take"),
+    ("This is the picture {} I {} in Kyoto.",   "私が撮った写真",       "16 関係代名詞",              "which [that] ／ took"),
+    ("I want {} {} a nap.",                     "昼寝をしたい",         "17 不定詞（名詞）",          "to take"),
+    ("I have some medicine {} {}.",             "飲むべき薬",           "17 不定詞（形容詞）",        "to take"),
+    ("I got up early {} {} the first bus.",     "バスに乗るために",     "17 不定詞（副詞）",          "to take"),
+    ("The homework {} {} an hour.",             "私には1時間かかった",  "18 SVOO",                    "took me"),
+    ("The picture {} {} happy.",                "私をうれしくさせた",   "19 SVOC",                    "made me"),
+    ("{} I {} the test, I was nervous.",        "テストを受けたとき",   "20 接続詞 when",             "When ／ took"),
+    ("Do you know {} {} this picture?",         "だれが撮ったか",       "21 間接疑問文",              "who took"),
+    ("This is a picture {} in Okinawa.",        "沖縄で撮られた写真",   "22 分詞（過去分詞）",        "taken"),
+    ("The girl {} part in the contest is Emi.", "参加している少女",     "22 分詞（現在分詞）",        "taking"),
+    ("There {} a picture on the wall.",         "〜がある",             "23 There is",                "is"),
+    ("If I {} time, I {} {} a trip.",           "あれば旅行するのに",   "24 仮定法",                  "had ／ would take"),
+    ("{} you {} the train yesterday?",          "電車に乗りましたか",   "26 疑問文",                  "Did ／ take"),
+    ("{} a seat.",                              "すわりなさい",         "27 命令文",                  "Take"),
+    ("{} {} pictures here.",                    "写真を撮ってはいけない", "28 禁止の文",              "Don't take"),
+    ("I {} {} the medicine.",                   "薬を飲まなかった",     "29 否定文",                  "didn't take"),
+    ("{} {} you {} to the party?",              "何を持って行ったのですか", "32 疑問詞の疑問文",      "What did ／ take"),
+    ("My father {} me {} the bags home.",       "持って帰るのを手伝った", "33 help＋人＋原形",        "helped ／ take"),
+]
 SETS = {"write": (WRITE, "書く", ["write", "wrote", "written", "writing"]),
-        "study": (STUDY, "勉強する", ["study", "studied", "studied", "studying"])}
+        "study": (STUDY, "勉強する", ["study", "studied", "studied", "studying"]),
+        "take": (TAKE, "意味がいろいろ", ["take", "took", "taken", "taking"])}
 ROWS, VJA, FORMS = SETS[VERB]
 
 def fill(en, ans):
