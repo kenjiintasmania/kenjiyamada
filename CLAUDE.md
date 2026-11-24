@@ -16,6 +16,8 @@
   印刷プリント（`mogi/print/*.html`）は `node tools/check_prints.mjs`（並べかえが答えの順でない・解答の英文が生徒用ページに無い）。
   **並べかえの語群は必ずまぜて書く**（答えの順で書かない）。
   プリントの**解答ページも生徒に配る**ので、「先生用」「ねらい」「〜は載せていない」のような作り手向けの注記は紙に書かない。
+  DOCX のプリントは `mogi/print/docx/`（正本＝先生が調整した版）。Word は LibreOffice より行が高く出るので、
+  1ページに詰める表は**下余白 2.5mm**（`tools/make_write_docx.py` 参照）。LibreOffice で1ページでも Word ではあふれることがある。
   模試データを触ったら必ず通すこと。
 
 ## GAS（Google Apps Script）— 手動デプロイ
