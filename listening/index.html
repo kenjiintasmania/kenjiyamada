@@ -174,7 +174,7 @@
         <button class="btn" id="l_openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="l_toPaste">📥 ③ 素材を貼る画面へ</button>
       </div>
-      <p class="hint">AIが出した素材は、<b>読まずに</b> <code>=== LISTENING ===</code> から <code>=== END ===</code> まで（いちばん下の正解の記号まで）コピーして③に貼ろう。聞いて答えるのはこのアプリの中です。</p>
+      <p class="hint">AIが出した素材は、<b>読まずに</b> <code>【リスニング】</code> から <code>【おわり】</code> まで（いちばん下の正解の記号まで）コピーして③に貼ろう。聞いて答えるのはこのアプリの中です。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
   </div>
@@ -185,8 +185,8 @@
   <div class="steps"><span>① 作らせる</span><span class="now">② 貼る</span><span>③ 聞いて答える</span><span>④ 採点</span></div>
   <div class="card">
     <h2>AIが出した素材を貼る</h2>
-    <p class="hint" style="margin-top:0"><code>=== LISTENING ===</code> から <code>=== END ===</code> までを貼り付けてください。</p>
-    <textarea id="l_paste" rows="12" placeholder="=== LISTENING ===&#10;題: 職場体験の相談&#10;回数: 2&#10;--- SCRIPT ---&#10;A: Hi, Mei. What are you going to do next week?&#10;B: I'm going to work at a flower shop.&#10;--- QUESTIONS ---&#10;1 | What will Mei do next week?&#10;ア | study at home&#10;イ | work at a flower shop&#10;ウ | visit a museum&#10;エ | play tennis&#10;--- KAISETSU ---&#10;1 | B の2文目で仕事の場所を言っています。&#10;--- ANSWERS ---&#10;1 | イ&#10;=== END ==="></textarea>
+    <p class="hint" style="margin-top:0"><code>【リスニング】</code> から <code>【おわり】</code> までを貼り付けてください。</p>
+    <textarea id="l_paste" rows="12" placeholder="【リスニング】&#10;題: 職場体験の相談&#10;回数: 2&#10;【放送文】&#10;A: Hi, Mei. What are you going to do next week?&#10;B: I'm going to work at a flower shop.&#10;【問題】&#10;1 | What will Mei do next week?&#10;ア | study at home&#10;イ | work at a flower shop&#10;ウ | visit a museum&#10;エ | play tennis&#10;【解説】&#10;1 | B の2文目で仕事の場所を言っています。&#10;【正解】&#10;1 | イ&#10;【おわり】"></textarea>
     <div class="msg" id="l_pmsg"></div>
     <div class="row">
       <button class="btn" id="l_start">この素材で聞く</button>
@@ -267,7 +267,7 @@
         <button class="btn" id="s_openAI">🤖 ② AIモードに貼る</button>
         <button class="btn ghost" id="s_toPaste">📥 ③ まとめを貼る画面へ</button>
       </div>
-      <p class="hint">AIが面接官になって<b>1問ずつ</b>質問します。1問ずつ英語で答えよう（キーボードのマイクで声を入れてもOK）。全部終わるとAIが講評と<b>まとめ</b>を出すので、<code>=== SPEAKING ===</code> から <code>=== END ===</code> までをコピーして③に貼ろう。<br>
+      <p class="hint">AIが面接官になって<b>1問ずつ</b>質問します。1問ずつ英語で答えよう（キーボードのマイクで声を入れてもOK）。全部終わるとAIが講評と<b>まとめ</b>を出すので、<code>【スピーキング】</code> から <code>【おわり】</code> までをコピーして③に貼ろう。<br>
       音読やイラストの問題もふくめた本番どおりの面接は <a href="../challenge/">挑戦モードの「英検二次」</a> へ。</p>
     </div>
     <div class="row"><button class="btn ghost sm" data-go="home">← もどる</button></div>
@@ -278,7 +278,7 @@
   <div class="steps"><span>① プロンプト</span><span>② AIと1問ずつ話す</span><span class="now">③ まとめを貼る</span><span>④ ふりかえり</span></div>
   <div class="card">
     <h2>AIが最後に出したまとめを貼る</h2>
-    <textarea id="s_paste" rows="9" placeholder="=== SPEAKING ===&#10;題: 好きなスポーツ&#10;1 | What sport do you like? | I like soccer.&#10;2 | Why do you like it? | Because it is fun.&#10;=== END ==="></textarea>
+    <textarea id="s_paste" rows="9" placeholder="【スピーキング】&#10;題: 好きなスポーツ&#10;1 | What sport do you like? | I like soccer.&#10;2 | Why do you like it? | Because it is fun.&#10;【おわり】"></textarea>
     <div class="msg" id="s_pmsg"></div>
     <div class="row">
       <button class="btn" id="s_start">ふりかえりを見る</button>
@@ -427,12 +427,14 @@
     p.push("【いちばん大事なお願い】");
     p.push("わたしのアプリが読み上げるので、下の書式で出してください。書式は1文字も変えないでください。");
     p.push("");
-    p.push("=== LISTENING ===");
+    p.push("【リスニング】");
     p.push("題: （日本語で場面の名前）");
     p.push("回数: 2");
-    p.push("--- SCRIPT ---");
+    p.push(""); p.push("");
+    p.push("【放送文】");
     p.push("（ここに放送する英文。会話ならA:／B:を行頭につける）");
-    p.push("--- QUESTIONS ---");
+    p.push(""); p.push("");
+    p.push("【問題】");
     p.push("1 | （英語の質問）");
     p.push("ア | （選択肢）");
     p.push("イ | （選択肢）");
@@ -440,20 +442,24 @@
     p.push("エ | （選択肢）");
     p.push("");
     p.push("2 | ...");
-    p.push("--- KAISETSU ---");
+    p.push(""); p.push("");
+    p.push("【解説】");
     p.push("1 | （日本語で1〜2文。放送のどこを聞けば分かるか）");
     p.push("2 | ...");
-    p.push("--- ANSWERS ---");
+    p.push(""); p.push("");
+    p.push("【正解】");
     p.push("1 | （ア〜エの記号だけ）");
     p.push("2 | ...");
-    p.push("=== END ===");
+    p.push(""); p.push("");
+    p.push("【おわり】");
     p.push("");
     p.push("・区切りは半角の縦棒 | を使ってください。選択肢は1行に1つ、ア・イ・ウ・エで書いてください。");
-    p.push("・**QUESTIONS の中には正解を書かないでください。**正解の記号は、いちばん下の ANSWERS にだけまとめて書いてください。");
-    p.push("・KAISETSU（解説）にも ア〜エ の記号は書かないでください。");
+    p.push("・**【問題】の中には正解を書かないでください。**正解の記号は、いちばん下の【正解】にだけまとめて書いてください。");
+    p.push("・【解説】にも ア〜エ の記号は書かないでください。");
     p.push("・正解の記号がアばかり・イばかりにならないよう、ばらばらにしてください。");
-    p.push("・SCRIPT には日本語を混ぜないでください（そのまま読み上げるため）。");
-    p.push("・=== END === で終わってください。その前後に、あいさつ・説明・案内などの文は何も書かないでください。");
+    p.push("・【放送文】には日本語を混ぜないでください（そのまま読み上げるため）。");
+    p.push("・区切りは上の【 】の見出しと空行だけにしてください。＝＝＝ や －－－ などの線は引かないでください。");
+    p.push("・【おわり】 で終わってください。その前後に、あいさつ・説明・案内などの文は何も書かないでください。");
     return p.join("\n");
   }
   $("l_mk").addEventListener("click",function(){
@@ -474,10 +480,22 @@
   $("l_toPaste").addEventListener("click",function(){ show("lPaste"); });
 
   /* ---------- ② 解析 ---------- */
+  // 区切りは【リスニング】【放送文】…【おわり】。＝や－の線は、AIの読み上げが「イコール、イコール…」と読んでしまうので使わない。
+  // 前の書式（=== LISTENING === / --- SCRIPT --- など）で貼られても読めるよう、中では前の印にそろえる。
+  function normMarks(t){
+    var m=[["リスニング","=== LISTENING ==="],["スピーキング","=== SPEAKING ==="],["おわり","=== END ==="],
+           ["放送文","--- SCRIPT ---"],["問題","--- QUESTIONS ---"],["解説","--- KAISETSU ---"],["正解","--- ANSWERS ---"]];
+    return t.split("\n").map(function(line){
+      var k=line.trim().match(/^[【\[［]\s*(.+?)\s*[】\]］]$/); if(!k) return line;
+      for(var i=0;i<m.length;i++) if(k[1]===m[i][0]) return m[i][1];
+      return line;
+    }).join("\n");
+  }
   function parseListening(raw){
     // 新しい書式：質問と選択肢（ア〜エ）を1行ずつ、正解は末尾の ANSWERS にまとめる。
     // 前の書式（1行に 質問 | 選択肢… | 正解番号）もそのまま読める。
     var t=String(raw||"").replace(/\r/g,"").replace(/｜/g,"|");
+    t=normMarks(t);
     var i=t.indexOf("=== LISTENING ==="), j=t.indexOf("=== END ===");
     var body=(i>=0)? t.slice(i+17, j>i? j : t.length) : t;
     var title="", reps=2, script="", qs=[], bad=0, sec="", byNo={}, KANA="アイウエ";
@@ -528,7 +546,7 @@
     var p=parseListening($("l_paste").value);
     if(!p.script || !p.qs.length){
       m.className="msg show ng";
-      m.innerHTML="✗ 素材を読み取れませんでした。<br>AIにこう言い直そう：<code>=== LISTENING === から === END === まで、最初にお願いした書式（SCRIPT・QUESTIONS・KAISETSU・ANSWERS）のまま出し直して</code><br>※いちばん下の ANSWERS（正解の記号）までコピーできているかも確かめよう。";
+      m.innerHTML="✗ 素材を読み取れませんでした。<br>AIにこう言い直そう：<code>【リスニング】 から 【おわり】 まで、最初にお願いした書式（【放送文】【問題】【解説】【正解】）のまま出し直して</code><br>※いちばん下の【正解】までコピーできているかも確かめよう。";
       return;
     }
     cur=p; played=0; picked={};
@@ -639,15 +657,16 @@
     p.push("6. 講評のあと、最後に下の【提出ブロック】を出してください。");
     p.push("");
     p.push("【提出ブロック】※この書式は1文字も変えないでください");
-    p.push("=== SPEAKING ===");
+    p.push("【スピーキング】");
     p.push("題: （日本語で話題の名前）");
     p.push("1 | （あなたが出した英語の質問） | （わたしの答えをそのまま）");
     p.push("2 | ...");
-    p.push("=== END ===");
+    p.push(""); p.push("");
+    p.push("【おわり】");
     p.push("");
     p.push("・「わたしの答え」は、わたしが書いたものを直さずそのまま入れてください（まちがいもそのまま）。");
     p.push("・答えられなかった問は、答えの欄に （無回答） と書いてください。");
-    p.push("・=== END === で終わってください。そのあとには何も書かないでください。");
+    p.push("・【おわり】 で終わってください。そのあとには何も書かないでください。");
     p.push("");
     p.push("では、あいさつから始めてください。");
     return p.join("\n");
@@ -662,6 +681,7 @@
 
   function parseSpeaking(raw){
     var t=String(raw||"").replace(/\r/g,"").replace(/｜/g,"|");
+    t=normMarks(t);
     var i=t.indexOf("=== SPEAKING ==="), j=t.indexOf("=== END ===");
     var body=(i>=0)? t.slice(i+16, j>i? j : t.length) : t;
     var title="", qs=[];
@@ -685,7 +705,7 @@
     var p=parseSpeaking($("s_paste").value);
     if(!p.qs.length){
       m.className="msg show ng";
-      m.innerHTML="✗ まとめを読み取れませんでした。<br>AIにこう言い直そう：<code>さっきの面接を、1 | 質問 | わたしの答え の形で、=== SPEAKING === と === END === ではさんで出し直して</code>";
+      m.innerHTML="✗ まとめを読み取れませんでした。<br>AIにこう言い直そう：<code>さっきの面接を、1 | 質問 | わたしの答え の形で、【スピーキング】 と 【おわり】 ではさんで出し直して</code>";
       return;
     }
     sCur=p; sIdx=0; sAns=[];

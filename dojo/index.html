@@ -241,6 +241,8 @@
   function store(){ var st=load(); st.tech=st.tech||{}; st.skill=st.skill||{}; return st; }
 
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  // データの中の <b>…</b>（強調）だけは生かす。ほかの記号は文字のまま出す。
+  function escB(s){ return esc(s).replace(/&lt;(\/?)b&gt;/g,"<$1b>"); }
   function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
   function techName(id){ var t=TECHS.filter(function(x){return x.id===id;})[0]; return t?(t.id+" "+t.name):id; }
 
@@ -273,7 +275,7 @@
         var b=document.createElement("button"); b.className="tech-tile"+(st.tech[t.id]?" done":"");
         b.innerHTML='<span class="from'+(t.from==="提案"?" mine":"")+'">'+esc(t.from)+'</span>'+
           '<div class="tid">'+esc(t.id)+'</div><div class="tname">'+esc(t.name)+'</div>'+
-          '<div class="twhat">'+esc(t.what)+'</div>';
+          '<div class="twhat">'+escB(t.what)+'</div>';
         b.addEventListener("click",function(){ openTech(t.id); });
         g.appendChild(b);
       });
@@ -285,13 +287,13 @@
   function openTech(id){
     var t=TECHS.filter(function(x){return x.id===id;})[0]; if(!t) return;
     $("tv_title").textContent="📖 "+t.id+" "+t.name+"（"+t.from+"）";
-    $("tv_what").textContent=t.what;
-    $("tv_how").innerHTML=(t.how||[]).map(function(h){return "<li>"+esc(h)+"</li>";}).join("");
+    $("tv_what").innerHTML=escB(t.what);
+    $("tv_how").innerHTML=(t.how||[]).map(function(h){return "<li>"+escB(h)+"</li>";}).join("");
     var box=$("tv_drill"); box.innerHTML="";
     var correct=0, answered=0;
     (t.drill||[]).forEach(function(d,qi){
       var wrap=document.createElement("div");
-      wrap.innerHTML='<div class="q-text">例題'+(t.drill.length>1?(qi+1):"")+'：'+esc(d.q)+'</div>';
+      wrap.innerHTML='<div class="q-text">例題'+(t.drill.length>1?(qi+1):"")+'：'+escB(d.q)+'</div>';
       var ch=document.createElement("div"); ch.className="choices";
       var order=shuffle(d.choices.map(function(_,i){return i;}));
       var fb=document.createElement("div"); fb.className="fb";
@@ -307,7 +309,7 @@
           if(!ok){ [].forEach.call(ch.children,function(c,k){ if(order[k]===d.answer) c.classList.add("reveal"); }); }
           [].forEach.call(ch.children,function(c){ c.setAttribute("disabled","1"); });
           fb.className="fb show";
-          fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+esc(d.ex||"");
+          fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+escB(d.ex||"");
           if(answered===(t.drill||[]).length) finishTech(t, correct===t.drill.length);
         });
         ch.appendChild(b);
@@ -361,7 +363,7 @@
     if(dSkill==="S1"){ stim.innerHTML='<div class="passage">'+it.passage+'</div>'; }
     else if(dSkill==="S2"){ stim.innerHTML='<div class="sent en">'+esc(it.sent)+'</div>'; }
     else { stim.innerHTML='<div class="flyer">'+it.flyer+'</div>'; }
-    $("d_q").textContent=it.q;
+    $("d_q").innerHTML=escB(it.q);
     var ch=$("d_choices"); ch.innerHTML="";
     var fb=$("d_fb"); fb.className="fb"; fb.innerHTML="";
     $("d_next").classList.add("hide");
@@ -388,8 +390,8 @@
     fb.innerHTML='<div class="head '+(ok?"ok":"ng")+'">'+(ok?"○ 正解！":"✕ ざんねん")+'</div>'+
       // S2 は「記号をつけた形」を見せるのが答え合わせの中身。図で覚えさせる。
       ((dSkill==="S2"&&it.marked)?'<div class="marked en">'+it.marked+'</div>':"")+
-      '<div>'+esc(it.why||"")+'</div>'+
-      (!ok&&it.trap?'<div class="trap">⚠ ワナ：'+esc(it.trap)+'</div>':"")+
+      '<div>'+escB(it.why||"")+'</div>'+
+      (!ok&&it.trap?'<div class="trap">⚠ ワナ：'+escB(it.trap)+'</div>':"")+
       '<div class="tech-chips">'+(it.tech||[]).map(function(t){return '<span class="chip">'+esc(techName(t))+'</span>';}).join("")+'</div>';
     $("d_score").textContent="○"+dScore;
     $("d_next").classList.remove("hide");
