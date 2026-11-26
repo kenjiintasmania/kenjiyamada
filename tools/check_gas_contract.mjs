@@ -26,7 +26,7 @@ const ver = Number((gas.match(/GAS_VERSION\s*=\s*"jigaku-(\d+)"/) || [])[1]);
 if (!ver) fail('score_gas.gs の GAS_VERSION を読めません');
 
 // 自学の各レーンは「この版以上でないと送らない」下限を持つ。GAS より先に行くと送信が止まる。
-const FLOORS = ['jigaku/index.html', 'jigaku/bunpo.js', 'gojun/gojun.js', 'jigaku/honbun.js'];
+const FLOORS = ['jigaku/index.html', 'jigaku/bunpo.js', 'gojun/gojun.js', 'jigaku/honbun.js', 'jigaku/furikaeri.html'];
 FLOORS.forEach(f => {
   const m = r(f).match(/Number\(vn\)\s*<\s*(\d+)/);
   if (!m) return fail(`${f} に版の下限（Number(vn) < N）が見あたりません`);

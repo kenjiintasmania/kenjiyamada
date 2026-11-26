@@ -64,6 +64,28 @@ function handleJigaku(d){
   return {result:"ok"};
 }
 
+/* ===== (C2) ふりかえり：自学のあとに生徒が書く（jigaku/furikaeri.html・jigaku-26〜） =====
+ * 1回＝1行。学習ポートフォリオの元データ。「学年＋番号」で 成績まとめ・自学ログ とつき合わせられる。
+ * ・やったこと／勉強法 は「／」区切り（アプリの選択肢の文字そのまま＋自由記述）。
+ * ・合っていたか は ◎ ○ △ の1文字。
+ * ・生徒はこのシートを開かない（入力はアプリだけ）。 */
+function handleFurikaeri(d){
+  var header = ["日時","学年","番号","名前","やったこと","時間(分)","学んだこと","勉強法","合っていたか","理由","次にやること"];
+  var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
+  if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
+  var sh = getSheet(FURIKAERI_SHEET, header);
+  sh.getRange(1,1,1,header.length).setValues([header]);
+  var cut = function(v, n){ return String(v==null?"":v).slice(0, n); };
+  // ★先頭が = + - @ の文字列は式として動いてしまうので、' を付けて文字のまま入れる。
+  var txt = function(v, n){ var s = cut(v, n); return /^[=+\-@]/.test(s) ? "'" + s : s; };
+  sh.appendRow([
+    new Date(), cls, num, txt(d.name, 40),
+    txt(d.did, 300), numOrBlank(d.min), txt(d.learned, 600),
+    txt(d.how, 300), txt(d.fit, 2), txt(d.why, 400), txt(d.next, 400)
+  ]);
+  return {result:"ok"};
+}
+
 /* ===== (A2) 自学ログ ▶ 成績まとめ「ユニット別クリア語数」 ===== *
  * 各生徒について「そのユニットで、これまでに正解できた語が何語あるか」を出す。
  *   ・同じリストを何回やっても、同じ語は1語として数える（延べではなく実数）。
@@ -350,6 +372,7 @@ function clearSummaryCols_(names){
 var TEACHER_PIN = "PIN";
 var UNIT_SHEET = "単元管理";        // ゲート状態（開/閉・セッション）。先生が見える化用も兼ねる
 var UNIT_LOG   = "単元テスト記録";  // 提出を1回ずつ別枠で記録
+var FURIKAERI_SHEET = "ふりかえり"; // 自学のふりかえり（jigaku/furikaeri.html）から1回ごとに追記
 var JIGAKU_SHEET = "自学ログ";      // 自学マイページ（jigaku/）から1回ごとに追記
 // 単元テスト扱いにする試験ID（exam.html?id=… と一致）→ 表示名。複数登録可。
 var UNIT_EXAMS = {
@@ -381,7 +404,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1, "mkatsu":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "jigaku-25";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "jigaku-26";   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){
@@ -433,6 +456,7 @@ function doPost(e){
     if (data.kind === "mastery")  return json(handleMastery(data));
     if (data.kind === "unittest") return json(handleUnitTest(data));
     if (data.kind === "jigaku")   return json(handleJigaku(data));
+    if (data.kind === "furikaeri") return json(handleFurikaeri(data));
     if (data.kind === "summary"){
       handleSummary(data);
       return json({result:"ok", policy:getPolicy()});   // マイページのコメント用に方針を返す

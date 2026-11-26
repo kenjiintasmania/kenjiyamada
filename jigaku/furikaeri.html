@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ふりかえり｜自学マイページ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📝</text></svg>">
+<!--
+  jigaku/furikaeri.html ─ 自学のふりかえり（学習ポートフォリオの入口）
+   自学のたびに「やったこと・学んだこと・使った勉強法・それは合っていたか・次にやること」を1分で書いて送る。
+   ・保存先：成績ブックの「ふりかえり」タブ（1回＝1行。score_gas の kind:"furikaeri"・jigaku-26〜）
+            ＋ この端末（localStorage: furikaeri_v1）。自分の分はこのページの下に時系列で出る。
+   ・生徒はスプレッドシートを開かない（入力はこのページだけ）。
+   ・数えたい項目（やったこと・勉強法・合っていたか）は選択式、考えを書く項目は自由記述。
+     あとで成績や自学の記録と「学年＋番号」でつき合わせるため。
+   ・「やったこと」は、今日この端末に残っている自学・音の道場の記録から先にチェックを入れておく。
+-->
+<style>
+  :root{
+    --jp:'游ゴシック','Yu Gothic',sans-serif;
+    --ink:#1f2430; --gray:#5a6473; --muted:#9aa3b2; --paper:#f7faf9; --line:#dde5e2;
+    --c1:#0f766e; --c1d:#0b5a54;
+    --ok:#2c7a52; --okbg:#e7f6ee; --ng:#b3402a; --ngbg:#fdeee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font-family:var(--jp);line-height:1.65;padding:0 0 70px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 15px}
+  .hero{background:linear-gradient(100deg,#0f766e,#134e4a);color:#fff;padding:22px 0 18px;margin-bottom:16px}
+  .hero h1{margin:0;font-size:23px}
+  .hero p{margin:6px 0 0;font-size:13px;color:#c9e6e1}
+  .crumbs{font-size:12.5px;margin-bottom:6px}
+  .crumbs a{color:#a7e0d8;text-decoration:none;font-weight:bold}
+  .hide{display:none!important}
+  .card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0}
+  h2{font-size:16.5px;margin:0 0 10px}
+  .btn{font:inherit;font-size:15px;font-weight:bold;border:none;border-radius:11px;padding:10px 20px;cursor:pointer;color:#fff;background:var(--c1)}
+  .btn:hover{background:var(--c1d)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .hint{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+  label,.lab{font-size:13.5px;font-weight:bold;display:block;margin:14px 0 5px}
+  .lab small{font-weight:normal;color:var(--muted);margin-left:6px}
+  input[type=text],select,textarea{font:inherit;font-size:14px;width:100%;border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;line-height:1.6}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px}
+  @media(max-width:620px){.grid3{grid-template-columns:1fr 1fr}.grid3 > div:last-child{grid-column:1 / -1}}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font:inherit;font-size:13.5px;border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+  .chip.on{background:var(--c1);border-color:var(--c1);color:#fff;font-weight:bold}
+  .msg{font-size:13px;padding:10px 12px;border-radius:10px;margin:10px 0;display:none}
+  .msg.show{display:block;background:#eef5f3;color:var(--gray)}
+  .msg.ok{background:var(--okbg);color:var(--ok)}
+  .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .log{border-top:1px solid var(--line);padding:10px 0;font-size:13.5px}
+  .log:first-child{border-top:none}
+  .log .d{font-size:12px;color:var(--muted)}
+  .log b{color:var(--c1d)}
+  code{background:#eef5f3;border-radius:4px;padding:1px 6px;font-size:12.5px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="wrap">
+  <div class="crumbs"><a href="index.html">← 自学マイページ</a></div>
+  <h1>📝 ふりかえり</h1>
+  <p>自学のあとに1分。やったこと・学んだこと・勉強のしかたを書いておくと、自分の学び方が見えてくる。</p>
+</div></div>
+
+<div class="wrap">
+  <div class="card">
+    <h2>今日の自学をふりかえる</h2>
+    <div class="grid3">
+      <div><label for="f_cls" style="margin-top:0">学年</label>
+        <select id="f_cls"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></div>
+      <div><label for="f_num" style="margin-top:0">番号</label><input type="text" id="f_num" placeholder="例：5"></div>
+      <div><label for="f_name" style="margin-top:0">名前（任意）</label><input type="text" id="f_name" placeholder="入れなくても送れます"></div>
+    </div>
+
+    <div class="lab">① 今日やったこと<small>あてはまるものを全部</small></div>
+    <div class="chips" id="c_did"></div>
+    <p class="hint" id="autoNote"></p>
+    <input type="text" id="f_didNote" placeholder="くわしく（例：Unit 5 の単語 20語／ワークの p.32）" style="margin-top:8px">
+
+    <label for="f_min">② かけた時間</label>
+    <select id="f_min" style="max-width:220px">
+      <option value="">—</option><option value="10">10分くらい</option><option value="20">20分くらい</option>
+      <option value="30">30分くらい</option><option value="45">45分くらい</option><option value="60">60分以上</option>
+    </select>
+
+    <label for="f_learned">③ 何を学んだ？ 何ができるようになった？</label>
+    <textarea id="f_learned" rows="2" placeholder="例：過去形と過去分詞がちがう動詞を10個おぼえた。written と wrote を書き分けられるようになった。"></textarea>
+
+    <div class="lab">④ どんな勉強のしかたをした？<small>あてはまるものを全部</small></div>
+    <div class="chips" id="c_how"></div>
+    <input type="text" id="f_howNote" placeholder="そのほかのやり方があれば" style="margin-top:8px">
+
+    <div class="lab">⑤ そのやり方は、自分に合っていた？</div>
+    <div class="chips" id="c_fit"></div>
+    <input type="text" id="f_why" placeholder="そう思った理由（例：声に出すと3回でおぼえられた／書くだけだと次の日わすれていた）" style="margin-top:8px">
+
+    <label for="f_next">⑥ 次はどうする？</label>
+    <input type="text" id="f_next" placeholder="例：まちがえた5語だけ、明日もう一度テストする">
+
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="send">記録して先生に送る</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>これまでのふりかえり（この端末）</h2>
+    <div id="hist"></div>
+  </div>
+  <footer>ふりかえり ／ 自学マイページ</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  /* 選択肢。ここの文字がそのままスプレッドシートに入り、あとで数える単位になる。
+     ★名前を変えると、前の記録と別のものとして数えられる。足すのは自由、変えるのは慎重に。 */
+  var DID=["単語アプリ","自学：単語","自学：本文","自学：文法","模試","英検","音の道場","AIモード","プリント・ワーク","ノート・教科書","そのほか"];
+  var HOW=["声に出して読む","書いておぼえる","テスト形式で確かめる","まちがい直しをする","音声を聞く","AIに質問・練習する","人に説明する・教え合う","時間をはかる"];
+  var FIT=["◎ とても合っていた","○ まあ合っていた","△ あまり合わなかった"];
+
+  function chips(boxId, list, multi){
+    var box=$(boxId);
+    list.forEach(function(t){
+      var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=t;
+      b.addEventListener("click",function(){
+        if(!multi) [].forEach.call(box.children,function(x){ if(x!==b) x.classList.remove("on"); });
+        b.classList.toggle("on");
+      });
+      box.appendChild(b);
+    });
+  }
+  function picked(boxId){ return [].filter.call($(boxId).children,function(x){ return x.classList.contains("on"); }).map(function(x){ return x.textContent; }); }
+  function setOn(boxId, name){ [].forEach.call($(boxId).children,function(x){ if(x.textContent===name) x.classList.add("on"); }); }
+  chips("c_did", DID, true); chips("c_how", HOW, true); chips("c_fit", FIT, false);
+
+  /* ---------- 今日この端末に残っている記録から「やったこと」に先にチェック ---------- */
+  function readJSON(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}")||{}; }catch(e){ return {}; } }
+  function isToday(ts){ if(!ts) return false; var a=new Date(ts), b=new Date(); return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+  (function autoFill(){
+    var found=[], j=readJSON("jigaku_v1"), l=readJSON("listening_v1");
+    function any(arr){ return (arr||[]).some(function(r){ return isToday(r&&r.ts); }); }
+    if(any(j.runs)) found.push("自学：単語");
+    if(any(j.honbun&&j.honbun.runs)) found.push("自学：本文");
+    if(any(j.bunpo&&j.bunpo.runs)) found.push("自学：文法");
+    if(any(l.lRuns)||any(l.sRuns)) found.push("音の道場");
+    found.forEach(function(n){ setOn("c_did", n); });
+    $("autoNote").textContent = found.length ? ("今日の記録から「"+found.join("」「")+"」にチェックを入れました。ほかにやったことも足してね。") : "";
+  })();
+
+  /* ---------- 学年・番号（ほかのページと共通） ---------- */
+  function idGet(k){ try{ return localStorage.getItem("mado_"+k)||""; }catch(e){ return ""; } }
+  function idSet(k,v){ try{ localStorage.setItem("mado_"+k,v); }catch(e){} }
+  function han(s){ return String(s||"").replace(/[０-９]/g,function(d){ return String.fromCharCode(d.charCodeAt(0)-65248); }).replace(/[^0-9]/g,""); }
+  $("f_cls").value=idGet("year"); $("f_num").value=han(idGet("num")); $("f_name").value=idGet("name");
+  $("f_cls").addEventListener("change",function(){ idSet("year",this.value); });
+  $("f_num").addEventListener("input",function(){ this.value=han(this.value); idSet("num",this.value); });
+  $("f_name").addEventListener("input",function(){ idSet("name",this.value.trim()); });
+
+  /* ---------- この端末の記録 ---------- */
+  var KEY="furikaeri_v1";
+  function load(){ var s=readJSON(KEY); s.logs=s.logs||[]; return s; }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  function renderHist(){
+    var s=load(), box=$("hist");
+    if(!s.logs.length){ box.innerHTML='<p class="hint">まだありません。自学のあとに書いてみよう。</p>'; return; }
+    box.innerHTML=s.logs.slice().reverse().slice(0,30).map(function(r){
+      return '<div class="log"><div class="d">'+new Date(r.ts).toLocaleDateString("ja-JP")+"　"+esc((r.did||[]).join("・"))+
+        (r.min?"　"+esc(r.min)+"分":"")+(r.sent?"":"　（未送信）")+'</div>'+
+        (r.learned?'<div>'+esc(r.learned)+'</div>':"")+
+        '<div><b>やり方</b> '+esc((r.how||[]).join("・")||"—")+(r.fit?"　<b>"+esc(r.fit.charAt(0))+"</b>":"")+(r.why?"　"+esc(r.why):"")+'</div>'+
+        (r.next?'<div><b>次</b> '+esc(r.next)+'</div>':"")+'</div>';
+    }).join("");
+  }
+  renderHist();
+
+  /* ---------- 送信（成績ブックの「ふりかえり」タブに1行） ---------- */
+  var GAS_URL="https://script.google.com/macros/s/AKfycbzJ2HThmRaf6Okkj682KOlxULwv_uQEtrdwbxCFyqOB5w8yKHa5bRpB9VTCEU3R2bCt/exec";
+  if(window.SITE) GAS_URL = SITE.gasFor("summary", GAS_URL);
+  function post(obj){
+    return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(obj)})
+      .then(function(r){ return r.text().then(function(t){
+        try{ return JSON.parse(t); }catch(e){ throw new Error("__HTML__ status="+r.status); } }); });
+  }
+  var pendingTs=null;
+  $("send").addEventListener("click",function(){
+    var m=$("msg"), btn=this;
+    var cls=$("f_cls").value.trim(), num=han($("f_num").value), name=$("f_name").value.trim();
+    var did=picked("c_did"), how=picked("c_how"), fit=picked("c_fit")[0]||"";
+    var rec={ts:Date.now(), did:did, didNote:$("f_didNote").value.trim(), min:$("f_min").value,
+      learned:$("f_learned").value.trim(), how:how, howNote:$("f_howNote").value.trim(),
+      fit:fit, why:$("f_why").value.trim(), next:$("f_next").value.trim(), sent:false};
+    function ng(t){ m.className="msg show ng"; m.textContent=t; }
+    if(!cls||!num) return ng("学年と番号を入れてね。");
+    if(!did.length && !rec.didNote) return ng("① 今日やったことを1つえらんでね。");
+    if(!rec.learned) return ng("③ 何を学んだかを一言書いてね。");
+    if(!how.length && !rec.howNote) return ng("④ 勉強のしかたを1つえらんでね。");
+    if(!fit) return ng("⑤ そのやり方が合っていたかをえらんでね。");
+    // まず端末に残す（送信に失敗しても消えない）。送り直しのときは、前の未送信ぶんと入れかえる。
+    var s=load();
+    if(pendingTs) s.logs=s.logs.filter(function(r){ return r.ts!==pendingTs; });
+    s.logs.push(rec); save(s); renderHist(); pendingTs=rec.ts;
+    if(!GAS_URL) return ng((window.SITE&&SITE.isTrial)?"この端末に記録しました。実証用の送信先が未設定です。":"この端末に記録しました。送信先が未設定です。");
+    btn.disabled=true; btn.textContent="送信中…"; m.className="msg show"; m.textContent="送信しています…";
+    // ★先に版を確かめる。「ふりかえり」タブに対応していない版へは送らない。
+    post({action:"policy"})
+      .then(function(j){
+        var ver=(j&&j.ver)||"";
+        var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
+        if(!vn || Number(vn) < 26){ throw new Error("__OLD__"+ver); }
+        var payload={kind:"furikaeri", cls:cls, num:num, name:name,
+          did:did.concat(rec.didNote?[rec.didNote]:[]).join("／"), min:rec.min, learned:rec.learned,
+          how:how.concat(rec.howNote?[rec.howNote]:[]).join("／"), fit:fit.charAt(0), why:rec.why, next:rec.next};
+        if(window.SITE) SITE.tag(payload);
+        return post(payload);
+      })
+      .then(function(j){
+        if(!(j&&j.result==="ok")) throw new Error((j&&j.message)||"server");
+        var s2=load(); s2.logs.forEach(function(r){ if(r.ts===rec.ts) r.sent=true; }); save(s2); renderHist(); pendingTs=null;
+        m.className="msg show ok"; m.textContent="記録して、先生に送りました ✓（"+new Date().toLocaleString("ja-JP")+"）";
+        btn.textContent="送信ずみ ✓";
+        ["f_didNote","f_learned","f_howNote","f_why","f_next"].forEach(function(id){ $(id).value=""; });
+        $("f_min").value="";
+        ["c_did","c_how","c_fit"].forEach(function(id){ [].forEach.call($(id).children,function(x){ x.classList.remove("on"); }); });
+        setTimeout(function(){ btn.disabled=false; btn.textContent="記録して先生に送る"; },2500);
+      })
+      .catch(function(err){
+        var t=String(err.message||err); m.className="msg show ng";
+        if(t.indexOf("__OLD__")>=0){
+          m.innerHTML="この端末には記録しました。<br>先生へ：スプレッドシート側がまだ「ふりかえり」に対応していません（いまの版 "+
+            esc(t.replace("__OLD__",""))+"）。<code>tools/score_gas.gs</code> を貼り直して「新バージョン」で再デプロイしてください。";
+        } else if(t.indexOf("__HTML__")>=0){
+          m.innerHTML="この端末には記録しました。<br>先生へ：送信先がスクリプトではなくページを返しています。デプロイのURLと公開設定を確認してください。";
+        } else {
+          m.textContent="この端末には記録しました。先生には送れませんでした。電波を確認してもう一度。（"+t.slice(0,40)+"）";
+        }
+        btn.disabled=false; btn.textContent="もう一度送る";
+      });
+  });
+})();
+</script>
+</body>
+</html>
