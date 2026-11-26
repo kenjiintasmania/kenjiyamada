@@ -295,10 +295,16 @@
       worry:$("f_worry").value.trim(), ai:aiText(), sent:false};
     function ng(t){ m.className="msg show ng"; m.textContent=t; }
     if(!cls||!num) return ng("学年と番号を入れてね。");
-    if(!did.length && !rec.didNote) return ng("① 今日やったことを1つえらんでね。");
-    if(!rec.learned) return ng("③ 何を学んだかを一言書いてね。");
-    if(!how.length && !rec.howNote) return ng("④ 勉強のしかたを1つえらんでね。");
-    if(!fit) return ng("⑤ そのやり方が合っていたかをえらんでね。");
+    // ★空欄があっても送れる（まず記録を残すほうが大事）。ぬけている所は、送ったあとに「次は〜も」と伝える。
+    //   何も書いていないときだけ止める（空の行をためないため）。
+    var miss=[];
+    if(!did.length && !rec.didNote) miss.push("① やったこと");
+    if(!rec.min) miss.push("② 時間");
+    if(!rec.learned) miss.push("③ 学んだこと");
+    if(!how.length && !rec.howNote) miss.push("④ 勉強のしかた");
+    if(!fit) miss.push("⑤ 合っていたか");
+    if(!rec.next) miss.push("⑥ 次にやること");
+    if(miss.length===6 && !rec.worry && !rec.ai) return ng("どれか1つは書いてから送ろう。");
     // まず端末に残す（送信に失敗しても消えない）。送り直しのときは、前の未送信ぶんと入れかえる。
     var s=load();
     if(pendingTs) s.logs=s.logs.filter(function(r){ return r.ts!==pendingTs; });
@@ -321,7 +327,9 @@
       .then(function(j){
         if(!(j&&j.result==="ok")) throw new Error((j&&j.message)||"server");
         var s2=load(); s2.logs.forEach(function(r){ if(r.ts===rec.ts) r.sent=true; }); save(s2); renderHist(); pendingTs=null;
-        m.className="msg show ok"; m.textContent="記録して、先生に送りました ✓（"+new Date().toLocaleString("ja-JP")+"）";
+        m.className="msg show ok";
+        m.innerHTML="記録して、先生に送りました ✓（"+esc(new Date().toLocaleString("ja-JP"))+"）"+
+          (miss.length? "<br>次は <b>"+esc(miss.join("・"))+"</b> も入力してね。" : "");
         btn.textContent="送信ずみ ✓";
         ["f_didNote","f_learned","f_howNote","f_why","f_next","f_worry","f_ai"].forEach(function(id){ $(id).value=""; });
         $("aiBox").classList.add("hide");
