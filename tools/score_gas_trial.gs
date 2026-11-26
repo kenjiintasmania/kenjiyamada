@@ -82,9 +82,30 @@ function handleJigaku(d){
  * 1回＝1行。学習ポートフォリオの元データ。「学年＋番号」で 成績まとめ・自学ログ とつき合わせられる。
  * ・やったこと／勉強法 は「／」区切り（アプリの選択肢の文字そのまま＋自由記述）。
  * ・合っていたか は ◎ ○ △ の1文字。
- * ・生徒はこのシートを開かない（入力はアプリだけ）。 */
+ * ・生徒はこのシートを開かない（入力はアプリだけ）。
+ * jigaku-27：こまっていること・AIのアドバイス・⚠️ の列を末尾に足した（前の列の並びは変えない）。
+ *   ⚠️ は「先生が先に読む行」の印。生徒が書いた文だけを見て決める（AIの文は見ない：AIは見出しに
+ *   「こまっていること」と書くので、見ると全部に印がつく）。
+ *     🚨（行が赤）   … FURIKAERI_STRONG の語がある（いじめ・なやみ・つらい など）
+ *     ⚠️（行が黄色） … 「こまっていること」に何か書いてある／△ が2回つづいた／FURIKAERI_MILD の語がある
+ *   ★語の一致で拾うだけなので、書き方しだいで漏れるし、冗談でも立つ。見守りの代わりにはならない。 */
+var FURIKAERI_STRONG = ["いじめ","イジメ","虐め","なやみ","なやむ","なやん","悩","つらい","辛い","しんどい","くるしい","苦しい","死"];
+var FURIKAERI_MILD   = ["無理","むり","やる気が出ない","やる気がない","やる気がでない","やめたい","いやだ","嫌だ"];
+function furikaeriFlag_(d, prevFit){
+  // 「必死」「死語」など、心配のいらない言い方は先に消してから見る
+  var body = [d.did, d.learned, d.how, d.why, d.next, d.worry].join("\n").replace(/必死|死語|死守/g, "");
+  var hit = function(list){ return list.filter(function(w){ return body.indexOf(w) >= 0; }); };
+  var strong = hit(FURIKAERI_STRONG), why = [];
+  if (strong.length) why.push("ことば：" + strong.join("・"));
+  if (String(d.worry||"").trim()) why.push("こまっていることに記入あり");
+  if (String(d.fit||"") === "△" && prevFit === "△") why.push("△が2回つづいた");
+  var mild = hit(FURIKAERI_MILD);
+  if (mild.length) why.push("ことば：" + mild.join("・"));
+  return { mark: strong.length ? "🚨" : (why.length ? "⚠️" : ""), why: why.join("／") };
+}
 function handleFurikaeri(d){
-  var header = ["日時","学年","番号","名前","やったこと","時間(分)","学んだこと","勉強法","合っていたか","理由","次にやること"];
+  var header = ["日時","学年","番号","名前","やったこと","時間(分)","学んだこと","勉強法","合っていたか","理由","次にやること",
+                "こまっていること","AIのアドバイス","⚠️","⚠️の理由"];
   var cls = String(d.cls||"").trim(), num = String(d.num||"").trim();
   if (!cls || !num) return {result:"error", message:"学年と番号を入れてね"};
   var sh = getSheet(FURIKAERI_SHEET, header);
@@ -92,11 +113,26 @@ function handleFurikaeri(d){
   var cut = function(v, n){ return String(v==null?"":v).slice(0, n); };
   // ★先頭が = + - @ の文字列は式として動いてしまうので、' を付けて文字のまま入れる。
   var txt = function(v, n){ var s = cut(v, n); return /^[=+\-@]/.test(s) ? "'" + s : s; };
+  // この生徒の1つ前の「合っていたか」（△が続いているかを見るため）
+  var prevFit = "", last = sh.getLastRow();
+  if (last >= 2){
+    var prev = sh.getRange(2, 1, last-1, 9).getValues();
+    for (var i = prev.length-1; i >= 0; i--){
+      if (String(prev[i][1]).trim() === cls && String(prev[i][2]).trim() === num){ prevFit = String(prev[i][8]).trim(); break; }
+    }
+  }
+  var f = furikaeriFlag_(d, prevFit);
   sh.appendRow([
     new Date(), cls, num, txt(d.name, 40),
     txt(d.did, 300), numOrBlank(d.min), txt(d.learned, 600),
-    txt(d.how, 300), txt(d.fit, 2), txt(d.why, 400), txt(d.next, 400)
+    txt(d.how, 300), txt(d.fit, 2), txt(d.why, 400), txt(d.next, 400),
+    txt(d.worry, 600), txt(d.ai, 1500), f.mark, f.why
   ]);
+  if (f.mark){
+    var r = sh.getLastRow();
+    sh.getRange(r, 1, 1, header.length).setBackground(f.mark === "🚨" ? "#f4c7c3" : "#fff2cc");
+    sh.getRange(r, 14, 1, 2).setFontColor("#cc0000").setFontWeight("bold");
+  }
   return {result:"ok"};
 }
 
@@ -418,7 +454,7 @@ var UNIT_EXAMS = {
 var MASTERY_EXAMS = { "m2000":1, "mgram":1, "mgram2":1, "midiom":1, "mkatsu":1 };   // 単元テストとは記録の作法が違う試験
 var MASTERY_LOG = "到達度テスト";
 // デプロイ確認用の版番号。/admin に表示され、新版が反映されたか一目で分かります。
-var GAS_VERSION = "trial-jigaku-26";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
+var GAS_VERSION = "trial-jigaku-27";   // 実証版であることが /admin 上部で分かるようにする   // ★"jigaku" を含むと自学ログ対応。アプリ側が送信可否の判定に使う
 var SETTINGS_SHEET = "設定";   // 学習方針などの保存（A2=項目, B2=値）
 /* いま有効な合言葉。「設定」タブの「合言葉」行（B列が空でない）が優先、無ければ TEACHER_PIN。 */
 function teacherPin_(){

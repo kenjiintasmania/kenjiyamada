@@ -14,6 +14,9 @@
    ・数えたい項目（やったこと・勉強法・合っていたか）は選択式、考えを書く項目は自由記述。
      あとで成績や自学の記録と「学年＋番号」でつき合わせるため。
    ・「やったこと」は、今日この端末に残っている自学・音の道場の記録から先にチェックを入れておく。
+   ・⑦ こまっていること（任意）。書いてあると、先生のスプレッドシートで ⚠️ の印がつく（jigaku-27〜）。
+   ・AIに相談（任意）：①〜⑦からプロンプトを作る → AIモード → 返事を貼る → いっしょに送る。
+     プロンプトに名前・学年・番号は入れない。AIを使わなくても送れる（使わないと送れない形にしない）。
 -->
 <style>
   :root{
@@ -51,6 +54,11 @@
   .msg.show{display:block;background:#eef5f3;color:var(--gray)}
   .msg.ok{background:var(--okbg);color:var(--ok)}
   .msg.ng{background:var(--ngbg);color:var(--ng)}
+  .ai{background:#f3f7fb;border:2px solid #d5e2ef;border-radius:12px;padding:12px 14px;margin-top:18px}
+  .ai h3{margin:0 0 4px;font-size:14.5px}
+  pre.prompt{white-space:pre-wrap;word-break:break-word;background:#fff;border:2px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.55;max-height:220px;overflow:auto;margin:8px 0 0;font-family:inherit}
+  .btn.ghost{background:#fff;color:var(--c1);border:2px solid var(--c1)}
+  .btn.sm{font-size:13px;padding:7px 14px}
   .log{border-top:1px solid var(--line);padding:10px 0;font-size:13.5px}
   .log:first-child{border-top:none}
   .log .d{font-size:12px;color:var(--muted)}
@@ -101,6 +109,28 @@
 
     <label for="f_next">⑥ 次はどうする？</label>
     <input type="text" id="f_next" placeholder="例：まちがえた5語だけ、明日もう一度テストする">
+
+    <label for="f_worry">⑦ こまっていること・不安なこと<small style="font-weight:normal;color:var(--muted);margin-left:6px">なければ空のままでOK</small></label>
+    <textarea id="f_worry" rows="2" placeholder="例：単語をおぼえても次の日にわすれる／何から手をつければいいか分からない"></textarea>
+    <p class="hint">ここに書いたことは先生に届きます。</p>
+
+    <div class="ai">
+      <h3>🤖 AIに相談してから送る（やってもやらなくてもOK）</h3>
+      <p class="hint" style="margin-top:0">上に書いたことをAIに見せて、よかったところ・アドバイス・次にやることのチェックをもらえます。名前や番号はAIに送りません。</p>
+      <div class="row">
+        <button class="btn ghost sm" id="mkPrompt">プロンプトを作る</button>
+      </div>
+      <div id="aiBox" class="hide">
+        <pre class="prompt" id="aiPrompt"></pre>
+        <div class="row">
+          <button class="btn sm" id="aiCopy">📋 ① コピーする</button>
+          <button class="btn sm" id="aiOpen">🤖 ② AIモードに貼る</button>
+        </div>
+        <label for="f_ai" style="margin-top:8px">③ AIの返事をここに貼る</label>
+        <textarea id="f_ai" rows="5" placeholder="【ふりかえりAI】から【おわり】までを貼ろう"></textarea>
+        <p class="hint">AIのアドバイスは参考です。合わないと思ったら、そのとおりにしなくてかまいません。</p>
+      </div>
+    </div>
 
     <div class="row" style="margin-top:16px">
       <button class="btn" id="send">記録して先生に送る</button>
@@ -178,7 +208,9 @@
         (r.min?"　"+esc(r.min)+"分":"")+(r.sent?"":"　（未送信）")+'</div>'+
         (r.learned?'<div>'+esc(r.learned)+'</div>':"")+
         '<div><b>やり方</b> '+esc((r.how||[]).join("・")||"—")+(r.fit?"　<b>"+esc(r.fit.charAt(0))+"</b>":"")+(r.why?"　"+esc(r.why):"")+'</div>'+
-        (r.next?'<div><b>次</b> '+esc(r.next)+'</div>':"")+'</div>';
+        (r.next?'<div><b>次</b> '+esc(r.next)+'</div>':"")+
+        (r.worry?'<div><b>こまっていること</b> '+esc(r.worry)+'</div>':"")+
+        (r.ai?'<div><b>AI</b> '+esc(r.ai).replace(/\n/g,"<br>")+'</div>':"")+'</div>';
     }).join("");
   }
   renderHist();
@@ -191,6 +223,67 @@
       .then(function(r){ return r.text().then(function(t){
         try{ return JSON.parse(t); }catch(e){ throw new Error("__HTML__ status="+r.status); } }); });
   }
+  /* ---------- AIに相談（任意） ---------- */
+  var AI_URL="https://www.google.com/search?udm=50";   // 生徒が使うAIモード（音の道場と同じ）
+  function form(){
+    return {did:picked("c_did"), didNote:$("f_didNote").value.trim(), min:$("f_min").value,
+      learned:$("f_learned").value.trim(), how:picked("c_how"), howNote:$("f_howNote").value.trim(),
+      fit:picked("c_fit")[0]||"", why:$("f_why").value.trim(), next:$("f_next").value.trim(),
+      worry:$("f_worry").value.trim()};
+  }
+  function aiPrompt(f){
+    var p=[], none="（書いていない）";
+    p.push("あなたは中学生の学習を見守る先生です。わたしの今日の自学のふりかえりを読んで、短くアドバイスをください。");
+    p.push("");
+    p.push("【わたしのふりかえり】");
+    p.push("① やったこと："+(f.did.concat(f.didNote?[f.didNote]:[]).join("／")||none));
+    p.push("② 時間："+(f.min?f.min+"分くらい":none));
+    p.push("③ 学んだこと："+(f.learned||none));
+    p.push("④ 勉強のしかた："+(f.how.concat(f.howNote?[f.howNote]:[]).join("／")||none));
+    p.push("⑤ そのやり方は合っていたか："+(f.fit||none)+(f.why?"（理由："+f.why+"）":""));
+    p.push("⑥ 次にやること："+(f.next||none));
+    p.push("⑦ こまっていること："+(f.worry||"（とくになし）"));
+    p.push("");
+    p.push("【お願い】");
+    p.push("・中学生に分かるやさしい日本語で、それぞれ1〜2文で書いてください。");
+    p.push("・わたしが書いていないことを、勝手に決めつけないでください。");
+    p.push("・ほめるときは、何がよかったのかを具体的に書いてください。");
+    p.push("・⑦が「とくになし」のときは、2 の行に「とくになし」とだけ書いてください。");
+    p.push("・**いじめ、体や心のつらさなど、勉強のしかた以外のなやみが書いてあるときは、アドバイスをせず、**");
+    p.push("　2 の行に「先生か家の人に、このことを話してみよう。」とだけ書いてください。");
+    p.push("・下の書式で出してください。見出しは変えず、＝＝＝ などの線は引かないでください。");
+    p.push("");
+    p.push("【ふりかえりAI】");
+    p.push("1 よかったところ：");
+    p.push("2 こまっていることへのアドバイス：");
+    p.push("3 次にやることのチェック：（ちょうどよいか、多すぎ・少なすぎないか）");
+    p.push("4 ほかにやるとよさそうなこと：");
+    p.push("【おわり】");
+    p.push("");
+    p.push("・【おわり】で終わってください。その前後に、あいさつや説明は書かないでください。");
+    return p.join("\n");
+  }
+  function aiText(){      // 貼られた返事から【ふりかえりAI】〜【おわり】だけを取り出す（無ければ全文）
+    var t=String($("f_ai").value||"").replace(/\r/g,"").trim(); if(!t) return "";
+    var i=t.lastIndexOf("【ふりかえりAI】"), j=t.lastIndexOf("【おわり】");
+    if(i>=0) t=t.slice(i+9, j>i? j : t.length);
+    return t.replace(/\n{2,}/g,"\n").trim().slice(0,1500);
+  }
+  $("mkPrompt").addEventListener("click",function(){
+    var f=form(), m=$("msg");
+    if(!f.learned && !f.did.length){ m.className="msg show ng"; m.textContent="先に①〜⑥を書いてから、プロンプトを作ろう。"; return; }
+    m.className="msg";
+    $("aiPrompt").textContent=aiPrompt(f); $("aiBox").classList.remove("hide");
+  });
+  $("aiCopy").addEventListener("click",function(){
+    var t=$("aiPrompt").textContent, btn=this;
+    function done(){ btn.textContent="コピーしました ✓"; setTimeout(function(){ btn.textContent="📋 ① コピーする"; },1600); }
+    function fb(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){} document.body.removeChild(ta); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,fb); } else fb();
+  });
+  $("aiOpen").addEventListener("click",function(){ try{ window.open(AI_URL,"_blank","noopener"); }catch(e){ location.href=AI_URL; } });
+
   var pendingTs=null;
   $("send").addEventListener("click",function(){
     var m=$("msg"), btn=this;
@@ -198,7 +291,8 @@
     var did=picked("c_did"), how=picked("c_how"), fit=picked("c_fit")[0]||"";
     var rec={ts:Date.now(), did:did, didNote:$("f_didNote").value.trim(), min:$("f_min").value,
       learned:$("f_learned").value.trim(), how:how, howNote:$("f_howNote").value.trim(),
-      fit:fit, why:$("f_why").value.trim(), next:$("f_next").value.trim(), sent:false};
+      fit:fit, why:$("f_why").value.trim(), next:$("f_next").value.trim(),
+      worry:$("f_worry").value.trim(), ai:aiText(), sent:false};
     function ng(t){ m.className="msg show ng"; m.textContent=t; }
     if(!cls||!num) return ng("学年と番号を入れてね。");
     if(!did.length && !rec.didNote) return ng("① 今日やったことを1つえらんでね。");
@@ -216,10 +310,11 @@
       .then(function(j){
         var ver=(j&&j.ver)||"";
         var vn=(String(ver).match(/jigaku-(\d+)/)||[])[1];
-        if(!vn || Number(vn) < 26){ throw new Error("__OLD__"+ver); }
+        if(!vn || Number(vn) < 27){ throw new Error("__OLD__"+ver); }
         var payload={kind:"furikaeri", cls:cls, num:num, name:name,
           did:did.concat(rec.didNote?[rec.didNote]:[]).join("／"), min:rec.min, learned:rec.learned,
-          how:how.concat(rec.howNote?[rec.howNote]:[]).join("／"), fit:fit.charAt(0), why:rec.why, next:rec.next};
+          how:how.concat(rec.howNote?[rec.howNote]:[]).join("／"), fit:fit.charAt(0), why:rec.why, next:rec.next,
+          worry:rec.worry, ai:rec.ai};
         if(window.SITE) SITE.tag(payload);
         return post(payload);
       })
@@ -228,7 +323,8 @@
         var s2=load(); s2.logs.forEach(function(r){ if(r.ts===rec.ts) r.sent=true; }); save(s2); renderHist(); pendingTs=null;
         m.className="msg show ok"; m.textContent="記録して、先生に送りました ✓（"+new Date().toLocaleString("ja-JP")+"）";
         btn.textContent="送信ずみ ✓";
-        ["f_didNote","f_learned","f_howNote","f_why","f_next"].forEach(function(id){ $(id).value=""; });
+        ["f_didNote","f_learned","f_howNote","f_why","f_next","f_worry","f_ai"].forEach(function(id){ $(id).value=""; });
+        $("aiBox").classList.add("hide");
         $("f_min").value="";
         ["c_did","c_how","c_fit"].forEach(function(id){ [].forEach.call($(id).children,function(x){ x.classList.remove("on"); }); });
         setTimeout(function(){ btn.disabled=false; btn.textContent="記録して先生に送る"; },2500);
