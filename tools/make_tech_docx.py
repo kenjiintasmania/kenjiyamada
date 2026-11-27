@@ -136,7 +136,7 @@ def page(doc, back):
 
     q = doc.add_paragraph(); q.paragraph_format.space_before = Pt(6); q.paragraph_format.space_after = Pt(3)
     font(q.add_run("Ｂ　次の文に、Ａの印（＝ ≒ V ／ → ← ＆ ←→ ＞ （　））を書き入れよう。" if not back
-                   else "Ｂ　印をつけるとこうなる。（＝ ≒ は be動詞などと入れかえて書いてある。V は動詞のうしろ）"), 10, True)
+                   else "Ｂ　印は一例です。（印刷の都合上＝ ≒ は be動詞などと入れかえて書いてます。V も動詞のうしろに置きました）"), 10, True)
     t2 = doc.add_table(rows=len(PART_B), cols=2); borders(t2); margins(t2)
     for k, (sent, marked) in enumerate(PART_B):
         r = t2.rows[k]; r.height = Mm(11 if not back else 7.6); r.height_rule = WD_ROW_HEIGHT_RULE.AT_LEAST
