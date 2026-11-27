@@ -1,6 +1,6 @@
 # tools/make_tech_docx.py ─ 読解道場のテクニックを確かめるプリント（A4 両面1枚：表＝テスト、裏＝解説と答え）
 # 使い方: python3 tools/make_tech_docx.py 出力.docx      （要 python-docx）
-# 出力先の正本: mogi/print/docx/dojo_tech_test.docx
+# 正本: mogi/print/docx/dojo_tech_test.docx（先生がレイアウトを調整した版・2026-11-27。これを上書きしないこと）
 # もとにしたもの: dojo/data/tech.js（テクカード T01〜T11・P10・G01〜G03）と dojo/data/drill_s2.js（印をつける文）。
 # ★Word は LibreOffice より行が高く出るので、下余白 2.5mm にして、行の高さにも余裕を残してある。
 # ★解答ページも生徒に配る。作り手向けの注記は紙に書かない。
@@ -109,8 +109,9 @@ def page(doc, back):
     p = doc.add_paragraph(); font(p.add_run(title), 15, True)
     if not back: font(p.add_run("　　　　年　　組　　番　名前　　　　　　　　　　　"), 10.5)
     p.paragraph_format.space_after = Pt(2)
-    q = doc.add_paragraph(); q.paragraph_format.space_after = Pt(3)
-    font(q.add_run("Ａ　（　　）に入ることばや印を書こう。" if not back else "Ａ　太い字が答え。右は、そのテクニックのポイント。"), 10, True)
+    if not back:          # 裏はこの1行を置かない（Word で2枚目があふれるため・先生の調整 2026-11-27）
+        q = doc.add_paragraph(); q.paragraph_format.space_after = Pt(3)
+        font(q.add_run("Ａ　（　　）に入ることばや印を書こう。"), 10, True)
     n = sum(len(x[1]) for x in PART_A) + len(PART_A)
     cols = 3 if back else 2
     t = doc.add_table(rows=n, cols=cols); borders(t); margins(t)
@@ -141,7 +142,8 @@ def page(doc, back):
         r = t2.rows[k]; r.height = Mm(11 if not back else 7.6); r.height_rule = WD_ROW_HEIGHT_RULE.AT_LEAST
         for c in r.cells: vcenter(c)
         p0 = r.cells[0].paragraphs[0]; p0.alignment = WD_ALIGN_PARAGRAPH.CENTER; font(p0.add_run(str(k + 1)), 9)
-        font(r.cells[1].paragraphs[0].add_run(marked if back else sent), 12.5 if not back else 11.5)
+        # 表は語の間を3つあける（／ などの印を書き入れやすいように・先生の調整）
+        font(r.cells[1].paragraphs[0].add_run(marked if back else "   ".join(sent.split())), 12.5 if not back else 11.5)
     widths(t2, [8, 180])
 
 
